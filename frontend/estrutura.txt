@@ -1,0 +1,74 @@
+pong-project/
+├── backend/
+│   ├── authentication/
+│   │   ├── Dockerfile
+│   │   ├── requirements.txt
+│   │   ├── authentication/
+│   │   │   ├── __init__.py
+│   │   │   ├── settings.py
+│   │   │   ├── urls.py
+│   │   │   ├── wsgi.py
+│   │   │   ├── asgi.py
+│   │   ├── manage.py
+│   ├── matchmaking/
+│   │   ├── Dockerfile
+│   │   ├── requirements.txt
+│   │   ├── matchmaking/
+│   │   │   ├── __init__.py
+│   │   │   ├── settings.py
+│   │   │   ├── urls.py
+│   │   │   ├── wsgi.py
+│   │   │   ├── asgi.py
+│   │   ├── manage.py
+│   ├── games/
+│   │   ├── Dockerfile
+│   │   ├── requirements.txt
+│   │   ├── games/
+│   │   │   ├── __init__.py
+│   │   │   ├── settings.py
+│   │   │   ├── urls.py
+│   │   │   ├── wsgi.py
+│   │   │   ├── asgi.py
+│   │   ├── manage.py
+│   ├── ai/
+│   │   ├── Dockerfile
+│   │   ├── requirements.txt
+│   │   ├── ai/
+│   │   │   ├── __init__.py
+│   │   │   ├── settings.py
+│   │   │   ├── urls.py
+│   │   │   ├── wsgi.py
+│   │   │   ├── asgi.py
+│   │   ├── manage.py
+│   ├── logging_monitoring/
+│   │   ├── Dockerfile
+│   │   ├── requirements.txt
+│   │   ├── logging_monitoring/
+│   │   │   ├── __init__.py
+│   │   │   ├── settings.py
+│   │   │   ├── urls.py
+│   │   │   ├── wsgi.py
+│   │   │   ├── asgi.py
+│   │   ├── manage.py
+├── frontend/
+│   ├── Dockerfile
+│   ├── index.html
+│   ├── css/
+│   │   ├── styles.css
+│   ├── js/
+│   │   ├── main.js
+│   │   ├── game.js
+│   │   ├── userManagement.js
+│   │   ├── tournament.js
+│   │   ├── multiplayer.js
+│   ├── images/
+├── database/
+│   ├── Dockerfile
+│   ├── init.sql
+├── nginx/
+│   ├── Dockerfile
+│   ├── nginx.conf
+├── docker-compose.yml
+├── README.md
+└── .env
+
