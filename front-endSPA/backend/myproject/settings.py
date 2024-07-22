@@ -53,16 +53,18 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-ALLOWED_HOSTS = ['*']
-
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS =[
     'http://localhost:5500',
     'http://127.0.0.1:5500',
-    'http://0.0.0.0:5500',
 ]
 
-CORS_ALLOW_CREDENTIALS = True
+AUTHENTICATION_BACKENDS = [
+    'accounts.authentication.EmailBackend', 
+    'django.contrib.auth.backends.ModelBackend', 
+]
 
+
+CORS_ALLOWED_CREDENTIALS = True
 
 ROOT_URLCONF = 'myproject.urls'
 
@@ -94,6 +96,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 # Password validation
