@@ -1,4 +1,4 @@
-const startPongGame = () => {
+export const startPongGame = () => {
     var canvas = document.getElementById('pongCanvas');
     var context = canvas.getContext('2d');
     let moldure  = document.getElementsByClassName('tv-container');

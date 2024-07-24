@@ -1,4 +1,4 @@
-const start4LineGame = () => {
+export const start4LineGame = () => {
     const line4 = document.getElementById('4line');
     line4.innerHTML = `
         <h2 class="title4-line">4 in a Line</h>
