@@ -1,4 +1,4 @@
-import { start4LineGame } from './fourLineGame.js'; 
+import { start4LineGame } from './fourline/fourlinegame.js'; 
 
 export const render4line = () => {
     const app = document.getElementById('app');

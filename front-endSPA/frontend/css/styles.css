@@ -18,7 +18,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(241, 166, 213, 0.8);
+    background-color: rgba(241, 166, 213, 0.13);
     z-index: 1000;
 }
 
@@ -28,12 +28,40 @@ header {
     padding: 10px;
 }
 
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+nav ul li {
+    margin: 0;
+}
+
+.btn-header {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 3%;
+    background-color: transparent;
+    border: none;
+    color: #ffcc00; 
+    text-align: center;
+    text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 40px #ffcc00;
+}
+
+.btn-header:hover {
+    background-color: rgba(0, 0, 0, 0.3);  
+    transform: scale(1.05);
+}
+
+
 footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #fff; 
+    color: #ff3399; 
+    text-shadow: 0 0 5px #ff3300, 0 0 10px #ff3300, 0 0 20px #ff3300, 0 0 40px #ff3399, 0 0 80px #ff3399;
     padding: 10px;
     text-align: center;
     height: 20px;
@@ -54,11 +82,11 @@ footer {
 }
 
 .menu h1 {
-    font-size: 60px;
+    font-size: 100px;
     animation-name: example;
     animation-duration: 4s;
     color: #00ff99; 
-    text-shadow: 0 0 5px #13681a;
+    text-shadow: 0 0 5px #13681a, 0 0 10px #096d2a, 0 0 20px #42c76a, 0 0 40px #44947c, 0 0 80px #ff3399;
 }
 
 .menu h2 {
@@ -269,11 +297,6 @@ canvas {
     text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 40px #ffcc00;
 }
 
-#loginBtn
-{
-    font-size: 100px;
-    border-box: linear-gradient(to bottom, #ff00ff, #00ffff);
-}
 
 .btn:hover {
     background-color: rgba(0, 0, 0, 0.3);  
@@ -284,10 +307,17 @@ h1, h2 {
     font-family: 'Press Start 2P', cursive; 
 }
 
+#startGameBtn {
+    position: absolute;
+    width: 50px; 
+    height: 50px;
+}
+
+
 #startGameBtn img
 {
-    width: 200px;
-    height: 200px;;
+    width: 300px;
+    height: 300px;;
 }
 
 
