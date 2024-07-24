@@ -1,5 +1,4 @@
-// fourLine.js
-import { start4LineGame } from './fourLineGame.js'; // Supondo que você tenha esse arquivo
+import { start4LineGame } from './fourLineGame.js'; 
 
 export const render4line = () => {
     const app = document.getElementById('app');

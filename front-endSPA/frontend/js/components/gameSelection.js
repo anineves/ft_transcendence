@@ -1,4 +1,3 @@
-// gameSelection.js
 import { navigateTo } from '../utils.js';
 
 export const renderGameSelection = () => {

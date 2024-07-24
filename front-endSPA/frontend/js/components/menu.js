@@ -1,4 +1,3 @@
-// menu.js
 import { navigateTo } from '../utils.js';
 
 export const renderMenu = () => {

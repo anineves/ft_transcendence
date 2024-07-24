@@ -1,4 +1,3 @@
-// register.js
 import { navigateTo } from '../utils.js';
 
 export const renderRegister = () => {
