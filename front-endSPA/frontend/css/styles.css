@@ -394,3 +394,61 @@ h1, h2 {
 }
 
 
+.user-account {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.account-icon {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.account-icon:hover {
+    transform: scale(1.1);
+}
+
+.user-panel {
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ff00;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+    position: absolute;
+    top: 50px;
+    right: 0;
+}
+
+.user-panel h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+.user-panel p {
+    margin: 5px 0;
+}
+
+.user-panel .btn {
+    background: #ff00ff;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.user-panel .btn:hover {
+    background: #cc00cc;
+}
+
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}

@@ -1,4 +1,4 @@
-import { navigateTo } from '../utils.js';
+import { navigateTo, checkLoginStatus } from '../utils.js';
 
 export const renderLogin = () => {
     const app = document.getElementById('app');
@@ -8,10 +8,11 @@ export const renderLogin = () => {
             <form id="loginForm">
                 <input type="email" id="email" placeholder="Email" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
-                <button type="submit" class="btn">Login</button>
+                <button type="submit" class="btn">Submit</button>
             </form>
         </div>
     `;
+
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('email').value;
@@ -27,9 +28,10 @@ export const renderLogin = () => {
             });
 
             const data = await response.json();
-            if (response.status === 200) {
-                alert('Login successful!');
-                navigateTo('/game-selection');
+            if (response.ok) {
+                localStorage.setItem('user', JSON.stringify(data));
+                checkLoginStatus();
+                navigateTo('/game-selection', data);
             } else {
                 alert('Login failed: ' + JSON.stringify(data));
             }

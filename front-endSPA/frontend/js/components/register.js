@@ -35,7 +35,7 @@ export const renderRegister = () => {
             const data = await response.json();
             if (response.status === 201) {
                 alert('User registered successfully!');
-                navigateTo('/pong');
+                navigateTo('/login');
             } else {
                 alert('Registration failed: ' + JSON.stringify(data));
             }
