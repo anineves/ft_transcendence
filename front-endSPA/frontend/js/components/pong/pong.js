@@ -25,8 +25,8 @@ export function initializeBall() {
     }
     ballX = canvas.width / 2;
     ballY = canvas.height / 2;
-    ballSpeedX = 5;
-    ballSpeedY = 5;
+    ballSpeedX = 2;
+    ballSpeedY = 2;
 }
 
 export function updateBall() {
@@ -79,31 +79,46 @@ function initialize() {
         draw();
     }
 
-    function checkCollisions() {
-        if (ballX - ballRadius < paddleWidth) {
-            if (ballY > playerY && ballY < playerY + paddleHeight) {
-                ballSpeedX = -ballSpeedX;
-            } else {
-                opponentScore++;
-                if (opponentScore >= 5) {
-                    gameOver = true;
-                }
-                resetBall();
-            }
-        }
+    let ballOutOfBoundsLeft = false;
+let ballOutOfBoundsRight = false;
 
-        if (ballX + ballRadius > canvas.width - paddleWidth) {
-            if (ballY > opponentY && ballY < opponentY + paddleHeight) {
-                ballSpeedX = -ballSpeedX;
-            } else {
-                playerScore++;
-                if (playerScore >= 5) {
-                    gameOver = true;
-                }
-                resetBall();
+function checkCollisions() {
+    if (ballX - ballRadius < 0) {
+        if (!ballOutOfBoundsLeft) {
+            opponentScore++;
+            if (opponentScore >= 5) {
+                gameOver = true;
             }
+            ballOutOfBoundsLeft = true;
+            resetBall();
         }
+    } else {
+        ballOutOfBoundsLeft = false; 
     }
+
+    if (ballX + ballRadius > canvas.width) {
+        if (!ballOutOfBoundsRight) {
+            playerScore++;
+            if (playerScore >= 5) {
+                gameOver = true;
+            }
+            ballOutOfBoundsRight = true; 
+            resetBall();
+        }
+    } else {
+        ballOutOfBoundsRight = false;
+    }
+
+    if (ballX - ballRadius < paddleWidth && ballY > playerY && ballY < playerY + paddleHeight) {
+        ballSpeedX = -ballSpeedX;
+    }
+
+    if (ballX + ballRadius > canvas.width - paddleWidth && ballY > opponentY && ballY < opponentY + paddleHeight) {
+        ballSpeedX = -ballSpeedX;
+    }
+}
+
+
 
     function gameLoop() {
         update();

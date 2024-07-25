@@ -352,6 +352,42 @@ h1, h2 {
     text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 40px #ffcc00;
 }
 
+
+.register {
+    background: #22222215;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    text-align: center;
+    width: 600px;
+}
+
+
+.register h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #00ffcc;
+    text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc, 0 0 15px #00ffcc;
+}
+
+.form-control {
+    width: 90%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border: 2px solid #00ffcc;
+    border-radius: 5px;
+    background: #111111ab;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+
+.form-control:focus {
+    border-color: #ff00cc;
+}
+
+
 @keyframes example {
     from {font-size: 100px;}
     to {font-size: 60;}
