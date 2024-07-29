@@ -35,6 +35,7 @@ export const renderRegister = () => {
             const data = await response.json();
             if (response.status === 201) {
                 alert('User registered successfully!');
+                localStorage.setItem('userReg', JSON.stringify(data));
                 navigateTo('/login');
             } else {
                 alert('Registration failed: ' + JSON.stringify(data));

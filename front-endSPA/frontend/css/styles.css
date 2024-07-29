@@ -418,9 +418,8 @@ h1, h2 {
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
-    position: absolute;
-    top: 50px;
-    right: 0;
+    width: 800px;
+    height: 600px;
 }
 
 .user-panel h3 {
