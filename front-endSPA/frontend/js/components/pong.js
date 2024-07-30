@@ -1,5 +1,6 @@
 import { startPongGame } from './pong/pong.js';
 
+
 export const renderPong = () => {
     const app = document.getElementById('app');
     app.innerHTML = `

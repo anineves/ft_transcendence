@@ -1,17 +1,26 @@
 # serializers.py
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import CustomUser
+from .models import CustomUser, Player
 from django.contrib.auth import get_user_model
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    
+    password2 = serializers.CharField(write_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ['email', 'username', 'first_name', 'last_name', 'password']
+        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password2']
         extra_kwargs = {'password': {'write_only': True}}
 
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError("The passwords don't match")
+        return attrs
+    
     def create(self, validated_data):
+        validated_data.pop('password2')
         try:
             user = CustomUser.objects.create_user(
                 email=validated_data['email'],
@@ -48,4 +57,16 @@ class UserLoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'username']
+        fields = ['id', 'email', 'username', 'first_name', \
+                  'last_name', 'date_joined']
+
+class PlayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = ['id', 'nickname', 'created_at' ,'friendship']
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'username', 'email']

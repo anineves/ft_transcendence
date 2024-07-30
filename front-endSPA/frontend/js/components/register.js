@@ -11,6 +11,7 @@ export const renderRegister = () => {
                 <input type="text" id="username" placeholder="Username" required class="form-control mb-2">
                 <input type="email" id="email" placeholder="Email" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
+                <input type="password" id="password2" placeholder="Confirm Password" required class="form-control mb-2">
                 <button type="submit" class="btn">Submit</button>
             </form>
         </div>
@@ -22,14 +23,14 @@ export const renderRegister = () => {
         const username = document.getElementById('username').value;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-
+        const password2 = document.getElementById('password2').value;
         try {
             const response = await fetch('http://127.0.0.1:8000/api/register/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ first_name: firstName, last_name: lastName, username, email, password })
+                body: JSON.stringify({ first_name: firstName, last_name: lastName, username, email, password, password2 })
             });
 
             const data = await response.json();

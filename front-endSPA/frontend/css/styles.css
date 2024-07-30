@@ -451,3 +451,40 @@ h1, h2 {
     border-radius: 50%;
     cursor: pointer;
 }
+
+
+
+#editBtn {
+    background: linear-gradient(145deg, #00ff99, #0044cc);
+    border: none;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    color: white;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    cursor: pointer;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 255, 153, 0.5);
+    transition: all 0.3s ease;
+}
+
+#editBtn:hover {
+    background: linear-gradient(145deg, #00cc66, #0055cc);
+    box-shadow: 0 0 15px rgba(0, 255, 153, 0.7);
+    transform: scale(1.05);
+}
+
+#editBtn:active {
+    background: linear-gradient(145deg, #00ff99, #0044cc);
+    box-shadow: 0 0 10px rgba(0, 255, 153, 0.5);
+    transform: scale(0.95);
+}
+
+
+#updateProfileSection {
+    margin-top: 20px;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}

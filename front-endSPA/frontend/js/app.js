@@ -32,9 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('userAvatar').addEventListener('click', () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            navigateTo('/user-panel', user);
+        }
+    });
+    document.getElementById('editBtn').addEventListener('click', () => {
         const userReg = JSON.parse(localStorage.getItem('userReg'));
         if (userReg) {
-            navigateTo('/user-panel', userReg);
+            navigateTo('/updateProfile', userReg);
         }
     });
 });

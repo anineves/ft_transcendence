@@ -39,3 +39,57 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class Player(models.Model):
+
+    class Status(models.TextChoices):
+        ONLINE = "ON", "Online"
+        OFFLINE = "OF", "Offline"
+        IN_GAME = "IG", "In_Game"
+
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    nickname = models.CharField(max_length=15)
+    status = models.CharField(max_length=2, choices=Status, default=Status.OFFLINE,)
+    avatar = models.ImageField(height_field=None, width_field=None, null=True, blank=True) #Limite do tamanho da imagem.
+    created_at = models.DateTimeField(auto_now_add=True)
+    friendship = models.ManyToManyField('self', through='Friendship', symmetrical=False )
+
+    def __str__(self):
+        return self.nickname
+
+
+class Friendship(models.Model):
+
+    # Add status choices: (Sent, Accepted, declined)
+
+    sender = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='sender')
+    invited = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='invited')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender.nickname} and {self.invited.nickname}"
+
+
+class Game(models.Model):
+
+    name = models.CharField(max_length=15)
+    version = models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.name
+
+class Match(models.Model):
+
+    date = models.DateTimeField(auto_now=False)
+    duration = models.DurationField()
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    players = models.ManyToManyField(Player)
+    winner_id = models.IntegerField()
+
+    def get_winner(self):
+        winner = self.players.get(id=self.winner_id)
+        return winner
+
+    def __str__(self):        
+        return f"{self.game}: {self.date} -- {self.get_winner()}"
