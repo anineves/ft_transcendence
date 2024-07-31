@@ -3,10 +3,12 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from .models import CustomUser, Player
-from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer, PlayerSerializer
+from .serializers import UserRegisterSerializer, UserSerializer, PlayerSerializer, CustomeTokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.http import Http404
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class UserRegister(viewsets.ViewSet):
     def create(self, request):
@@ -19,15 +21,46 @@ class UserRegister(viewsets.ViewSet):
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserLogin(viewsets.ViewSet):
-    def create(self, request):
-        serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-            return Response({'email': user.email, 'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name, 'id': user.id}, status=status.HTTP_200_OK)
-        else:
-            print(serializer.errors)  
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class UserLogin(viewsets.ViewSet):
+
+#     def create(self, request):
+#         serializer = UserLoginSerializer(data=request.data)
+#         if serializer.is_valid():
+#             user = serializer.validated_data['user']
+#             return Response({'email': user.email, 'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name, 'id': user.id}, status=status.HTTP_200_OK)
+#         else:
+#             print(serializer.errors)  
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    
+    serializer_class = CustomeTokenObtainPairSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = serializer.user
+        refresh = RefreshToken.for_user(user)
+        
+        response_data = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name
+            }
+        }
+        
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class UserInfo(APIView):
@@ -73,13 +106,13 @@ class UserDetail(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class PlayerList(APIView):
 
     def get(self, request):
         player = Player.objects.all()
         serializer = PlayerSerializer(player, many=True)
         return Response(serializer.data)
+
 
 class PlayerDetail(APIView):
     
@@ -92,13 +125,13 @@ class PlayerDetail(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class UserUpdate(APIView):
-    permission_classes = [IsAuthenticated]
+# class UserUpdate(APIView):
+#     permission_classes = [IsAuthenticated]
 
-    def put(self, request):
-        user = request.user
-        serializer = UserUpdateSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def put(self, request):
+#         user = request.user
+#         serializer = UserUpdateSerializer(user, data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

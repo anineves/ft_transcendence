@@ -2,7 +2,7 @@ from django.contrib import admin
 # from accounts import urls
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from accounts.views import UserRegister, UserLogin
+# from accounts.views import UserRegister, UserLogin
 from rest_framework_simplejwt import views as jwt_views
 
 # router = DefaultRouter()
