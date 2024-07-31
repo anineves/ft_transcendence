@@ -44,7 +44,7 @@ export const renderPanel = (user) => {
         const email = document.getElementById('updateEmail').value;
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/user/1', {
+            const response = await fetch(`http://127.0.0.1:8000/api/user/${user.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
