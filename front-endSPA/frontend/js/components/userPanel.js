@@ -1,4 +1,4 @@
-import { navigateTo } from '../utils.js';
+import { navigateTo, checkLoginStatus } from '../utils.js';
 
 export const renderPanel = (user) => {
     const app = document.getElementById('app');
@@ -28,8 +28,12 @@ export const renderPanel = (user) => {
     `;
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
-        logout();
+        localStorage.removeItem('jwtToken');
+        localStorage.removeItem('user');
+        checkLoginStatus();
+        navigateTo('/login');
     });
+
 
     document.getElementById('editBtn').addEventListener('click', () => {
         const updateProfileSection = document.getElementById('updateProfileSection');
@@ -56,7 +60,8 @@ export const renderPanel = (user) => {
             const data = await response.json();
             if (response.ok) {
                 alert('Profile updated successfully!');
-                navigateTo('/user-panel');
+                localStorage.setItem('user', JSON.stringify(data));
+                renderPanel(data);
             } else {
                 alert('Update failed: ' + JSON.stringify(data));
             }
