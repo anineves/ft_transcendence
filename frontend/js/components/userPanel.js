@@ -19,7 +19,7 @@ export const renderPanel = (user) => {
             <div id="updateProfileSection" style="display: none;">
                 <h2>Update Profile</h2>
                 <form id="updateProfileForm">
-                    <input type="file" id="updateAvatar" class="form-control mb-2">
+                    <input type="file" id="updateAvatar" placeholder="Avatar"class="form-control mb-2">
                     <input type="text" id="updateFirstName" placeholder="First Name" class="form-control mb-2" value="${user.first_name}">
                     <input type="text" id="updateLastName" placeholder="Last Name" class="form-control mb-2" value="${user.last_name}">
                     <input type="text" id="updateUsername" placeholder="Username" class="form-control mb-2" value="${user.username}">
@@ -71,7 +71,8 @@ export const renderPanel = (user) => {
             if (response.ok) {
                 alert('Profile updated successfully!');
                 localStorage.setItem('user', JSON.stringify(data));
-                renderPanel(data);
+                checkLoginStatus();
+                navigateTo('/game-selection', data);
             } else {
                 alert('Update failed: ' + JSON.stringify(data));
             }
