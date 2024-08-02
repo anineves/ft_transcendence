@@ -39,7 +39,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
-        
         try:
             serializer.is_valid(raise_exception=True)
         except Exception as e:
@@ -60,7 +59,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 'avatar' :request.build_absolute_uri(user.avatar.url) if user.avatar else None
             }
         }
-        
         return Response(response_data, status=status.HTTP_200_OK)
 
 
@@ -103,7 +101,8 @@ class UserDetail(APIView):
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            updated_user = UserSerializer(user, context={'request': request})
+            return Response(updated_user.data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 

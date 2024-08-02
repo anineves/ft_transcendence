@@ -79,10 +79,21 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = CustomUser
         fields = ['id', 'email', 'username', 'first_name', \
-                  'last_name', 'avatar','date_joined']
+                  'last_name', 'avatar', 'date_joined']
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        request = self.context.get('request')
+        if instance.avatar and request:
+            representation['avatar_url'] = request.build_absolute_uri(instance.avatar.url)
+        else:
+            representation['avatar_url'] = None
+        return representation
+    
 
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:

@@ -8,7 +8,6 @@ export const renderPanel = (user) => {
             <h2>User Profile</h2>
             <img id="avatarImg" src="${user.avatar}?${new Date().getTime()}" alt="User Avatar" class="avatar">
             <p><strong>Username:</strong> ${user.username}</p>
-            <p><strong>Nickname:</strong> ${user.nickname}</p>
             <p><strong>Email:</strong> ${user.email}</p>
             <p><strong>Firstname:</strong> ${user.first_name}</p>
             <p><strong>Lastname:</strong> ${user.last_name}</p>
