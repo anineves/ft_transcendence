@@ -5,8 +5,9 @@ export const renderPanel = (user) => {
     app.innerHTML = `
         <div class="user-panel">
             <h2>User Profile</h2>
-            <img id="avatarImg" src="./assets/avatar.png" alt="User Avatar" class="avatar">
+            <img id="avatarImg" src=${user.avatar} alt="User Avatar" class="avatar">
             <p><strong>Username:</strong> ${user.username}</p>
+            <p><strong>Nickname:</strong> ${user.nickname}</p>
             <p><strong>Email:</strong> ${user.email}</p>
             <p><strong>Firstname:</strong> ${user.first_name}</p>
             <p><strong>Lastname:</strong> ${user.last_name}</p>
@@ -17,6 +18,7 @@ export const renderPanel = (user) => {
             <div id="updateProfileSection" style="display: none;">
                 <h2>Update Profile</h2>
                 <form id="updateProfileForm">
+                    <input type="file" id="updateAvatar" value="${user.avatar}">
                     <input type="text" id="updateFirstName" placeholder="First Name" class="form-control mb-2" value="${user.first_name}">
                     <input type="text" id="updateLastName" placeholder="Last Name" class="form-control mb-2" value="${user.last_name}">
                     <input type="text" id="updateUsername" placeholder="Username" class="form-control mb-2" value="${user.username}">
@@ -42,6 +44,7 @@ export const renderPanel = (user) => {
 
     document.getElementById('updateProfileForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        const avatar = document.getElementById('updateAvatar').value;
         const firstName = document.getElementById('updateFirstName').value;
         const lastName = document.getElementById('updateLastName').value;
         const username = document.getElementById('updateUsername').value;
@@ -54,7 +57,7 @@ export const renderPanel = (user) => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
                 },
-                body: JSON.stringify({ first_name: firstName, last_name: lastName, username, email })
+                body: JSON.stringify({ avatar: avatar, first_name: firstName, last_name: lastName, username, email })
             });
 
             const data = await response.json();
