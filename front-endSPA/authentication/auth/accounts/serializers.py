@@ -47,6 +47,8 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'username': self.user.username,
                 'first_name': self.user.first_name,
                 'last_name': self.user.last_name,
+                'nickname': self.user.player.nickname,
+                'avatar': self.context['request'].build_absolute_uri(self.user.player.avatar.url) if self.user.player.avatar else None
             }
         })
         return data
@@ -77,10 +79,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'username', 'first_name', \
                   'last_name', 'date_joined']
 
+
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ['id', 'nickname', 'created_at' ,'friendship']
+        fields = ['id', 'nickname', 'created_at' ,'friendship', 'status', 'avatar']
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
