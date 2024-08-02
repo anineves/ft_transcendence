@@ -41,17 +41,23 @@ export const checkLoginStatus = () => {
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
     const userAvatar = document.getElementById('userAvatar');
+    const avatarImg = document.getElementById('avatarImg');
 
     if (user) {
         loginBtn.style.display = 'none';
         registerBtn.style.display = 'none';
         userAvatar.style.display = 'block';
+        
+        if (user.avatar) {
+            avatarImg.src = user.avatar;
+        } 
     } else {
         loginBtn.style.display = 'block';
         registerBtn.style.display = 'block';
         userAvatar.style.display = 'none';
     }
 };
+
 
 export const logout = () => {
     localStorage.removeItem('user');

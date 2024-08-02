@@ -5,32 +5,44 @@ export const renderRegister = () => {
     app.innerHTML = `
         <div class="register">
             <h2>Register</h2>
-            <form id="registerForm">
+            <form id="registerForm" enctype="multipart/form-data">
                 <input type="text" id="firstName" placeholder="First Name" required class="form-control mb-2">
                 <input type="text" id="lastName" placeholder="Last Name" required class="form-control mb-2">
                 <input type="text" id="username" placeholder="Username" required class="form-control mb-2">
                 <input type="email" id="email" placeholder="Email" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
                 <input type="password" id="password2" placeholder="Confirm Password" required class="form-control mb-2">
+                <input type="file" id="avatar" accept="image/*" class="form-control mb-2">
                 <button type="submit" class="btn">Submit</button>
             </form>
         </div>
     `;
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        
         const firstName = document.getElementById('firstName').value;
         const lastName = document.getElementById('lastName').value;
         const username = document.getElementById('username').value;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const password2 = document.getElementById('password2').value;
+        const avatar = document.getElementById('avatar').files[0];
+        
+        const formData = new FormData();
+        formData.append('first_name', firstName);
+        formData.append('last_name', lastName);
+        formData.append('username', username);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('password2', password2);
+        if (avatar) {
+            formData.append('avatar', avatar);
+        }
+
         try {
             const response = await fetch('http://127.0.0.1:8000/api/register/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ first_name: firstName, last_name: lastName, username, email, password, password2 })
+                body: formData
             });
 
             const data = await response.json();
