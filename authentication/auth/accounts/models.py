@@ -53,15 +53,14 @@ class Player(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=15)
     status = models.CharField(max_length=2, choices=Status, default=Status.OFFLINE,)
-    avatar = models.ImageField(height_field=None, width_field=None, null=True, blank=True) #Limite do tamanho da imagem.
     created_at = models.DateTimeField(auto_now_add=True)
-    friendship = models.ManyToManyField('self', through='Friendship', symmetrical=False )
+    friendship = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="friends")
 
     def __str__(self):
         return self.nickname
 
 
-class Friendship(models.Model):
+class FriendRequest(models.Model):
 
     # Add status choices: (Sent, Accepted, declined)
 
