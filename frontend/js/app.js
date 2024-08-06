@@ -20,7 +20,7 @@ const routes = {
 
 // Adiciona um listener que chama a função de renderização quando o DOM é carregado
 document.addEventListener('DOMContentLoaded', () => {
-    render();
+    render(); // Renderiza a página atual com base na URL
 
     // Adiciona listeners para os botões de login e registro
     document.getElementById('loginBtn').addEventListener('click', () => {
@@ -32,15 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('userAvatar').addEventListener('click', () => {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem('user')); // Obtém o usuário do localStorage
         if (user) {
             navigateTo('/user-panel', user);
-        }
-    });
-    document.getElementById('editBtn').addEventListener('click', () => {
-        const userReg = JSON.parse(localStorage.getItem('userReg'));
-        if (userReg) {
-            navigateTo('/updateProfile', userReg);
         }
     });
 });
