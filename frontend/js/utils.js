@@ -19,20 +19,19 @@ export const routes = {
 
 // Altera a URL do navegador e atualizar a exibição da página
 export const navigateTo = (path, user = null) => {
-    window.history.pushState({ user }, path, window.location.origin + path);
+    window.history.pushState({ user }, path, window.location.origin + path); // Atualiza o histórico com o novo estado
     render();
 };
 
-// Renderiza o conteúdo da página com base na URL 
+// Renderiza o conteúdo da página com base na URL
 export const render = () => {
-    const path = window.location.pathname;
+    const path = window.location.pathname; // Obtém o caminho atual da URL
     const route = routes[path] || renderMenu;
-    
-    const state = window.history.state;
-    if (path === '/user-panel' && state?.user) {
-        route(state.user); 
+    const state = window.history.state; // Obtém o estado atual do histórico
+    if (path === '/user-panel' && state?.user) { // Se tiver na rota do user.pna e o estado contem um user
+        route(state.user); // Renderiza o painel do usuário com os dados do usuário
     } else {
-        route();
+        route(); // Renderiza a rota padrão
     }
 };
 
@@ -44,13 +43,14 @@ export const checkLoginStatus = () => {
     const avatarImg = document.getElementById('avatarImg');
 
     if (user) {
-        loginBtn.style.display = 'none';
+        loginBtn.style.display = 'none';alex
         registerBtn.style.display = 'none';
         userAvatar.style.display = 'block';
-        
+        avatarImg.src = '../../assets/avatar.png';
         if (user.avatar) {
             avatarImg.src = user.avatar;
         } 
+        console.log(avatarImg.src);
     } else {
         loginBtn.style.display = 'block';
         registerBtn.style.display = 'block';
@@ -60,9 +60,10 @@ export const checkLoginStatus = () => {
 
 
 export const logout = () => {
-    localStorage.removeItem('user');
-    checkLoginStatus();
-    navigateTo('/');
+    localStorage.removeItem('user'); 
+    sessionStorage.clear(); 
+    checkLoginStatus(); 
+    navigateTo('/'); 
 };
 
 
