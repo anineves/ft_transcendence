@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import UserRegister, UserList, UserDetail, CustomTokenObtainPairView, PlayerList, PlayerDetail
+from .views import *
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework.routers import DefaultRouter
 from django.conf import settings
@@ -19,5 +19,8 @@ urlpatterns = [
 
     path('players/', PlayerList.as_view(), name='player_list'),
     path('player/<int:pk>', PlayerDetail.as_view(), name='player_detail'),
+
+    path('player/requests/', SendFriendRequestList.as_view(), name='requests'),
+    path('player/send_friend_request/<int:pk>', SendFriendRequest.as_view(), name='send_request'),
 ]
 

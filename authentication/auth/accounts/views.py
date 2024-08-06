@@ -2,8 +2,8 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser, Player
-from .serializers import UserRegisterSerializer, UserSerializer, PlayerSerializer, CustomeTokenObtainPairSerializer
+from .models import CustomUser, Player, FriendRequest
+from .serializers import UserRegisterSerializer, UserSerializer, PlayerSerializer, CustomeTokenObtainPairSerializer, FriendRequestSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.http import Http404
@@ -111,3 +111,27 @@ class PlayerDetail(APIView):
             return Response(serializer.data)
         except CustomUser.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+class SendFriendRequestList(APIView):
+
+    def get(self, request):
+        friend_request = FriendRequest.objects.all()
+        serializer = FriendRequestSerializer(friend_request, many=True)
+        # print(f"Serializer: {serializer.data}")
+        return Response(serializer.data)
+    
+
+class SendFriendRequest(APIView):
+
+    def post(self, request, pk):
+        from_user = request.user.player
+        to_user = Player.objects.get(id=pk)
+        from_serializer = PlayerSerializer(from_user)
+        to_serializer = PlayerSerializer(to_user)
+        # print(f"From User: {from_user}")
+        # print(f"To User: {to_user}")
+        # print(f"From Serialized User: {from_serializer.data}")
+        # print(f"TO Serialized User: {to_serializer.data}")
+        return Response(to_serializer.data)
+
+

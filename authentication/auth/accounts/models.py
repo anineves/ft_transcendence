@@ -48,7 +48,6 @@ class Player(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=15)
     created_at = models.DateTimeField(auto_now_add=True)
-    # friendship = None
     friendship = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="friends")
 
     def __str__(self):
