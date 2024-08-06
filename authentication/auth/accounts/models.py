@@ -45,15 +45,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 class Player(models.Model):
 
-    class Status(models.TextChoices):
-        ONLINE = "ON", "Online"
-        OFFLINE = "OF", "Offline"
-        IN_GAME = "IG", "In_Game"
-
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=15)
-    status = models.CharField(max_length=2, choices=Status, default=Status.OFFLINE,)
     created_at = models.DateTimeField(auto_now_add=True)
+    # friendship = None
     friendship = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="friends")
 
     def __str__(self):

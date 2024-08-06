@@ -10,7 +10,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('nickname', 'id', 'status', 'created_at')
+    list_display = ('nickname', 'id', 'created_at')
     ordering = ('nickname',)
 
 
