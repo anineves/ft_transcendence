@@ -21,18 +21,6 @@ class UserRegister(viewsets.ViewSet):
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# class UserLogin(viewsets.ViewSet):
-
-#     def create(self, request):
-#         serializer = UserLoginSerializer(data=request.data)
-#         if serializer.is_valid():
-#             user = serializer.validated_data['user']
-#             return Response({'email': user.email, 'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name, 'id': user.id}, status=status.HTTP_200_OK)
-#         else:
-#             print(serializer.errors)  
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class CustomTokenObtainPairView(TokenObtainPairView):
     
     serializer_class = CustomeTokenObtainPairSerializer
