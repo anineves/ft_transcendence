@@ -2,11 +2,15 @@ import { navigateTo, checkLoginStatus } from '../utils.js';
 
 export const renderPanel = (user) => {
     const app = document.getElementById('app');
+    
     console.log('User Avatar URL:', user.avatar);
+    
+    const defaultAvatar = '../../assets/avatar.png';
+    const avatarUrl = user.avatar ? user.avatar : defaultAvatar;
     app.innerHTML = `
         <div class="user-panel">
             <h2>User Profile</h2>
-            <img id="avatarImg" src="${user.avatar}?${new Date().getTime()}" alt="User Avatar" class="avatar">
+            <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="User Avatar" class="avatar">
             <p><strong>Username:</strong> ${user.username}</p>
             <p><strong>Email:</strong> ${user.email}</p>
             <p><strong>Firstname:</strong> ${user.first_name}</p>
@@ -15,10 +19,11 @@ export const renderPanel = (user) => {
             <button id="logoutBtn" class="btn">Logout</button>
             <button id="editBtn" class="btn">Edit</button>
             
+            <!-- Seção para atualizar o perfil, inicialmente oculta -->
             <div id="updateProfileSection" style="display: none;">
                 <h2>Update Profile</h2>
                 <form id="updateProfileForm">
-                    <input type="file" id="updateAvatar" placeholder="Avatar"class="form-control mb-2">
+                    <input type="file" id="updateAvatar" placeholder="Avatar" class="form-control mb-2">
                     <input type="text" id="updateFirstName" placeholder="First Name" class="form-control mb-2" value="${user.first_name}">
                     <input type="text" id="updateLastName" placeholder="Last Name" class="form-control mb-2" value="${user.last_name}">
                     <input type="text" id="updateUsername" placeholder="Username" class="form-control mb-2" value="${user.username}">
@@ -29,21 +34,26 @@ export const renderPanel = (user) => {
         </div>
     `;
 
+    // Adiciona um listener para o botão de logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
+        // Remove o token JWT e os dados do usuário do localStorage
         localStorage.removeItem('jwtToken');
         localStorage.removeItem('user');
         checkLoginStatus();
         navigateTo('/login');
     });
 
+    // Adiciona um listener para o botão de edição do perfil
     document.getElementById('editBtn').addEventListener('click', () => {
         const updateProfileSection = document.getElementById('updateProfileSection');
+        // Alterna a visibilidade da seção de atualização do perfil
         updateProfileSection.style.display = updateProfileSection.style.display === 'none' ? 'block' : 'none';
     });
 
     document.getElementById('updateProfileForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
+    
         const formData = new FormData();
         const avatarFile = document.getElementById('updateAvatar').files[0]; 
         const firstName = document.getElementById('updateFirstName').value;
@@ -51,6 +61,7 @@ export const renderPanel = (user) => {
         const username = document.getElementById('updateUsername').value;
         const email = document.getElementById('updateEmail').value;
 
+        // Adiciona o arquivo de avatar ao FormData se estiver presente
         if (avatarFile) formData.append('avatar', avatarFile);
         formData.append('first_name', firstName);
         formData.append('last_name', lastName);
@@ -58,6 +69,7 @@ export const renderPanel = (user) => {
         formData.append('email', email);
 
         try {
+            // Faz uma requisição PUT para atualizar os dados do usuário na API
             const response = await fetch(`http://127.0.0.1:8000/api/user/${user.id}`, {
                 method: 'PUT',
                 headers: {
@@ -66,11 +78,12 @@ export const renderPanel = (user) => {
                 body: formData 
             });
 
-            const data = await response.json();
+            const data = await response.json(); 
+
             if (response.ok) {
                 alert('Profile updated successfully!');
-                localStorage.setItem('user', JSON.stringify(data));
-                checkLoginStatus();
+                localStorage.setItem('user', JSON.stringify(data)); 
+                checkLoginStatus(); 
                 navigateTo('/game-selection', data);
             } else {
                 alert('Update failed: ' + JSON.stringify(data));

@@ -1,7 +1,7 @@
 import { navigateTo } from '../utils.js';
 
 export const renderMenu = () => {
-    const app = document.getElementById('app');
+    const app = document.getElementById('app'); //Obtém o elemento de conteúdo principal
     app.innerHTML = `
         <div class="menu">
             <h1>FT TRANSCENDENCE</h1>
