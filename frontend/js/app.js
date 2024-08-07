@@ -6,6 +6,7 @@ import { renderGameSelection } from './components/gameSelection.js';
 import { renderPong } from './components/pong.js';
 import { render4line } from './components/fourLine.js';
 import { renderPanel } from './components/userPanel.js';
+import { createPlayer } from './components/createPlayer.js';
 
 // Define as rotas da aplicação e suas funções de renderização correspondentes
 const routes = {
@@ -16,6 +17,7 @@ const routes = {
     '/4line': render4line,
     '/register': renderRegister,
     '/user-panel':  renderPanel,
+    '/create-player': createPlayer, 
 };
 
 // Adiciona um listener que chama a função de renderização quando o DOM é carregado

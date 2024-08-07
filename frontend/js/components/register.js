@@ -64,9 +64,10 @@ export const renderRegister = () => {
             const data = await response.json(); // Converte a resposta para JSON
 
             if (response.status === 201) {
-                alert('User registered successfully!');
+                alert('User registered success!');
                 localStorage.setItem('userReg', JSON.stringify(data)); // Armazena os dados do usuário registrado no localStorage
-                navigateTo('/login');
+                //navigateTo('/login');
+                navigateTo('/create-player');
             } else {
                 // Se o registro falhar, alerta o usuário com a mensagem de erro
                 alert('Registration failed: ' + JSON.stringify(data));

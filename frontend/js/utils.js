@@ -5,6 +5,7 @@ import { renderGameSelection } from './components/gameSelection.js';
 import { renderPong } from './components/pong.js';
 import { render4line } from './components/fourLine.js';
 import { renderPanel } from './components/userPanel.js';
+import { createPlayer } from './components/createPlayer.js';
 
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
@@ -15,6 +16,7 @@ export const routes = {
     '/4line': render4line,
     '/register': renderRegister,
     '/user-panel': renderPanel, 
+    '/create-player': createPlayer, 
 };
 
 // Altera a URL do navegador e atualizar a exibição da página
@@ -43,7 +45,7 @@ export const checkLoginStatus = () => {
     const avatarImg = document.getElementById('avatarImg');
 
     if (user) {
-        loginBtn.style.display = 'none';alex
+        loginBtn.style.display = 'none';
         registerBtn.style.display = 'none';
         userAvatar.style.display = 'block';
         avatarImg.src = '../../assets/avatar.png';
