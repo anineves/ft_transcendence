@@ -40,6 +40,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"error": str(e)})
         return user
 
+
 class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
@@ -57,25 +58,6 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
             }
         })
         return data
-
-
-# class UserLoginSerializer(serializers.Serializer):
-#     email = serializers.EmailField()
-#     password = serializers.CharField(write_only=True)
-
-#     def validate(self, data):
-#         email = data.get('email')
-#         password = data.get('password')
-
-#         if email and password:
-#             user = authenticate(request=self.context.get('request'), email=email, password=password)
-#             if not user:
-#                 raise serializers.ValidationError("Invalid email or password")
-#         else:
-#             raise serializers.ValidationError("Must include email and password")
-
-#         data['user'] = user
-#         return data
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -98,13 +80,20 @@ class UserSerializer(serializers.ModelSerializer):
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ['id', 'nickname', 'created_at' ,'friendship']
+        fields = ['id', 'nickname', 'friendship', 'user', 'created_at']
+        read_only_fields = ['created_at', 'id', 'user']
 
+    def create(self, validate_data):
+        current_user = self.context.get('user')
+        validate_data['user'] = current_user
+        return super().create(validate_data)
+        
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'username', 'email', 'avatar']
+
 
 class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:

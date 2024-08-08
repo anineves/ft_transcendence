@@ -100,7 +100,18 @@ class PlayerList(APIView):
         player = Player.objects.all()
         serializer = PlayerSerializer(player, many=True)
         return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = PlayerSerializer(data=request.data, context={'user': request.user})
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except serializer.ValidationError as e:
+                return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        
 
 class PlayerDetail(APIView):
     
@@ -112,6 +123,7 @@ class PlayerDetail(APIView):
         except CustomUser.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
+
 class SendFriendRequestList(APIView):
 
     def get(self, request):
