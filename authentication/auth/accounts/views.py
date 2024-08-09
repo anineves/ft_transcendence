@@ -44,8 +44,11 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'avatar' :request.build_absolute_uri(user.avatar.url) if user.avatar else None
-            }
+                'avatar': request.build_absolute_uri(user.avatar.url) if user.avatar else None,
+                'player': {
+                    'nickname': user.player.nickname
+                }
+            },
         }
         return Response(response_data, status=status.HTTP_200_OK)
 
