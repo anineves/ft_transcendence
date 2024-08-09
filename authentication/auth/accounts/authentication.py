@@ -1,11 +1,13 @@
+# backend/accounts/authentication.py
 from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
-class EmailBackend(BaseBackend):
+class EmailOrUsernameBackend(BaseBackend):
     def authenticate(self, request, email=None, password=None, **kwargs):
         UserModel = get_user_model()
         try:
-            user = UserModel.objects.get(email=email)
+            user = UserModel.objects.get(Q(email=email) | Q(username=email))
         except UserModel.DoesNotExist:
             return None
         

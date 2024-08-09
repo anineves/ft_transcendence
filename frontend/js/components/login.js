@@ -10,7 +10,7 @@ export const renderLogin = () => {
             <!-- Título da seção de login -->
             <form id="loginForm">
                 <!-- Formulário de login -->
-                <input type="email" id="email" placeholder="Email" required class="form-control mb-2">
+                <input type="text" id="email" placeholder="Email or user" required class="form-control mb-2">
                 <!-- Campo de entrada para o email, obrigatório para submissão -->
                 <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
                 <!-- Campo de entrada para a senha, obrigatório para submissão -->
