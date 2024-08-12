@@ -66,6 +66,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['id', 'email', 'username', 'first_name', \
                   'last_name', 'avatar', 'date_joined']
+        read_only_fields = ['id', 'email', 'username', 'date_joined']
+        
     
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -78,16 +80,23 @@ class UserSerializer(serializers.ModelSerializer):
     
 
 class PlayerSerializer(serializers.ModelSerializer):
+    total_winner = serializers.IntegerField(read_only=True) 
+    pong_winner = serializers.IntegerField(read_only=True)
+    linha_winner = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Player
-        fields = ['id', 'nickname', 'friendship', 'user', 'created_at']
-        read_only_fields = ['created_at', 'id', 'user']
+        fields = ['id', 'nickname', 'friendship', 'user', \
+                  'created_at', 'total_winner', 'pong_winner', 'linha_winner']
+        
+        read_only_fields = ['created_at', 'id', 'user', 'total_winner', \
+                            'pong_winner', 'linha_winner']
 
     def create(self, validate_data):
         current_user = self.context.get('user')
         validate_data['user'] = current_user
         return super().create(validate_data)
-        
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:

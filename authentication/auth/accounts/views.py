@@ -2,13 +2,15 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser, Player, FriendRequest
+from .models import CustomUser, Player, FriendRequest, Match
 from .serializers import UserRegisterSerializer, UserSerializer, PlayerSerializer, CustomeTokenObtainPairSerializer, FriendRequestSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.db.models import Count, Q
+
 
 class UserRegister(viewsets.ViewSet):
     def create(self, request):
@@ -34,7 +36,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         
         user = serializer.user
         refresh = RefreshToken.for_user(user)
-        
         response_data = {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
@@ -45,10 +46,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'avatar': request.build_absolute_uri(user.avatar.url) if user.avatar else None,
-                'player': {
-                    'nickname': user.player.nickname
-                }
-            },
+            }
         }
         return Response(response_data, status=status.HTTP_200_OK)
 
@@ -120,9 +118,13 @@ class PlayerDetail(APIView):
     
     def get(self, request, pk):
         try:
-            player = Player.objects.get(id=pk)
+            player = Player.objects.annotate(
+                total_winner=Count('players', filter=Q(players__winner_id=pk)),
+                pong_winner=Count('players', filter=Q(players__winner_id=pk, players__game__name='Pong')),
+                linha_winner=Count('players', filter=Q(players__winner_id=pk, players__game__name='Quatro Em Linha')),
+            ).get(id=pk)
             serializer = PlayerSerializer(player)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         

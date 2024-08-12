@@ -82,7 +82,7 @@ class Match(models.Model):
     date = models.DateTimeField(auto_now=False)
     duration = models.DurationField()
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    players = models.ManyToManyField(Player)
+    players = models.ManyToManyField(Player, related_name='players')
     winner_id = models.IntegerField()
 
     def get_winner(self):
