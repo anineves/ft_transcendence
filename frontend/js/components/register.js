@@ -17,15 +17,15 @@ export const renderRegister = () => {
                 <button type="submit" class="btn">Submit</button>
             </form>
             <form id="btn-register42">
-                <button type="submit" class="btn">Register with 42</button>
+                <button type="submit" class="btn">Register com 42</button>
             </form>
         </div>
     `;
 
     document.getElementById('btn-register42').addEventListener('submit', async (e) => {
         e.preventDefault(); 
-        alert('register ');
-        navigateTo('/');
+        alert('register test');
+        navigateTo('/api/login/intra42/');
     });
 
     // Adiciona um listener para o evento de submissão do formulário de registro

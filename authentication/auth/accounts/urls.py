@@ -22,5 +22,7 @@ urlpatterns = [
 
     path('player/requests/', SendFriendRequestList.as_view(), name='requests'),
     path('player/send_friend_request/<int:pk>', SendFriendRequest.as_view(), name='send_request'),
+    path('login/intra42/', intra42_login, name='intra42_login'),
+    path('callback/intra42', intra42_callback, name='intra42_callback'),
 ]
 

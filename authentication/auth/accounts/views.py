@@ -9,6 +9,10 @@ from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
+from django.shortcuts import redirect, render
+import requests
+import os
 
 class UserRegister(viewsets.ViewSet):
     def create(self, request):
@@ -149,4 +153,39 @@ class SendFriendRequest(APIView):
         # print(f"TO Serialized User: {to_serializer.data}")
         return Response(to_serializer.data)
 
+def intra42_login(request):
+    client_id = os.getenv('CLIENT_ID')
+    redirect_uri = "http://localhost:8080/game-selection"
+    url = f'https://api.intra.42.fr/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code'
+    return redirect(url)
 
+def intra42_callback(request):
+    code = request.GET.get('code')
+    client_id = os.getenv('CLIENT_ID')
+    client_secret = os.getenv('ClIENT_SECRET')
+    redirect_uri = "http://localhost:8080/game-selection"
+    token_url = 'https://api.intra.42.fr/oauth/token'
+    data = {
+        'grant_type': 'authorization_code',
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'code': code,
+        'redirect_uri': redirect_uri,
+    }
+
+    response = request.post(token_url, data=data)
+    response_data = response.json()
+    access_token = response_data.get('access_token')
+
+    user_info_url = 'https://api.intra.42.fr/v2/me'
+    headers = {'Authorization': f'Bearer {access_token}'}
+    user_response = requests.get(user_info_url, headers=headers)
+    user, created = user.objects.get_or_create(username=user_data['login'])
+    user.username = user_data['username']
+    user.first_name = user_data['first_name']
+    user.last_name = user_data['last_name']
+    user.email = user_data['email']
+    user.save()
+    user_data = user_response.json()
+
+    return render(request, 'login_success.html', {'access_token': access_token})
