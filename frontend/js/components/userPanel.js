@@ -4,13 +4,14 @@ export const renderPanel = (user) => {
     const app = document.getElementById('app');
 
     const defaultAvatar = '../../assets/avatar.png';
+    const nickname = localStorage.getItem('nickname');
     const avatarUrl = user.avatar ? user.avatar : defaultAvatar;
     app.innerHTML = `
         <div class="user-panel">
             <h2>User Profile</h2>
             <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="User Avatar" class="avatar">
             <p><strong>Username:</strong> ${user.username}</p>
-            <p><strong>Nickname:</strong> ${user.player.nickname}</p>
+            <p><strong>Nickname:</strong> ${nickname}</p>
             <p><strong>Email:</strong> ${user.email}</p>
             <p><strong>Firstname:</strong> ${user.first_name}</p>
             <p><strong>Lastname:</strong> ${user.last_name}</p>
@@ -24,9 +25,11 @@ export const renderPanel = (user) => {
                 <form id="updateProfileForm">
                     <input type="file" id="updateAvatar" placeholder="Avatar" class="form-control mb-2">
                     <input type="text" id="updateFirstName" placeholder="First Name" class="form-control mb-2" value="${user.first_name}">
+                    <input type="text" id="updateNickname" placeholder= "Nickname" class="form-control mb-2" value="${nickname}">
                     <input type="text" id="updateLastName" placeholder="Last Name" class="form-control mb-2" value="${user.last_name}">
                     <input type="text" id="updateUsername" placeholder="Username" class="form-control mb-2" value="${user.username}">
                     <input type="email" id="updateEmail" placeholder="Email" class="form-control mb-2" value="${user.email}">
+
                     <button type="submit" class="btn">Update</button>
                 </form>
             </div>
@@ -55,6 +58,8 @@ export const renderPanel = (user) => {
         const lastName = document.getElementById('updateLastName').value;
         const username = document.getElementById('updateUsername').value;
         const email = document.getElementById('updateEmail').value;
+        const nickname = document.getElementById('updateNickname').value;
+        localStorage.setItem('nickname', nickname);
 
         // Adiciona o arquivo de avatar ao FormData se estiver presente
         if (avatarFile) formData.append('avatar', avatarFile);

@@ -18,7 +18,7 @@ export const createPlayer = () => {
 
         const nickname = document.getElementById('nickname').value;
         
-
+        localStorage.setItem('nickname', nickname);
         const token = localStorage.getItem('jwtToken');
         
         try {
