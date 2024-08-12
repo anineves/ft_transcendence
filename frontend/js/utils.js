@@ -6,6 +6,7 @@ import { renderPong } from './components/pong.js';
 import { render4line } from './components/fourLine.js';
 import { renderPanel } from './components/userPanel.js';
 import { createPlayer } from './components/createPlayer.js';
+import { startMenu } from './components/startMenu.js';
 
 
 // Mapeia rotas para suas respectivas funções de renderização
@@ -18,6 +19,7 @@ export const routes = {
     '/register': renderRegister,
     '/user-panel': renderPanel, 
     '/create-player': createPlayer, 
+    '/star-menu': startMenu,
 };
 
 // Altera a URL do navegador e atualizar a exibição da página
@@ -44,19 +46,18 @@ export const checkLoginStatus = () => {
     const registerBtn = document.getElementById('registerBtn');
     const userAvatar = document.getElementById('userAvatar');
     const avatarImg = document.getElementById('avatarImg');
+    const bar = document.getElementById('startBtn');
 
     if (user) {
-        loginBtn.style.display = 'none';
-        registerBtn.style.display = 'none';
         userAvatar.style.display = 'block';
+        bar.style.display = 'none';
         avatarImg.src = '../../assets/avatar.png';
         if (user.avatar) {
             avatarImg.src = user.avatar;
         } 
         console.log(avatarImg.src);
     } else {
-        loginBtn.style.display = 'block';
-        registerBtn.style.display = 'block';
+        bar.style.display = 'block';
         userAvatar.style.display = 'none';
     }
 };

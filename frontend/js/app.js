@@ -7,7 +7,8 @@ import { renderPong } from './components/pong.js';
 import { render4line } from './components/fourLine.js';
 import { renderPanel } from './components/userPanel.js';
 import { createPlayer } from './components/createPlayer.js';
-
+import { teste} from './components/teste.js';
+import {startMenu} from './components/startMenu.js';
 // Define as rotas da aplicação e suas funções de renderização correspondentes
 const routes = {
     '/': renderMenu,
@@ -18,19 +19,16 @@ const routes = {
     '/register': renderRegister,
     '/user-panel':  renderPanel,
     '/create-player': createPlayer, 
+    '/star-menu': startMenu,
 };
 
 // Adiciona um listener que chama a função de renderização quando o DOM é carregado
 document.addEventListener('DOMContentLoaded', () => {
     render(); // Renderiza a página atual com base na URL
 
-    // Adiciona listeners para os botões de login e registro
-    document.getElementById('loginBtn').addEventListener('click', () => {
-        navigateTo('/login');
-    });
 
-    document.getElementById('registerBtn').addEventListener('click', () => {
-        navigateTo('/register');
+    document.getElementById('startBtn').addEventListener('click', () => {
+        navigateTo('/star-menu');
     });
 
     document.getElementById('userAvatar').addEventListener('click', () => {
