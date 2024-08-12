@@ -6,16 +6,11 @@ export const renderLogin = () => {
 
     app.innerHTML = `
         <div class="login">
-            <h2>Login</h2> 
-            <!-- Título da seção de login -->
+            <h2>Login</h2>
             <form id="loginForm">
-                <!-- Formulário de login -->
-                <input type="text" id="email" placeholder="Email or user" required class="form-control mb-2">
-                <!-- Campo de entrada para o email, obrigatório para submissão -->
+                <input type="text" id="emailOrUsername" placeholder="Email or Username" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
-                <!-- Campo de entrada para a senha, obrigatório para submissão -->
                 <button type="submit" class="btn">Submit</button>
-                <!-- Botão de submissão do formulário -->
             </form>
         </div>
     `;
@@ -24,7 +19,7 @@ export const renderLogin = () => {
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         // Previne o comportamento padrão do formulário de recarregar a página.
         e.preventDefault(); 
-        const email = document.getElementById('email').value; 
+        const emailOrUsername = document.getElementById('emailOrUsername').value; 
         const password = document.getElementById('password').value; 
 
         try {
@@ -36,7 +31,7 @@ export const renderLogin = () => {
                     'Content-Type': 'application/json'
                 },
                 // Converte o corpo da requisição para uma string JSON contendo email e senha.
-                body: JSON.stringify({ email, password }) 
+                body: JSON.stringify({ email: emailOrUsername, password }) 
             });
 
             // Converte a resposta da API em um objeto JSON.

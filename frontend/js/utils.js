@@ -7,6 +7,7 @@ import { render4line } from './components/fourLine.js';
 import { renderPanel } from './components/userPanel.js';
 import { createPlayer } from './components/createPlayer.js';
 
+
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
     '/': renderMenu,
