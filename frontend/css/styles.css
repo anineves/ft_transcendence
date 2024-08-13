@@ -57,6 +57,21 @@ nav ul li {
     height: 60px; 
 }
 
+#userAvatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 20px;
+    border: 2px solid #fff;
+}
+
+#userAvatar img
+{
+    width: 90%;
+    align-items: center;
+    height: auto;
+}
 
 .btn-header {
     padding: 10px 20px;
