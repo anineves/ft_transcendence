@@ -58,8 +58,6 @@ class Player(models.Model):
 
 class FriendRequest(models.Model):
 
-    # Add status choices: (Sent, Accepted, declined)
-
     sender = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='sender')
     invited = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='invited')
     created_at = models.DateTimeField(auto_now_add=True)

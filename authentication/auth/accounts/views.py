@@ -1,15 +1,14 @@
-# views.py
-from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework import status
-from .models import CustomUser, Player, FriendRequest, Match
-from .serializers import UserRegisterSerializer, UserSerializer, PlayerSerializer, CustomeTokenObtainPairSerializer, FriendRequestSerializer
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
+from .serializers import *
+from .models import CustomUser, Player, FriendRequest
 from django.http import Http404
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Count, Q
+from rest_framework.views import APIView
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.serializers import ValidationError
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class UserRegister(viewsets.ViewSet):
@@ -22,6 +21,7 @@ class UserRegister(viewsets.ViewSet):
             except serializer.ValidationError as e:
                 return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     
@@ -97,10 +97,11 @@ class UserDetail(APIView):
 
 class PlayerList(APIView):
 
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         player = Player.objects.all()
         serializer = PlayerSerializer(player, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
         serializer = PlayerSerializer(data=request.data, context={'user': request.user})
@@ -113,9 +114,9 @@ class PlayerList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         
-
 class PlayerDetail(APIView):
     
+    permission_classes = [IsAuthenticated]
     def get(self, request, pk):
         try:
             player = Player.objects.annotate(
@@ -125,30 +126,68 @@ class PlayerDetail(APIView):
             ).get(id=pk)
             serializer = PlayerSerializer(player)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except CustomUser.DoesNotExist:
+        except Player.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
 
-class SendFriendRequestList(APIView):
-
+class FriendRequestList(APIView):
+    '''
+    Get all requests sent to or by player logged in.
+    '''
+    permission_classes = [IsAuthenticated]
     def get(self, request):
-        friend_request = FriendRequest.objects.all()
+        friend_request = FriendRequest.objects.filter(
+            Q(sender=request.user.player) | Q(invited=request.user.player)
+        ).select_related('sender', 'invited')
+
         serializer = FriendRequestSerializer(friend_request, many=True)
-        # print(f"Serializer: {serializer.data}")
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    
+class SendFriendRequest(APIView):
+    '''
+    Send friend request from logged in player to player.id (pk) in the URL.
+    '''
+    permission_classes = [IsAuthenticated]
+    def post(self, request, pk):
+        sender = request.user.player
+        if sender.id == pk:
+            return Response(data={'You cannot invite yourself'}, 
+                            status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = FriendRequestSerializer(
+            data=request.data, 
+            context={
+                'sender': sender, 
+                'invited': pk
+                })
+        
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except ValidationError as e:
+                raise Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class SendFriendRequest(APIView):
+class RespondFriendRequest(APIView):
 
+    permission_classes = [IsAuthenticated]
     def post(self, request, pk):
-        from_user = request.user.player
-        to_user = Player.objects.get(id=pk)
-        from_serializer = PlayerSerializer(from_user)
-        to_serializer = PlayerSerializer(to_user)
-        # print(f"From User: {from_user}")
-        # print(f"To User: {to_user}")
-        # print(f"From Serialized User: {from_serializer.data}")
-        # print(f"TO Serialized User: {to_serializer.data}")
-        return Response(to_serializer.data)
-
+        invited_player = request.user.player
+        try:
+            friend_request = FriendRequest.objects.select_related(
+                'sender', 
+                'invited'
+            ).get(id=pk)
+        except:
+            raise Http404('Friend Request was not found')
+        if friend_request.invited == invited_player:
+            invited_player.friends.add(friend_request.sender)
+            friend_request.sender.friends.add(invited_player)
+            friend_request.delete()
+            return Response(data={'Friend request accepted'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(data={'Not allowed'}, status=status.HTTP_403_FORBIDDEN)
 

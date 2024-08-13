@@ -13,7 +13,11 @@ class PlayerAdmin(admin.ModelAdmin):
     list_display = ('nickname', 'id', 'created_at', 'user')
     ordering = ('nickname',)
 
+    
+@admin.register(FriendRequest)
+class FriendRequestAdmin(admin.ModelAdmin):
+    list_display = ('id', 'sender', 'invited')
+
 
 admin.site.register(Match)
 admin.site.register(Game)
-admin.site.register(FriendRequest)

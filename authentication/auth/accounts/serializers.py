@@ -1,9 +1,10 @@
-# serializers.py
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import CustomUser, Player, FriendRequest
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.exceptions import ValidationError
+from django.db.models import Q
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -89,13 +90,12 @@ class PlayerSerializer(serializers.ModelSerializer):
         fields = ['id', 'nickname', 'friendship', 'user', \
                   'created_at', 'total_winner', 'pong_winner', 'linha_winner']
         
-        read_only_fields = ['created_at', 'id', 'user', 'total_winner', \
-                            'pong_winner', 'linha_winner']
+        read_only_fields = ['id' ,'created_at', 'user']
 
-    def create(self, validate_data):
+    def create(self, validated_data):
         current_user = self.context.get('user')
-        validate_data['user'] = current_user
-        return super().create(validate_data)
+        validated_data['user'] = current_user
+        return super().create(validated_data)
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
@@ -105,6 +105,31 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 
 class FriendRequestSerializer(serializers.ModelSerializer):
+    sender = serializers.StringRelatedField()
+    invited = serializers.StringRelatedField()
+
     class Meta:
         model = FriendRequest
-        fields = ['sender', 'invited']
+        fields = ['id', 'sender', 'invited', 'created_at']
+        read_only_fields = ['id', 'sender', 'invited', 'created_at']
+
+    def validate(self, attrs):
+
+        sender = self.context['sender']
+        invited_id = self.context['invited']
+
+        if FriendRequest.objects.filter(
+            (Q(sender=sender)) & (Q(invited__id=invited_id))
+            | (Q(sender=invited_id)) & (Q(invited__id=sender.id))).exists():
+            raise ValidationError({'Already Sent': 'You have already sent a friend request to this player.'})
+        if sender.friends.filter(id=invited_id).exists():
+            raise ValidationError({'Already Friends': 'You are already friend with this player.'})
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        invited_id = self.context['invited']
+        invited = Player.objects.get(id=invited_id)
+        sender = self.context.get('sender')
+        validated_data['sender'] = sender
+        validated_data['invited'] = invited
+        return super().create(validated_data)
