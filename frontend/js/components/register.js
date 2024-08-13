@@ -4,25 +4,27 @@ export const renderRegister = () => {
     const app = document.getElementById('app');
     
     app.innerHTML = `
-        <div class="register">
+        <div class="background-form" id="form-register">
             <h2>Register</h2>
             <form id="registerForm" enctype="multipart/form-data">
-                <input type="text" id="firstName" placeholder="Frst Name" required class="form-control mb-2">
+                <input type="text" id="firstName" placeholder="First Name" required class="form-control mb-2">
                 <input type="text" id="lastName" placeholder="Last Name" required class="form-control mb-2">
                 <input type="text" id="username" placeholder="Username" required class="form-control mb-2">
                 <input type="text" id="email" placeholder="Email" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
                 <input type="password" id="password2" placeholder="Confirm Password" required class="form-control mb-2">
                 <input type="file" id="avatar" accept="image/*" class="form-control mb-2">
-                <button type="submit" class="btn">Submit</button>
-            </form>
-            <form id="btn-register42">
-                <button type="submit" class="btn">Register with 42</button>
+                <div class="button-container">
+                    <button type="submit" class="btn">Submit</button>
+                    <button type="button" id="btn-register42" class="btn">
+                        <img src="./assets/42.png" alt="Pong" class="button-image">
+                    </button>
+                </div>
             </form>
         </div>
     `;
 
-    document.getElementById('btn-register42').addEventListener('submit', async (e) => {
+    document.getElementById('btn-register42').addEventListener('click', async (e) => {
         e.preventDefault(); 
         alert('register ');
         navigateTo('/');

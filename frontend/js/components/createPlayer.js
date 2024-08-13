@@ -4,10 +4,10 @@ export const createPlayer = () => {
     const app = document.getElementById('app');
 
     app.innerHTML = `
-        <div class="create-player">
+        <div class="background-form">
             <h2>Create Your Player</h2>
             <form id="playerForm">
-               <input type="text" id="nickname" placeholder="Nioickname" required class="form-control mb-2">
+               <input type="text" id="nickname" placeholder="Nickname" required class="form-control mb-2">
                <button type="submit" class="btn">Submit</button>
             </form>
         </div>

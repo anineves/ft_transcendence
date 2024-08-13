@@ -15,11 +15,11 @@ header {
     top: 0;
     right: 0;
     width: 100%;
-    height: 60px; /* Altura do cabeçalho */
+    height: 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px; /* Espaçamento interno do cabeçalho */
+    padding: 0 20px; 
     background-color: rgba(241, 166, 213, 0.13);
     z-index: 1000;
 }
@@ -94,233 +94,27 @@ footer {
     font-size: 12px; 
 }
 
-.menu {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-
-.menu h1 {
-    font-size: 100px;
-    animation-name: example;
-    animation-duration: 4s;
-    color: #00ff99; 
-    text-shadow: 0 0 5px #13681a, 0 0 10px #096d2a, 0 0 20px #42c76a, 0 0 40px #44947c, 0 0 80px #ff3399;
-}
-
-.menu h2 {
-    color: #ff3399; 
-    text-shadow: 0 0 5px #ff3300, 0 0 10px #ff3300, 0 0 20px #ff3300, 0 0 40px #ff3399, 0 0 80px #ff3399;
-}
-
-.btn-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-
-
-#gameBoard {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    width: 550px;
-    height: 400px;
-    background-color: #0059b3;
-    border: 2px solid #ffcc00; 
-    border-radius: 10px; 
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-    padding: 10px;
-}
-
-.cell {
-    width: 60px;
-    height: 60px;
-    background-color: #1d5fa1; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
-    position: relative;
-}
-
-.cell.player1 {
-
-    width: 58px;
-    height: 58px;
-    background: #ff00ff;
-    border-radius: 50%;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px #00ffff;
-    border: 2px solid #fff;
-}
-.cell.player2 {
-    width: 55px;
-    height: 55px;
-    background: yellow;
-    border-radius: 50%;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px #00ffff;
-    border: 2px solid #fff;
-}
-
-/*TV*/
-
-.tv-container {
-    width: 980px;
-    height: 680px; 
-    background: #222;
-    border: 10px solid #666;
-    border-radius: 20px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-
-
-.tv-container::after {
-    content: "";
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: #ff0000;
-    border-radius: 50%;
-    bottom: 20px;
-    right: 20px;
-}
-
-
-
-/*arcade*/
-
-.arcade-container {
-    margin-top: 30px;
-    width: 700px;
-    height: 750px; 
-    background: linear-gradient(to bottom, #ff00ff, #00ffff);
-    border: 10px solid #fff;
-    border-radius: 20px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), 0 0 30px #00ffff inset;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    padding: 20px;
-}
-
-.arcade-screen {
-    width: 90%;
-    height: 60%;
-    background: #000;
-    border: 5px solid #444;
-    border-radius: 5px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px #00ffff;
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    position: relative;
-    padding: 20px;
-}
-
-.arcade-title {
-    position: absolute;
-    top: 25px;
-    font-size: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #fff;
-    margin: 0;
-}
-
-.arcade-controls {
-
-    width: 80%;
-    height: 25%;
-    background: #222;
-    border-top: 10px solid #444;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 20px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px #ff00ff;
-}
-
-.arcade-button {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(to bottom, #ff00ff, #00ffff);
-    border-radius: 50%;
-    margin: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px #00ffff;
-    border: 2px solid #fff;
-}
-
-.arcade-joystick {
-    width: 20px; 
-    height: 80px;
-    background: #000;
-    position: relative;
-    margin: 10px;
-}
-
-.arcade-joystick::after {
-    content: "";
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(to bottom, #ff00ff, #00ffff);
-    border-radius: 50%;
-    position: absolute;
-    top: -25px;
-    left: -12px;
-    border: 2px solid #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px #00ffff;
-}
-
-.title4-line
-{
-    position: absolute;
-    top: 10px;
-    font-size: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #fff;
-    margin: 0;
-}
-
-
-canvas {
-    display: block;
-    margin: 35px auto;
-    background-color: rgba(0, 0, 0, 0.8);
-    border: 2px solid #ffcc00; 
-    border-radius: 10px; 
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); 
-}
 
 .btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 3%;
-    background-color: transparent;
+    font-family: "VT323", monospace;
+    font-size: 30px;
+    background-color: #0ec0c04f; 
+    color: #fff; 
     border: none;
-    color: #ffcc00; 
+    border-radius: 5px;
+    padding: 10px 10px;
+    margin: 10px 0; 
+    cursor: pointer;
+    font-size: 16px;
     text-align: center;
-    text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 40px #ffcc00;
+    width: 30%; 
+    transition: background-color 0.3s ease; 
+    border: 2px solid #ff00ff44;
+    text-shadow: none;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
-
-
 .btn:hover {
-    background-color: rgba(0, 0, 0, 0.3);  
+    background-color: #b300b3; 
 }
 
 h1, h2 {
@@ -328,224 +122,15 @@ h1, h2 {
     font-family: 'Press Start 2P', cursive; 
 }
 
-#startGameBtn {
-    position: absolute;
-    width: 50px; 
-    height: 50px;
-}
-
-
-#startGameBtn img
-{
-    width: 300px;
-    height: 300px;;
-}
-
-
-#resetBtn {
-    padding: 5px;
-    font-size: 15px;
-    cursor: pointer;
-    border-radius: 5%;
-    background-color: #5f4646; 
-    border: none;
-    color: white;
-    text-shadow: 0 0 5px #ff3333, 0 0 10px #ff3333, 0 0 20px #ff3333, 0 0 40px #ff3333;
-    display: flex;
-    justify-content: flex-start; 
-}
-
-#resetBtn:hover {
-    background-color: #cc0000; 
-}
 
 .hidden {
     display: none;
 }
 
-#victoryMessage {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 20px;
-    background-color: rgba(0, 0, 0, 0);
-    color: #ffcc00;
-    text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 40px #ffcc00;
-}
-
-
-.register {
-    background: #22222215;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
-    text-align: center;
-    width: 600px;
-}
-
-
-.register h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: #00ffcc;
-    text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc, 0 0 15px #00ffcc;
-}
-
-.form-control {
-    width: 90%;
-    padding: 0.75rem;
-    margin: 0.5rem 0;
-    border: 2px solid #00ffcc;
-    border-radius: 5px;
-    background: #111111ab;
-    color: #fff;
-    outline: none;
-    transition: border-color 0.3s ease;
-}
-
-
-.form-control:focus {
-    border-color: #ff00cc;
-}
-
-
-@keyframes example {
-    from {font-size: 100px;}
-    to {font-size: 60;}
-}
-
-
-.user-account {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-}
-
-.account-icon {
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    transition: transform 0.3s;
-}
-
-.account-icon:hover {
-    transform: scale(1.1);
-}
-
-.user-panel {
-    background: rgba(0, 0, 0, 0.8);
-    color: #00ff00;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
-    width: 800px;
-    height: 600px;
-}
-
-.user-panel h3 {
-    margin: 0 0 10px 0;
-    font-size: 18px;
-}
-
-.user-panel p {
-    margin: 5px 0;
-}
-
-.user-panel .btn {
-    background: #ff00ff;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.user-panel .btn:hover {
-    background: #cc00cc;
-}
-
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-}
 
 
 
-#editBtn {
-    background: linear-gradient(145deg, #00ff99, #0044cc);
-    border: none;
-    border-radius: 10px;
-    padding: 0.5rem 1rem;
-    color: white;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 10px;
-    cursor: pointer;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 10px rgba(0, 255, 153, 0.5);
-    transition: all 0.3s ease;
-}
-
-#editBtn:hover {
-    background: linear-gradient(145deg, #00cc66, #0055cc);
-    box-shadow: 0 0 15px rgba(0, 255, 153, 0.7);
-    transform: scale(1.05);
-}
-
-#editBtn:active {
-    background: linear-gradient(145deg, #00ff99, #0044cc);
-    box-shadow: 0 0 10px rgba(0, 255, 153, 0.5);
-    transform: scale(0.95);
-}
-
-
-#updateProfileSection {
-    margin-top: 20px;
-    padding: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-}
 
 
 
-.background-form {
-    background-color: rgba(0, 0, 0, 0.7); 
-    padding: 20px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 60vh; 
-    width: 40vw;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
-}
 
-
-.background-form img {
-    max-width: 90%;
-    height: auto;
-    margin-bottom: 15px; 
-}
-
-
-.btn {
-    background-color: #0a396b; 
-    color: #fff; 
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    margin: 10px 0; 
-    cursor: pointer;
-    font-size: 16px;
-    text-align: center;
-    width: 30%; 
-    transition: background-color 0.3s ease; /
-}
-.btn:hover {
-    background-color: #0056b3; 
-}

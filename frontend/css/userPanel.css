@@ -1,0 +1,129 @@
+.user-panel {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    width: 60vw;
+    height: 70vh;
+    margin: auto;
+    color: #fff;
+    font-family: "Arial", sans-serif;
+    background-color: rgba(0, 0, 0, 0.7); 
+    border-radius: 12px;
+    font-size: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+
+.user-panel h2 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+}
+
+.user-panel p {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+.user-panel .btn {
+    background: #ff00ff;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 10px 5px;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.user-panel .btn:hover {
+    background: #cc00cc;
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 20px;
+    border: 2px solid #fff;
+}
+
+#editBtn {
+    background: linear-gradient(145deg, #00ff99, #0044cc);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    color: white;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    cursor: pointer;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 255, 153, 0.5);
+    transition: all 0.3s ease;
+}
+
+#editBtn:hover {
+    background: linear-gradient(145deg, #00cc66, #0055cc);
+    box-shadow: 0 6px 18px rgba(0, 255, 153, 0.7);
+    transform: scale(1.05);
+}
+
+#editBtn:active {
+    background: linear-gradient(145deg, #00ff99, #0044cc);
+    box-shadow: 0 4px 12px rgba(0, 255, 153, 0.5);
+    transform: scale(0.95);
+}
+
+#updateProfileSection {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: 100%;
+}
+
+#updateProfileForm {
+    display: flex;
+    flex-direction: column;
+}
+
+#updateProfileForm input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+#updateProfileForm input[type="file"] {
+    padding: 0;
+}
+
+#updateProfileForm button {
+    background: #00cc99;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s, transform 0.3s;
+}
+
+#updateProfileForm button:hover {
+    background: #009966;
+    transform: scale(1.05);
+}
+
+#updateProfileForm button:active {
+    background: #00cc99;
+    transform: scale(0.95);
+}

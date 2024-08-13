@@ -5,12 +5,12 @@ export const renderLogin = () => {
     const app = document.getElementById('app'); 
 
     app.innerHTML = `
-        <div class="login">
+        <div class="background-form" id="form-login">
             <h2>Login</h2>
             <form id="loginForm">
                 <input type="text" id="emailOrUsername" placeholder="Email or Username" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
-                <button type="submit" class="btn">Submit</button>
+                <button type="submit" id="btn-login"class="btn">Submit</button>
             </form>
         </div>
     `;

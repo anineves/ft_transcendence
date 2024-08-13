@@ -1,4 +1,5 @@
-export let canvas, context, paddleHeight, paddleWidth, ballRadius, playerY, opponentY;
+export let canvas, context, paddleHeight, paddleWidth, ballRadius, playerY, opponentY, ballY;
+
 
 export function initializeCanvas() {
     canvas = document.getElementById('pongCanvas');
@@ -62,5 +63,25 @@ export function stopPaddle(event) {
         clearInterval(playerPaddleInterval);
     } else if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
         clearInterval(opponentPaddleInterval);
+    }
+}
+
+
+let opponentPaddleDirection = 1;
+const opponentPaddleSpeed = 2;  
+
+export function moveOpponentPaddleAI() {
+    if (!canvas) {
+        console.error('Canvas not initialized');
+        return;
+    }
+
+    opponentY += opponentPaddleSpeed * opponentPaddleDirection;
+    if (opponentY <= 0) {
+        opponentY = 0;
+        opponentPaddleDirection = 1; 
+    } else if (opponentY + paddleHeight >= canvas.height) {
+        opponentY = canvas.height - paddleHeight;
+        opponentPaddleDirection = -1; 
     }
 }

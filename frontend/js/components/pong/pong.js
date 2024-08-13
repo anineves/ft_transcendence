@@ -1,4 +1,4 @@
-import { drawCenterLine, initializeCanvas } from './canvasUtils.js';
+import { drawCenterLine, initializeCanvas, moveOpponentPaddleAI, } from './canvasUtils.js';
 import { drawScore, drawGameOver } from './score.js';
 import { canvas, context, paddleWidth, paddleHeight, playerY, opponentY, movePaddle, stopPaddle } from './canvasUtils.js';
 
@@ -8,7 +8,7 @@ let gameOver = false;
 
 export let ballX, ballY, ballSpeedX, ballSpeedY;
 export const ballRadius = 10;
-
+let isAIActive = false;
 
 
 export function startPongGame() {
@@ -23,6 +23,7 @@ export function initializeBall() {
         console.error('Canvas element not found for ball');
         return;
     }
+    ballX = canvas.width / 2;
     ballX = canvas.width / 2;
     ballY = canvas.height / 2;
     ballSpeedX = 2;
@@ -75,6 +76,10 @@ function initialize() {
     function update() {
         if (gameOver) return;
         updateBall();
+        if (localStorage.getItem('game') === 'ai') {
+            moveOpponentPaddleAI();
+            isAIActive = true;
+        }
         checkCollisions();
         draw();
     }
@@ -128,16 +133,32 @@ function checkCollisions() {
     }
 
     document.addEventListener('keydown', function(event) {
-        if (['ArrowUp', 'ArrowDown', 'w', 'W', 's', 'S'].includes(event.key)) {
+        if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+            movePaddle(event);
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (['w', 'W', 's', 'S'].includes(event.key) && localStorage.getItem('game') === 'player') {
+            const game = localStorage.getItem('game');
+            console.log(game);
             movePaddle(event);
         }
     });
 
     document.addEventListener('keyup', function(event) {
-        if (['ArrowUp', 'ArrowDown', 'w', 'W', 's', 'S'].includes(event.key)) {
+        if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
             stopPaddle(event);
         }
     });
+
+    document.addEventListener('keyup', function(event) {
+        if (['w', 'W', 's', 'S'].includes(event.key) && localStorage.getItem('game') === 'player') {
+            stopPaddle(event);
+        }
+    });
+
+    
 
     gameLoop();
 }

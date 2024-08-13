@@ -7,7 +7,7 @@ import { render4line } from './components/fourLine.js';
 import { renderPanel } from './components/userPanel.js';
 import { createPlayer } from './components/createPlayer.js';
 import { startMenu } from './components/startMenu.js';
-
+import { selectPlayerorAI } from './components/selectPlayerOrAI.js';
 
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
@@ -20,6 +20,7 @@ export const routes = {
     '/user-panel': renderPanel, 
     '/create-player': createPlayer, 
     '/star-menu': startMenu,
+    '/select-playerOrAI': selectPlayerorAI,
 };
 
 // Altera a URL do navegador e atualizar a exibição da página
