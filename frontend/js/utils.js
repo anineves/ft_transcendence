@@ -10,6 +10,7 @@ import { startMenu } from './components/startMenu.js';
 import { selectPlayerorAI } from './components/selectPlayerOrAI.js';
 import { renderFriendPanel } from './components/friendPanel.js';
 
+
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
     '/': renderMenu,

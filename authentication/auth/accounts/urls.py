@@ -23,6 +23,6 @@ urlpatterns = [
     path('player/requests/', FriendRequestList.as_view(), name='requests'),
     path('player/send_friend_request/<int:pk>/', SendFriendRequest.as_view(), name='send_request'),
 
-    path('player/responde_friend_request/<int:pk>', RespondFriendRequest.as_view(), name='responde_requests'),
+    path('player/responde_friend_request/<int:pk>/', RespondFriendRequest.as_view(), name='responde_requests'),
 ]
 
