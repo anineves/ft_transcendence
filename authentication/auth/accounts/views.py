@@ -146,20 +146,22 @@ class FriendRequestList(APIView):
     
 class SendFriendRequest(APIView):
     '''
-    Send friend request from logged in player to player.id (pk) in the URL.
+    Send friend request from logged in player to player nickname in the URL.
     '''
     permission_classes = [IsAuthenticated]
-    def post(self, request, pk):
+    def post(self, request, nickname):
         sender = request.user.player
-        if sender.id == pk:
+        invited = Player.objects.prefetch_related('friends').get(nickname=nickname)
+
+        if sender == invited:
             return Response(data={'You cannot invite yourself'}, 
                             status=status.HTTP_403_FORBIDDEN)
-        
+
         serializer = FriendRequestSerializer(
             data=request.data, 
             context={
                 'sender': sender, 
-                'invited': pk
+                'invited': invited
                 })
         
         if serializer.is_valid():

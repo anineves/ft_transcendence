@@ -116,19 +116,19 @@ class FriendRequestSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
 
         sender = self.context['sender']
-        invited_id = self.context['invited']
+        invited = self.context['invited']
 
         if FriendRequest.objects.filter(
-            (Q(sender=sender)) & (Q(invited__id=invited_id))
-            | (Q(sender=invited_id)) & (Q(invited__id=sender.id))).exists():
+            (Q(sender__id=sender.id)) & (Q(invited__id=invited.id))
+            | (Q(sender__id=invited.id)) & (Q(invited__id=sender.id))).exists():
             raise ValidationError({'Already Sent': 'You have already sent a friend request to this player.'})
-        if sender.friends.filter(id=invited_id).exists():
+        if sender.friends.filter(id=invited.id).exists():
             raise ValidationError({'Already Friends': 'You are already friend with this player.'})
         return super().validate(attrs)
 
     def create(self, validated_data):
-        invited_id = self.context['invited']
-        invited = Player.objects.get(id=invited_id)
+        player = self.context['invited']
+        invited = Player.objects.get(id=player.id)
         sender = self.context.get('sender')
         validated_data['sender'] = sender
         validated_data['invited'] = invited
