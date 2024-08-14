@@ -1,7 +1,7 @@
 // frontend/components/userPanel.js
 
 import { navigateTo, checkLoginStatus, logout } from '../utils.js';
-import { renderFriendPanel } from './friendPanel.js';
+import { renderFriendsPage } from './friendsPage.js';
 
 export const renderPanel = (user) => {
     const app = document.getElementById('app');
@@ -22,8 +22,7 @@ export const renderPanel = (user) => {
                 <p><strong>Id:</strong> ${user.id}</p>
                 <button id="logoutBtn" class="btn">Logout</button>
                 <button id="editBtn" class="btn">Edit</button>
-                <button id="inviteBtn" class="btn">Invite friends</button>
-                <button id="friendsBtn" class="btn">Friend Requests</button>
+                <button id="friendBtn" class="btn">Friends</button>
             </div>
             <div id="updateProfileSection" style="display: none;">
                 <h2>Update Profile</h2>
@@ -57,40 +56,12 @@ export const renderPanel = (user) => {
         profileSection.style.display = isHidden ? 'none' : 'flex';
     });
 
-    document.getElementById('inviteBtn').addEventListener('click', () => {
-        const inviteSection = document.getElementById('inviteSection');
-        inviteSection.style.display = inviteSection.style.display === 'none' ? 'flex' : 'none';
+ 
+
+    document.getElementById('friendBtn').addEventListener('click', () => {
+        renderFriendsPage(user);
     });
 
-    document.getElementById('friendsBtn').addEventListener('click', () => {
-        renderFriendPanel(user);
-    });
-
-    document.getElementById('inviteForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-    
-        const friendId = document.getElementById('friendId').value;
-    
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/api/player/send_friend_request/${friendId}/`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-    
-            if (response.ok) {
-                alert('Friend request sent successfully!');
-            } else {
-                const errorData = await response.json();
-                alert('Failed to send friend request: ' + JSON.stringify(errorData));
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while sending the friend request.');
-        }
-    });
 
     document.getElementById('updateProfileForm').addEventListener('submit', async (e) => {
         e.preventDefault();

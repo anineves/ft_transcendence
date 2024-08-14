@@ -8,8 +8,8 @@ import { renderPanel } from './components/userPanel.js';
 import { createPlayer } from './components/createPlayer.js';
 import { startMenu } from './components/startMenu.js';
 import { selectPlayerorAI } from './components/selectPlayerOrAI.js';
-import { renderFriendPanel } from './components/friendPanel.js';
-
+import { renderRequestPanel } from './components/requestPanel.js';
+import { renderFriendsPage } from './components/friendsPage.js';
 
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
@@ -23,7 +23,8 @@ export const routes = {
     '/create-player': createPlayer, 
     '/star-menu': startMenu,
     '/select-playerOrAI': selectPlayerorAI,
-    '/friendPanel': renderFriendPanel,
+    '/friendPanel': renderRequestPanel,
+    '/friendPage' : renderFriendsPage,
 };
 
 // Altera a URL do navegador e atualizar a exibição da página

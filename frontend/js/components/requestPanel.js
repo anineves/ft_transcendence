@@ -1,4 +1,4 @@
-export const renderFriendPanel = (user) => {
+export const renderRequestPanel = (user) => {
     const app = document.getElementById('app');
 
     app.innerHTML = `

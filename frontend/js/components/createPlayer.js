@@ -35,6 +35,7 @@ export const createPlayer = () => {
 
             if (response.ok) {
                 alert('Player created successfully!');
+                localStorage.setItem('player', JSON.stringify(data.user)); 
                 navigateTo('/game-selection'); 
             } else {
                 alert('Player creation failed: ' + JSON.stringify(data));
