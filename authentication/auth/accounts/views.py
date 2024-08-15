@@ -1,6 +1,6 @@
 from .serializers import *
 from .models import CustomUser, Player, FriendRequest
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.db.models import Count, Q
 from rest_framework.views import APIView
 from rest_framework import viewsets, status
@@ -9,6 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.serializers import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+
+from django.shortcuts import redirect
+from django.contrib.auth import authenticate, login
 
 
 class UserRegister(viewsets.ViewSet):
@@ -193,3 +196,26 @@ class RespondFriendRequest(APIView):
         else:
             return Response(data={'Not allowed'}, status=status.HTTP_403_FORBIDDEN)
 
+
+# Tem que sair daqui
+def oauth_login(request):
+    authorization_url = 'https://api.intra.42.fr/oauth/authorize'
+    redirect_uri = 'http://127.0.0.1:8000/oauth/callback/'
+    client_id = 'u-s4t2ud-84f82297edeb244de73ec702342aa78c84ff40652725da6e93f949ed9eefd222'
+    
+    return redirect(f'{authorization_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code')
+
+
+# Tem que sair daqui
+def oauth_callback(request):
+    code = request.GET.get('code')
+    try:
+        user = authenticate(request, code=code)
+    except ValueError as e:
+        return HttpResponse(f'Authentication failed: {e}', status=401)
+    
+    if user is not None:
+        login(request, user)
+        return redirect('http://127.0.0.1:8080/create-player')
+    else:
+        return HttpResponse('Authentication failed', status=401)

@@ -70,11 +70,11 @@ export const checkLoginStatus = () => {
 
 export const logout = () => {
     localStorage.removeItem('user'); 
-    sessionStorage.clear(); 
+    sessionStorage.clear();
+    localStorage.clear();
     checkLoginStatus(); 
     navigateTo('/'); 
 };
-
 
 //sada para ouvir e lidar com eventos de navegação no navegador, como o uso dos botões "voltar" e "avançar" no histórico do navegador.
 

@@ -65,7 +65,7 @@ export const renderRequestPanel = (user) => {
 
     const handleFriendRequest = async (requestId, accepted) => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/player/responde_friend_request/${requestId}/`, {
+            const response = await fetch(`http://127.0.0.1:8000/api/player/respond_friend_request/${requestId}/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,

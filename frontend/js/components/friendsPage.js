@@ -12,7 +12,7 @@ export const renderFriendsPage = async (user) => {
             <button id="friendsBtn2" class="btn">Friend Requests</button>
             <div id="inviteSection" style="display: none;">
                 <form id="inviteForm">
-                    <input type="number" id="friendId" placeholder="Friend ID" class="form-control mb-2" required>
+                    <input type="text" id="friendId" placeholder="Friend nickname" class="form-control mb-2" required>
                     <button type="submit" class="btn">Send Request</button>
                 </form>
             </div>
@@ -32,6 +32,7 @@ export const renderFriendsPage = async (user) => {
 
         if (response.ok) {
             const data = await response.json();
+            console.log(data);
             if (data.friendship && data.friendship.length > 0) {
                 data.friendship.forEach(friendId => {
                     const listItem = document.createElement('li');

@@ -69,7 +69,8 @@ CORS_ALLOWED_ORIGINS =[
 
 
 AUTHENTICATION_BACKENDS = [
-    'accounts.authentication.EmailOrUsernameBackend', 
+    'accounts.authentication.EmailOrUsernameBackend',
+    'accounts.oauth.CustomOAuth2Backend',
     'django.contrib.auth.backends.ModelBackend', 
 ]
 

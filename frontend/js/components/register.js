@@ -27,7 +27,7 @@ export const renderRegister = () => {
     document.getElementById('btn-register42').addEventListener('click', async (e) => {
         e.preventDefault(); 
         alert('register ');
-        navigateTo('/');
+        window.location.href='http://localhost:8000/oauth/login';
     });
 
     // Adiciona um listener para o evento de submissão do formulário de registro

@@ -1,7 +1,9 @@
 from django.contrib import admin
+ffrom django.contrib import admin
 from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
+from accounts import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -10,6 +12,8 @@ urlpatterns = [
 
 urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
+    path('oauth/login/', views.oauth_login, name='oauth_login'),
+    path('oauth/callback/', views.oauth_callback, name='oauth_callback'),
 ]
 
 if settings.DEBUG:
