@@ -19,9 +19,10 @@ class CustomOAuth2Backend(BaseBackend):
         
         if (token_response.status_code != 200):
             raise ValueError("post request got an error or response is None")
-            
+        
         token_json = token_response.json()
         access_token = token_json.get('access_token')
+        print(f"\ntoken_response: {token_response.json()}\n")
         
         user_info_response = requests.get(user_info_url, headers={
             'Authorization': f'Bearer {access_token}'

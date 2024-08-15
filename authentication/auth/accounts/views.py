@@ -1,6 +1,6 @@
 from .serializers import *
 from .models import CustomUser, Player, FriendRequest
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.db.models import Count, Q
 from rest_framework.views import APIView
 from rest_framework import viewsets, status
@@ -209,13 +209,34 @@ def oauth_login(request):
 # Tem que sair daqui
 def oauth_callback(request):
     code = request.GET.get('code')
+    
     try:
         user = authenticate(request, code=code)
     except ValueError as e:
-        return HttpResponse(f'Authentication failed: {e}', status=401)
+        return JsonResponse({'success': False, 'error': str(e)}, status=401)
     
     if user is not None:
         login(request, user)
-        return redirect('http://127.0.0.1:8080/create-player')
+
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'avatar': user.avatar.url if user.avatar else None,
+        }
+
+        return JsonResponse({
+            'success': True,
+            'access_token': access_token,
+            'refresh_token': refresh_token,
+            'user': user_data
+        }, status=200)
+
     else:
-        return HttpResponse('Authentication failed', status=401)
+        return JsonResponse({'success': False, 'error': 'Authentication failed'}, status=401)
