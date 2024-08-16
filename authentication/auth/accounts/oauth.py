@@ -43,9 +43,11 @@ class CustomOAuth2Backend(BaseBackend):
         user, created = User.objects.get_or_create(
             email=email,
             username = username,
-            first_name = first_name,
-            last_name = last_name,
-            avatar = avatar
+            defaults={
+                'first_name': first_name,
+                'last_name': last_name,
+                'avatar': avatar
+            }
         )
 
         return user
