@@ -26,7 +26,6 @@ export const renderRegister = () => {
 
     document.getElementById('btn-register42').addEventListener('click', async (e) => {
         e.preventDefault(); 
-        alert('register ');
         window.location.href='http://localhost:8000/oauth/login';
     });
 

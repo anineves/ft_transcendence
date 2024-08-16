@@ -1,5 +1,6 @@
 from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth import get_user_model
+from rest_framework.serializers import ValidationError
 import requests
 
 
@@ -18,20 +19,19 @@ class CustomOAuth2Backend(BaseBackend):
         })
         
         if (token_response.status_code != 200):
-            raise ValueError("post request got an error or response is None")
+            raise ValidationError("Post request got an error or response is None")
         
         token_json = token_response.json()
         access_token = token_json.get('access_token')
-        print(f"\ntoken_response: {token_response.json()}\n")
         
         user_info_response = requests.get(user_info_url, headers={
             'Authorization': f'Bearer {access_token}'
         })
-        
+
         if 'application/json' in user_info_response.headers.get('Content-Type', ''):
             user_info = user_info_response.json()
         else:
-            raise ValueError("Unexpected content-type in user info response")
+            raise ValidationError("Unexpected content-type in user info response")
 
         email = user_info.get('email')
         username = user_info.get('login')
@@ -47,5 +47,5 @@ class CustomOAuth2Backend(BaseBackend):
             last_name = last_name,
             avatar = avatar
         )
-        
+
         return user

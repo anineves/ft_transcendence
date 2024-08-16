@@ -1,17 +1,17 @@
 from .serializers import *
 from .models import CustomUser, Player, FriendRequest
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, JsonResponse
 from django.db.models import Count, Q
 from rest_framework.views import APIView
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.serializers import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-
 from django.shortcuts import redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
 
 
 class UserRegister(viewsets.ViewSet):
@@ -207,36 +207,34 @@ def oauth_login(request):
 
 
 # Tem que sair daqui
+@api_view(['GET', 'POST'])
 def oauth_callback(request):
     code = request.GET.get('code')
     
     try:
         user = authenticate(request, code=code)
-    except ValueError as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=401)
+    except ValidationError as e:
+        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
     
     if user is not None:
-        login(request, user)
-
         refresh = RefreshToken.for_user(user)
+
         access_token = str(refresh.access_token)
         refresh_token = str(refresh)
-
-        user_data = {
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'avatar': user.avatar.url if user.avatar else None,
-        }
-
-        return JsonResponse({
-            'success': True,
+        response_data = {
             'access_token': access_token,
             'refresh_token': refresh_token,
-            'user': user_data
-        }, status=200)
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'avatar': user.avatar.url,
+            }
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
     else:
-        return JsonResponse({'success': False, 'error': 'Authentication failed'}, status=401)
+        return Response(data='Authentication failed', status=status.HTTP_400_BAD_REQUEST)
+    
