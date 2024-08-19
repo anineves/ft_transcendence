@@ -1,5 +1,5 @@
 from .serializers import *
-from .models import CustomUser, Player, FriendRequest
+from .models import CustomUser, Player, FriendRequest, Match
 from django.http import Http404, JsonResponse
 from django.db.models import Count, Q
 from rest_framework.views import APIView
@@ -237,4 +237,28 @@ def oauth_callback(request):
 
     else:
         return Response(data='Authentication failed', status=status.HTTP_400_BAD_REQUEST)
+
+
+#Matches
+class MatchList(APIView):
+
+    def get(self, request):
+        matches = Match.objects.all()
+        serializer = MatchSerializer(
+            matches, many=True
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
+    def post(self, request):
+        serializer = MatchSerializer(
+            data=request.data
+        )
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except ValidationError as e:
+                raise Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+

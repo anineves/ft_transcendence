@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import CustomUser, Player, FriendRequest
+from .models import CustomUser, Player, FriendRequest, Match
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import ValidationError
@@ -133,3 +133,9 @@ class FriendRequestSerializer(serializers.ModelSerializer):
         validated_data['sender'] = sender
         validated_data['invited'] = invited
         return super().create(validated_data)
+    
+class MatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Match
+        fields = ['date', 'duration', 'game', 'players', 'winner_id']
+        read_only_fields = ['date', 'duration']
