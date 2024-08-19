@@ -1,11 +1,9 @@
 import os
 
 from django.core.asgi import get_asgi_application
-from channels.routing import ProtocolTypeRouter # <- Add this
-from channels.auth import AuthMiddlewareStack # <- Add this
-from presence.consumers import PresenceConsumer # <- Add this
+from channels.routing import ProtocolTypeRouter
+from presence.consumers import PresenceConsumer
 
-from myproject.chat_config import routing
 from myproject.chat_config.jwt_middleware import JWTAuthMiddleware 
 
 
