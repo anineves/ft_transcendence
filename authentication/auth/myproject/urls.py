@@ -8,6 +8,8 @@ from accounts import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('accounts.urls')),
+    
+    path("", include("presence.urls")),
 ]
 
 urlpatterns += [
