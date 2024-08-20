@@ -137,4 +137,5 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
-        fields = ['date', 'duration', 'game', 'players', 'winner_id']
+        fields = ['date', 'duration', 'game', 'players', 'winner_id', 'score']
+        read_only_fields = ['date', 'winner_id', 'duration', 'score']

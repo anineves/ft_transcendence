@@ -77,15 +77,19 @@ class Game(models.Model):
 
 class Match(models.Model):
 
-    date = models.DateTimeField(auto_now=False)
-    duration = models.DurationField()
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+    duration = models.DurationField(null=True, blank=True)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game')
     players = models.ManyToManyField(Player, related_name='players')
-    winner_id = models.IntegerField()
+    winner_id = models.IntegerField(null=True, blank=True)
+    score = models.CharField(max_length=5, null=True, blank=True)
 
     def get_winner(self):
-        winner = self.players.get(id=self.winner_id)
-        return winner
+        try:
+            winner = self.players.get(id=self.winner_id)
+            return winner
+        except:
+            return None
 
     def __str__(self):        
         return f"{self.game}: {self.date} -- {self.get_winner()}"
