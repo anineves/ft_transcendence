@@ -5,19 +5,20 @@ import requests
 
 
 class CustomOAuth2Backend(BaseBackend):
-    def authenticate(self, request, code=None):
+    def authenticate(self, request, code):
         token_url = 'https://api.intra.42.fr/oauth/token'
         user_info_url = 'https://api.intra.42.fr/v2/me'
-        redirect_uri = 'http://127.0.0.1:8000/oauth/callback/'
-        # Set Client_ID and Secret in .env
+        redirect_uri = 'http://localhost:8080/game-selection'
         token_response = requests.post(token_url, data={
             'grant_type': 'authorization_code',
-            'client_id': 'u-s4t2ud-84f82297edeb244de73ec702342aa78c84ff40652725da6e93f949ed9eefd222',
-            'client_secret': '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',
+            'client_id': 'u-s4t2ud-355d0e118e95085d20b1170e02ecadf3af3030e1ee913f299b9dacc50df1348f',
+            'client_secret': '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',
             'code': code,
             'redirect_uri': redirect_uri,
         })
         
+        print(token_response)
+        print(token_response.json())
         if (token_response.status_code != 200):
             raise ValidationError("Post request got an error or response is None")
         

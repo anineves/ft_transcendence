@@ -200,16 +200,24 @@ class RespondFriendRequest(APIView):
 # Tem que sair daqui
 def oauth_login(request):
     authorization_url = 'https://api.intra.42.fr/oauth/authorize'
-    redirect_uri = 'http://127.0.0.1:8000/oauth/callback/'
-    client_id = 'u-s4t2ud-84f82297edeb244de73ec702342aa78c84ff40652725da6e93f949ed9eefd222'
+    redirect_uri = 'http://localhost:8080/game-selection' 
+    client_id = 'u-s4t2ud-355d0e118e95085d20b1170e02ecadf3af3030e1ee913f299b9dacc50df1348f'
     
     return redirect(f'{authorization_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code')
 
 
 # Tem que sair daqui
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def oauth_callback(request):
-    code = request.GET.get('code')
+    #code = request.GET.get('code')
+    #code = request.get('code')
+    print("teste")
+    print(request.headers)
+    print("code")
+    print(request.data)
+    code = request.data.get('code')
+    print(code)
+
     
     try:
         user = authenticate(request, code=code)
@@ -218,7 +226,6 @@ def oauth_callback(request):
     
     if user is not None:
         refresh = RefreshToken.for_user(user)
-
         access_token = str(refresh.access_token)
         refresh_token = str(refresh)
         response_data = {
@@ -234,7 +241,6 @@ def oauth_callback(request):
             }
         }
         return Response(response_data, status=status.HTTP_201_CREATED)
-
     else:
         return Response(data='Authentication failed', status=status.HTTP_400_BAD_REQUEST)
 

@@ -38,6 +38,7 @@ export const renderLogin = () => {
             const data = await response.json(); 
             // Se a resposta for bem-sucedida (status 200), armazena os tokens JWT e dados do usuário.
             if (response.ok) {
+                localStorage.setItem('register', 'form');
                 // Armazena o token de acesso JWT.
                 localStorage.setItem('jwtToken', data.access); 
                 // Armazena o token de atualização JWT.

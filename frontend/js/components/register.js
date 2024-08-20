@@ -25,8 +25,9 @@ export const renderRegister = () => {
     `;
 
     document.getElementById('btn-register42').addEventListener('click', async (e) => {
-        e.preventDefault(); 
-        window.location.href='http://localhost:8000/oauth/login';
+        e.preventDefault();
+        localStorage.setItem('register', '42');
+        window.location.href = 'http://localhost:8000/oauth/login'; 
     });
 
     // Adiciona um listener para o evento de submissão do formulário de registro
@@ -80,6 +81,7 @@ export const renderRegister = () => {
                 const loginData = await loginResponse.json();
 
                 if (loginResponse.ok) {
+                    localStorage.setItem('register', 'form');
                     localStorage.setItem('jwtToken', loginData.access); 
                     localStorage.setItem('refreshToken', loginData.refresh); 
                     localStorage.setItem('user', JSON.stringify(loginData.user)); 

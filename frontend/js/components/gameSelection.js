@@ -1,7 +1,53 @@
-import { navigateTo } from '../utils.js';
+import { checkLoginStatus, navigateTo } from '../utils.js';
 
-export const renderGameSelection = () => {
+export const renderGameSelection = async () => {
+    // opcional
     const app = document.getElementById('app');
+    app.innerHTML = `
+        <div class="loading">
+            <p>Loading...</p>
+        </div>
+    `;
+
+    const register = localStorage.getItem('register');
+    console.log(register);
+
+    if (register === "42") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        console.log("code");
+        console.log(code);
+
+        if (code) {
+            try {
+                const response = await fetch('http://localhost:8000/oauth/callback/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code })
+                });
+                
+                const data = await response.json();
+
+                if (data.access_token) {
+                    console.log(data);
+                    localStorage.setItem('jwtToken', data.access_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    const user = localStorage.getItem('user');
+                    console.log(user);
+                    checkLoginStatus();
+                } else {
+                    console.error('OAuth login failed', data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error occurred while processing OAuth login.');
+            }
+        }
+    }
+
+    // Após a autenticação, renderizar a interface de seleção de jogos
     app.innerHTML = `
         <div class="select-game">
             <div class="game-selection-item">
@@ -22,6 +68,8 @@ export const renderGameSelection = () => {
             </div>
         </div>
     `;
+
+    // Adicionar eventos de clique aos botões
     document.getElementById('pongBtn').addEventListener('click', () => navigateTo('/select-playerOrAI'));
     document.getElementById('4LineBtn').addEventListener('click', () => navigateTo('/4line'));
 };
