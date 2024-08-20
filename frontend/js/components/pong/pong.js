@@ -10,14 +10,40 @@ export let ballX, ballY, ballSpeedX, ballSpeedY;
 export const ballRadius = 10;
 let isAIActive = false;
 
+export const startPongGame = async () => {
+    const duration = "01:30:00";
+    const winner_id = 0;
+    console.log("entrei Pong")
 
-export function startPongGame() {
+    try {
+        const response = await fetch('http://localhost:8000/api/matches', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ duration, winner_id })
+        });
+        
+        const data = await response.json();
+
+        if (data.access_token) {
+            console.log(data);
+        } else {
+            console.error('match error', data);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error occurred while processing match.');
+    }
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initialize);
     } else {
         initialize();
     }
 }
+
+
 export function initializeBall() {
     if (!canvas) {
         console.error('Canvas element not found for ball');

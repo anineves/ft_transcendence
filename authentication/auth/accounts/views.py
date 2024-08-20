@@ -228,6 +228,10 @@ def oauth_callback(request):
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
         refresh_token = str(refresh)
+        avatar_url = user.avatar.url.replace('/media/https%3A/', 'https://')
+        print(user.avatar.url)
+        print("token")
+        print(refresh.access_token)
         response_data = {
             'access_token': access_token,
             'refresh_token': refresh_token,
@@ -237,7 +241,7 @@ def oauth_callback(request):
                 'email': user.email,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'avatar': user.avatar.url,
+                'avatar': avatar_url,
             }
         }
         return Response(response_data, status=status.HTTP_201_CREATED)

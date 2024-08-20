@@ -17,12 +17,12 @@ class CustomOAuth2Backend(BaseBackend):
             'redirect_uri': redirect_uri,
         })
         
-        print(token_response)
-        print(token_response.json())
+     
         if (token_response.status_code != 200):
             raise ValidationError("Post request got an error or response is None")
         
         token_json = token_response.json()
+
         access_token = token_json.get('access_token')
         
         user_info_response = requests.get(user_info_url, headers={
