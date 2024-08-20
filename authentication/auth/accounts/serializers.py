@@ -138,4 +138,3 @@ class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
         fields = ['date', 'duration', 'game', 'players', 'winner_id']
-        read_only_fields = ['date', 'duration']

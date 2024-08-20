@@ -12,6 +12,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate
+import os
 
 
 class UserRegister(viewsets.ViewSet):
@@ -201,7 +202,7 @@ class RespondFriendRequest(APIView):
 def oauth_login(request):
     authorization_url = 'https://api.intra.42.fr/oauth/authorize'
     redirect_uri = 'http://localhost:8080/game-selection' 
-    client_id = 'u-s4t2ud-355d0e118e95085d20b1170e02ecadf3af3030e1ee913f299b9dacc50df1348f'
+    client_id = os.getenv('CLIENT_ID')
     
     return redirect(f'{authorization_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code')
 
@@ -209,15 +210,7 @@ def oauth_login(request):
 # Tem que sair daqui
 @api_view(['POST'])
 def oauth_callback(request):
-    #code = request.GET.get('code')
-    #code = request.get('code')
-    print("teste")
-    print(request.headers)
-    print("code")
-    print(request.data)
     code = request.data.get('code')
-    print(code)
-
     
     try:
         user = authenticate(request, code=code)
@@ -229,9 +222,7 @@ def oauth_callback(request):
         access_token = str(refresh.access_token)
         refresh_token = str(refresh)
         avatar_url = user.avatar.url.replace('/media/https%3A/', 'https://')
-        print(user.avatar.url)
-        print("token")
-        print(refresh.access_token)
+
         response_data = {
             'access_token': access_token,
             'refresh_token': refresh_token,

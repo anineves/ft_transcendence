@@ -2,6 +2,7 @@ from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import ValidationError
 import requests
+import os
 
 
 class CustomOAuth2Backend(BaseBackend):
@@ -9,10 +10,11 @@ class CustomOAuth2Backend(BaseBackend):
         token_url = 'https://api.intra.42.fr/oauth/token'
         user_info_url = 'https://api.intra.42.fr/v2/me'
         redirect_uri = 'http://localhost:8080/game-selection'
+
         token_response = requests.post(token_url, data={
             'grant_type': 'authorization_code',
-            'client_id': 'u-s4t2ud-355d0e118e95085d20b1170e02ecadf3af3030e1ee913f299b9dacc50df1348f',
-            'client_secret': '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',
+            'client_id': os.getenv('CLIENT_ID'),
+            'client_secret': os.getenv('CLIENT_SECRET'),
             'code': code,
             'redirect_uri': redirect_uri,
         })
