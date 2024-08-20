@@ -86,7 +86,7 @@ export const renderRegister = () => {
                     localStorage.setItem('refreshToken', loginData.refresh); 
                     localStorage.setItem('user', JSON.stringify(loginData.user)); 
                     checkLoginStatus(); 
-                    navigateTo('/create-player'); // Redireciona para a próxima página após login
+                    navigateTo('/game-selection', data);  // Redireciona para a próxima página após login
                 } else {
                     alert('Login after registration failed: ' + JSON.stringify(loginData));
                 }
