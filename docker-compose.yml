@@ -35,6 +35,22 @@ services:
     volumes:
       - ./frontend/nginx.conf:/etc/nginx/nginx.conf
       - ./frontend:/usr/share/nginx/html
+  
+  redis:
+    image: redis:alpine
+    container_name: redis
+
+  remote:
+    container_name: remote
+    build:
+      context: ./remote
+      dockerfile: Dockerfile
+    volumes:
+      - ./remote:/app
+    ports:
+      - "8001:8000"
+    depends_on:
+      - redis
 
 volumes:
   postgres_data:
