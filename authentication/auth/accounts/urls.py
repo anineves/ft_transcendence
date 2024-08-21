@@ -25,5 +25,6 @@ urlpatterns = [
     path('player/respond_friend_request/<int:pk>/', RespondFriendRequest.as_view(), name='respond_requests'),
 
     path('matches/', MatchList.as_view(), name='match_list'),
+    path('match/<int:pk>', MatchDetail.as_view(), name='match_detail'),
 ]
 

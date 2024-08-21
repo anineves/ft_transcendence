@@ -262,4 +262,26 @@ class MatchList(APIView):
                 raise Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class MatchDetail(APIView):
+    
+    def get(self, request, pk):
+        match = Match.objects.get(id=pk)
+        serializer = MatchSerializer(
+            match
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request, pk):
+        match = Match.objects.get(id=pk)
+        serializer = MatchSerializer(
+            match,
+            data=request.data
+        )
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except ValidationError as e:
+                raise Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

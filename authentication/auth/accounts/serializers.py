@@ -138,4 +138,11 @@ class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
         fields = ['date', 'duration', 'game', 'players', 'winner_id', 'score']
-        read_only_fields = ['date', 'winner_id', 'duration', 'score']
+        read_only_fields = ['date']
+    
+    def update(self, instance, validated_data):
+        instance.winner_id=validated_data.get('winner_id', instance.winner_id)
+        instance.score=validated_data.get('score', instance.score)
+        instance.duration=validated_data.get('duration', instance.duration)
+        instance.save()
+        return instance
