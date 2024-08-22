@@ -275,7 +275,13 @@ class MatchDetail(APIView):
         match = Match.objects.get(id=pk)
         serializer = MatchSerializer(
             match,
-            data=request.data
+            data = {
+                "duration": request.data["duration"],
+                "winner_id": request.data["winner_id"],
+                "score": request.data["score"],
+                "game": match.game.id,
+                "players" : [players.id for players in match.players.all()],
+            }
         )
         if serializer.is_valid():
             try:

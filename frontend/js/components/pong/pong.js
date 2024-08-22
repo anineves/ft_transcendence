@@ -13,21 +13,32 @@ let isAIActive = false;
 export const startPongGame = async () => {
     const duration = "01:30:00";
     const winner_id = 0;
+    const game = 1;
+    const players= [1,2]; 
+    const player2 = 2;
+    localStorage.setItem('game', game);
+    localStorage.setItem('players', players);
+
     console.log("entrei Pong")
 
     try {
-        const response = await fetch('http://localhost:8000/api/matches', {
+        const response = await fetch('http://localhost:8000/api/matches/', {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ duration, winner_id })
+            body: JSON.stringify({game, players})
         });
         
         const data = await response.json();
 
-        if (data.access_token) {
+        if (data) {
+            console.log('Data');
             console.log(data);
+            localStorage.setItem('id_match', data.id);
+            console.log('IDDDD');
+            console.log(data.id);
         } else {
             console.error('match error', data);
         }
@@ -151,11 +162,52 @@ function checkCollisions() {
 
 
 
-    function gameLoop() {
+    function  gameLoop() {
         update();
         if (!gameOver) {
             requestAnimationFrame(gameLoop);
         }
+        else
+        {
+            
+          /*  const id = localStorage.getItem('id_match');
+            console.log('IDDDD loop');
+            console.log(id);
+  
+            try {
+                const winner_id = 1;
+                const score = "1-2"; 
+                const duration = "10";
+                const response =  fetch(`http://localhost:8000/api/match/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({winner_id, score, duration})
+                });
+                
+                console.log(response);
+                const data =  response.json();
+                
+                if (data.access_token) {
+                    console.log(data);
+                } else {
+                    console.error('match error', data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error occurred while processing match.');
+            }
+        
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initialize);
+            } else {
+                initialize();
+            }*/
+        }
+        
+        
     }
 
     document.addEventListener('keydown', function(event) {
