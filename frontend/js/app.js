@@ -11,6 +11,7 @@ import { teste} from './components/teste.js';
 import {startMenu} from './components/startMenu.js';
 import { selectPlayerorAI } from './components/selectPlayerOrAI.js';
 import { renderRequestPanel } from './components/requestPanel.js';
+
 // Define as rotas da aplicação e suas funções de renderização correspondentes
 const routes = {
     '/': renderMenu,

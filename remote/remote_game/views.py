@@ -1,27 +1,29 @@
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
-from .models import Match, FriendRequest
+# remote/views.py
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from .models import MatchInvite
+from .serializers import MatchInviteSerializer
 
-@csrf_exempt
-def send_invite(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        invitee_username = data.get('invitee')
+class MatchInviteViewSet(viewsets.ViewSet):
+    def create(self, request):
+        serializer = MatchInviteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(sender=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            invitee = User.objects.get(username=invitee_username)
-            sender = request.user  # Assume que o usuário está autenticado
-
-            # Verifique se já existe um convite pendente
-            if FriendRequest.objects.filter(sender=sender, invitee=invitee, accepted=False).exists():
-                return JsonResponse({'message': 'Invite already sent'}, status=400)
-
-            # Crie um novo convite
-            FriendRequest.objects.create(sender=sender, invitee=invitee, accepted=False)
-            return JsonResponse({'message': 'Invite sent successfully'})
-
-        except User.DoesNotExist:
-            return JsonResponse({'message': 'Invitee not found'}, status=404)
-
-    return JsonResponse({'message': 'Invalid request method'}, status=405)
+    def update(self, request, pk=None):
+        invite = MatchInvite.objects.get(pk=pk)
+        if request.user != invite.receiver:
+            return Response({'detail': 'Not authorized'}, status=status.HTTP_403_FORBIDDEN)
+        
+        if request.data.get('accepted') is not None:
+            invite.accepted = request.data['accepted']
+            invite.save()
+            if invite.accepted:
+                # Start a game session
+                # ...
+                return Response({'detail': 'Invite accepted'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'detail': 'Invite rejected'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)

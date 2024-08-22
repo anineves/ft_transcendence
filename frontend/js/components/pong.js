@@ -18,4 +18,29 @@ export const renderPong = () => {
         </div>
     `;
     startPongGame();
+    let socket = new WebSocket('ws://' + window.location.host + '/ws/game/' + roomName + '/');
+
+// Quando uma mensagem é recebida
+socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    // Atualize o estado do jogo com a mensagem recebida
+    console.log(data.message);
+};
+
+// Quando a conexão WebSocket está aberta
+socket.onopen = function(e) {
+    console.log('WebSocket connection established');
+};
+
+// Quando a conexão WebSocket está fechada
+socket.onclose = function(e) {
+    console.log('WebSocket connection closed');
+};
+
+// Enviar mensagem para o servidor WebSocket
+function sendGameData(data) {
+    socket.send(JSON.stringify({
+        'message': data
+    }));
+}
 };

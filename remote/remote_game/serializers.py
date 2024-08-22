@@ -1,8 +1,8 @@
-# serializers.py
+# remote/serializers.py
 from rest_framework import serializers
-from .models import Invitation
+from .models import MatchInvite
 
-class InvitationSerializer(serializers.ModelSerializer):
+class MatchInviteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Invitation
-        fields = ['sender', 'recipient', 'game_mode']
+        model = MatchInvite
+        fields = ['id', 'receiver', 'accepted']

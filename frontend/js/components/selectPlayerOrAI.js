@@ -22,6 +22,14 @@ export const selectPlayerorAI = () =>
                     </button>
                 </div>
             </div>
+            <div class="game-selection-item">
+                <div id="remote-select">
+                    <button id="remote" class="btn">
+                        <img src="./assets/vsAI.png" alt="AI" class="button-image-select">
+                        <h3>Remote</h3>
+                    </button>
+                </div>
+            </div>
         </div>
     `;
 
@@ -35,5 +43,6 @@ export const selectPlayerorAI = () =>
         navigateTo('/pong');
         localStorage.setItem('game', 'ai'); 
     });
+    
         
 };

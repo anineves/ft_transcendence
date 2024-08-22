@@ -15,7 +15,7 @@ export const startPongGame = async () => {
     const winner_id = 0;
     console.log("entrei Pong")
 
-    try {
+   /* try {
         const response = await fetch('http://localhost:8000/api/matches', {
             method: 'POST',
             headers: {
@@ -35,7 +35,7 @@ export const startPongGame = async () => {
         console.error('Error:', error);
         alert('Error occurred while processing match.');
     }
-
+*/
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initialize);
     } else {
