@@ -10,6 +10,8 @@ import { startMenu } from './components/startMenu.js';
 import { selectPlayerorAI } from './components/selectPlayerOrAI.js';
 import { renderRequestPanel } from './components/requestPanel.js';
 import { renderFriendsPage } from './components/friendsPage.js';
+import { selectTournamentPlayers } from './components/tournament.js';
+import { setupTournament } from './components/tournament.js';
 
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
@@ -25,6 +27,8 @@ export const routes = {
     '/select-playerOrAI': selectPlayerorAI,
     '/friendPanel': renderRequestPanel,
     '/friendPage' : renderFriendsPage,
+    '/tournament' : selectTournamentPlayers,
+    '/tournament-setup' : setupTournament,
 };
 
 // Altera a URL do navegador e atualizar a exibição da página
