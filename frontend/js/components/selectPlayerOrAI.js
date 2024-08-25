@@ -18,7 +18,7 @@ export const selectPlayerorAI = () =>
                 <div id="AI-select">
                     <button id="vsAIBtn" class="btn">
                         <img src="./assets/vsAI.png" alt="AI" class="button-image-select">
-                        <h3>vs AI </h3>
+                        <h3>vs AiI </h3>
                     </button>
                 </div>
             </div>

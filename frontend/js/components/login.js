@@ -31,13 +31,17 @@ export const renderLogin = () => {
             });
             const data = await response.json();
             if (response.ok) {
-                localStorage.setItem('jwtToken', data.access);
-                localStorage.setItem('refreshToken', data.refresh);
-                localStorage.setItem('user', JSON.stringify(data.user));
-                checkLoginStatus();
-                navigateTo('/game-selection', data);
                 // Inicia a conexão WebSocket após o login bem-sucedido
                 initWebSocket();
+                localStorage.setItem('register', 'form');
+                // Armazena o token de acesso JWT.
+                localStorage.setItem('jwtToken', data.access); 
+                // Armazena o token de atualização JWT.
+                localStorage.setItem('refreshToken', data.refresh); 
+                // Armazena as informações do usuário (por exemplo, nome, email).
+                localStorage.setItem('user', JSON.stringify(data.user)); 
+                checkLoginStatus(); 
+                navigateTo('/game-selection', data); 
             } else {
                 alert('Login failed: ' + JSON.stringify(data));
             }

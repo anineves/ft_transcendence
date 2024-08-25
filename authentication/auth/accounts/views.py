@@ -1,5 +1,5 @@
 from .serializers import *
-from .models import CustomUser, Player, FriendRequest
+from .models import CustomUser, Player, FriendRequest, Match
 from django.http import Http404, JsonResponse
 from django.db.models import Count, Q
 from rest_framework.views import APIView
@@ -12,6 +12,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate
+import os
 
 
 class UserRegister(viewsets.ViewSet):
@@ -200,16 +201,16 @@ class RespondFriendRequest(APIView):
 # Tem que sair daqui
 def oauth_login(request):
     authorization_url = 'https://api.intra.42.fr/oauth/authorize'
-    redirect_uri = 'http://127.0.0.1:8000/oauth/callback/'
-    client_id = 'u-s4t2ud-84f82297edeb244de73ec702342aa78c84ff40652725da6e93f949ed9eefd222'
+    redirect_uri = 'http://localhost:8080/game-selection' 
+    client_id = os.getenv('CLIENT_ID')
     
     return redirect(f'{authorization_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code')
 
 
 # Tem que sair daqui
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def oauth_callback(request):
-    code = request.GET.get('code')
+    code = request.data.get('code')
     
     try:
         user = authenticate(request, code=code)
@@ -218,9 +219,10 @@ def oauth_callback(request):
     
     if user is not None:
         refresh = RefreshToken.for_user(user)
-
         access_token = str(refresh.access_token)
         refresh_token = str(refresh)
+        avatar_url = user.avatar.url.replace('/media/https%3A/', 'https://')
+
         response_data = {
             'access_token': access_token,
             'refresh_token': refresh_token,
@@ -230,11 +232,57 @@ def oauth_callback(request):
                 'email': user.email,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'avatar': user.avatar.url,
+                'avatar': avatar_url,
             }
         }
         return Response(response_data, status=status.HTTP_201_CREATED)
-
     else:
         return Response(data='Authentication failed', status=status.HTTP_400_BAD_REQUEST)
+
+
+#Matches
+class MatchList(APIView):
+
+    def get(self, request):
+        matches = Match.objects.all()
+        serializer = MatchSerializer(
+            matches, many=True
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
+    def post(self, request):
+        serializer = MatchSerializer(
+            data=request.data
+        )
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except ValidationError as e:
+                raise Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class MatchDetail(APIView):
+    
+    def get(self, request, pk):
+        match = Match.objects.get(id=pk)
+        serializer = MatchSerializer(
+            match
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request, pk):
+        match = Match.objects.get(id=pk)
+        serializer = MatchSerializer(
+            match,
+            data = request.data,
+            partial = True
+        )
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except ValidationError as e:
+                raise Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

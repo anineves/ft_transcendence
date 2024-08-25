@@ -23,6 +23,7 @@ export const renderPanel = (user) => {
                 <button id="logoutBtn" class="btn">Logout</button>
                 <button id="editBtn" class="btn">Edit</button>
                 <button id="friendBtn" class="btn">Friends</button>
+                <button id="createBtn" class="btn">Create Player</button>
             </div>
             <div id="updateProfileSection" style="display: none;">
                 <h2>Update Profile</h2>
@@ -60,6 +61,10 @@ export const renderPanel = (user) => {
 
     document.getElementById('friendBtn').addEventListener('click', () => {
         renderFriendsPage(user);
+    });
+
+    document.getElementById('createBtn').addEventListener('click', () => {
+        navigateTo('/create-player');
     });
 
 

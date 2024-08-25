@@ -47,21 +47,26 @@ export const render = () => {
 
 export const checkLoginStatus = () => {
     const user = JSON.parse(localStorage.getItem('user'));
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
+    const jwtToken = localStorage.getItem('jwtToken');
     const userAvatar = document.getElementById('userAvatar');
     const avatarImg = document.getElementById('avatarImg');
     const bar = document.getElementById('startBtn');
 
-    if (user) {
-        userAvatar.style.display = 'block';
-        bar.style.display = 'none';
-        avatarImg.src = '../../assets/avatar.png';
-        if (user.avatar) {
-            avatarImg.src = user.avatar;
-        } 
-        console.log(avatarImg.src);
+    if (jwtToken) {
+        if (user) {
+            
+            userAvatar.style.display = 'block';
+            bar.style.display = 'none';
+            avatarImg.src = '../../assets/avatar.png';
+            if (user.avatar) {
+                avatarImg.src = user.avatar;
+            } 
+        } else {
+            bar.style.display = 'block';
+            userAvatar.style.display = 'none';
+        }
     } else {
+
         bar.style.display = 'block';
         userAvatar.style.display = 'none';
     }
