@@ -35,7 +35,7 @@
   </div>
 
   <script>
-    const ws = new WebSocket('ws://' + window.location.host + '/ws/presence/');
+    const ws = new WebSocket('ws://' + window.location.host + '/ws/presence/' + 'new_room/');
     const presenceEl = document.getElementById('pre_cnt');
     const messagesEl = document.getElementById('messages');
     const onlineUsers = document.querySelector("#online-users");

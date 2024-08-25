@@ -1,59 +1,50 @@
 import json
 import pprint
 from channels.generic.websocket import WebsocketConsumer
+from asgiref.sync import async_to_sync
 
 
 class PresenceConsumer(WebsocketConsumer):
 
-    connections = []
-
     def connect(self):
-        self.accept()
         pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(f"Scope: {self.scope}")
+        # pp.pprint(self.scope)
+
+        self.group_name = self.scope["url_route"]["kwargs"]["group_name"]
+        # print(f"Group_Name: {self.group_name}")
+        self.match_name = f"{self.group_name}_match"
+        # print(f"Match_Name: {self.match_name}")
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.match_name, self.channel_name
+        )
+
         self.user = self.scope["user"]
-        print(f"User from scope: {self.user}")
-        self.connections.append(self)
-        self.update_indicator(msg="Connected")
+        # print(f"User from scope: {self.user}")
+        
+        
+        self.accept()
 
-    def disconnect(self, code):
-        self.update_indicator(msg="Disconnected")
-        self.connections.remove(self)
-        return super().disconnect(code)
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.match_name, self.channel_name
+        )
+        print(f"THe channel {self.channel_name} was disconnected from {self.match_name}")
+        return super().disconnect(close_code)
 
-    def update_indicator(self, msg):
-        for connection in self.connections:
-            connection.send(
-                text_data=json.dumps(
-                    {
-                        "msg": f"{self.user.username} {msg}" if self.user.is_authenticated else "Guest",
-                        "online": len(self.connections),
-                        "users": [
-                            {
-                                "username": user.scope.get("user").username or "Guest",
-                                "id": user.scope.get("user").id or None
-                            }
-                            for user in self.connections
-                        ]
-                    }
-                )
-            )
-        print(f"MSG: {msg}")
+    def receive(self, text_data=None):
+        text_data_json = json.loads(text_data)
+        message = text_data_json["message"]
 
-    def receive(self, text_data=None, bytes_data=None):
-        for connection in self.connections:
-            connection.send(
-                text_data=json.dumps(
-                    {
-                        "msg": f"{self.user.username}" if self.user.is_authenticated else f"Guest {text_data}",
-                        "online": len(self.connections),
-                        "users": [
-                            {
-                                "username": user.scope.get("user").username or "Guest",
-                                "id": user.scope.get("user").id or None
-                            }
-                            for user in self.connections
-                        ]
-                    }
-                )
-            )
+        async_to_sync(self.channel_layer.group_send)(
+            self.match_name, 
+            {
+                "type": "match.message",
+                "message": message
+            }
+        )
+
+    def match_message(self, event):
+        # print("Match Message was called")
+        message = event["message"]
+        self.send(text_data=json.dumps({"message": message}))

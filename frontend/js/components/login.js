@@ -47,7 +47,7 @@ export const renderLogin = () => {
         }
     });
     const initWebSocket = () => {
-        const ws = new WebSocket('ws://localhost:8000/ws/presence/');
+        const ws = new WebSocket('ws://localhost:8000/ws/presence/pong/');
         const presenceEl = document.getElementById('pre_cnt');
         const messagesEl = document.getElementById('messages');
         const onlineUsers = document.getElementById("online-users");
