@@ -1,6 +1,7 @@
 import { drawCenterLine, initializeCanvas, moveOpponentPaddleAI, } from './canvasUtils.js';
 import { drawScore, drawGameOver } from './score.js';
 import { canvas, context, paddleWidth, paddleHeight, playerY, opponentY, movePaddle, stopPaddle } from './canvasUtils.js';
+import {endMatch} from '../tournament.js';
 
 let playerScore = 0;
 let opponentScore = 0;
@@ -191,8 +192,29 @@ async function gameLoop() {
             console.error('Erro ao processar a partida:', error);
             alert('Ocorreu um erro ao processar a partida.');
         }
+
+        showNextMatchButton();
     }
 }
+
+function showNextMatchButton() {
+    const app = document.getElementById('app');
+    const nextMatchButton = document.createElement('button');
+    nextMatchButton.innerText = 'Next Match';
+    nextMatchButton.className = 'btn';
+    nextMatchButton.style.display = 'block';
+    nextMatchButton.style.margin = '20px auto';
+    
+    nextMatchButton.addEventListener('click', () => {
+        const currentMatch = JSON.parse(localStorage.getItem('currentMatch'));
+        const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
+
+        endMatch(winner);
+    });
+
+    app.appendChild(nextMatchButton);
+}
+
 
 
     document.addEventListener('keydown', function(event) {

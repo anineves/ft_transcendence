@@ -22,6 +22,14 @@ export const selectPlayerorAI = () =>
                     </button>
                 </div>
             </div>
+            <div class="game-selection-item">
+                <div id="tourn-select">
+                    <button id="tournBtn" class="btn">
+                        <img src="./assets/tournament.png" alt="Tournament" class="button-image-select">
+                        <h3>Tournament </h3>
+                    </button>
+                </div>
+            </div>
         </div>
     `;
 
@@ -34,6 +42,10 @@ export const selectPlayerorAI = () =>
     {
         navigateTo('/pong');
         localStorage.setItem('game', 'ai'); 
+    });
+    document.getElementById('tournBtn').addEventListener('click', () =>
+    {
+            navigateTo('/tournament');
     });
         
 };
