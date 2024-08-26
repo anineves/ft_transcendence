@@ -82,6 +82,7 @@ const startMatch = () => {
         sessionStorage.setItem('currentMatch', JSON.stringify({ player1, player2 }));
 
         setTimeout(() => {
+            resetGameState();
             navigateTo('/pong');
         }, 200); 
     } else {

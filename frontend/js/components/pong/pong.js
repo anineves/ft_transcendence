@@ -6,20 +6,22 @@ import { endMatch } from '../tournament.js';
 let playerScore = 0;
 let opponentScore = 0;
 let gameOver = false;
+let ballSpeedX = 2;
+let ballSpeedY = 2;
 
-export let ballX, ballY, ballSpeedX, ballSpeedY;
+export let ballX, ballY;
 export const ballRadius = 10;
 let isAIActive = false;
+let animationFrameId; 
 
 export const startPongGame = async () => {
+    console.log("Starting game...");
     const duration = "01:30:00";
     const winner_id = 0;
     const game = 1;
     const players = [1, 2];
     sessionStorage.setItem('game', game);
     sessionStorage.setItem('players', players);
-
-    console.log("entrei Pong");
 
     try {
         const response = await fetch('http://localhost:8000/api/matches/', {
@@ -37,18 +39,14 @@ export const startPongGame = async () => {
             console.log('Data:', data);
             sessionStorage.setItem('id_match', data.id);
         } else {
-            console.error('match error', data);
+            console.error('Match error', data);
         }
     } catch (error) {
         console.error('Error:', error);
         alert('Error occurred while processing match.');
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initialize);
-    } else {
-        initialize();
-    }
+    initialize();
 }
 
 export function initializeBall() {
@@ -80,6 +78,8 @@ export function resetBall() {
 }
 
 function initialize() {
+    console.log("Initializing game...");
+   
     initializeCanvas();
     initializeBall();
 
@@ -159,10 +159,10 @@ function initialize() {
         update();
 
         if (!gameOver) {
-            requestAnimationFrame(gameLoop);
+            animationFrameId =requestAnimationFrame(gameLoop);
         } else {
             const id = sessionStorage.getItem('id_match');
-            console.log('ID da partida:', id);
+            console.log('Match ID:', id);
 
             try {
                 const winner_id = playerScore > opponentScore ? 1 : 2; 
@@ -181,13 +181,13 @@ function initialize() {
                 const data = await response.json();
 
                 if (response.ok) {
-                    console.log('Match atualizado com sucesso:', data);
+                    console.log('Match updated successfully:', data);
                 } else {
-                    console.error('Erro na atualização da partida:', data);
+                    console.error('Error updating match:', data);
                 }
             } catch (error) {
-                console.error('Erro ao processar a partida:', error);
-                alert('Ocorreu um erro ao processar a partida.');
+                console.error('Error processing match:', error);
+                alert('An error occurred while processing the match.');
             }
             if (sessionStorage.getItem('modality') === 'tournament') {
                 showNextMatchButton();
@@ -239,8 +239,19 @@ function initialize() {
     gameLoop();
 }
 
-export function resetGameState() {
+export function stopGame() {
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);  
+        animationFrameId = null;
+    }
+}
 
-    initializeCanvas();
-    initializeBall();
+export function resetGameState() {
+    playerScore = 0;
+    opponentScore = 0;
+    ballSpeedX= 2;
+    ballSpeedY= 2;
+    initializeCanvas(); 
+    initializeBall(); 
+    stopGame(); 
 }

@@ -1,8 +1,19 @@
 import { navigateTo } from '../utils.js';
-
+import { startPongGame, resetGameState } from './pong/pong.js';
 
 export const selectPlayerorAI = () =>
 {
+    sessionStorage.removeItem('modality');
+    sessionStorage.removeItem('playerNames');
+    sessionStorage.removeItem('playersCount');
+    sessionStorage.removeItem('winners');
+    sessionStorage.removeItem('currentMatch');  
+    sessionStorage.removeItem('players'); 
+    sessionStorage.removeItem('currentRound');
+    sessionStorage.removeItem('rounds');
+    sessionStorage.removeItem('game');
+    resetGameState();
+
     const app = document.getElementById('app');
     app.innerHTML = `
         <div class="select-game">
