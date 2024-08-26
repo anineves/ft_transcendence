@@ -6,7 +6,7 @@ import { renderFriendsPage } from './friendsPage.js';
 export const renderPanel = (user) => {
     const app = document.getElementById('app');
     const defaultAvatar = '../../assets/avatar.png';
-    const nickname = localStorage.getItem('nickname');
+    const nickname = sessionStorage.getItem('nickname');
     const avatarUrl = user.avatar || defaultAvatar;
 
     app.innerHTML = `
@@ -79,7 +79,7 @@ export const renderPanel = (user) => {
         const email = document.getElementById('updateEmail').value;
         const nickname = document.getElementById('updateNickname').value;
 
-        localStorage.setItem('nickname', nickname);
+        sessionStorage.setItem('nickname', nickname);
 
         if (avatarFile) formData.append('avatar', avatarFile);
         formData.append('first_name', firstName);
@@ -91,7 +91,7 @@ export const renderPanel = (user) => {
             const response = await fetch(`http://127.0.0.1:8000/api/user/${user.id}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`
                 },
                 body: formData
             });
@@ -100,7 +100,7 @@ export const renderPanel = (user) => {
 
             if (response.ok) {
                 alert('Profile updated successfully!');
-                localStorage.setItem('user', JSON.stringify(data));
+                sessionStorage.setItem('user', JSON.stringify(data));
                 checkLoginStatus();
                 navigateTo('/game-selection', data);
             } else {

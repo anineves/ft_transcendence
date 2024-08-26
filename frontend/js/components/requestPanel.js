@@ -20,7 +20,7 @@ export const renderRequestPanel = (user) => {
             const response = await fetch('http://127.0.0.1:8000/api/player/requests/', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -68,7 +68,7 @@ export const renderRequestPanel = (user) => {
             const response = await fetch(`http://127.0.0.1:8000/api/player/respond_friend_request/${requestId}/`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ accepted })

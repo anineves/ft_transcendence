@@ -44,14 +44,16 @@ export const render = () => {
     const state = window.history.state; // Obtém o estado atual do histórico
     if (path === '/user-panel' && state?.user) { // Se tiver na rota do user.pna e o estado contem um user
         route(state.user); // Renderiza o painel do usuário com os dados do usuário
+        checkLoginStatus();
     } else {
         route(); // Renderiza a rota padrão
     }
 };
 
 export const checkLoginStatus = () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const jwtToken = localStorage.getItem('jwtToken');
+    console.log("entrei");
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const jwtToken = sessionStorage.getItem('jwtToken');
     const userAvatar = document.getElementById('userAvatar');
     const avatarImg = document.getElementById('avatarImg');
     const bar = document.getElementById('startBtn');
@@ -78,9 +80,9 @@ export const checkLoginStatus = () => {
 
 
 export const logout = () => {
-    localStorage.removeItem('user'); 
+    sessionStorage.removeItem('user'); 
     sessionStorage.clear();
-    localStorage.clear();
+    sessionStorage.clear();
     checkLoginStatus(); 
     navigateTo('/'); 
 };

@@ -29,14 +29,14 @@ const routes = {
 // Adiciona um listener que chama a função de renderização quando o DOM é carregado
 document.addEventListener('DOMContentLoaded', () => {
     render(); // Renderiza a página atual com base na URL
-
+    checkLoginStatus();
 
     document.getElementById('startBtn').addEventListener('click', () => {
         navigateTo('/star-menu');
     });
 
     document.getElementById('userAvatar').addEventListener('click', () => {
-        const user = JSON.parse(localStorage.getItem('user')); // Obtém o usuário do localStorage
+        const user = JSON.parse(sessionStorage.getItem('user')); // Obtém o usuário do sessionStorage
         if (user) {
             navigateTo('/user-panel', user);
         }

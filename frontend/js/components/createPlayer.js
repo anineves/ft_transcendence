@@ -18,8 +18,8 @@ export const createPlayer = () => {
 
         const nickname = document.getElementById('nickname').value;
         
-        localStorage.setItem('nickname', nickname);
-        const token = localStorage.getItem('jwtToken');
+        sessionStorage.setItem('nickname', nickname);
+        const token = sessionStorage.getItem('jwtToken');
         
         try {
             const response = await fetch('http://127.0.0.1:8000/api/players/', {
@@ -35,7 +35,10 @@ export const createPlayer = () => {
 
             if (response.ok) {
                 alert('Player created successfully!');
-                localStorage.setItem('player', JSON.stringify(data.user)); 
+                sessionStorage.setItem('player', JSON.stringify(data.id));
+                sessionStorage.setItem('nickname', JSON.stringify(data.nickname));
+                //console.log("player"); 
+                //console.log(data);
                 navigateTo('/game-selection'); 
             } else {
                 alert('Player creation failed: ' + JSON.stringify(data));

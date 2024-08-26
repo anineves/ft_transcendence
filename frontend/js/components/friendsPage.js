@@ -20,12 +20,12 @@ export const renderFriendsPage = async (user) => {
     `;
 
     const friendsList = document.getElementById('friendsList');
-    
+    const player = sessionStorage.getItem('player');
     try {
         const response = await fetch(`http://127.0.0.1:8000/api/player/${user.id}`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
                 'Content-Type': 'application/json'
             }
         });
@@ -68,7 +68,7 @@ export const renderFriendsPage = async (user) => {
             const response = await fetch(`http://127.0.0.1:8000/api/player/send_friend_request/${friendId}/`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
                     'Content-Type': 'application/json'
                 }
             });

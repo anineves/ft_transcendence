@@ -1,7 +1,7 @@
-import { drawCenterLine, initializeCanvas, moveOpponentPaddleAI, } from './canvasUtils.js';
+import { drawCenterLine, initializeCanvas, moveOpponentPaddleAI } from './canvasUtils.js';
 import { drawScore, drawGameOver } from './score.js';
 import { canvas, context, paddleWidth, paddleHeight, playerY, opponentY, movePaddle, stopPaddle } from './canvasUtils.js';
-import {endMatch} from '../tournament.js';
+import { endMatch } from '../tournament.js';
 
 let playerScore = 0;
 let opponentScore = 0;
@@ -16,8 +16,8 @@ export const startPongGame = async () => {
     const winner_id = 0;
     const game = 1;
     const players = [1, 2];
-    localStorage.setItem('game', game);
-    localStorage.setItem('players', players);
+    sessionStorage.setItem('game', game);
+    sessionStorage.setItem('players', players);
 
     console.log("entrei Pong");
 
@@ -25,7 +25,7 @@ export const startPongGame = async () => {
         const response = await fetch('http://localhost:8000/api/matches/', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ game, players })
@@ -35,7 +35,7 @@ export const startPongGame = async () => {
 
         if (data) {
             console.log('Data:', data);
-            localStorage.setItem('id_match', data.id);
+            sessionStorage.setItem('id_match', data.id);
         } else {
             console.error('match error', data);
         }
@@ -50,7 +50,6 @@ export const startPongGame = async () => {
         initialize();
     }
 }
-
 
 export function initializeBall() {
     if (!canvas) {
@@ -109,7 +108,7 @@ function initialize() {
     function update() {
         if (gameOver) return;
         updateBall();
-        if (localStorage.getItem('game') === 'ai') {
+        if (sessionStorage.getItem('modality') === 'ai') {
             moveOpponentPaddleAI();
             isAIActive = true;
         }
@@ -120,102 +119,98 @@ function initialize() {
     let ballOutOfBoundsLeft = false;
     let ballOutOfBoundsRight = false;
 
-function checkCollisions() {
-    if (ballX - ballRadius < 0) {
-        if (!ballOutOfBoundsLeft) {
-            opponentScore++;
-            if (opponentScore >= 5) {
-                gameOver = true;
+    function checkCollisions() {
+        if (ballX - ballRadius < 0) {
+            if (!ballOutOfBoundsLeft) {
+                opponentScore++;
+                if (opponentScore >= 5) {
+                    gameOver = true;
+                }
+                ballOutOfBoundsLeft = true;
+                resetBall();
             }
-            ballOutOfBoundsLeft = true;
-            resetBall();
-        }
-    } else {
-        ballOutOfBoundsLeft = false; 
-    }
-
-    if (ballX + ballRadius > canvas.width) {
-        if (!ballOutOfBoundsRight) {
-            playerScore++;
-            if (playerScore >= 5) {
-                gameOver = true;
-            }
-            ballOutOfBoundsRight = true; 
-            resetBall();
-        }
-    } else {
-        ballOutOfBoundsRight = false;
-    }
-
-    if (ballX - ballRadius < paddleWidth && ballY > playerY && ballY < playerY + paddleHeight) {
-        ballSpeedX = -ballSpeedX;
-    }
-
-    if (ballX + ballRadius > canvas.width - paddleWidth && ballY > opponentY && ballY < opponentY + paddleHeight) {
-        ballSpeedX = -ballSpeedX;
-    }
-}
-
-
-
-async function gameLoop() {
-    update();
-
-    if (!gameOver) {
-        requestAnimationFrame(gameLoop);
-    } else {
-        const id = localStorage.getItem('id_match');
-        console.log('ID da partida:', id);
-
-        try {
-            const winner_id = playerScore > opponentScore ? 1 : 2; 
-            const score = `${playerScore}-${opponentScore}`;
-            const duration = "10";  
-
-            const response = await fetch(`http://localhost:8000/api/match/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ winner_id, score, duration })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                console.log('Match atualizado com sucesso:', data);
-            } else {
-                console.error('Erro na atualização da partida:', data);
-            }
-        } catch (error) {
-            console.error('Erro ao processar a partida:', error);
-            alert('Ocorreu um erro ao processar a partida.');
+        } else {
+            ballOutOfBoundsLeft = false; 
         }
 
-        showNextMatchButton();
+        if (ballX + ballRadius > canvas.width) {
+            if (!ballOutOfBoundsRight) {
+                playerScore++;
+                if (playerScore >= 5) {
+                    gameOver = true;
+                }
+                ballOutOfBoundsRight = true; 
+                resetBall();
+            }
+        } else {
+            ballOutOfBoundsRight = false;
+        }
+
+        if (ballX - ballRadius < paddleWidth && ballY > playerY && ballY < playerY + paddleHeight) {
+            ballSpeedX = -ballSpeedX;
+        }
+
+        if (ballX + ballRadius > canvas.width - paddleWidth && ballY > opponentY && ballY < opponentY + paddleHeight) {
+            ballSpeedX = -ballSpeedX;
+        }
     }
-}
 
-function showNextMatchButton() {
-    const app = document.getElementById('app');
-    const nextMatchButton = document.createElement('button');
-    nextMatchButton.innerText = 'Next Match';
-    nextMatchButton.className = 'btn';
-    nextMatchButton.style.display = 'block';
-    nextMatchButton.style.margin = '20px auto';
-    
-    nextMatchButton.addEventListener('click', () => {
-        const currentMatch = JSON.parse(localStorage.getItem('currentMatch'));
-        const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
+    async function gameLoop() {
+        update();
 
-        endMatch(winner);
-    });
+        if (!gameOver) {
+            requestAnimationFrame(gameLoop);
+        } else {
+            const id = sessionStorage.getItem('id_match');
+            console.log('ID da partida:', id);
 
-    app.appendChild(nextMatchButton);
-}
+            try {
+                const winner_id = playerScore > opponentScore ? 1 : 2; 
+                const score = `${playerScore}-${opponentScore}`;
+                const duration = "10";  
 
+                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ winner_id, score, duration })
+                });
 
+                const data = await response.json();
+
+                if (response.ok) {
+                    console.log('Match atualizado com sucesso:', data);
+                } else {
+                    console.error('Erro na atualização da partida:', data);
+                }
+            } catch (error) {
+                console.error('Erro ao processar a partida:', error);
+                alert('Ocorreu um erro ao processar a partida.');
+            }
+            if (sessionStorage.getItem('modality') === 'tournament') {
+                showNextMatchButton();
+            }
+        }
+    }
+
+    function showNextMatchButton() {
+        const app = document.getElementById('app');
+        const nextMatchButton = document.createElement('button');
+        nextMatchButton.innerText = 'Next Match';
+        nextMatchButton.className = 'btn';
+        nextMatchButton.style.display = 'block';
+        nextMatchButton.style.margin = '20px auto';
+
+        nextMatchButton.addEventListener('click', () => {
+            const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+            const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
+            endMatch(winner);
+        });
+        app.appendChild(nextMatchButton);
+
+    }
 
     document.addEventListener('keydown', function(event) {
         if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
@@ -224,9 +219,7 @@ function showNextMatchButton() {
     });
 
     document.addEventListener('keydown', function(event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && localStorage.getItem('game') === 'player') {
-            const game = localStorage.getItem('game');
-            console.log(game);
+        if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') === 'player') {
             movePaddle(event);
         }
     });
@@ -238,14 +231,16 @@ function showNextMatchButton() {
     });
 
     document.addEventListener('keyup', function(event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && localStorage.getItem('game') === 'player') {
+        if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') === 'player') {
             stopPaddle(event);
         }
     });
-
-    
 
     gameLoop();
 }
 
+export function resetGameState() {
 
+    initializeCanvas();
+    initializeBall();
+}

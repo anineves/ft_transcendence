@@ -38,13 +38,13 @@ export const renderLogin = () => {
             const data = await response.json(); 
             // Se a resposta for bem-sucedida (status 200), armazena os tokens JWT e dados do usuário.
             if (response.ok) {
-                localStorage.setItem('register', 'form');
+                sessionStorage.setItem('register', 'form');
                 // Armazena o token de acesso JWT.
-                localStorage.setItem('jwtToken', data.access); 
+                sessionStorage.setItem('jwtToken', data.access); 
                 // Armazena o token de atualização JWT.
-                localStorage.setItem('refreshToken', data.refresh); 
+                sessionStorage.setItem('refreshToken', data.refresh); 
                 // Armazena as informações do usuário (por exemplo, nome, email).
-                localStorage.setItem('user', JSON.stringify(data.user)); 
+                sessionStorage.setItem('user', JSON.stringify(data.user)); 
                 checkLoginStatus(); 
                 navigateTo('/game-selection', data); 
             } else {

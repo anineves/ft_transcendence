@@ -26,7 +26,7 @@ export const renderRegister = () => {
 
     document.getElementById('btn-register42').addEventListener('click', async (e) => {
         e.preventDefault();
-        localStorage.setItem('register', '42');
+        sessionStorage.setItem('register', '42');
         window.location.href = 'http://localhost:8000/oauth/login'; 
     });
 
@@ -66,7 +66,7 @@ export const renderRegister = () => {
 
             if (response.status === 201) {
                 alert('User registered success!');
-                localStorage.setItem('userReg', JSON.stringify(data)); // Armazena os dados do usuário registrado no localStorage
+                sessionStorage.setItem('userReg', JSON.stringify(data)); // Armazena os dados do usuário registrado no sessionStorage
 
                 // Após o registro, faça login automaticamente com as credenciais fornecidas
                 const loginResponse = await fetch('http://127.0.0.1:8000/api/token/', {
@@ -81,10 +81,10 @@ export const renderRegister = () => {
                 const loginData = await loginResponse.json();
 
                 if (loginResponse.ok) {
-                    localStorage.setItem('register', 'form');
-                    localStorage.setItem('jwtToken', loginData.access); 
-                    localStorage.setItem('refreshToken', loginData.refresh); 
-                    localStorage.setItem('user', JSON.stringify(loginData.user)); 
+                    sessionStorage.setItem('register', 'form');
+                    sessionStorage.setItem('jwtToken', loginData.access); 
+                    sessionStorage.setItem('refreshToken', loginData.refresh); 
+                    sessionStorage.setItem('user', JSON.stringify(loginData.user)); 
                     checkLoginStatus(); 
                     navigateTo('/game-selection', data);  // Redireciona para a próxima página após login
                 } else {

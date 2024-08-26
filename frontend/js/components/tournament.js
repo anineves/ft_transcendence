@@ -1,4 +1,5 @@
 import { navigateTo } from '../utils.js';
+import { resetGameState } from './pong/pong.js';
 
 export const selectTournamentPlayers = () => {
     const app = document.getElementById('app');
@@ -11,19 +12,19 @@ export const selectTournamentPlayers = () => {
     `;
 
     document.getElementById('select4Players').addEventListener('click', () => {
+        sessionStorage.setItem('playersCount', '4');
         navigateTo('/tournament-setup');
-        localStorage.setItem('playersCount', '4');
     });
 
     document.getElementById('select8Players').addEventListener('click', () => {
+        sessionStorage.setItem('playersCount', '8');
         navigateTo('/tournament-setup');
-        localStorage.setItem('playersCount', '8');
     });
 };
 
 export const setupTournament = () => {
     const app = document.getElementById('app');
-    const playersCount = localStorage.getItem('playersCount');
+    const playersCount = sessionStorage.getItem('playersCount');
 
     let playersForm = '';
     for (let i = 1; i <= playersCount; i++) {
@@ -53,58 +54,65 @@ export const setupTournament = () => {
             playerNames.push(document.getElementById(`player${i}`).value);
         }
 
-        localStorage.setItem('playerNames', JSON.stringify(playerNames));
+        sessionStorage.setItem('playerNames', JSON.stringify(playerNames));
         initializeTournament();
     });
 };
 
 const initializeTournament = () => {
-    const players = JSON.parse(localStorage.getItem('playerNames'));
+    const players = JSON.parse(sessionStorage.getItem('playerNames'));
     const rounds = [];
 
     for (let i = 0; i < players.length; i += 2) {
         rounds.push([players[i], players[i + 1]]);
     }
 
-    localStorage.setItem('rounds', JSON.stringify(rounds));
-    localStorage.setItem('currentRound', '0');
-    localStorage.setItem('winners', '[]');
+    sessionStorage.setItem('rounds', JSON.stringify(rounds));
+    sessionStorage.setItem('currentRound', '0');
+    sessionStorage.setItem('winners', '[]');
     startMatch();
 };
 
 const startMatch = () => {
-    const rounds = JSON.parse(localStorage.getItem('rounds'));
-    const currentRound = parseInt(localStorage.getItem('currentRound'), 10);
-
+    const rounds = JSON.parse(sessionStorage.getItem('rounds'));
+    const currentRound = parseInt(sessionStorage.getItem('currentRound'), 10);
+    resetGameState();
     if (currentRound < rounds.length) {
         const [player1, player2] = rounds[currentRound];
-        localStorage.setItem('currentMatch', JSON.stringify({ player1, player2 }));
-        navigateTo('/pong');  
+        sessionStorage.setItem('currentMatch', JSON.stringify({ player1, player2 }));
+
+        setTimeout(() => {
+            navigateTo('/pong');
+        }, 200); 
     } else {
-        const winners = JSON.parse(localStorage.getItem('winners'));
-        
+        const winners = JSON.parse(sessionStorage.getItem('winners'));
+
         if (winners.length > 1) {
             const nextRound = [];
             for (let i = 0; i < winners.length; i += 2) {
                 nextRound.push([winners[i][0], winners[i + 1][0]]);
             }
-            localStorage.setItem('rounds', JSON.stringify(nextRound));
-            localStorage.setItem('currentRound', '0');
-            localStorage.setItem('winners', '[]');  
-            startMatch();  
+            sessionStorage.setItem('rounds', JSON.stringify(nextRound));
+            sessionStorage.setItem('currentRound', '0');
+            sessionStorage.setItem('winners', '[]');
+
+            setTimeout(() => {
+                startMatch();
+            }, 200);  
         } else {
-            
-            alert(`Winner of the tournamnt is ${winners[0][0]}!`);
+            alert(`Winner of the tournament is ${winners[0][0]}!`);
         }
     }
 };
 
-export function endMatch(winner) {
-    let winners = JSON.parse(localStorage.getItem('winners')) || [];
-    winners.push([winner]); 
-    localStorage.setItem('winners', JSON.stringify(winners));
-    const currentRound = parseInt(localStorage.getItem('currentRound'), 10);
-    localStorage.setItem('currentRound', currentRound + 1);
 
+export function endMatch(winner) {
+    let winners = JSON.parse(sessionStorage.getItem('winners')) || [];
+    winners.push([winner]);
+    sessionStorage.setItem('winners', JSON.stringify(winners));
+
+    const currentRound = parseInt(sessionStorage.getItem('currentRound'), 10);
+    sessionStorage.setItem('currentRound', currentRound + 1);
+    console.log("entrei");
     startMatch();
 };

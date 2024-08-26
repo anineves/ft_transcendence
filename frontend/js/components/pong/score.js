@@ -1,9 +1,16 @@
 import { context, canvas } from './canvasUtils.js';
+import { resetGameState } from './pong.js';
 
 
 export function drawScore(playerScore, opponentScore) {
-    const currentMatch = JSON.parse(localStorage.getItem('currentMatch'));
-    const { player1, player2 } = currentMatch;
+    const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+    
+    let player1 = "Player";
+    let player2 = "Oponente";
+    if (currentMatch) {
+        ({ player1, player2 } = currentMatch);
+    }
+
 
     context.font = "16px 'Press Start 2P', cursive";
     context.fillStyle = "#ffcc00";
@@ -15,5 +22,4 @@ export function drawGameOver(playerScore) {
     context.fillStyle = "#ffcc00";
     context.fillText("Game Over", canvas.width / 2 - 150, canvas.height / 2);
     context.fillText("Player Score: " + playerScore, canvas.width / 2 - 150, canvas.height / 2 + 50);
-
 }

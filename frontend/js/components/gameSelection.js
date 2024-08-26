@@ -9,7 +9,7 @@ export const renderGameSelection = async () => {
         </div>
     `;
 
-    const register = localStorage.getItem('register');
+    const register = sessionStorage.getItem('register');
     console.log(register);
 
     if (register === "42") {
@@ -32,9 +32,9 @@ export const renderGameSelection = async () => {
 
                 if (data.access_token) {
                     console.log(data);
-                    localStorage.setItem('jwtToken', data.access_token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    const user = localStorage.getItem('user');
+                    sessionStorage.setItem('jwtToken', data.access_token);
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
+                    const user = sessionStorage.getItem('user');
                     console.log(user);
                     checkLoginStatus();
                 } else {

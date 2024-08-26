@@ -36,16 +36,17 @@ export const selectPlayerorAI = () =>
     document.getElementById('vsPlayerBtn').addEventListener('click', () =>
     {
         navigateTo('/pong');
-        localStorage.setItem('game', 'player');
+        sessionStorage.setItem('modality', 'player');
     });
     document.getElementById('vsAIBtn').addEventListener('click', () => 
     {
         navigateTo('/pong');
-        localStorage.setItem('game', 'ai'); 
+        sessionStorage.setItem('modality', 'ai'); 
     });
     document.getElementById('tournBtn').addEventListener('click', () =>
     {
             navigateTo('/tournament');
+            sessionStorage.setItem('modality', 'tournament'); 
     });
         
 };
