@@ -21,28 +21,28 @@ export const startPongGame = async () => {
 
     console.log("entrei Pong");
 
-    try {
-        const response = await fetch('http://localhost:8000/api/matches/', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ game, players })
-        });
+    // try {
+    //     const response = await fetch('http://localhost:8000/api/matches/', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({ game, players })
+    //     });
 
-        const data = await response.json();
+    //     const data = await response.json();
 
-        if (data) {
-            console.log('Data:', data);
-            localStorage.setItem('id_match', data.id);
-        } else {
-            console.error('match error', data);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error occurred while processing match.');
-    }
+    //     if (data) {
+    //         console.log('Data:', data);
+    //         localStorage.setItem('id_match', data.id);
+    //     } else {
+    //         console.error('match error', data);
+    //     }
+    // } catch (error) {
+    //     console.error('Error:', error);
+    //     alert('Error occurred while processing match.');
+    // }
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initialize);
@@ -167,31 +167,31 @@ async function gameLoop() {
         const id = localStorage.getItem('id_match');
         console.log('ID da partida:', id);
 
-        try {
-            const winner_id = playerScore > opponentScore ? 1 : 2; 
-            const score = `${playerScore}-${opponentScore}`;
-            const duration = "10";  
+        // try {
+        //     const winner_id = playerScore > opponentScore ? 1 : 2; 
+        //     const score = `${playerScore}-${opponentScore}`;
+        //     const duration = "10";  
 
-            const response = await fetch(`http://localhost:8000/api/match/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ winner_id, score, duration })
-            });
+        //     const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+        //         method: 'PUT',
+        //         headers: {
+        //             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({ winner_id, score, duration })
+        //     });
 
-            const data = await response.json();
+        //     const data = await response.json();
 
-            if (response.ok) {
-                console.log('Match atualizado com sucesso:', data);
-            } else {
-                console.error('Erro na atualização da partida:', data);
-            }
-        } catch (error) {
-            console.error('Erro ao processar a partida:', error);
-            alert('Ocorreu um erro ao processar a partida.');
-        }
+        //     if (response.ok) {
+        //         console.log('Match atualizado com sucesso:', data);
+        //     } else {
+        //         console.error('Erro na atualização da partida:', data);
+        //     }
+        // } catch (error) {
+        //     console.error('Erro ao processar a partida:', error);
+        //     alert('Ocorreu um erro ao processar a partida.');
+        // }
 
         showNextMatchButton();
     }
@@ -215,35 +215,111 @@ function showNextMatchButton() {
     app.appendChild(nextMatchButton);
 }
 
+    const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change /pong1/
 
+    const user = localStorage.getItem('user');
+    const user_json = JSON.parse(user)
+
+    console.log('user_id')
+    console.log(user_json['id'])
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({
+            'action': 'create_match',
+            'user': user_json,
+            'game': 1,
+            'players': [1, 2]
+        }));
+    }
+
+    ws.onmessage = (event) => {
+        console.log('On message event: ')
+        console.log(event.data)
+        
+        let data = JSON.parse(event.data)
+
+        if (data.action === 'match_created') {
+            console.log(`Match created with ID: ${data.match_id}`);
+        }
+
+        movePaddle(data);
+    }
 
     document.addEventListener('keydown', function(event) {
         if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            movePaddle(event);
+            console.log("Arrow Up/Down -> Keydown")
+            
+            ws.send(JSON.stringify({
+                'action': 'move',
+                'user': user_json,
+                'key': event.key
+            }));
         }
     });
+    
+    // document.addEventListener('keydown', function(event) {
+    //     if (['w', 'W', 's', 'S'].includes(event.key) && user_json['id'] === 1) {
+    //         console.log("W/S -> Keydown")
+            
+    //         ws.send(JSON.stringify({
+    //             'user': user_json,
+    //             'key': event.key
+    //         }));
 
-    document.addEventListener('keydown', function(event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && localStorage.getItem('game') === 'player') {
-            const game = localStorage.getItem('game');
-            console.log(game);
-            movePaddle(event);
-        }
-    });
-
+    //         // const game = localStorage.getItem('game');
+    //         // console.log(game);
+    //     }
+    // });
+    
     document.addEventListener('keyup', function(event) {
         if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            stopPaddle(event);
-        }
-    });
+            console.log("Arrow Up/Down -> Keyup")
+                        
+            ws.send(JSON.stringify({
+                'user': user_json,
+                'key': event.key
+            }));
 
-    document.addEventListener('keyup', function(event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && localStorage.getItem('game') === 'player') {
-            stopPaddle(event);
+            // stopPaddle(event);
         }
     });
+    
+    document.addEventListener('keyup', function(event) {
+        if (['w', 'W', 's', 'S'].includes(event.key) && user_json['id'] === 1) {
+            console.log("W/S -> Keyup")
+                        
+            ws.send(JSON.stringify({
+                'user': user_json,
+                'key': event.key
+            }));
+
+            // stopPaddle(event);
+        }
+    });    
 
     
+    
+    // document.addEventListener('keydown', function(event) {
+    //     if (['w', 'W', 's', 'S'].includes(event.key) && localStorage.getItem('game') === 'player') {
+    //         console.log("W/S -> Keydown")
+    //         const game = localStorage.getItem('game');
+    //         console.log(game);
+    //     }
+    // });
+    
+    // document.addEventListener('keyup', function(event) {
+    //     if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+    //         console.log("Arrow Up/Down -> Keyup")
+    //         // stopPaddle(event);
+    //     }
+    // });
+    
+    // document.addEventListener('keyup', function(event) {
+    //     if (['w', 'W', 's', 'S'].includes(event.key) && localStorage.getItem('game') === 'player') {
+    //         console.log("W/S -> Keyup")
+    //         stopPaddle(event);
+    //     }
+    // });
 
     gameLoop();
 }

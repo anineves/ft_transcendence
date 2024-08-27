@@ -32,7 +32,7 @@ export const renderLogin = () => {
             const data = await response.json();
             if (response.ok) {
                 // Inicia a conexão WebSocket após o login bem-sucedido
-                initWebSocket();
+                // initWebSocket();
                 localStorage.setItem('register', 'form');
                 // Armazena o token de acesso JWT.
                 localStorage.setItem('jwtToken', data.access); 
@@ -50,27 +50,27 @@ export const renderLogin = () => {
             alert('An error occurred during login');
         }
     });
-    const initWebSocket = () => {
-        const ws = new WebSocket('ws://localhost:8000/ws/presence/pong/');
-        const presenceEl = document.getElementById('pre_cnt');
-        const messagesEl = document.getElementById('messages');
-        const onlineUsers = document.getElementById("online-users");
-        ws.onmessage = (event) => {
-            onlineUsers.innerHTML = "";
-            console.log(event);
-            let data = JSON.parse(event.data);
-            presenceEl.innerHTML = data.online;
-            const li1 = document.createElement('li');
-            li1.innerHTML = data.msg;
-            messagesEl.appendChild(li1);
-            data.users.forEach(user => {
-                const li2 = document.createElement("li");
-                li2.classList.add("on-us");
-                li2.innerHTML = `${user.username} (ID: ${user.id})`;
-                onlineUsers.appendChild(li2);
-            });
-        };
-    };
-    // Inicia o WebSocket na primeira carga da página (antes do login)
-    initWebSocket();
+    // const initWebSocket = () => {
+    //     const ws = new WebSocket('ws://localhost:8000/ws/presence/pong/');
+    //     const presenceEl = document.getElementById('pre_cnt');
+    //     const messagesEl = document.getElementById('messages');
+    //     const onlineUsers = document.getElementById("online-users");
+    //     ws.onmessage = (event) => {
+    //         onlineUsers.innerHTML = "";
+    //         console.log(event);
+    //         let data = JSON.parse(event.data);
+    //         presenceEl.innerHTML = data.online;
+    //         const li1 = document.createElement('li');
+    //         li1.innerHTML = data.msg;
+    //         messagesEl.appendChild(li1);
+    //         data.users.forEach(user => {
+    //             const li2 = document.createElement("li");
+    //             li2.classList.add("on-us");
+    //             li2.innerHTML = `${user.username} (ID: ${user.id})`;
+    //             onlineUsers.appendChild(li2);
+    //         });
+    //     };
+    // };
+    // // Inicia o WebSocket na primeira carga da página (antes do login)
+    // initWebSocket();
 };
