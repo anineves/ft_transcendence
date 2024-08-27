@@ -219,7 +219,7 @@ function initialize() {
     });
 
     document.addEventListener('keydown', function(event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') === 'player') {
+        if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai') {
             movePaddle(event);
         }
     });
@@ -231,7 +231,7 @@ function initialize() {
     });
 
     document.addEventListener('keyup', function(event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') === 'player') {
+        if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai') {
             stopPaddle(event);
         }
     });

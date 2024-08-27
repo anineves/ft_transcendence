@@ -102,6 +102,7 @@ const startMatch = () => {
             }, 200);  
         } else {
             alert(`Winner of the tournament is ${winners[0][0]}!`);
+            navigateTo('/select-playerOrAI'); 
         }
     }
 };

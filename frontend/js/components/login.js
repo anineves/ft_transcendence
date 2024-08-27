@@ -45,6 +45,37 @@ export const renderLogin = () => {
                 sessionStorage.setItem('refreshToken', data.refresh); 
                 // Armazena as informações do usuário (por exemplo, nome, email).
                 sessionStorage.setItem('user', JSON.stringify(data.user)); 
+                console.log("Login");
+                console.log(data);
+                const userId = data.user.id;
+                const token = data.access;
+                try {
+
+                    const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` 
+                        }
+                    });
+            
+                    if (playerResponse.ok) {
+                        const playerData = await playerResponse.json();
+                        const player = playerData.find(p => p.user === userId);
+                        
+                        if (player) {
+                            sessionStorage.setItem('player', JSON.stringify(player.id));
+                            sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
+                        } else {
+                            console.log("You need create a player");
+                        }
+                    } else {
+                        console.log("error loading players");
+                    }
+                } catch (error) {
+                    console.error('Error', error);
+                }
+            
                 checkLoginStatus(); 
                 navigateTo('/game-selection', data); 
             } else {

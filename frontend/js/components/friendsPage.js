@@ -1,4 +1,4 @@
-import { renderRequestPanel } from './requestPanel.js';
+import { navigateTo } from "../utils.js";
 
 export const renderFriendsPage = async (user) => {
     const app = document.getElementById('app');
@@ -21,33 +21,39 @@ export const renderFriendsPage = async (user) => {
 
     const friendsList = document.getElementById('friendsList');
     const player = sessionStorage.getItem('player');
-    try {
-        const response = await fetch(`http://127.0.0.1:8000/api/player/${user.id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                'Content-Type': 'application/json'
-            }
-        });
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log(data);
-            if (data.friendship && data.friendship.length > 0) {
-                data.friendship.forEach(friendId => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `Friend ID: ${friendId}`;
-                    friendsList.appendChild(listItem);
-                });
+    if (player) {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/player/${player}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                if (data.friendship && data.friendship.length > 0) {
+                    data.friendship.forEach(friendId => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `Friend ID: ${friendId}`;
+                        friendsList.appendChild(listItem);
+                    });
+                } else {
+                    friendsList.innerHTML = `<li>No friends found</li>`;
+                }
             } else {
-                friendsList.innerHTML = `<li>No friends found</li>`;
+                alert('Failed to load friends.');
             }
-        } else {
-            alert('Failed to load friends.');
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while loading friends.');
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while loading friends.');
+    } else {
+        alert('You need to create a Plaayer');
+        navigateTo('/create-player');
     }
 
     document.getElementById('inviteBtn2').addEventListener('click', () => {
@@ -61,9 +67,9 @@ export const renderFriendsPage = async (user) => {
 
     document.getElementById('inviteForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-    
+
         const friendId = document.getElementById('friendId').value;
-    
+
         try {
             const response = await fetch(`http://127.0.0.1:8000/api/player/send_friend_request/${friendId}/`, {
                 method: 'POST',
@@ -72,7 +78,7 @@ export const renderFriendsPage = async (user) => {
                     'Content-Type': 'application/json'
                 }
             });
-    
+
             if (response.ok) {
                 alert('Friend request sent successfully!');
             } else {
