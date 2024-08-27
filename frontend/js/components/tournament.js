@@ -22,18 +22,28 @@ export const selectTournamentPlayers = () => {
     });
 };
 
+
 export const setupTournament = () => {
     const app = document.getElementById('app');
     const playersCount = sessionStorage.getItem('playersCount');
-
+    const nickname = sessionStorage.getItem('nickname');
     let playersForm = '';
+
     for (let i = 1; i <= playersCount; i++) {
-        playersForm += `
-            <div class="player-input">
-                <label for="player${i}">Player ${i} Name:</label>
-                <input type="text" id="player${i}" name="player${i}">
-            </div>
-        `;
+        if (i === 1 && nickname) {
+            playersForm += `
+                <div class="player-input">
+                    <label for="player${i}">Player ${i} Name:</label>
+                    <span>${nickname}</span>
+                    <input type="hidden" id="player${i}" name="player${i}" value="${nickname}">
+                </div>`;
+        } else {
+            playersForm += `
+                <div class="player-input">
+                    <label for="player${i}">Player ${i} Name:</label>
+                    <input type="text" id="player${i}" name="player${i}">
+                </div>`;
+        }
     }
 
     app.innerHTML = `
@@ -51,13 +61,15 @@ export const setupTournament = () => {
 
         const playerNames = [];
         for (let i = 1; i <= playersCount; i++) {
-            playerNames.push(document.getElementById(`player${i}`).value);
+            const playerName = document.getElementById(`player${i}`).value || nickname; 
+            playerNames.push(playerName);
         }
 
         sessionStorage.setItem('playerNames', JSON.stringify(playerNames));
         initializeTournament();
     });
 };
+
 
 const initializeTournament = () => {
     const players = JSON.parse(sessionStorage.getItem('playerNames'));
