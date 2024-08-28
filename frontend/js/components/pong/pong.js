@@ -13,37 +13,45 @@ export let ballX, ballY;
 export const ballRadius = 10;
 let isAIActive = false;
 let animationFrameId;
+const modality2 = sessionStorage.getItem('modality');
 
 export const startPongGame = async () => {
+    const player = sessionStorage.getItem('player');
+    console.log(player);
     console.log("Starting game...");
     const duration = "01:30:00";
-    const winner_id = 0;
     const game = 1;
-    const players = [1, 2];
+    console.log("player o", player);
+    const players = [player, 2];
     sessionStorage.setItem('game', game);
     sessionStorage.setItem('players', players);
+    const modality2 = sessionStorage.getItem('modality');
 
-    try {
-        const response = await fetch('http://localhost:8000/api/matches/', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ game, players })
-        });
+    if (modality2 != 'remote') {
+        alert('entrei try')
 
-        const data = await response.json();
+        try {
+            const response = await fetch('http://localhost:8000/api/matches/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ game, players })
+            });
 
-        if (data) {
-            console.log('Data:', data);
-            sessionStorage.setItem('id_match', data.id);
-        } else {
-            console.error('Match error', data);
+            const data = await response.json();
+
+            if (data) {
+                console.log('Data:', data);
+                sessionStorage.setItem('id_match', data.id);
+            } else {
+                console.error('Match error', data);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error occurred while processing match.');
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error occurred while processing match.');
     }
 
     if (document.readyState === 'loading') {
@@ -215,8 +223,8 @@ function initialize() {
 
     }
 
-    const modality2 = sessionStorage.getItem('modality');
-    if (modality2 == 'remote') {
+
+    /*if (modality2 == 'remote') {
 
         const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change /pong1/
 
@@ -285,7 +293,7 @@ function initialize() {
                 // stopPaddle(event);
             }
         });
-    }
+    }*/
 
     if (modality2 != 'remote') {
         document.addEventListener('keydown', function (event) {

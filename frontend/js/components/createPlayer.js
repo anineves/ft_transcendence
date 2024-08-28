@@ -36,6 +36,7 @@ export const createPlayer = () => {
             if (response.ok) {
                 alert('Player created successfully!');
                 sessionStorage.setItem('player', JSON.stringify(data.id));
+                sessionStorage.setItem('playerID', JSON.stringify(data.id));
                 sessionStorage.setItem('nickname', JSON.stringify(data.nickname));
                 //console.log("player"); 
                 //console.log(data);

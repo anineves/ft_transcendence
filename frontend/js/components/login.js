@@ -6,7 +6,7 @@ export const renderLogin = () => {
 
     app.innerHTML = `
         <div class="background-form" id="form-login">
-            <h2>Login</h2>
+            <h2>Logiin</h2>
             <form id="loginForm">
                 <input type="text" id="emailOrUsername" placeholder="Email or Username" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
