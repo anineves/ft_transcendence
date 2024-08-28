@@ -12,6 +12,12 @@ export const renderLogin = () => {
                 <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
                 <button type="submit" id="btn-login"class="btn">Submit</button>
             </form>
+            <div id="presence"><span class="tag is-success" id="pre_cnt">0</span> users online</div>
+            <ul id="messages"></ul>
+            <div class="box">
+                <h1 class="title">Online Users</h1>
+                <div id="online-users"></div>
+            </div>
         </div>
     `;
 

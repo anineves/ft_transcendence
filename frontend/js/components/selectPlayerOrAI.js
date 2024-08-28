@@ -41,14 +41,27 @@ export const selectPlayerorAI = () =>
                     </button>
                 </div>
             </div>
+            <div class="game-selection-item">
+                <div id="remote-select">
+                    <button id="remoteBtn" class="btn">
+                        <img src="./assets/remote.png" alt="Tournament" class="button-image-select">
+                        <h3>Remote </h3>
+                    </button>
+                </div>
+            </div>
         </div>
     `;
 
-    document.getElementById('vsPlayerBtn').addEventListener('click', () =>
+    document.getElementById('remoteBtn').addEventListener('click', () =>
     {
         navigateTo('/pong');
-        sessionStorage.setItem('modality', 'player');
+        sessionStorage.setItem('modality', 'remote');
     });
+    document.getElementById('vsPlayerBtn').addEventListener('click', () =>
+        {
+            navigateTo('/pong');
+            sessionStorage.setItem('modality', 'player');
+        });
     document.getElementById('vsAIBtn').addEventListener('click', () => 
     {
         navigateTo('/pong');

@@ -31,30 +31,67 @@ let opponentPaddleInterval;
 let paddleSpeed = 10;
 
 export function movePaddle(event) {
-    if (event.key === 'ArrowUp') {
-        clearInterval(playerPaddleInterval);
-        playerPaddleInterval = setInterval(() => {
-            playerY -= paddleSpeed;
-            if (playerY < 0) playerY = 0;
-        }, 16);
-    } else if (event.key === 'ArrowDown') {
-        clearInterval(playerPaddleInterval);
-        playerPaddleInterval = setInterval(() => {
-            playerY += paddleSpeed;
-            if (playerY + paddleHeight > canvas.height) playerY = canvas.height - paddleHeight;
-        }, 16);
-    } else if (event.key === 'w' || event.key === 'W') {
-        clearInterval(opponentPaddleInterval);
-        opponentPaddleInterval = setInterval(() => {
-            opponentY -= paddleSpeed;
-            if (opponentY < 0) opponentY = 0;
-        }, 16);
-    } else if (event.key === 's' || event.key === 'S') {
-        clearInterval(opponentPaddleInterval);
-        opponentPaddleInterval = setInterval(() => {
-            opponentY += paddleSpeed;
-            if (opponentY + paddleHeight > canvas.height) opponentY = canvas.height - paddleHeight;
-        }, 16);
+    const modality = sessionStorage.getItem('modality');
+    if(modality !== 'remote')
+    {
+        if (event.key === 'ArrowUp') {
+            clearInterval(playerPaddleInterval);
+            playerPaddleInterval = setInterval(() => {
+                playerY -= paddleSpeed;
+                if (playerY < 0) playerY = 0;
+            }, 16);
+        } else if (event.key === 'ArrowDown') {
+            clearInterval(playerPaddleInterval);
+            playerPaddleInterval = setInterval(() => {
+                playerY += paddleSpeed;
+                if (playerY + paddleHeight > canvas.height) playerY = canvas.height - paddleHeight;
+            }, 16);
+        } else if (event.key === 'w' || event.key === 'W') {
+            clearInterval(opponentPaddleInterval);
+            opponentPaddleInterval = setInterval(() => {
+                opponentY -= paddleSpeed;
+                if (opponentY < 0) opponentY = 0;
+            }, 16);
+        } else if (event.key === 's' || event.key === 'S') {
+            clearInterval(opponentPaddleInterval);
+            opponentPaddleInterval = setInterval(() => {
+                opponentY += paddleSpeed;
+                if (opponentY + paddleHeight > canvas.height) opponentY = canvas.height - paddleHeight;
+            }, 16);
+        }
+    }
+    else if(modality === 'remote')
+    {
+        if (event.key === 'ArrowUp' && event.user_id === 1) {
+            console.log('ArrowUp && ID 1 ')
+            clearInterval(playerPaddleInterval);
+            playerPaddleInterval = setInterval(() => {
+                playerY -= paddleSpeed;
+                if (playerY < 0) playerY = 0;
+            }, 16);
+        } else if (event.key === 'ArrowDown' && event.user_id === 1) {
+            console.log('ArrowDown && ID 1 ')
+            clearInterval(playerPaddleInterval);
+            playerPaddleInterval = setInterval(() => {
+                playerY += paddleSpeed;
+                if (playerY + paddleHeight > canvas.height) playerY = canvas.height - paddleHeight;
+            }, 16);
+            // } else if (event.key === 'w' || event.key === 'W') {
+        } else if (event.key === 'ArrowUp' && event.user_id === 2) {
+            console.log('ArrowUp && ID 2')
+            clearInterval(opponentPaddleInterval);
+            opponentPaddleInterval = setInterval(() => {
+                opponentY -= paddleSpeed;
+                if (opponentY < 0) opponentY = 0;
+            }, 16);
+        } else if (event.key === 'ArrowDown' && event.user_id === 2) {
+            console.log('ArrowDown && ID 2')
+            clearInterval(opponentPaddleInterval);
+            opponentPaddleInterval = setInterval(() => {
+                opponentY += paddleSpeed;
+                if (opponentY + paddleHeight > canvas.height) opponentY = canvas.height - paddleHeight;
+            }, 16);
+        }
     }
 }
 
