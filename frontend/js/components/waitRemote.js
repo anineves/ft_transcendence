@@ -3,21 +3,23 @@ import { movePaddle } from './pong/canvasUtils.js';
 
 export const waitRemote = () => {
     const app = document.getElementById('app');
-    app.innerHTML = 
-    `
+    app.innerHTML =
+        `
          <div class="background-form">
             <h2>Invite Youur Friend</h2>
-            <form id="playerForm2">
+            <form id="sendinv">
                <input type="text" id="nickFriend" placeholder="nickname" required class="form-control mb-2">
-               <button type="submit" class="btn">Submit</button>
-               </form>
-               <button id="accept" class="btn">Accept</button>
+               <button id="submit" type="submit" class="btn">Submit</button>
+            </form>
+            <form id="accept-teste">
+               <input type="text" id="nickaccept" placeholder="nickname" required class="form-control mb-2">
+               <button id="submit" type="submit" class="btn">Submit</button>
+            </form>
         </div>
     `;
 
-    document.getElementById('playerForm2').addEventListener('submit', async (e) => 
-        {
-        e.preventDefault(); 
+    document.getElementById('sendinv').addEventListener('submit', async (e) => {
+        e.preventDefault();
 
         const user = sessionStorage.getItem('user');
         const user_json = JSON.parse(user);
@@ -26,7 +28,7 @@ export const waitRemote = () => {
         sessionStorage.setItem('playerID', playerID);
         sessionStorage.setItem('friendID', friendId);
         const players = [playerID, friendId];
-        console.log("wait " , friendId," player", playerID)
+        console.log("wait ", friendId, " player", playerID)
         const game = 1;
         sessionStorage.setItem('remote', 'invite');
         try {
@@ -39,10 +41,8 @@ export const waitRemote = () => {
                 },
                 body: JSON.stringify({ game, players })
             });
-            console.log("teste aqui");
 
             const data = await response.json();
-            console.log("teste ", data);
 
             if (data) {
                 console.log('Data:', data);
@@ -55,14 +55,14 @@ export const waitRemote = () => {
             alert('Error occurred while processing match.');
         }
 
-    const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change /pong1/
+        const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change /pong1/
 
 
         //console.log('user_id')
         //console.log(user_json['id'])
 
         ws.onopen = () => {
-            ws.send(JSON.stringify({ 
+            ws.send(JSON.stringify({
                 'action': 'create_match',
                 'user': user_json,
                 'game': 1,
@@ -70,8 +70,8 @@ export const waitRemote = () => {
             }));
         }
         ws.onmessage = (event) => {
-            //console.log('On message event: ')
-            //console.log(event.data)
+            console.log('On message event: ')
+            console.log(event)
 
             let data = JSON.parse(event.data)
 
@@ -84,7 +84,7 @@ export const waitRemote = () => {
 
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-               // console.log("Arrow Up/Down -> Keydown")
+                // console.log("Arrow Up/Down -> Keydown")
 
                 ws.send(JSON.stringify({
                     'action': 'move',
@@ -121,78 +121,78 @@ export const waitRemote = () => {
             }
         });
         navigateTo('/pong');
-})
+    })
 
-document.getElementById('accept').addEventListener('click', () =>
-    {
-    const user = sessionStorage.getItem('user');
-    sessionStorage.setItem('remote', 'accept');
-    const user_json = JSON.parse(user);
-    const playerID = sessionStorage.getItem('player');
-    const friendId = document.getElementById('nickFriend').value;
-    sessionStorage.setItem('playerID', playerID);
-    sessionStorage.setItem('friendID', friendId);
-    console.log("wait " , friendId," player", playerID);
-
-   
-const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change /pong1/
+    document.getElementById('accept-teste').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = sessionStorage.getItem('user');
+        sessionStorage.setItem('remote', 'accept');
+        const user_json = JSON.parse(user);
+        const playerID = sessionStorage.getItem('player');
+        const friendId = document.getElementById('nickaccept').value;
+        sessionStorage.setItem('playerID', playerID);
+        sessionStorage.setItem('friendID', friendId);
+        console.log("wait ", friendId, " player", playerID);
 
 
-    //console.log('user_id')
-   // console.log(user_json['id'])
+        const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change /pong1/
 
-    ws.onmessage = (event) => {
-       // console.log('On message event: ')
-        //console.log(event.data)
 
-        let data = JSON.parse(event.data)
+        //console.log('user_id')
+        // console.log(user_json['id'])
 
-        if (data.action === 'match_created') {
-            console.log(`Match created with ID: ${data.match_id}`);
+        ws.onmessage = (event) => {
+            console.log('On message event: ')
+            console.log(event);
+
+            let data = JSON.parse(event.data)
+
+            if (data.action === 'match_created') {
+                console.log(`Match created with ID: ${data.match_id}`);
+            }
+
+            movePaddle(data);
         }
 
-        movePaddle(data);
-    }
+        document.addEventListener('keydown', function (event) {
+            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                //console.log("Arrow Up/Down -> Keydown")
 
-    document.addEventListener('keydown', function (event) {
-        if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            //console.log("Arrow Up/Down -> Keydown")
-
-            ws.send(JSON.stringify({
-                'action': 'move',
-                'user': user_json,
-                'key': event.key
-            }));
-        }
-    });
+                ws.send(JSON.stringify({
+                    'action': 'move',
+                    'user': user_json,
+                    'key': event.key
+                }));
+            }
+        });
 
 
-    document.addEventListener('keyup', function (event) {
-        if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            //console.log("Arrow Up/Down -> Keyup")
+        document.addEventListener('keyup', function (event) {
+            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                //console.log("Arrow Up/Down -> Keyup")
 
-            ws.send(JSON.stringify({
-                'user': user_json,
-                'key': event.key
-            }));
+                ws.send(JSON.stringify({
+                    'user': user_json,
+                    'key': event.key
+                }));
 
-            // stopPaddle(event);
-        }
-    });
+                // stopPaddle(event);
+            }
+        });
 
-    document.addEventListener('keyup', function (event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && user_json['id'] == playerID) {
-            //console.log("W/S -> Keyup")
+        document.addEventListener('keyup', function (event) {
+            if (['w', 'W', 's', 'S'].includes(event.key) && user_json['id'] == playerID) {
+                //console.log("W/S -> Keyup")
 
-            ws.send(JSON.stringify({
-                'user': user_json,
-                'key': event.key
-            }));
+                ws.send(JSON.stringify({
+                    'user': user_json,
+                    'key': event.key
+                }));
 
-            // stopPaddle(event);
-        }
-    });
-    navigateTo('/pong');
-})
+                // stopPaddle(event);
+            }
+        });
+        navigateTo('/pong');
+    })
 
 };
