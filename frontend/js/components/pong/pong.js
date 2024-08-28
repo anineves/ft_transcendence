@@ -28,7 +28,7 @@ export const startPongGame = async () => {
     const modality2 = sessionStorage.getItem('modality');
 
     if (modality2 != 'remote') {
-        alert('entrei try')
+        alert('entrei  partida nao remote')
 
         try {
             const response = await fetch('http://localhost:8000/api/matches/', {
@@ -174,34 +174,37 @@ function initialize() {
         } else {
             const id = sessionStorage.getItem('id_match');
             console.log('Match ID:', id);
+            const remote = sessionStorage.getItem('remote');
+            console.log("remote", remote);
+            if (remote != 'accept') {
+                try {
+                    const winner_id = playerScore > opponentScore ? 1 : 2;
+                    const score = `${playerScore}-${opponentScore}`;
+                    const duration = "10";
 
-            try {
-                const winner_id = playerScore > opponentScore ? 1 : 2;
-                const score = `${playerScore}-${opponentScore}`;
-                const duration = "10";
+                    const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ winner_id, score, duration })
+                    });
 
-                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ winner_id, score, duration })
-                });
+                    const data = await response.json();
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    console.log('Match updated successfully:', data);
-                } else {
-                    console.error('Error updating match:', data);
+                    if (response.ok) {
+                        console.log('Match updated successfully:', data);
+                    } else {
+                        console.error('Error updating match:', data);
+                    }
+                } catch (error) {
+                    console.error('Error processing match:', error);
+                    alert('An error occurred while processing the match.');
                 }
-            } catch (error) {
-                console.error('Error processing match:', error);
-                alert('An error occurred while processing the match.');
-            }
-            if (sessionStorage.getItem('modality') === 'tournament') {
-                showNextMatchButton();
+                if (sessionStorage.getItem('modality') === 'tournament') {
+                    showNextMatchButton();
+                }
             }
         }
     }

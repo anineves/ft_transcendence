@@ -6,12 +6,12 @@ export const waitRemote = () => {
     app.innerHTML = 
     `
          <div class="background-form">
-            <h2>Invite Your Friend</h2>
+            <h2>Invite Youur Friend</h2>
             <form id="playerForm2">
                <input type="text" id="nickFriend" placeholder="nickname" required class="form-control mb-2">
                <button type="submit" class="btn">Submit</button>
-               <button type="submit" class="btn">Accept</button>
-            </form>
+               </form>
+               <button id="accept" class="btn">Accept</button>
         </div>
     `;
 
@@ -28,9 +28,9 @@ export const waitRemote = () => {
         const players = [playerID, friendId];
         console.log("wait " , friendId," player", playerID)
         const game = 1;
-
+        sessionStorage.setItem('remote', 'invite');
         try {
-            console.log('entrei partida aqui');
+            console.log('entrei partida remote');
             const response = await fetch('http://localhost:8000/api/matches/', {
                 method: 'POST',
                 headers: {
@@ -58,8 +58,8 @@ export const waitRemote = () => {
     const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change /pong1/
 
 
-        console.log('user_id')
-        console.log(user_json['id'])
+        //console.log('user_id')
+        //console.log(user_json['id'])
 
         ws.onopen = () => {
             ws.send(JSON.stringify({ 
@@ -70,8 +70,8 @@ export const waitRemote = () => {
             }));
         }
         ws.onmessage = (event) => {
-            console.log('On message event: ')
-            console.log(event.data)
+            //console.log('On message event: ')
+            //console.log(event.data)
 
             let data = JSON.parse(event.data)
 
@@ -84,7 +84,7 @@ export const waitRemote = () => {
 
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                console.log("Arrow Up/Down -> Keydown")
+               // console.log("Arrow Up/Down -> Keydown")
 
                 ws.send(JSON.stringify({
                     'action': 'move',
@@ -97,7 +97,7 @@ export const waitRemote = () => {
 
         document.addEventListener('keyup', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                console.log("Arrow Up/Down -> Keyup")
+                //console.log("Arrow Up/Down -> Keyup")
 
                 ws.send(JSON.stringify({
                     'user': user_json,
@@ -109,8 +109,8 @@ export const waitRemote = () => {
         });
 
         document.addEventListener('keyup', function (event) {
-            if (['w', 'W', 's', 'S'].includes(event.key) && user_json['id'] === 1) {
-                console.log("W/S -> Keyup")
+            if (['w', 'W', 's', 'S'].includes(event.key) && user_json['id'] == playerID) {
+                //console.log("W/S -> Keyup")
 
                 ws.send(JSON.stringify({
                     'user': user_json,
@@ -123,11 +123,10 @@ export const waitRemote = () => {
         navigateTo('/pong');
 })
 
-document.getElementById('playerForm2').addEventListener('submit', async (e) => 
+document.getElementById('accept').addEventListener('click', () =>
     {
-    e.preventDefault(); 
-
     const user = sessionStorage.getItem('user');
+    sessionStorage.setItem('remote', 'accept');
     const user_json = JSON.parse(user);
     const playerID = sessionStorage.getItem('player');
     const friendId = document.getElementById('nickFriend').value;
@@ -139,12 +138,12 @@ document.getElementById('playerForm2').addEventListener('submit', async (e) =>
 const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change /pong1/
 
 
-    console.log('user_id')
-    console.log(user_json['id'])
+    //console.log('user_id')
+   // console.log(user_json['id'])
 
     ws.onmessage = (event) => {
-        console.log('On message event: ')
-        console.log(event.data)
+       // console.log('On message event: ')
+        //console.log(event.data)
 
         let data = JSON.parse(event.data)
 
@@ -157,7 +156,7 @@ const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change 
 
     document.addEventListener('keydown', function (event) {
         if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            console.log("Arrow Up/Down -> Keydown")
+            //console.log("Arrow Up/Down -> Keydown")
 
             ws.send(JSON.stringify({
                 'action': 'move',
@@ -170,7 +169,7 @@ const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change 
 
     document.addEventListener('keyup', function (event) {
         if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            console.log("Arrow Up/Down -> Keyup")
+            //console.log("Arrow Up/Down -> Keyup")
 
             ws.send(JSON.stringify({
                 'user': user_json,
@@ -182,8 +181,8 @@ const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change 
     });
 
     document.addEventListener('keyup', function (event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && user_json['id'] === 1) {
-            console.log("W/S -> Keyup")
+        if (['w', 'W', 's', 'S'].includes(event.key) && user_json['id'] == playerID) {
+            //console.log("W/S -> Keyup")
 
             ws.send(JSON.stringify({
                 'user': user_json,

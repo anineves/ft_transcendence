@@ -11,6 +11,7 @@ export const selectPlayerorAI = () => {
     sessionStorage.removeItem('currentRound');
     sessionStorage.removeItem('rounds');
     sessionStorage.removeItem('game');
+    sessionStorage.removeItem('remote');
     resetGameState();
     const player = sessionStorage.getItem('player');
 
@@ -29,7 +30,7 @@ export const selectPlayerorAI = () => {
                 <div id="AI-select">
                     <button id="vsAIBtn" class="btn">
                         <img src="./assets/vsAI.png" alt="AI" class="button-image-select">
-                        <h3>vs AiI </h3>
+                        <h3>vs Ai </h3>
                     </button>
                 </div>
             </div>
