@@ -12,7 +12,7 @@ let ballSpeedY = 2;
 export let ballX, ballY;
 export const ballRadius = 10;
 let isAIActive = false;
-let animationFrameId; 
+let animationFrameId;
 
 export const startPongGame = async () => {
     console.log("Starting game...");
@@ -46,7 +46,11 @@ export const startPongGame = async () => {
         alert('Error occurred while processing match.');
     }
 
-    initialize();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+        initialize();
+    }
 }
 
 export function initializeBall() {
@@ -78,8 +82,7 @@ export function resetBall() {
 }
 
 function initialize() {
-    console.log("Initializing game...");
-   
+
     initializeCanvas();
     initializeBall();
 
@@ -130,7 +133,7 @@ function initialize() {
                 resetBall();
             }
         } else {
-            ballOutOfBoundsLeft = false; 
+            ballOutOfBoundsLeft = false;
         }
 
         if (ballX + ballRadius > canvas.width) {
@@ -139,7 +142,7 @@ function initialize() {
                 if (playerScore >= 5) {
                     gameOver = true;
                 }
-                ballOutOfBoundsRight = true; 
+                ballOutOfBoundsRight = true;
                 resetBall();
             }
         } else {
@@ -159,15 +162,15 @@ function initialize() {
         update();
 
         if (!gameOver) {
-            animationFrameId =requestAnimationFrame(gameLoop);
+            animationFrameId = requestAnimationFrame(gameLoop);
         } else {
             const id = sessionStorage.getItem('id_match');
             console.log('Match ID:', id);
 
             try {
-                const winner_id = playerScore > opponentScore ? 1 : 2; 
+                const winner_id = playerScore > opponentScore ? 1 : 2;
                 const score = `${playerScore}-${opponentScore}`;
-                const duration = "10";  
+                const duration = "10";
 
                 const response = await fetch(`http://localhost:8000/api/match/${id}`, {
                     method: 'PUT',
@@ -211,112 +214,111 @@ function initialize() {
         app.appendChild(nextMatchButton);
 
     }
-    
+
     const modality2 = sessionStorage.getItem('modality');
-    if( modality2 == 'remote')
-    {
-    const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change /pong1/
+    if (modality2 == 'remote') {
 
-    const user = localStorage.getItem('user');
-    const user_json = JSON.parse(user)
+        const ws = new WebSocket('ws://localhost:8000/ws/pong_match/pong1/');  //Change /pong1/
 
-    console.log('user_id')
-    console.log(user_json['id'])
+        const user = sessionStorage.getItem('user');
+        const user_json = JSON.parse(user)
 
-    ws.onopen = () => {
-        ws.send(JSON.stringify({
-            'action': 'create_match',
-            'user': user_json,
-            'game': 1,
-            'players': [1, 2]
-        }));
+        console.log('user_id')
+        console.log(user_json['id'])
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({
+                'action': 'create_match',
+                'user': user_json,
+                'game': 1,
+                'players': [1, 2]
+            }));
+        }
+        ws.onmessage = (event) => {
+            console.log('On message event: ')
+            console.log(event.data)
+
+            let data = JSON.parse(event.data)
+
+            if (data.action === 'match_created') {
+                console.log(`Match created with ID: ${data.match_id}`);
+            }
+
+            movePaddle(data);
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                console.log("Arrow Up/Down -> Keydown")
+
+                ws.send(JSON.stringify({
+                    'action': 'move',
+                    'user': user_json,
+                    'key': event.key
+                }));
+            }
+        });
+
+
+        document.addEventListener('keyup', function (event) {
+            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                console.log("Arrow Up/Down -> Keyup")
+
+                ws.send(JSON.stringify({
+                    'user': user_json,
+                    'key': event.key
+                }));
+
+                // stopPaddle(event);
+            }
+        });
+
+        document.addEventListener('keyup', function (event) {
+            if (['w', 'W', 's', 'S'].includes(event.key) && user_json['id'] === 1) {
+                console.log("W/S -> Keyup")
+
+                ws.send(JSON.stringify({
+                    'user': user_json,
+                    'key': event.key
+                }));
+
+                // stopPaddle(event);
+            }
+        });
     }
-    ws.onmessage = (event) => {
-        console.log('On message event: ')
-        console.log(event.data)
-        
-        let data = JSON.parse(event.data)
 
-        if (data.action === 'match_created') {
-            console.log(`Match created with ID: ${data.match_id}`);
-        }
+    if (modality2 != 'remote') {
+        document.addEventListener('keydown', function (event) {
+            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                movePaddle(event);
+            }
+        });
 
-        movePaddle(data);
+        document.addEventListener('keydown', function (event) {
+            if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai' && sessionStorage.getItem('modality') !== 'remote') {
+                movePaddle(event);
+            }
+        });
+
+        document.addEventListener('keyup', function (event) {
+            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                stopPaddle(event);
+            }
+        });
+
+        document.addEventListener('keyup', function (event) {
+            if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai' && sessionStorage.getItem('modality') !== 'remote') {
+                stopPaddle(event);
+            }
+        });
     }
-
-    document.addEventListener('keydown', function(event) {
-        if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            console.log("Arrow Up/Down -> Keydown")
-            
-            ws.send(JSON.stringify({
-                'action': 'move',
-                'user': user_json,
-                'key': event.key
-            }));
-        }
-    });
-
-
-    document.addEventListener('keyup', function(event) {
-        if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            console.log("Arrow Up/Down -> Keyup")
-                        
-            ws.send(JSON.stringify({
-                'user': user_json,
-                'key': event.key
-            }));
-
-            // stopPaddle(event);
-        }
-    });
-
-    document.addEventListener('keyup', function(event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && user_json['id'] === 1) {
-            console.log("W/S -> Keyup")
-                        
-            ws.send(JSON.stringify({
-                'user': user_json,
-                'key': event.key
-            }));
-
-            // stopPaddle(event);
-        }
-    });     
-}
-
-if(modality2 != 'remote')
-{
-    document.addEventListener('keydown', function(event) {
-        if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            movePaddle(event);
-        }
-    });
-
-    document.addEventListener('keydown', function(event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai'  && sessionStorage.getItem('modality') !== 'remote') {
-            movePaddle(event);
-        }
-    });
-
-    document.addEventListener('keyup', function(event) {
-        if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            stopPaddle(event);
-        }
-    });
-
-    document.addEventListener('keyup', function(event) {
-        if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai' && sessionStorage.getItem('modality') !== 'remote') {
-            stopPaddle(event);
-        }
-    });
-}
 
     gameLoop();
 }
 
 export function stopGame() {
     if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);  
+        cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
     }
 }
@@ -324,9 +326,9 @@ export function stopGame() {
 export function resetGameState() {
     playerScore = 0;
     opponentScore = 0;
-    ballSpeedX= 2;
-    ballSpeedY= 2;
-    initializeCanvas(); 
-    initializeBall(); 
-    stopGame(); 
+    ballSpeedX = 2;
+    ballSpeedY = 2;
+    initializeCanvas();
+    initializeBall();
+    stopGame();
 }
