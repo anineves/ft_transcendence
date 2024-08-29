@@ -4,64 +4,110 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 
 from accounts.serializers import MatchSerializer
+from accounts.models import PlayerChannel, Player
 
+chat_private_groups = {} #TODO: Create table to store Groups
 
-class PresenceConsumer(WebsocketConsumer):
+class ChatConsumer(WebsocketConsumer):
+
 
     def connect(self):
-        pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(self.scope)
 
-        self.group_name = self.scope["url_route"]["kwargs"]["group_name"]
-        # print(f"Group_Name: {self.group_name}")
-        self.match_name = f"{self.group_name}_match"
-        # print(f"Match_Name: {self.match_name}")
-
+        self.global_chat = "global_chat"
         async_to_sync(self.channel_layer.group_add)(
-            self.match_name, self.channel_name)
+            self.global_chat, self.channel_name
+        )
         
         self.user = self.scope["user"]
-        # print(f"User from scope: {self.user}")       
-        
+        if self.user != AnonymousUser(): #TODO: Check if there is a player
+            User = get_user_model()
+            user = User.objects.select_related('player').get(id=self.user.id)
+            PlayerChannel.objects.create(
+                channel_name=self.channel_name, 
+                player=user.player
+            )
+
         self.accept()
         async_to_sync(self.channel_layer.group_send)(
-            self.match_name, 
+            self.global_chat, 
             {
-                'type': 'match.message',
-                'message': f"{self.user} joined the match"
+                'type': 'chat.message',
+                'message': f"{self.user} joined the chat"
             }
         )
 
     def disconnect(self, close_code):
+        
         async_to_sync(self.channel_layer.group_discard)(
-            self.match_name, self.channel_name
+            self.global_chat, self.channel_name
         )
+
+        PlayerChannel.objects.filter(channel_name=self.channel_name).delete()
+        
         async_to_sync(self.channel_layer.group_send)(
-            self.match_name, 
+            self.global_chat, 
             {
-                'type': 'match.message',
-                'message': f"{self.user} left the match"
+                'type': 'chat.message',
+                'message': f"{self.user} left the chat"
             }
         )
+        chat_private_groups.clear()
         return super().disconnect(close_code)
 
     def receive(self, text_data=None):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
+        data = json.loads(text_data)
+        message = data["message"]
+        is_private = data["is_private"]
 
-        async_to_sync(self.channel_layer.group_send)(
-            self.match_name, 
-            {
-                "type": "match.message",
-                "message": message
-            }
-        )
+        if is_private:
+            self.handle_private_chat(message)
+        else:
+            async_to_sync(self.channel_layer.group_send)(
+                self.global_chat, 
+                {
+                    "type": "chat.message",
+                    "message": message,
+                    "from_player": self.user.player if self.user != AnonymousUser() else "Anonymous"
+                }
+            )
 
-    def match_message(self, event):
+    def chat_message(self, event):
         message = event["message"]
         self.send(text_data=json.dumps({"message": message}))
+
+    def handle_private_chat(self, message):
+
+        message_split = message.split(":")
+        nickname = message_split[0][1:]
+        message = message_split[1][1:]
+
+        player2 = Player.objects.get(nickname=nickname) #TODO: Need to handle when Player2 does not exist.
+        player_id = self.user.player.id
+        
+        self.private_group = ''.join(sorted(f"{player_id}{player2.id}"))
+
+        if self.private_group not in chat_private_groups: #TODO: Add new method after the new table is created
+            chat_private_groups[self.private_group] = f"private_group_{self.private_group}"
+        
+        async_to_sync(self.channel_layer.group_add)(
+            chat_private_groups[self.private_group], self.channel_name)
+        
+        player2_channel = PlayerChannel.objects.get(player=player2.id)
+
+        async_to_sync(self.channel_layer.group_add)(
+            chat_private_groups[self.private_group], player2_channel.channel_name)
+
+        async_to_sync(self.channel_layer.group_send)(
+            chat_private_groups[self.private_group],
+                {                
+                    "type": "chat.message",
+                    "message": message,
+                    "from_player": self.user.player
+                }
+            )
 
 
 class PongConsumer(WebsocketConsumer):
