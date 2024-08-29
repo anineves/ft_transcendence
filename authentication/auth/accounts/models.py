@@ -93,3 +93,12 @@ class Match(models.Model):
 
     def __str__(self):        
         return f"{self.game}: {self.date} -- {self.get_winner()}"
+    
+
+class PlayerChannel(models.Model):
+
+    channel_name = models.CharField(max_length=125)
+    player = models.OneToOneField(Player, on_delete=models.CASCADE, related_name="player_channel")
+
+    def __str__(self):        
+        return f"{self.player} channel_name: {self.channel_name}"
