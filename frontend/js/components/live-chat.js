@@ -7,7 +7,7 @@ export const liveChat = () => {
 
     const token = `Bearer ${jwttoken}`;
     console.log("Token:", token);
-    const socket = new WebSocket(`ws://localhost:8000/ws/global_chat/?token=${encodeURIComponent(jwttoken)}`);
+    const socket = new WebSocket('ws://localhost:8000/ws/global_chat/', jwttoken);
 
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -39,6 +39,10 @@ export const liveChat = () => {
         console.log("Connected to WebSocket");
     };
 
+    socket.onclose = function () {
+        socket.close();
+    }
+    
     socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         addMessage(data.message, false); 

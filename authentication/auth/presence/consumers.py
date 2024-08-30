@@ -35,7 +35,7 @@ class ChatConsumer(WebsocketConsumer):
             self.global_chat, 
             {
                 'type': 'chat.message',
-                'message': f"{self.user} joined the chat"
+                'message': self.user.player.nickname if self.user != AnonymousUser() else "Anonymous"
             }
         )
 
