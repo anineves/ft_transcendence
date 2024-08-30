@@ -27,10 +27,9 @@ export const liveChat = () => {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
 
-
     const addMessage = (message, isOwnMessage) => {
         const messageElement = document.createElement('div');
-        messageElement.className = isOwnMessage ? 'message own-message' : 'message';
+        messageElement.className = isOwnMessage ? 'message own-message' : 'message other-message';
         messageElement.textContent = `${isOwnMessage ? 'You: ' : 'Server: '}${message}`;
         chatBox.appendChild(messageElement);
         chatBox.scrollTop = chatBox.scrollHeight; 
@@ -38,14 +37,11 @@ export const liveChat = () => {
 
     socket.onopen = function (event) {
         console.log("Connected to WebSocket");
-
-        userNameElement.textContent = "User";
-        avatarElement.src = "path/to/user/avatar.jpg";
     };
 
     socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        addMessage(data.message, false);
+        addMessage(data.message, false); 
     };
 
     socket.onerror = function (error) {
@@ -55,13 +51,11 @@ export const liveChat = () => {
     sendButton.onclick = function () {
         const message = messageInput.value.trim();
         if (message) {
-
             socket.send(JSON.stringify({ message: message, is_private: false }));
-            addMessage(message, true);
+            addMessage(message, true); 
             messageInput.value = '';
         }
     };
-
 
     messageInput.addEventListener('keypress', function (event) {
         if (event.key === 'Enter') {

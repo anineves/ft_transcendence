@@ -106,3 +106,65 @@
     margin-top: 10px; 
     width: 40%;
 }
+
+
+
+
+.chat-panel {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.chat-box {
+    height: 400px;
+    overflow-y: scroll;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff; /* White background for the chat area */
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    max-width: 80%;
+}
+
+.own-message {
+    background-color: #ffdddd; /* Light red for own messages */
+    color: red;
+    text-align: right;
+    margin-left: auto;
+}
+
+.other-message {
+    background-color: #ffffff; /* White for other messages */
+    color: black;
+}
+
+.message-input-panel {
+    display: flex;
+}
+
+#message-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#send-button {
+    padding: 10px;
+    margin-left: 5px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+#send-button:hover {
+    background-color: #0056b3;
+}
