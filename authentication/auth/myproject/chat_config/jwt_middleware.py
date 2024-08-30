@@ -22,14 +22,15 @@ class JWTAuthMiddleware(BaseMiddleware):
         return await super().__call__(scope, receive, send)
 
     def get_token_from_scope(self, scope):
+        headers = dict(scope.get("headers", []))
         subprotocols = scope.get("subprotocols", [])
-        
         if subprotocols:
             return subprotocols[0]
-        # auth_header = headers.get(b'authorization', b'').decode('utf-8')
         
-        # if auth_header.startswith('Bearer '):
-        #     return auth_header.split(' ')[1]
+        auth_header = headers.get(b'authorization', b'').decode('utf-8')
+        
+        if auth_header.startswith('Bearer '):
+            return auth_header.split(' ')[1]
         
         return None
         
@@ -43,7 +44,6 @@ class JWTAuthMiddleware(BaseMiddleware):
                 user_id = access_token['user_id']
                 User = get_user_model()
                 user = User.objects.get(id=user_id)
-                # print(f"ACCESS TOKEN: {access_token['user']}")
                 return user
             except:
                 return AnonymousUser()
