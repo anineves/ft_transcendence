@@ -65,6 +65,8 @@ export const renderFriendsPage = async (user) => {
         renderRequestPanel(user);
     });
 
+   
+
     document.getElementById('inviteForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 

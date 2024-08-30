@@ -24,6 +24,7 @@ export const renderPanel = (user) => {
                 <button id="editBtn" class="btn">Edit</button>
                 <button id="friendBtn" class="btn">Friends</button>
                 <button id="createBtn" class="btn">Create Player</button>
+                <button id="sendMensageBtn" class="btn">Send Mensage</button>
             </div>
             <div id="updateProfileSection" style="display: none;">
                 <h2>Update Profile</h2>
@@ -65,6 +66,9 @@ export const renderPanel = (user) => {
 
     document.getElementById('createBtn').addEventListener('click', () => {
         navigateTo('/create-player');
+    });
+    document.getElementById('sendMensageBtn').addEventListener('click', () => {
+        navigateTo('/live-chat');
     });
 
 
