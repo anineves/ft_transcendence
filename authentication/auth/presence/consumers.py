@@ -59,6 +59,7 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None):
         data = json.loads(text_data)
+        
         message = data["message"]
         is_private = data["is_private"]
 
@@ -84,7 +85,15 @@ class ChatConsumer(WebsocketConsumer):
         nickname = message_split[0][1:]
         message = message_split[1][1:]
 
-        player2 = Player.objects.get(nickname=nickname) #TODO: Need to handle when Player2 does not exist.
+        try:
+            player2 = Player.objects.get(nickname=nickname)
+        except Player.DoesNotExist:
+            return async_to_sync(self.channel_layer.send)(
+                    self.channel_name, {
+                        "type": "chat.message",
+                        "message": "This player does not exist"
+                    })
+            
         player_id = self.user.player.id
         
         self.private_group = ''.join(sorted(f"{player_id}{player2.id}"))
@@ -94,9 +103,16 @@ class ChatConsumer(WebsocketConsumer):
         
         async_to_sync(self.channel_layer.group_add)(
             chat_private_groups[self.private_group], self.channel_name)
-        
-        player2_channel = PlayerChannel.objects.get(player=player2.id)
 
+        try: 
+            player2_channel = PlayerChannel.objects.get(player=player2.id)
+        except:
+            return async_to_sync(self.channel_layer.send)(
+                    self.channel_name, {
+                        "type": "chat.message",
+                        "message": "This player is not online"
+                    })
+        
         async_to_sync(self.channel_layer.group_add)(
             chat_private_groups[self.private_group], player2_channel.channel_name)
 
