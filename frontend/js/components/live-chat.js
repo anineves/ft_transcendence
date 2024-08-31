@@ -1,3 +1,5 @@
+import { navigateTo } from '../utils.js';
+
 export const liveChat = () => {
     const jwttoken = sessionStorage.getItem('jwtToken'); 
     if (!jwttoken) {
@@ -5,9 +7,7 @@ export const liveChat = () => {
         return;
     }
 
-    const token = `Bearer ${jwttoken}`;
-    console.log("Token:", token);
-    const socket = new WebSocket('ws://localhost:8000/ws/global_chat/', [jwttoken]);
+    const socket = new WebSocket('ws://localhost:8000/ws/global_chat/');
 
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -41,13 +41,14 @@ export const liveChat = () => {
 
     socket.onopen = function (event) {
         console.log("Connected to WebSocket");
+        socket.send(JSON.stringify({
+            Authorization: jwttoken,
+        }));
     };
   
     socket.onmessage = function (event) {
-        // console.log("On message: Message");
         const data = JSON.parse(event.data);
         addMessage(data.message, false); 
-        // console.log(data.message);
     };
 
     socket.onerror = function (error) {
@@ -56,14 +57,13 @@ export const liveChat = () => {
 
     leaveButton.onclick = function () {
         socket.close();
+        navigateTo('/game-selection');
     };
     
     sendButton.onclick = function () {
         let privacy;
-        // console.log("Send Button Message");
         const message = messageInput.value.trim();
         if (message) {
-            // console.log("Message[0]: ", message[0]);
             privacy = message[0] === '@' ? true : false;
             socket.send(JSON.stringify({ message: message, is_private: privacy }));
             addMessage(message, true); 

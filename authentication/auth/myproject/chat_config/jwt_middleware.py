@@ -11,7 +11,8 @@ class JWTAuthMiddleware(BaseMiddleware):
     
 
     async def __call__(self, scope, receive, send):
-
+        # print(f"Scope JWT")
+        # pprint.pp(scope)
         token = self.get_token_from_scope(scope)
         
         if token != None:
@@ -47,3 +48,15 @@ class JWTAuthMiddleware(BaseMiddleware):
                 return user
             except:
                 return AnonymousUser()
+            
+
+def authenticate_user(token):
+
+    try:
+        access_token = AccessToken(token)
+        user_id = access_token['user_id']
+        User = get_user_model()
+        user = User.objects.get(id=user_id)
+        return user
+    except:
+        return AnonymousUser()

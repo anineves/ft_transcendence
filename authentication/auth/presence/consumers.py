@@ -1,5 +1,7 @@
 import json
+
 import pprint
+
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
@@ -9,7 +11,11 @@ from django.contrib.auth.models import AnonymousUser
 from accounts.serializers import MatchSerializer
 from accounts.models import PlayerChannel, Player
 
+from myproject.chat_config.jwt_middleware import authenticate_user
+
+
 chat_private_groups = {} #TODO: Create table to store Groups
+
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -21,8 +27,10 @@ class ChatConsumer(WebsocketConsumer):
             self.global_chat, self.channel_name
         )
         
+        # self.user = AnonymousUser()
+
         self.user = self.scope["user"]
-        if self.user != AnonymousUser(): #TODO: Check if there is a player
+        if self.user != AnonymousUser():
             User = get_user_model()
             user = User.objects.select_related('player').get(id=self.user.id)
             PlayerChannel.objects.create(
@@ -31,13 +39,6 @@ class ChatConsumer(WebsocketConsumer):
             )
 
         self.accept()
-        async_to_sync(self.channel_layer.group_send)(
-            self.global_chat, 
-            {
-                'type': 'chat.message',
-                'message': self.user.player.nickname if self.user != AnonymousUser() else "Anonymous"
-            }
-        )
 
     def disconnect(self, close_code):
         
@@ -47,18 +48,22 @@ class ChatConsumer(WebsocketConsumer):
 
         PlayerChannel.objects.filter(channel_name=self.channel_name).delete()
         
-        async_to_sync(self.channel_layer.group_send)(
-            self.global_chat, 
-            {
-                'type': 'chat.message',
-                'message': f"{self.user} left the chat"
-            }
-        )
+        if close_code != 400:
+            async_to_sync(self.channel_layer.group_send)(
+                self.global_chat, 
+                {
+                    'type': 'chat.message',
+                    'message': f"{self.user.player} left the chat"
+                }
+            )
         chat_private_groups.clear()
         return super().disconnect(close_code)
 
     def receive(self, text_data=None):
         data = json.loads(text_data)
+        
+        if data.get('Authorization'):
+            return self.handle_authentication(data.get('Authorization'))
         
         message = data["message"]
         is_private = data["is_private"]
@@ -81,22 +86,23 @@ class ChatConsumer(WebsocketConsumer):
 
     def handle_private_chat(self, message):
 
-        message_split = message.split(":")
+        if self.user == AnonymousUser():
+            return self.send_channel_error_messages("Login to send private messages")
+        
+        message_split = message.split(" ", 1)
         nickname = message_split[0][1:]
-        message = message_split[1][1:]
+        message = message_split[1]
 
         try:
             player2 = Player.objects.get(nickname=nickname)
         except Player.DoesNotExist:
-            return async_to_sync(self.channel_layer.send)(
-                    self.channel_name, {
-                        "type": "chat.message",
-                        "message": "This player does not exist"
-                    })
+            return self.send_channel_error_messages("This player does not exist")
             
         player_id = self.user.player.id
         
-        self.private_group = ''.join(sorted(f"{player_id}{player2.id}"))
+        room_list = [player_id, player2.id]
+        sorted_list = sorted(room_list)
+        self.private_group = ''.join(sorted(f"{sorted_list[0]}{sorted_list[1]}"))
 
         if self.private_group not in chat_private_groups: #TODO: Add new method after the new table is created
             chat_private_groups[self.private_group] = f"private_group_{self.private_group}"
@@ -107,11 +113,7 @@ class ChatConsumer(WebsocketConsumer):
         try: 
             player2_channel = PlayerChannel.objects.get(player=player2.id)
         except:
-            return async_to_sync(self.channel_layer.send)(
-                    self.channel_name, {
-                        "type": "chat.message",
-                        "message": "This player is not online"
-                    })
+            return self.send_channel_error_messages("This player is not online")
         
         async_to_sync(self.channel_layer.group_add)(
             chat_private_groups[self.private_group], player2_channel.channel_name)
@@ -124,6 +126,35 @@ class ChatConsumer(WebsocketConsumer):
                     "from_player": self.user.player
                 }
             )
+
+    def handle_authentication(self, token):
+
+        self.user = authenticate_user(token)
+        if self.user != AnonymousUser():
+            try:
+                PlayerChannel.objects.create(
+                    channel_name=self.channel_name, 
+                    player=self.user.player
+                )
+            except:
+                self.send_channel_error_messages("You must have a player to chat")
+                return self.disconnect(400)
+
+        async_to_sync(self.channel_layer.group_send)(
+            self.global_chat, 
+            {
+                'type': 'chat.message',
+                'message': f"{self.user.player.nickname} has joined the chat" \
+                        if self.user != AnonymousUser() else "Anonymous has joined the chat"
+            }   
+        )
+
+    def send_channel_error_messages(self, message):
+        async_to_sync(self.channel_layer.send)(self.channel_name, 
+            {
+                "type": "chat.message",
+                "message": message
+            })
 
 
 class PongConsumer(WebsocketConsumer):
