@@ -13,6 +13,8 @@ from accounts.models import PlayerChannel, Player, PrivateGroup
 
 from myproject.chat_config.jwt_middleware import authenticate_user
 
+from django.db.models import Q
+
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -62,6 +64,9 @@ class ChatConsumer(WebsocketConsumer):
         if data.get('Authorization'):
             return self.handle_authentication(data.get('Authorization'))
         
+        if data.get('action') == "block" or data.get('action') == "unblock":
+            return self.block_player(data.get('player'), data.get('action'))
+        
         message = data["message"]
         is_private = data["is_private"]
 
@@ -84,26 +89,29 @@ class ChatConsumer(WebsocketConsumer):
     def handle_private_chat(self, message):
 
         if self.user == AnonymousUser():
-            return self.send_channel_error_messages("Login to send private messages")
-        
+            return self.send_self_channel_messages("Login to send private messages")
+        #TODO: Handle these three try
         try:
             message_split = message.split(" ", 1)
             nickname = message_split[0][1:]
             message = message_split[1]
         except IndexError:
-            return self.send_channel_error_messages(f'Cannot send this. Try again.')
+            return self.send_self_channel_messages(f'Cannot send this. Try again.')
 
         try:
             player2 = Player.objects.prefetch_related("player_channel").get(nickname=nickname)
         except Player.DoesNotExist:
-            return self.send_channel_error_messages(f'Player "{nickname}" does not exist')
+            return self.send_self_channel_messages(f'Player "{nickname}" does not exist')
         
         try: 
             PlayerChannel.objects.get(player=player2.id)
         except:
-            return self.send_channel_error_messages("This player is not online")
+            return self.send_self_channel_messages("This player is not online")
         
         self.private_group = self.get_or_create_new_room(player2)
+
+        if self.private_group.blocked == True:
+            return self.send_self_channel_messages("Message was not sent")
 
         async_to_sync(self.channel_layer.group_send)(
             self.private_group.group_name,
@@ -125,12 +133,11 @@ class ChatConsumer(WebsocketConsumer):
                 id=int(group_id),
                 group_name=f"private_group_{group_id}"
             )
-            self.private_group.save()
+            if created:
+                self.private_group.players.add(from_player, to_player)
         except:
             print("# Something went wrong with creating_new_room")
         
-        if created:
-            self.private_group.players.add(from_player, to_player)
         
         async_to_sync(self.channel_layer.group_add)(
             self.private_group.group_name, self.channel_name)
@@ -150,7 +157,7 @@ class ChatConsumer(WebsocketConsumer):
                     player=self.user.player
                 )
             except:
-                self.send_channel_error_messages("You must have a player to chat")
+                self.send_self_channel_messages("You must have a player to chat")
                 return self.disconnect(400)
 
         async_to_sync(self.channel_layer.group_send)(
@@ -162,12 +169,38 @@ class ChatConsumer(WebsocketConsumer):
             }   
         )
 
-    def send_channel_error_messages(self, message):
+    def send_self_channel_messages(self, message):
         async_to_sync(self.channel_layer.send)(self.channel_name, 
             {
                 "type": "chat.message",
                 "message": message
             })
+
+    def block_player(self, nickname, action):
+        try:
+            player_to_block = Player.objects.get(nickname=nickname)
+        except Player.DoesNotExist:
+            return self.send_self_channel_messages("Player does not exist") #TODO Second time I use it. Maybe a new method
+        
+        if self.user.player.nickname == nickname:
+           return self.send_self_channel_messages(f"You cannot block yourself")
+
+        group_to_block = PrivateGroup.objects.filter(
+            players__id=self.user.player.id).filter(players__id=player_to_block.id).first()
+        if group_to_block:
+            if action == "block":
+                group_to_block.blocked = True
+            else:
+                group_to_block.blocked = False
+            group_to_block.save()
+            self.send_self_channel_messages(f"{nickname} was {action}")
+        else:
+            self.send_self_channel_messages("Cannot block or unblock this user.")
+
+
+
+
+
 
 
 class PongConsumer(WebsocketConsumer):
