@@ -102,3 +102,13 @@ class PlayerChannel(models.Model):
 
     def __str__(self):        
         return f"{self.player} channel_name: {self.channel_name}"
+    
+
+class PrivateGroup(models.Model):
+    id = models.IntegerField(unique=True, primary_key=True)
+    group_name = models.CharField(max_length=255, unique=True)
+    blocked = models.BooleanField(default=False)
+    players = models.ManyToManyField(Player, related_name="players_group")
+
+    def __str__(self):        
+        return f"{self.group_name}"

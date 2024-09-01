@@ -1,6 +1,6 @@
 # accounts/admin.py
 from django.contrib import admin
-from .models import CustomUser, Player, Match, Game, FriendRequest, PlayerChannel
+from .models import *
 
 
 @admin.register(CustomUser)
@@ -22,3 +22,4 @@ class FriendRequestAdmin(admin.ModelAdmin):
 admin.site.register(Match)
 admin.site.register(Game)
 admin.site.register(PlayerChannel)
+admin.site.register(PrivateGroup)

@@ -9,12 +9,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 
 from accounts.serializers import MatchSerializer
-from accounts.models import PlayerChannel, Player
+from accounts.models import PlayerChannel, Player, PrivateGroup
 
 from myproject.chat_config.jwt_middleware import authenticate_user
-
-
-chat_private_groups = {} #TODO: Create table to store Groups
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -53,10 +50,10 @@ class ChatConsumer(WebsocketConsumer):
                 self.global_chat, 
                 {
                     'type': 'chat.message',
-                    'message': f"{self.user.player} left the chat"
+                    'message': f"{self.user.player} left the chat" \
+                        if self.user != AnonymousUser() else "Anonymous left the chat"
                 }
             )
-        chat_private_groups.clear()
         return super().disconnect(close_code)
 
     def receive(self, text_data=None):
@@ -89,37 +86,27 @@ class ChatConsumer(WebsocketConsumer):
         if self.user == AnonymousUser():
             return self.send_channel_error_messages("Login to send private messages")
         
-        message_split = message.split(" ", 1)
-        nickname = message_split[0][1:]
-        message = message_split[1]
+        try:
+            message_split = message.split(" ", 1)
+            nickname = message_split[0][1:]
+            message = message_split[1]
+        except IndexError:
+            return self.send_channel_error_messages(f'Cannot send this. Try again.')
 
         try:
-            player2 = Player.objects.get(nickname=nickname)
+            player2 = Player.objects.prefetch_related("player_channel").get(nickname=nickname)
         except Player.DoesNotExist:
-            return self.send_channel_error_messages("This player does not exist")
-            
-        player_id = self.user.player.id
+            return self.send_channel_error_messages(f'Player "{nickname}" does not exist')
         
-        room_list = [player_id, player2.id]
-        sorted_list = sorted(room_list)
-        self.private_group = ''.join(sorted(f"{sorted_list[0]}{sorted_list[1]}"))
-
-        if self.private_group not in chat_private_groups: #TODO: Add new method after the new table is created
-            chat_private_groups[self.private_group] = f"private_group_{self.private_group}"
-        
-        async_to_sync(self.channel_layer.group_add)(
-            chat_private_groups[self.private_group], self.channel_name)
-
         try: 
-            player2_channel = PlayerChannel.objects.get(player=player2.id)
+            PlayerChannel.objects.get(player=player2.id)
         except:
             return self.send_channel_error_messages("This player is not online")
         
-        async_to_sync(self.channel_layer.group_add)(
-            chat_private_groups[self.private_group], player2_channel.channel_name)
+        self.private_group = self.get_or_create_new_room(player2)
 
         async_to_sync(self.channel_layer.group_send)(
-            chat_private_groups[self.private_group],
+            self.private_group.group_name,
                 {                
                     "type": "chat.message",
                     "message": message,
@@ -127,6 +114,32 @@ class ChatConsumer(WebsocketConsumer):
                 }
             )
 
+    def get_or_create_new_room(self, to_player):
+        from_player = self.user.player
+        room_list = [from_player.id, to_player.id]
+        sorted_list = sorted(room_list)
+        group_id = ''.join(f"{sorted_list[0]}{sorted_list[1]}")
+
+        try:
+            self.private_group, created = PrivateGroup.objects.get_or_create(
+                id=int(group_id),
+                group_name=f"private_group_{group_id}"
+            )
+            self.private_group.save()
+        except:
+            print("# Something went wrong with creating_new_room")
+        
+        if created:
+            self.private_group.players.add(from_player, to_player)
+        
+        async_to_sync(self.channel_layer.group_add)(
+            self.private_group.group_name, self.channel_name)
+        
+        async_to_sync(self.channel_layer.group_add)(
+            self.private_group.group_name, to_player.player_channel.channel_name)
+
+        return self.private_group
+    
     def handle_authentication(self, token):
 
         self.user = authenticate_user(token)
