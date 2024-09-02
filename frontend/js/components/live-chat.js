@@ -2,6 +2,8 @@ import { navigateTo, checkLoginStatus } from '../utils.js';
 
 export const liveChat = () => {
     const jwttoken = sessionStorage.getItem('jwtToken'); 
+    const nickname2 = sessionStorage.getItem('nickname');
+    const nickname = nickname2.replace(/^"|"$/g, '');
     if (!jwttoken) {
         console.error("JWT Token is missing");
         return;
@@ -53,10 +55,52 @@ export const liveChat = () => {
 
     const addMessage = (message, isOwnMessage) => {
         const messageElement = document.createElement('div');
-        messageElement.className = isOwnMessage ? 'message own-message' : 'message other-message';
-        messageElement.textContent = `${isOwnMessage ? 'You: ' : 'Server: '}${message}`;
+        const words = message.split(' ');
+        const firstWord2 = words[0];
+        const restOfMessage = words.slice(1).join(' ');
+
+        const firstWord = firstWord2.replace(':', '');
+        const isFromSelf = firstWord == nickname;
+        console.log("first", firstWord);
+        console.log("Nick ", nickname);
+
+        messageElement.className = isFromSelf ? 'message own-message' : 'message other-message';
+
+        const firstWordButton = document.createElement('button');
+        firstWordButton.className = 'highlighted-player-button';
+        firstWordButton.textContent = firstWord;
+        firstWordButton.onclick = async () => {
+            try {
+                const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${jwttoken}` 
+                    }
+                });
+
+                if (playerResponse.ok) {
+                    const playerData = await playerResponse.json();
+                    const player = playerData.find(p => p.nickname === firstWord);
+                    if (player) {
+                        console.log("Player found:", player);
+                        navigateTo('/game-selection');
+                    } else {
+                        console.log("Player not found");
+                    }
+                } else {
+                    console.log("Error loading players");
+                }
+            } catch (error) {
+                console.error('Error fetching player data:', error);
+            }
+        };
+        
+        messageElement.appendChild(firstWordButton);
+        messageElement.appendChild(document.createTextNode(' ' + restOfMessage));
+
         chatBox.appendChild(messageElement);
-        chatBox.scrollTop = chatBox.scrollHeight; 
+        chatBox.scrollTop = chatBox.scrollHeight;
     };
 
     socket.onopen = function (event) {
@@ -68,7 +112,9 @@ export const liveChat = () => {
   
     socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        addMessage(data.message, false); 
+        const firstWord = data.message.split(' ')[0];
+        const isOwnMessage = firstWord === nickname;
+        addMessage(data.message, isOwnMessage);
     };
 
     socket.onerror = function (error) {
@@ -116,7 +162,6 @@ export const liveChat = () => {
         if (message) {
             privacy = message[0] === '@' ? true : false;
             socket.send(JSON.stringify({ message: message, is_private: privacy }));
-            addMessage(message, true); 
             messageInput.value = '';
         }
     };

@@ -25,17 +25,28 @@
 .message {
     margin: 5px 0;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 5px;
+    max-width: 60%;
+    clear: both;
+    word-wrap: break-word;
 }
 
 .own-message {
-    background-color: rgba(0, 255, 0, 0.3); 
+    color: #FF00FF;
+    float: right;
     text-align: right;
+    margin-left: auto;
+    border-top-right-radius: 0;
+    background-color: transparent;
 }
 
 .other-message {
-    background-color: rgba(255, 0, 255, 0.3); 
+    color: #00FFFF;
+    float: left;
     text-align: left;
+    margin-right: auto; 
+    border-top-left-radius: 0;
+    background-color: transparent;
 }
 
 .message-input-container {
@@ -212,4 +223,23 @@
 #leave-button:hover i {
     color: #00FFFF;
     transform: scale(1.1);
+}
+
+.highlighted-player {
+    font-weight: bold;
+    color: #d295eb; 
+}
+
+
+.highlighted-player-button {
+    background-color: transparent;
+    border: none;
+    color: #d295eb;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 16px;
+
+}
+
+.highlighted-player-button:hover {
+    color: #ff00ff;
 }
