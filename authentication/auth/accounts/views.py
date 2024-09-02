@@ -1,6 +1,6 @@
 from .serializers import *
 from .models import CustomUser, Player, FriendRequest, Match
-from django.http import Http404, JsonResponse
+from django.http import Http404
 from django.db.models import Count, Q
 from rest_framework.views import APIView
 from rest_framework import viewsets, status
@@ -13,6 +13,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate
 import os
+
+import random
+from datetime import timedelta
+from django.utils import timezone
+from django.core.mail import send_mail
 
 
 class UserRegister(viewsets.ViewSet):
@@ -27,11 +32,48 @@ class UserRegister(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+def generate_random_digits(n=6):
+    return "".join(map(str, random.sample(range(0, 10), n)))
+
+
+class OneTimePasswordLogin(APIView):
+
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        user = authenticate(request, email=email, password=password)
+
+        print(f"User: {user}")
+        if user is not None:
+            user = CustomUser.objects.get(email=email)
+
+            verification_token = generate_random_digits()
+            user.otp = verification_token
+            user.otp_expiry_time = timezone.now() + timedelta(hours=1)
+            user.save()
+
+            send_mail(
+                'Verification Code',
+                f'Your verification code is: {verification_token}',
+                'from@transcendence.com',
+                [email],
+                fail_silently=False,
+            )
+
+            return Response(
+                {'detail': 'Verification code sent successfully.'},
+                status=status.HTTP_200_OK
+            )
+        return Response({'detail': "Invalid Credentials"})
+
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     
     serializer_class = CustomeTokenObtainPairSerializer
 
     def post(self, request):
+        print(f"Request DatA: {request.data}")
         serializer = self.get_serializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)

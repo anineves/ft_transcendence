@@ -13,7 +13,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password2', 'avatar']
+        fields = ['email', 'username', 'first_name', 'last_name', 
+                  'password', 'password2', 'avatar', 'otp', 'otp_expiry_time']
         extra_kwargs = {
             'password': {'write_only': True},
             'avatar': {'required': False} 
@@ -43,8 +44,20 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
-
+    #TODO: Set player to choose if wants to use OTP or not
+    #TODO: Set time to refresh code
     def validate(self, attrs):
+        otp = self.context['request'].data.get('otp', None)
+
+        user = authenticate(
+            request=self.context['request'],
+            email=attrs.get('email'),
+            password=attrs.get('password'),
+        )   
+
+        if user is None or user.otp != otp:
+            raise serializers.ValidationError('Invalid credentials or OTP', code='authorization')
+
         data = super().validate(attrs)
         user = self.user  # Retrieve the user object
 
