@@ -12,6 +12,7 @@ import {startMenu} from './components/startMenu.js';
 import { selectPlayerorAI } from './components/selectPlayerOrAI.js';
 import { renderRequestPanel } from './components/requestPanel.js';
 import { waitRemote } from './components/waitRemote.js';
+import { renderPlayerProfile } from './components/friendsPanel.js';
 // Define as rotas da aplicação e suas funções de renderização correspondentes
 const routes = {
     '/': renderMenu,
@@ -26,6 +27,7 @@ const routes = {
     '/select-playerOrAI': selectPlayerorAI,
     '/friendPanel': renderRequestPanel,
     'wait-remote': waitRemote,
+    '/player-profile': renderPlayerProfile,
 };
 
 // Adiciona um listener que chama a função de renderização quando o DOM é carregado

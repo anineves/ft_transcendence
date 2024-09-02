@@ -14,6 +14,7 @@ import { selectTournamentPlayers } from './components/tournament.js';
 import { setupTournament } from './components/tournament.js';
 import { waitRemote } from './components/waitRemote.js';
 import { liveChat } from './components/live-chat.js';
+import { renderPlayerProfile } from './components/friendsPanel.js';
 
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
@@ -33,6 +34,7 @@ export const routes = {
     '/tournament-setup' : setupTournament,
     '/wait-remote' : waitRemote,
     '/live-chat' : liveChat,
+    '/player-profile': renderPlayerProfile,
 };
 
 // Altera a URL do navegador e atualizar a exibição da página

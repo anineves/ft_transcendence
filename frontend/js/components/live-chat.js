@@ -78,13 +78,14 @@ export const liveChat = () => {
                         'Authorization': `Bearer ${jwttoken}` 
                     }
                 });
-
+        
                 if (playerResponse.ok) {
                     const playerData = await playerResponse.json();
                     const player = playerData.find(p => p.nickname === firstWord);
                     if (player) {
                         console.log("Player found:", player);
-                        navigateTo('/game-selection');
+                        sessionStorage.setItem('playerProfile', JSON.stringify(player));
+                        navigateTo('/player-profile');
                     } else {
                         console.log("Player not found");
                     }
@@ -95,6 +96,8 @@ export const liveChat = () => {
                 console.error('Error fetching player data:', error);
             }
         };
+        
+        
         
         messageElement.appendChild(firstWordButton);
         messageElement.appendChild(document.createTextNode(' ' + restOfMessage));
