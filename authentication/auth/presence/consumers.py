@@ -28,6 +28,7 @@ class ChatConsumer(WebsocketConsumer):
         
         # self.user = AnonymousUser()
 
+        # Using it for Postman tests
         self.user = self.scope["user"]
         if self.user != AnonymousUser():
             User = get_user_model()
@@ -77,7 +78,7 @@ class ChatConsumer(WebsocketConsumer):
                 self.global_chat, 
                 {
                     "type": "chat.message",
-                    "message": message,
+                    "message": f"{self.user.player}: {message}",
                     "from_player": self.user.player if self.user != AnonymousUser() else "Anonymous"
                 }
             )
@@ -117,7 +118,7 @@ class ChatConsumer(WebsocketConsumer):
             self.private_group.group_name,
                 {                
                     "type": "chat.message",
-                    "message": message,
+                    "message": f"{self.user.player}: {message}",
                     "from_player": self.user.player
                 }
             )
@@ -151,7 +152,7 @@ class ChatConsumer(WebsocketConsumer):
 
         self.user = authenticate_user(token)
         if self.user != AnonymousUser():
-            try:
+            try: #TODO: Get or create may prevent DB problems
                 PlayerChannel.objects.create(
                     channel_name=self.channel_name, 
                     player=self.user.player
