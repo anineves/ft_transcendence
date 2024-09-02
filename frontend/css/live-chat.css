@@ -1,0 +1,215 @@
+.chat-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+}
+
+.chat-box {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    padding: 10px;
+    overflow-y: scroll;
+    height: 60vh;
+    width: 100%;
+    box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.5);
+    border: 1px solid rgba(0, 255, 255, 0.7);
+    color: #00FFFF;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 16px;
+}
+
+
+
+.message {
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.own-message {
+    background-color: rgba(0, 255, 0, 0.3); 
+    text-align: right;
+}
+
+.other-message {
+    background-color: rgba(255, 0, 255, 0.3); 
+    text-align: left;
+}
+
+.message-input-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    width: 100%;
+}
+
+#message-input {
+    background: transparent;
+    border: 2px solid #00FFFF;
+    color: #00FFFF;
+    padding: 10px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 16px;
+    width: 75%; 
+    height: 50%;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(0, 255, 255, 0.5);
+}
+
+#message-input::placeholder {
+    color: #FF00FF;
+    text-shadow: 0 0 8px rgba(255, 0, 255, 0.7);
+}
+
+#message-input:focus {
+    outline: none;
+    border-color: #FF00FF;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.8), inset 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+.button-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+#send-button, #block-button, #unblock-button {
+    background-color: rgba(0, 0, 0, 0.8); 
+    border: 2px solid #00FFFF;
+    color: #00FFFF;
+    font-family: "VT323", monospace;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-top: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; 
+}
+
+#send-button:hover, #block-button:hover, #unblock-button:hover {
+    background-color: #00FFFF;
+    color: #000;
+}
+
+#block-button {
+    border: 2px solid #FF00FF;
+    color: #FF00FF;
+}
+
+#block-button:hover {
+    background-color: #FF00FF;
+    color: #000;
+}
+
+#unblock-button {
+    border: 2px solid #00FF00;
+    color: #00FF00;
+}
+
+#unblock-button:hover {
+    background-color: #00FF00;
+    color: #000;
+}
+
+#block-input-container, #unblock-input-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+
+#block-input-container.hidden, #unblock-input-container.hidden {
+    display: none;
+}
+
+#block-player-input, #unblock-player-input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    color: #FF00FF;
+    background-color: transparent;
+    border: 2px solid #00FFFF;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(0, 255, 255, 0.5);
+    text-align: center;
+}
+
+#block-player-input::placeholder, #unblock-player-input::placeholder {
+    color: #FF00FF;
+    text-shadow: 0 0 8px rgba(255, 0, 255, 0.7);
+}
+
+#block-player-input:focus, #unblock-player-input:focus {
+    outline: none;
+    border-color: #FF00FF;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.8), inset 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+#confirm-block-button, #confirm-unblock-button {
+    width: 60%;
+    padding: 10px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    color: #00FFFF;
+    background-color: transparent;
+    border: 2px solid #FF00FF;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.5), inset 0 0 5px rgba(255, 0, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#confirm-block-button:hover, #confirm-unblock-button:hover {
+    background-color: #FF00FF;
+    color: #000;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.8), inset 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+#confirm-block-button:active, #confirm-unblock-button:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 1), inset 0 0 15px rgba(255, 0, 255, 0.7);
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    border-bottom: 2px solid #00FFFF;
+    border-radius: 10px 10px 0 0;
+}
+
+.chat-header h2 {
+    font-size: 30px;
+    color: #00FFFF;
+    text-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF;
+    margin: 0;
+}
+
+#leave-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #FF00FF;
+    padding: 5px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+#leave-button i {
+    font-size: 30px;
+    color: #FF00FF;
+}
+
+#leave-button:hover i {
+    color: #00FFFF;
+    transform: scale(1.1);
+}
