@@ -92,7 +92,7 @@ const startMatch = () => {
     if (currentRound < rounds.length) {
         const [player1, player2] = rounds[currentRound];
         sessionStorage.setItem('currentMatch', JSON.stringify({ player1, player2 }));
-
+        
         setTimeout(() => {
             resetGameState();
             navigateTo('/pong');

@@ -45,10 +45,14 @@ class OneTimePasswordLogin(APIView):
         user = authenticate(request, email=email, password=password)
 
         print(f"User: {user}")
+        user_email = user
         if user is not None:
-            user = CustomUser.objects.get(email=email)
+            print("user_email")
+            print(user_email)
+            user = CustomUser.objects.get(email=user_email.email)
 
             verification_token = generate_random_digits()
+            print()
             user.otp = verification_token
             user.otp_expiry_time = timezone.now() + timedelta(hours=1)
             user.save()
@@ -57,7 +61,7 @@ class OneTimePasswordLogin(APIView):
                 'Verification Code',
                 f'Your verification code is: {verification_token}',
                 'from@transcendence.com',
-                [email],
+                [user_email],
                 fail_silently=False,
             )
 
@@ -174,6 +178,18 @@ class PlayerDetail(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Player.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+    def put(self, request, pk):
+        player = Player.objects.get(id=pk)
+        serializer = PlayerSerializer(
+            player,
+            partial = True
+        )
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Player.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
         
 
 class FriendRequestList(APIView):

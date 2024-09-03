@@ -54,12 +54,17 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
             email=attrs.get('email'),
             password=attrs.get('password'),
         )   
-
-        if user is None or user.otp != otp:
-            raise serializers.ValidationError('Invalid credentials or OTP', code='authorization')
+        print ("user")
+        print (user)
+        print ("OTP")
+        print (otp)
+        print ("user.otp")
+        print (user.otp)
 
         data = super().validate(attrs)
         user = self.user  # Retrieve the user object
+        if user is None or user.otp != otp:
+            raise serializers.ValidationError('Invalid credentials or OTP', code='authorization')
 
         data.update({
             'user': {
@@ -101,7 +106,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ['id', 'nickname', 'friendship', 'user', \
-                  'created_at', 'total_winner', 'pong_winner', 'linha_winner']
+                  'created_at', 'total_winner', 'pong_winner', 'linha_winner', 'status']
         
         read_only_fields = ['id' ,'created_at', 'user']
 
@@ -109,6 +114,11 @@ class PlayerSerializer(serializers.ModelSerializer):
         current_user = self.context.get('user')
         validated_data['user'] = current_user
         return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        instance.status=validated_data.get('status', instance.status)
+        instance.save()
+        return(instance)
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
