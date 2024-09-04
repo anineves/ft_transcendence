@@ -32,8 +32,8 @@ class UserRegister(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-def generate_random_digits(n=6):
-    return "".join(map(str, random.sample(range(0, 10), n)))
+def generate_random_digits(len):
+    return "".join(map(str, random.sample(range(0, 10), len)))
 
 
 class OneTimePasswordLogin(APIView):
@@ -44,15 +44,8 @@ class OneTimePasswordLogin(APIView):
 
         user = authenticate(request, email=email, password=password)
 
-        print(f"User: {user}")
-        user_email = user
         if user is not None:
-            print("user_email")
-            print(user_email)
-            user = CustomUser.objects.get(email=user_email.email)
-
-            verification_token = generate_random_digits()
-            print()
+            verification_token = generate_random_digits(len=6)
             user.otp = verification_token
             user.otp_expiry_time = timezone.now() + timedelta(hours=1)
             user.save()
@@ -61,7 +54,7 @@ class OneTimePasswordLogin(APIView):
                 'Verification Code',
                 f'Your verification code is: {verification_token}',
                 'from@transcendence.com',
-                [user_email],
+                [user.email],
                 fail_silently=False,
             )
 
@@ -77,7 +70,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomeTokenObtainPairSerializer
 
     def post(self, request):
-        print(f"Request DatA: {request.data}")
         serializer = self.get_serializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
@@ -167,6 +159,7 @@ class PlayerList(APIView):
 class PlayerDetail(APIView):
     
     permission_classes = [IsAuthenticated]
+    
     def get(self, request, pk):
         try:
             player = Player.objects.annotate(
@@ -178,6 +171,7 @@ class PlayerDetail(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Player.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
     def put(self, request, pk):
         try:
             player = Player.objects.get(id=pk)

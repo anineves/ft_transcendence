@@ -54,15 +54,10 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
             email=attrs.get('email'),
             password=attrs.get('password'),
         )   
-        print ("user")
-        print (user)
-        print ("OTP")
-        print (otp)
-        print ("user.otp")
-        print (user.otp)
 
         data = super().validate(attrs)
-        user = self.user  # Retrieve the user object
+        user = self.user
+
         if user is None or user.otp != otp:
             raise serializers.ValidationError('Invalid credentials or OTP', code='authorization')
 
@@ -102,6 +97,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     total_winner = serializers.IntegerField(read_only=True) 
     pong_winner = serializers.IntegerField(read_only=True)
     linha_winner = serializers.IntegerField(read_only=True)
+    status = serializers.SerializerMethodField()
 
     class Meta:
         model = Player
@@ -119,6 +115,9 @@ class PlayerSerializer(serializers.ModelSerializer):
         instance.status=validated_data.get('status', instance.status)
         instance.save()
         return(instance)
+    
+    def get_status(self, obj):
+        return obj.get_status_display()
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
