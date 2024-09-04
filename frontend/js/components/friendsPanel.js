@@ -19,11 +19,8 @@ export const renderPlayerProfile = () => {
             <div id="profileSection">
                 <h2>Player Profile</h2>
                 <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="Player Avatar" class="avatar">
-                <p><strong>Username:</strong> ${player.username}</p>
                 <p><strong>Nickname:</strong> ${player.nickname}</p>
-                <p><strong>Email:</strong> ${player.email}</p>
-                <p><strong>Firstname:</strong> ${player.first_name}</p>
-                <p><strong>Lastname:</strong> ${player.last_name}</p>
+                <p><strong>Status:</strong> ${player.status}</p>
                 <p><strong>Id:</strong> ${player.id}</p>
                 <button id="backBtn" class="btn">Back to Chat</button>
             </div>

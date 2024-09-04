@@ -7,6 +7,7 @@ export const renderPanel = (user) => {
     const app = document.getElementById('app');
     const defaultAvatar = '../../assets/avatar.png';
     const nickname = sessionStorage.getItem('nickname');
+    const playerStatus = sessionStorage.getItem('playerStatus');
     const avatarUrl = user.avatar || defaultAvatar;
 
     app.innerHTML = `
@@ -20,6 +21,7 @@ export const renderPanel = (user) => {
                 <p><strong>Firstname:</strong> ${user.first_name}</p>
                 <p><strong>Lastname:</strong> ${user.last_name}</p>
                 <p><strong>Id:</strong> ${user.id}</p>
+                <p><strong>Status:</strong> ${playerStatus}</p>
                 <button id="logoutBtn" class="btn">Logout</button>
                 <button id="editBtn" class="btn">Edit</button>
                 <button id="friendBtn" class="btn">Friends</button>

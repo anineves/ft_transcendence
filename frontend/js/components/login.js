@@ -97,11 +97,11 @@ const showCodeForm = (emailOrUsername, password) => {
 
 
 const handleSuccessfulLogin = async () => {
-    
-const jwtToken = sessionStorage.getItem('jwtToken');
-const user = sessionStorage.getItem('user');
-const userID = sessionStorage.getItem('userID');
-alert("handle");
+
+    const jwtToken = sessionStorage.getItem('jwtToken');
+    const user = sessionStorage.getItem('user');
+    const userID = sessionStorage.getItem('userID');
+    alert("handle");
     try {
         const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
             method: 'GET',
@@ -118,14 +118,24 @@ alert("handle");
             console.log("-----------------------------------------------------------")
             console.log(user)
             console.log(userID);
-            const player = playerData.find(p => p.user === userID);
+
+            let player = null;
+
+            for (const p of playerData) {
+               // console.log("User:", p.user);
+                //console.log("UserID:", userID);
+
+                if (p.user == userID) {
+                 //console.log("Entrei")
+                    player = p;
+                }
+            }
 
             if (player) {
-                
                 sessionStorage.setItem('player', player.id);
                 sessionStorage.setItem('nickname', player.nickname);
                 checkLoginStatus();
-                putPlayer();
+                putPlayer("ON");
             } else {
                 console.log("You need to create a player");
                 navigateTo('/game-selection');
@@ -139,32 +149,34 @@ alert("handle");
 };
 
 
-const putPlayer = async ()  =>
-{
+export const putPlayer = async (status) => {
     const jwtToken = sessionStorage.getItem('jwtToken');
     const user = sessionStorage.getItem('user');
     const playerId = sessionStorage.getItem('player');
     console.log("Player", playerId);
-    const stat = "online";
+    console.log("Status", status)
+    const stat = status;
 
+    console.log("Entrei Put");
     try {
-        const player = await fetch(`http://127.0.0.1:8000/api/${playerId}`,  {
+        const player = await fetch(`http://127.0.0.1:8000/api/player/${playerId}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({stat})
+            body: JSON.stringify({ status : stat })
         });
-
-        if (player.ok) 
-        {
+        console.log("Entrei Try");
+        if (player.ok) {
+            console.log("Entrei IF");
             const playerT = await player.json();
+            sessionStorage.setItem('playerStatus', playerT.status);
             console.log(playerT)
-                
-                checkLoginStatus();
-                navigateTo('/game-selection');
-          
+
+            checkLoginStatus();
+            navigateTo('/game-selection');
+
         } else {
             alert("Player not found");
             console.log("Error player not found");
