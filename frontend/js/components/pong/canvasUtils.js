@@ -62,32 +62,30 @@ export function movePaddle(event) {
     }
     else if(modality === 'remote')
     {
+        // console.log("Move Paddle Event: ", event);
         const playerID = sessionStorage.getItem('playerID');
         const friendID = sessionStorage.getItem('friendID');
+        // console.log("Canvas Player ID: ", playerID );
+        // console.log("Canvas Friend ID: ", friendID );
         if (event.key === 'ArrowUp' && event.user_id == playerID) {
-            console.log('ArrowUp && ID 1 ')
             clearInterval(playerPaddleInterval);
             playerPaddleInterval = setInterval(() => {
                 playerY -= paddleSpeed;
                 if (playerY < 0) playerY = 0;
             }, 16);
         } else if (event.key === 'ArrowDown' && event.user_id == playerID) {
-            console.log('ArrowDown && ID 1 ')
             clearInterval(playerPaddleInterval);
             playerPaddleInterval = setInterval(() => {
                 playerY += paddleSpeed;
                 if (playerY + paddleHeight > canvas.height) playerY = canvas.height - paddleHeight;
             }, 16);
-            // } else if (event.key === 'w' || event.key === 'W') {
         } else if (event.key === 'ArrowUp' && event.user_id == friendID) {
-            console.log('ArrowUp && ID 2')
             clearInterval(opponentPaddleInterval);
             opponentPaddleInterval = setInterval(() => {
                 opponentY -= paddleSpeed;
                 if (opponentY < 0) opponentY = 0;
             }, 16);
         } else if (event.key === 'ArrowDown' && event.user_id == friendID) {
-            console.log('ArrowDown && ID 2')
             clearInterval(opponentPaddleInterval);
             opponentPaddleInterval = setInterval(() => {
                 opponentY += paddleSpeed;
@@ -98,12 +96,36 @@ export function movePaddle(event) {
 }
 
 export function stopPaddle(event) {
-    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-        clearInterval(playerPaddleInterval);
-    } else if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
-        clearInterval(opponentPaddleInterval);
+    const modality = sessionStorage.getItem('modality');
+    if(modality !== 'remote') {
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+            clearInterval(playerPaddleInterval);
+        } else if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
+            clearInterval(opponentPaddleInterval);
+        }
     }
+    else if(modality === 'remote') {
+        const playerID = sessionStorage.getItem('playerID');
+        const friendID = sessionStorage.getItem('friendID');
+
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown' && event.user_id == playerID) {
+            // console.log("StopPaddlePlayer")
+            clearInterval(playerPaddleInterval);
+        } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' && event.user_id == friendID) {
+                // console.log("StopPaddleOpponent")
+                clearInterval(opponentPaddleInterval);
+            }
+        }
 }
+// } else if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
+    
+// export function stopPaddle(event) {
+//     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+//         clearInterval(playerPaddleInterval);
+//     } else if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
+//         clearInterval(opponentPaddleInterval);
+//     }
+// }
 
 
 let opponentPaddleDirection = 1;

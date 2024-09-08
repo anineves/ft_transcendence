@@ -70,7 +70,9 @@ class ChatConsumer(WebsocketConsumer):
         
         message = data["message"]
         is_private = data["is_private"]
-
+        
+        sender = self.user.player if self.user != AnonymousUser() else "Anonymous"
+        
         if is_private:
             self.handle_private_chat(message)
         else:
@@ -78,7 +80,7 @@ class ChatConsumer(WebsocketConsumer):
                 self.global_chat, 
                 {
                     "type": "chat.message",
-                    "message": f"{self.user.player}: {message}",
+                    "message": f"{sender}: {message}",
                     "from_player": self.user.player if self.user != AnonymousUser() else "Anonymous"
                 }
             )
@@ -152,12 +154,20 @@ class ChatConsumer(WebsocketConsumer):
 
         self.user = authenticate_user(token)
         if self.user != AnonymousUser():
-            try: #TODO: Get or create may prevent DB problems
-                PlayerChannel.objects.create(
-                    channel_name=self.channel_name, 
-                    player=self.user.player
+            try: #TODO: Get or create may prevent DB problems / Find a way to clean channel before updating
+                print(f"Player: {self.user.player}")
+                print(f"Channel: {self.channel_name}")
+                player, created = PlayerChannel.objects.update_or_create(
+                    # channel_name=self.channel_name,
+                    player=self.user.player,
+                    defaults={'channel_name': self.channel_name}
                 )
-            except:
+                if created:
+                    print("Created")
+                else:
+                    print(player)
+            except Exception as e:
+                print(e)
                 self.send_self_channel_messages("You must have a player to chat")
                 return self.disconnect(400)
 
@@ -201,8 +211,7 @@ class ChatConsumer(WebsocketConsumer):
 
 
 
-
-
+pong_group = {}
 
 class PongConsumer(WebsocketConsumer):
     
@@ -223,6 +232,26 @@ class PongConsumer(WebsocketConsumer):
             }
         )
 
+        #TODO: Change it to right player IDs
+        if len(pong_group) == 0:
+            pong_group['player'] = 1 #self.channel_name
+        else:
+            pong_group['opponent'] = 2 #self.channel_name
+
+        if len(pong_group) == 2:
+            async_to_sync(self.channel_layer.group_send)(
+                self.pong_match, 
+                {
+                    'type': 'pong.log',
+                    'action': 'full_lobby',
+                    'message': {
+                        'player': pong_group['player'],
+                        'opponent': pong_group['opponent']
+                    }
+                }
+            )
+            pong_group.clear()
+
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
             self.pong_match, self.channel_name
@@ -234,64 +263,102 @@ class PongConsumer(WebsocketConsumer):
         #         'message': f"{self.user} left the match"
         #     }
         # )
+        pong_group.clear()
         return super().disconnect(close_code)
 
     def receive(self, text_data=None):
-        # print(f"Data: {text_data}")
+        # print(f"Data In Consumer: {text_data}")
         # print(f"User: {self.user}")
 
         data = json.loads(text_data)
         user_id = data["user"]['id'] # Test using user in scope
 
-        User = get_user_model()
-        user = User.objects.select_related('player').get(id=user_id)
+        # User = get_user_model()
+        # user = User.objects.select_related('player').get(id=user_id)
 
-        if data.get('action') == 'create_match':
-            game = data['game']
-            players = data['players']
+        # if data.get('action') == 'create_match':
+        #     game = data['game']
+        #     players = data['players']
 
-            if user.player.id == players[0]:
-                serializer = MatchSerializer(data={
-                    'game': game,
-                    'players': players
-                })
-                if serializer.is_valid():
-                    try:
-                        match = serializer.save()
-                        self.send(text_data=json.dumps({
-                            'action': 'match_created',
-                            'match_id': match.id,
-                            'game': match.game,
-                            'players': match.players
-                        }))
-                        return 
-                    except:
-                        self.send(text_data=json.dumps({
-                        'action': 'error',
-                        'errors': serializer.errors
-                    }))
+            # if user.player.id == players[0]:
+            #     serializer = MatchSerializer(data={
+            #         'game': game,
+            #         'players': players
+            #     })
+            #     if serializer.is_valid():
+            #         try:
+            #             match = serializer.save()
+            #             self.send(text_data=json.dumps({
+            #                 'action': 'match_created',
+            #                 'match_id': match.id,
+            #                 'game': match.game,
+            #                 'players': match.players
+            #             }))
+            #             return 
+            #         except:
+            #             self.send(text_data=json.dumps({
+            #             'action': 'error',
+            #             'errors': serializer.errors
+            #         }))
 
-        if data.get('action') == 'move':
+        if data.get('action') == 'move_paddle' or data.get('action') == 'stop_paddle':
             key = data["key"]
-
             async_to_sync(self.channel_layer.group_send)(
                 self.pong_match, 
                 {
                     "type": "pong.move",
+                    "action": data.get('action'),
                     "user_id": user_id,
                     "key_move": key
                 }
             )
+        if data.get('action') == 'ball_track':
+            ball_x = data["ball_x"]
+            ball_y = data["ball_y"]
+            ballSpeedY = data["ballSpeedY"]
+            async_to_sync(self.channel_layer.group_send)(
+                self.pong_match, 
+                {
+                    "type": "ball.track",
+                    "action": data.get('action'),
+                    "user_id": user_id,
+                    "ball_x": ball_x,
+                    "ball_y": ball_y,
+                    "ballSpeedY": ballSpeedY
+                }
+            )
 
     def pong_move(self, event):
-        # print(f"Event: {event}")
         user_id = event["user_id"]
         key = event["key_move"]
-        self.send(text_data=json.dumps({
-        "user_id": user_id,
+        action = event["action"]
+        self.send(text_data=json.dumps(
+        {
+            "action": action,
+            "user_id": user_id,
             "key": key
+        }))
+
+    def ball_track(self, event):
+        user_id = event["user_id"]
+        ball_x = event["ball_x"]
+        ball_y = event["ball_y"]
+        ballSpeedY = event["ballSpeedY"]
+        action = event["action"]
+        self.send(text_data=json.dumps(
+        {
+            "action": action,
+            "user_id": user_id,
+            "ball_x": ball_x,
+            "ball_y": ball_y,
+            "ballSpeedY": ballSpeedY
         }))
 
     def pong_log(self, event):
         message = event["message"]
-        self.send(text_data=json.dumps({"message": message}))
+        action = event.get("action")
+        
+        self.send(text_data=json.dumps({
+            "message": message,
+            "action": action if action else "Null"
+        }))

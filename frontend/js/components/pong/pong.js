@@ -3,11 +3,19 @@ import { drawScore, drawGameOver } from './score.js';
 import { canvas, context, paddleWidth, paddleHeight, playerY, opponentY, movePaddle, stopPaddle } from './canvasUtils.js';
 import { endMatch } from '../tournament.js';
 
+import { waitRemote } from '../waitRemote.js';
+import { initPongSocket } from './pongSocket.js'
+
 let playerScore = 0;
 let opponentScore = 0;
 let gameOver = false;
 let ballSpeedX = 2;
 let ballSpeedY = 2;
+
+let ws;
+
+const user = sessionStorage.getItem('user');
+const user_json = JSON.parse(user);
 
 export let ballX, ballY;
 export const ballRadius = 10;
@@ -16,6 +24,7 @@ let animationFrameId;
 const modality2 = sessionStorage.getItem('modality');
 
 export const startPongGame = async () => {
+    
     const player = sessionStorage.getItem('player');
     console.log(player);
     console.log("Starting game...");
@@ -28,7 +37,6 @@ export const startPongGame = async () => {
     const modality2 = sessionStorage.getItem('modality');
 
     if (modality2 != 'remote') {
-        alert('entrei  partida nao remote')
 
         try {
             const response = await fetch('http://localhost:8000/api/matches/', {
@@ -57,9 +65,28 @@ export const startPongGame = async () => {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initialize);
     } else {
+        ws = initPongSocket('ws://localhost:8000/ws/pong_match/pong1/');
+        
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            
+            if (data.action === 'ball_track') {
+                    ballX = data.ball_x;
+                    ballY = data.ball_y;
+                    ballSpeedY = data.ballSpeedY;
+                }
+            if (data.action === 'move_paddle') {
+                movePaddle(data);
+            }
+            if (data.action === 'stop_paddle') {
+                stopPaddle(data);
+            }
+        }; 
+        
         initialize();
     }
 }
+
 
 export function initializeBall() {
     if (!canvas) {
@@ -78,7 +105,16 @@ export function updateBall() {
 
     if (ballY + ballRadius > canvas.height || ballY - ballRadius < 0) {
         ballSpeedY = -ballSpeedY;
-    }
+        
+        ws.send(JSON.stringify({
+            'action': 'ball_track',
+            'user': user_json,
+            'ball_x': ballX,
+            'ball_y': ballY,
+            'ballSpeedY': ballSpeedY
+
+        }));
+    } 
 }
 
 export function resetBall() {
@@ -320,6 +356,26 @@ function initialize() {
         document.addEventListener('keyup', function (event) {
             if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai' && sessionStorage.getItem('modality') !== 'remote') {
                 stopPaddle(event);
+            }
+        });
+    }
+    else if (modality2 == 'remote') {
+        document.addEventListener('keydown', function (event) {
+            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                ws.send(JSON.stringify({
+                    'action': 'move_paddle',
+                    'user': user_json,
+                    'key': event.key
+                }));
+            }
+        });
+        document.addEventListener('keyup', function (event) {
+            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                ws.send(JSON.stringify({
+                    'action': 'stop_paddle',
+                    'user': user_json,
+                    'key': event.key
+                }));
             }
         });
     }
