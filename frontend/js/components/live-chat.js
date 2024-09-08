@@ -26,6 +26,8 @@ export const liveChat = () => {
                         <button id="send-button"><i class="fas fa-paper-plane"></i> Send</button>
                         <button id="block-button"><i class="fas fa-ban"></i> Block</button>
                         <button id="unblock-button"><i class="fas fa-unlock"></i> Unblock</button>
+
+                        <button id="duel-button"><i class="fas fa-crossed-swords"></i> Duel</button> <!-- New Duel button -->
                     </div>
                 </div>
                 <div id="block-input-container" style="display: none;">
@@ -35,6 +37,11 @@ export const liveChat = () => {
                 <div id="unblock-input-container" style="display: none;">
                     <input id="unblock-player-input" type="text" placeholder="Player to unblock...">
                     <button id="confirm-unblock-button">Confirm Unblock</button>
+                </div>
+
+                <div id="duel-input-container" style="display: none;">
+                    <input id="duel-player-input" type="text" placeholder="Player to duel...">
+                    <button id="confirm-duel-button">Confirm Duel</button>
                 </div>
             </div>
         </div>
@@ -115,9 +122,25 @@ export const liveChat = () => {
   
     socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
+        console.log('Data;', event.data)
         const firstWord = data.message.split(' ')[0];
         const isOwnMessage = firstWord === nickname;
         addMessage(data.message, isOwnMessage);
+
+        if (data.message.endsWith("#"))
+        {
+            const chatBox = document.getElementById('chat-box'); 
+            const duelMessage = document.createElement('p');
+            duelMessage.innerHTML = `
+                has challenged you to a duel! 
+                <a href="http://localhost:8080/wait-remote" id="accept-link">Accept</a>
+            `;
+            chatBox.appendChild(duelMessage);
+        }
+        // duelMessage.innerHTML = `
+        //     ${duelRequest.proposer} has challenged you to a duel! 
+        //     <a href="${duelRequest.lobbyUrl}" id="accept-link">Accept</a>
+        // `;
     };
 
     socket.onerror = function (error) {
@@ -159,7 +182,7 @@ export const liveChat = () => {
         }
     };
     
-    sendButton.onclick = function () {
+    sendButton.onclick = function privateMessage() {
         let privacy;
         const message = messageInput.value.trim();
         if (message) {
@@ -174,4 +197,40 @@ export const liveChat = () => {
             sendButton.click();
         }
     });
+    // Fechar a socket quando fechar a aba ou navegador.
+    window.addEventListener('beforeunload', function (event) {
+        socket.close();
+        return;
+    });
+
+    document.getElementById('duel-button').addEventListener('click', function() {
+        const duelContainer = document.getElementById('duel-input-container');
+        
+        // Toggle the visibility of the duel input container
+        if (duelContainer.style.display === 'none') {
+            duelContainer.style.display = 'block';
+        } else {
+            duelContainer.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('confirm-duel-button').addEventListener('click', function() {
+        const playerNickname = document.getElementById('duel-player-input').value;
+    
+        if (playerNickname) {
+            // Code to handle the duel request with the provided nickname
+            // alert('Duel requested with: ' + playerNickname);
+            document.getElementById('duel-input-container').style.display = 'none'; // Hide after confirmation
+            document.getElementById('duel-player-input').value = ''; // Clear input field
+            let duel_message = '@' + playerNickname + ' someone wants to fight #';
+            console.log('DuelMessage: ', duel_message);
+            socket.send(JSON.stringify({ message: duel_message, is_private: true }));
+
+            socket.close();
+            navigateTo('/wait-remote');
+
+        } else {
+            alert('Please enter a player nickname to duel.');
+        }
+    });    
 };
