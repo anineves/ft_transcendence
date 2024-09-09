@@ -71,15 +71,21 @@ export const startPongGame = async () => {
             const data = JSON.parse(event.data);
             
             if (data.action === 'ball_track') {
-                    ballX = data.ball_x;
-                    ballY = data.ball_y;
-                    ballSpeedY = data.ballSpeedY;
-                }
+                ballX = data.ball_x;
+                ballY = data.ball_y;
+                ballSpeedY = data.ballSpeedY;
+                ballSpeedX = data.ballSpeedX;
+            }
             if (data.action === 'move_paddle') {
                 movePaddle(data);
             }
             if (data.action === 'stop_paddle') {
                 stopPaddle(data);
+            }
+            if (data.action === 'score_track') {
+                playerScore = data.player_score;
+                opponentScore = data.opponent_score;
+                gameOver = data.game_over;
             }
         }; 
         
@@ -99,6 +105,9 @@ export function initializeBall() {
     ballSpeedY = 2;
 }
 
+const playerID = sessionStorage.getItem('playerID');
+const currentPlayer = sessionStorage.getItem('player');
+
 export function updateBall() {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
@@ -106,14 +115,16 @@ export function updateBall() {
     if (ballY + ballRadius > canvas.height || ballY - ballRadius < 0) {
         ballSpeedY = -ballSpeedY;
         
-        ws.send(JSON.stringify({
-            'action': 'ball_track',
-            'user': user_json,
-            'ball_x': ballX,
-            'ball_y': ballY,
-            'ballSpeedY': ballSpeedY
-
-        }));
+        if (currentPlayer === playerID) {
+            ws.send(JSON.stringify({
+                'action': 'ball_track',
+                'user': user_json,
+                'ball_x': ballX,
+                'ball_y': ballY,
+                'ballSpeedY': ballSpeedY,
+                'ballSpeedX': ballSpeedX
+            }));
+        }
     } 
 }
 
@@ -174,12 +185,21 @@ function initialize() {
                     gameOver = true;
                 }
                 ballOutOfBoundsLeft = true;
+                if (currentPlayer === playerID) {
+                    ws.send(JSON.stringify({
+                        'action': 'score_track',
+                        'user': user_json,
+                        'playerScore': playerScore,
+                        'opponentScore': opponentScore,
+                        'gameOver': gameOver
+                    }));
+                }
                 resetBall();
             }
         } else {
             ballOutOfBoundsLeft = false;
         }
-
+        
         if (ballX + ballRadius > canvas.width) {
             if (!ballOutOfBoundsRight) {
                 playerScore++;
@@ -187,18 +207,47 @@ function initialize() {
                     gameOver = true;
                 }
                 ballOutOfBoundsRight = true;
+                if (currentPlayer === playerID) {
+                    ws.send(JSON.stringify({
+                        'action': 'score_track',
+                        'user': user_json,
+                        'playerScore': playerScore,
+                        'opponentScore': opponentScore,
+                        'gameOver': gameOver
+                    }));
+                }
                 resetBall();
             }
         } else {
             ballOutOfBoundsRight = false;
         }
-
+        
         if (ballX - ballRadius < paddleWidth && ballY > playerY && ballY < playerY + paddleHeight) {
             ballSpeedX = -ballSpeedX;
+            if (currentPlayer === playerID) {
+                ws.send(JSON.stringify({
+                    'action': 'ball_track',
+                    'user': user_json,
+                    'ball_x': ballX,
+                    'ball_y': ballY,
+                    'ballSpeedY': ballSpeedY,
+                    'ballSpeedX': ballSpeedX
+                }));
+            }
         }
-
+        
         if (ballX + ballRadius > canvas.width - paddleWidth && ballY > opponentY && ballY < opponentY + paddleHeight) {
             ballSpeedX = -ballSpeedX;
+            if (currentPlayer === playerID) {
+                ws.send(JSON.stringify({
+                    'action': 'ball_track',
+                    'user': user_json,
+                    'ball_x': ballX,
+                    'ball_y': ballY,
+                    'ballSpeedY': ballSpeedY,
+                    'ballSpeedX': ballSpeedX
+                }));
+            }
         }
     }
 

@@ -316,6 +316,7 @@ class PongConsumer(WebsocketConsumer):
             ball_x = data["ball_x"]
             ball_y = data["ball_y"]
             ballSpeedY = data["ballSpeedY"]
+            ballSpeedX = data["ballSpeedX"]
             async_to_sync(self.channel_layer.group_send)(
                 self.pong_match, 
                 {
@@ -324,7 +325,25 @@ class PongConsumer(WebsocketConsumer):
                     "user_id": user_id,
                     "ball_x": ball_x,
                     "ball_y": ball_y,
-                    "ballSpeedY": ballSpeedY
+                    "ballSpeedY": ballSpeedY,
+                    "ballSpeedX": ballSpeedX
+                }
+            )
+        if data.get('action') == 'score_track':
+            # print(f"Data In ScoreTrack")
+            # pprint.pp(data)
+            player_score = data["playerScore"]
+            opponent_score = data["opponentScore"]
+            game_over = data["gameOver"]
+            async_to_sync(self.channel_layer.group_send)(
+                self.pong_match, 
+                {
+                    "type": "score.track",
+                    "action": data.get('action'),
+                    "user_id": user_id,
+                    "player_score": player_score,
+                    "opponent_score": opponent_score,
+                    "game_over": game_over
                 }
             )
 
@@ -344,6 +363,7 @@ class PongConsumer(WebsocketConsumer):
         ball_x = event["ball_x"]
         ball_y = event["ball_y"]
         ballSpeedY = event["ballSpeedY"]
+        ballSpeedX = event["ballSpeedX"]
         action = event["action"]
         self.send(text_data=json.dumps(
         {
@@ -351,7 +371,23 @@ class PongConsumer(WebsocketConsumer):
             "user_id": user_id,
             "ball_x": ball_x,
             "ball_y": ball_y,
-            "ballSpeedY": ballSpeedY
+            "ballSpeedY": ballSpeedY,
+            "ballSpeedX": ballSpeedX
+        }))
+
+    def score_track(self, event):
+        action = event["action"]
+        user_id = event["user_id"]
+        player_score = event["player_score"]
+        opponent_score = event["opponent_score"]
+        game_over = event["game_over"]
+        self.send(text_data=json.dumps(
+        {
+            "action": action,
+            "user_id": user_id,
+            "player_score": player_score,
+            "opponent_score": opponent_score,
+            'game_over': game_over
         }))
 
     def pong_log(self, event):
