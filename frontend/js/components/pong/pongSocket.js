@@ -1,6 +1,7 @@
 import { navigateTo } from '../../utils.js';
 
 let ws = null;
+const jwttoken = sessionStorage.getItem('jwtToken'); 
 
 //Need to get URL dinamically
 export function initPongSocket(url='ws://localhost:8000/ws/pong_match/pong1/') {
@@ -8,6 +9,13 @@ export function initPongSocket(url='ws://localhost:8000/ws/pong_match/pong1/') {
     if (!ws) {
         ws = new WebSocket(url);
     }
+
+    ws.onopen = function (event) {
+        console.log("Connected to Pong WebSocket");
+        ws.send(JSON.stringify({
+            Authorization: jwttoken,
+        }));
+    };
 
     ws.onmessage = (event) => {
     

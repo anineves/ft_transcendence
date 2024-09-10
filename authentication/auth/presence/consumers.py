@@ -11,7 +11,7 @@ from django.contrib.auth.models import AnonymousUser
 from accounts.serializers import MatchSerializer
 from accounts.models import PlayerChannel, Player, PrivateGroup
 
-from myproject.chat_config.jwt_middleware import authenticate_user
+from myproject.chat_config.jwt_middleware import authenticate_user, handle_authentication
 
 from django.db.models import Q
 
@@ -57,13 +57,27 @@ class ChatConsumer(WebsocketConsumer):
                         if self.user != AnonymousUser() else "Anonymous left the chat"
                 }
             )
+        if close_code == 400:
+            self.send_self_channel_messages("You must have a player to use this feature")
         return super().disconnect(close_code)
 
     def receive(self, text_data=None):
         data = json.loads(text_data)
         
-        if data.get('Authorization'):
-            return self.handle_authentication(data.get('Authorization'))
+        if data.get('Authorization'): #Should we receive the token for every message?
+            user = handle_authentication(self, data.get('Authorization'))
+            if user:
+                async_to_sync(self.channel_layer.group_send)(
+                    self.global_chat, 
+                    {
+                        'type': 'chat.message',
+                        'message': f"{self.user.player.nickname} has joined the chat"
+                    }   
+                )
+                return
+            else:
+                return self.disconnect(400)
+            # return self.handle_authentication(data.get('Authorization'))
         
         if data.get('action') == "block" or data.get('action') == "unblock":
             return self.block_player(data.get('player'), data.get('action'))
@@ -149,36 +163,6 @@ class ChatConsumer(WebsocketConsumer):
             self.private_group.group_name, to_player.player_channel.channel_name)
 
         return self.private_group
-    
-    def handle_authentication(self, token):
-
-        self.user = authenticate_user(token)
-        if self.user != AnonymousUser():
-            try: #TODO: Get or create may prevent DB problems / Find a way to clean channel before updating
-                print(f"Player: {self.user.player}")
-                print(f"Channel: {self.channel_name}")
-                player, created = PlayerChannel.objects.update_or_create(
-                    # channel_name=self.channel_name,
-                    player=self.user.player,
-                    defaults={'channel_name': self.channel_name}
-                )
-                if created:
-                    print("Created")
-                else:
-                    print(player)
-            except Exception as e:
-                print(e)
-                self.send_self_channel_messages("You must have a player to chat")
-                return self.disconnect(400)
-
-        async_to_sync(self.channel_layer.group_send)(
-            self.global_chat, 
-            {
-                'type': 'chat.message',
-                'message': f"{self.user.player.nickname} has joined the chat" \
-                        if self.user != AnonymousUser() else "Anonymous has joined the chat"
-            }   
-        )
 
     def send_self_channel_messages(self, message):
         async_to_sync(self.channel_layer.send)(self.channel_name, 
@@ -232,6 +216,7 @@ class PongConsumer(WebsocketConsumer):
             }
         )
 
+        # print(f"User Player: {self.user.player}")
         #TODO: Change it to right player IDs
         if len(pong_group) == 0:
             pong_group['player'] = 1 #self.channel_name
@@ -263,7 +248,13 @@ class PongConsumer(WebsocketConsumer):
         #         'message': f"{self.user} left the match"
         #     }
         # )
+        if close_code == 400:
+            self.send_self_channel_messages(
+                "Authentication failed. \
+                Ensure you must have a valid account and a player to access this feature."
+            )
         pong_group.clear()
+        self.close()
         return super().disconnect(close_code)
 
     def receive(self, text_data=None):
@@ -271,10 +262,21 @@ class PongConsumer(WebsocketConsumer):
         # print(f"User: {self.user}")
 
         data = json.loads(text_data)
-        user_id = data["user"]['id'] # Test using user in scope
+        # user_id = data["user"]['id'] # Test using user in scope
 
-        # User = get_user_model()
-        # user = User.objects.select_related('player').get(id=user_id)
+        if data.get('Authorization'):
+            user = handle_authentication(self, data.get('Authorization'))
+            if user:
+                async_to_sync(self.channel_layer.group_send)(
+                    self.pong_match, 
+                    {
+                        'type': 'pong.log',
+                        'message': f"{self.user.player.nickname} has joined the lobby" \
+                                if self.user != AnonymousUser() else "Anonymous has joined the lobby"
+                    }   
+                )
+            else:
+                return self.disconnect(400)
 
         # if data.get('action') == 'create_match':
         #     game = data['game']
@@ -308,7 +310,7 @@ class PongConsumer(WebsocketConsumer):
                 {
                     "type": "pong.move",
                     "action": data.get('action'),
-                    "user_id": user_id,
+                    "user_id": user.id,
                     "key_move": key
                 }
             )
@@ -322,7 +324,7 @@ class PongConsumer(WebsocketConsumer):
                 {
                     "type": "ball.track",
                     "action": data.get('action'),
-                    "user_id": user_id,
+                    "user_id": user.id,
                     "ball_x": ball_x,
                     "ball_y": ball_y,
                     "ballSpeedY": ballSpeedY,
@@ -340,7 +342,7 @@ class PongConsumer(WebsocketConsumer):
                 {
                     "type": "score.track",
                     "action": data.get('action'),
-                    "user_id": user_id,
+                    "user_id": user.id,
                     "player_score": player_score,
                     "opponent_score": opponent_score,
                     "game_over": game_over
@@ -398,3 +400,10 @@ class PongConsumer(WebsocketConsumer):
             "message": message,
             "action": action if action else "Null"
         }))
+
+    def send_self_channel_messages(self, message):
+        async_to_sync(self.channel_layer.send)(self.channel_name, 
+            {
+                "type": "pong.log",
+                "message": message
+            })

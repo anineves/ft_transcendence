@@ -4,6 +4,10 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 
+from accounts.models import PlayerChannel
+from asgiref.sync import async_to_sync
+
+
 import pprint
 
 
@@ -11,8 +15,7 @@ class JWTAuthMiddleware(BaseMiddleware):
     
 
     async def __call__(self, scope, receive, send):
-        # print(f"Scope JWT")
-        # pprint.pp(scope)
+
         token = self.get_token_from_scope(scope)
         
         if token != None:
@@ -59,4 +62,23 @@ def authenticate_user(token):
         user = User.objects.get(id=user_id)
         return user
     except:
-        return AnonymousUser()
+        return None
+    
+
+def handle_authentication(obj, token):
+
+    obj.user = authenticate_user(token)
+    if obj.user:
+        try: #TODO: Find a way to clean channel before updating
+            player, created = PlayerChannel.objects.update_or_create(
+                player=obj.user.player,
+                defaults={'channel_name': obj.channel_name}
+            )
+            if created:
+                print("Created")
+            else:
+                print(player)
+            return obj.user
+        except Exception as e:
+            print(f"Exception: {e}")
+    return None
