@@ -13,7 +13,8 @@ export const liveChat = () => {
 
     const app = document.getElementById('app');
     app.innerHTML = `
-        <div class="user-panel">
+       
+            <div class="chat">
             <div class="chat-header">
                 <h2>CHAT</h2>
                 <button id="leave-button" title="Leave"><i class="fas fa-sign-out-alt"></i></button>
@@ -23,30 +24,28 @@ export const liveChat = () => {
                 <div class="message-input-container">
                     <input id="message-input" type="text" placeholder="Type your message here...">
                     <div class="button-panel">
-                        <button id="send-button"><i class="fas fa-paper-plane"></i> Send</button>
-                        <button id="block-button"><i class="fas fa-ban"></i> Block</button>
-                        <button id="unblock-button"><i class="fas fa-unlock"></i> Unblock</button>
-
+                        <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+                        <button id="block-button"><i class="fas fa-ban"></i></button>
+                        <button id="unblock-button"><i class="fas fa-unlock"></i></button>
                         <button id="duel-button"><i class="fas fa-crossed-swords"></i> Duel</button> <!-- New Duel button -->
                     </div>
                 </div>
                 <div id="block-input-container" style="display: none;">
                     <input id="block-player-input" type="text" placeholder="Player to block...">
-                    <button id="confirm-block-button">Confirm Block</button>
+                    <button id="confirm-block-button" class="confirm-button">Confirm</button>
                 </div>
                 <div id="unblock-input-container" style="display: none;">
                     <input id="unblock-player-input" type="text" placeholder="Player to unblock...">
-                    <button id="confirm-unblock-button">Confirm Unblock</button>
+                    <button id="confirm-unblock-button" class="confirm-button" >Confirm</button>
                 </div>
-
                 <div id="duel-input-container" style="display: none;">
                     <input id="duel-player-input" type="text" placeholder="Player to duel...">
-                    <button id="confirm-duel-button">Confirm Duel</button>
+                    <button id="confirm-duel-button" class="confirm-button">Confirm</button>
                 </div>
             </div>
-        </div>
+            </div>
+  
     `;
-
     const chatBox = document.getElementById('chat-box');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
