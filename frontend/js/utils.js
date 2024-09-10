@@ -15,6 +15,7 @@ import { setupTournament } from './components/tournament.js';
 import { waitRemote } from './components/waitRemote.js';
 import { liveChat } from './components/live-chat.js';
 import { renderPlayerProfile } from './components/friendsPanel.js';
+import { render3DPong } from './components/3dPong.js';
 
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
@@ -35,6 +36,7 @@ export const routes = {
     '/wait-remote' : waitRemote,
     '/live-chat' : liveChat,
     '/player-profile': renderPlayerProfile,
+    '/3d-pong': render3DPong,
 };
 
 // Altera a URL do navegador e atualizar a exibição da página

@@ -1,3 +1,23 @@
+.three{
+    body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #000;
+    }
+    canvas {
+        display: block;
+        width: 90vw;
+        height: 80vh;
+        max-width: 90%;
+        max-height: 80%;
+        border: 2px solid white;
+    }
+}
+
 .menu {
     display: flex;
     flex-direction: column;

@@ -42,6 +42,14 @@ export const selectPlayerorAI = () => {
                     </button>
                 </div>
             </div>
+            <div class="game-selection-item">
+                <div id="3D-select">
+                    <button id="3DBtn" class="btn">
+                        <img src="./assets/3D.png" alt="3D" class="button-image-select">
+                        <h3>3D</h3>
+                    </button>
+                </div>
+            </div>
         </div>
     `;
     if (player) {
@@ -58,13 +66,10 @@ export const selectPlayerorAI = () => {
             </div>
         `;
     }
-    const remoteBtn = document.getElementById('remoteBtn');
-    if (remoteBtn) {
-        remoteBtn.addEventListener('click', () => {
-            navigateTo('/wait-remote');
-            sessionStorage.setItem('modality', 'remote');
-        });
-    }
+    document.getElementById('remoteBtn')?.addEventListener('click', () => {
+        navigateTo('/wait-remote');
+        sessionStorage.setItem('modality', 'remote');
+    });
     document.getElementById('vsPlayerBtn').addEventListener('click', () => {
         navigateTo('/pong');
         sessionStorage.setItem('modality', 'player');
@@ -73,9 +78,12 @@ export const selectPlayerorAI = () => {
         navigateTo('/pong');
         sessionStorage.setItem('modality', 'ai');
     });
+    document.getElementById('3DBtn').addEventListener('click', () => {
+        navigateTo('/3d-pong');
+        sessionStorage.setItem('modality', '3D');
+    });
     document.getElementById('tournBtn').addEventListener('click', () => {
         navigateTo('/tournament');
         sessionStorage.setItem('modality', 'tournament');
     });
-
 };
