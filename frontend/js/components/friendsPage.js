@@ -1,4 +1,5 @@
-import { navigateTo } from "../utils.js";
+import { renderRequestPanel } from './requestPanel.js';
+import { navigateTo } from '../utils.js';
 
 export const renderFriendsPage = async (user) => {
     const app = document.getElementById('app');
@@ -34,7 +35,6 @@ export const renderFriendsPage = async (user) => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 if (data.friendship && data.friendship.length > 0) {
                     data.friendship.forEach(friendId => {
                         const listItem = document.createElement('li');
@@ -52,7 +52,7 @@ export const renderFriendsPage = async (user) => {
             alert('An error occurred while loading friends.');
         }
     } else {
-        alert('You need to create a Plaayer');
+        alert('You need to create a Player');
         navigateTo('/create-player');
     }
 
@@ -64,8 +64,6 @@ export const renderFriendsPage = async (user) => {
     document.getElementById('friendsBtn2').addEventListener('click', () => {
         renderRequestPanel(user);
     });
-
-   
 
     document.getElementById('inviteForm').addEventListener('submit', async (e) => {
         e.preventDefault();

@@ -1,6 +1,5 @@
 export const renderRequestPanel = (user) => {
     const app = document.getElementById('app');
-
     app.innerHTML = `
         <div class="friend-requests-panel background-form">
             <h2>Friend Requests</h2>
