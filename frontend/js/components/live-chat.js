@@ -217,16 +217,22 @@ export const liveChat = () => {
         const playerNickname = document.getElementById('duel-player-input').value;
     
         if (playerNickname) {
+            console.log("players", playerNickname, nickname);
+            if (playerNickname === nickname) {
+                alert('You cannot challenge yourself to a duel.');
+            }
             // Code to handle the duel request with the provided nickname
             // alert('Duel requested with: ' + playerNickname);
-            document.getElementById('duel-input-container').style.display = 'none'; // Hide after confirmation
-            document.getElementById('duel-player-input').value = ''; // Clear input field
-            let duel_message = '@' + playerNickname + ' someone wants to fight #';
-            console.log('DuelMessage: ', duel_message);
-            socket.send(JSON.stringify({ message: duel_message, is_private: true }));
+            else{
+                document.getElementById('duel-input-container').style.display = 'none'; // Hide after confirmation
+                document.getElementById('duel-player-input').value = ''; // Clear input field
+                let duel_message = '@' + playerNickname + ' someone wants to fight #';
+                console.log('DuelMessage: ', duel_message);
+                socket.send(JSON.stringify({ message: duel_message, is_private: true }));
 
-            socket.close();
-            navigateTo('/wait-remote');
+                socket.close();
+                navigateTo('/wait-remote');
+            }
 
         } else {
             alert('Please enter a player nickname to duel.');

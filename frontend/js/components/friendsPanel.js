@@ -15,6 +15,7 @@ export const renderPlayerProfile = async () => {
     const avatarUrl = player.avatar || defaultAvatar;
 
     try {
+      
         app.innerHTML = `
             <div class="user-panel">
                 <div id="profileSection">
@@ -33,7 +34,7 @@ export const renderPlayerProfile = async () => {
                 </div>
             </div>
         `;
-
+        
         const response = await fetch('http://localhost:8000/api/matches/');
         const matches = await response.json();
 
