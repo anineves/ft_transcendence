@@ -112,6 +112,9 @@ export const liveChat = () => {
         chatBox.scrollTop = chatBox.scrollHeight;
     };
 
+    const user = sessionStorage.getItem('user');
+    const user_json = JSON.parse(user);
+
     socket.onopen = function (event) {
         console.log("Connected to WebSocket");
         socket.send(JSON.stringify({
@@ -121,25 +124,28 @@ export const liveChat = () => {
   
     socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
+        
         console.log('Data;', event.data)
+        
         const firstWord = data.message.split(' ')[0];
         const isOwnMessage = firstWord === nickname;
+        
         addMessage(data.message, isOwnMessage);
-
-        if (data.message.endsWith("#"))
+        if (data.action == "duel")
         {
             const chatBox = document.getElementById('chat-box'); 
             const duelMessage = document.createElement('p');
-            duelMessage.innerHTML = `
+            duelMessage.innerHTML = 
+            `
                 has challenged you to a duel! 
                 <a href="http://localhost:8080/wait-remote" id="accept-link">Accept</a>
             `;
             chatBox.appendChild(duelMessage);
+            socket.close();
+            if (user_json.id == data.from_user) {
+                navigateTo('/wait-remote');
+            }
         }
-        // duelMessage.innerHTML = `
-        //     ${duelRequest.proposer} has challenged you to a duel! 
-        //     <a href="${duelRequest.lobbyUrl}" id="accept-link">Accept</a>
-        // `;
     };
 
     socket.onerror = function (error) {
@@ -221,21 +227,21 @@ export const liveChat = () => {
             if (playerNickname === nickname) {
                 alert('You cannot challenge yourself to a duel.');
             }
-            // Code to handle the duel request with the provided nickname
-            // alert('Duel requested with: ' + playerNickname);
             else{
                 document.getElementById('duel-input-container').style.display = 'none'; // Hide after confirmation
                 document.getElementById('duel-player-input').value = ''; // Clear input field
-                let duel_message = '@' + playerNickname + ' someone wants to fight #';
-                console.log('DuelMessage: ', duel_message);
-                socket.send(JSON.stringify({ message: duel_message, is_private: true }));
-
-                socket.close();
-                navigateTo('/wait-remote');
+                
+                let duel_message = '@' + playerNickname + ' wants to fight!';
+                
+                socket.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
             }
 
         } else {
             alert('Please enter a player nickname to duel.');
         }
     });    
+    
+    socket.onclose = function () {
+        console.error("Chat socket was close"); //Debug
+    };
 };

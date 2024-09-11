@@ -88,7 +88,7 @@ class ChatConsumer(WebsocketConsumer):
         sender = self.user.player if self.user != AnonymousUser() else "Anonymous"
         
         if is_private:
-            self.handle_private_chat(message)
+            self.handle_private_chat(data)
         else:
             async_to_sync(self.channel_layer.group_send)(
                 self.global_chat, 
@@ -102,9 +102,15 @@ class ChatConsumer(WebsocketConsumer):
     def chat_message(self, event):
         message = event["message"]
         self.send(text_data=json.dumps({"message": message}))
+    
+    def request_duel(self, event):
+        message = event["message"]
+        action = event["action"]
+        from_user = event["from_user"]
+        self.send(text_data=json.dumps({"action": action, "message": message, "from_user": from_user}))
 
-    def handle_private_chat(self, message):
-
+    def handle_private_chat(self, data):
+        message = data.get("message")
         if self.user == AnonymousUser():
             return self.send_self_channel_messages("Login to send private messages")
         #TODO: Handle these three try
@@ -124,20 +130,32 @@ class ChatConsumer(WebsocketConsumer):
             PlayerChannel.objects.get(player=player2.id)
         except:
             return self.send_self_channel_messages("This player is not online")
-        
+    
         self.private_group = self.get_or_create_new_room(player2)
 
         if self.private_group.blocked == True:
             return self.send_self_channel_messages("Message was not sent")
-
-        async_to_sync(self.channel_layer.group_send)(
-            self.private_group.group_name,
-                {                
-                    "type": "chat.message",
-                    "message": f"{self.user.player}: {message}",
-                    "from_player": self.user.player
-                }
-            )
+        
+        if data.get("action") == "duel":
+            print(f"{data.get('action')}: {data.get('action')}")
+            async_to_sync(self.channel_layer.group_send)(   
+                        self.private_group.group_name,
+                            {                
+                                "type": "request.duel",
+                                "action": "duel",
+                                "message": f"{self.user.player}: {message}",
+                                "from_user": self.user.id
+                            }
+                        )
+        else:
+            async_to_sync(self.channel_layer.group_send)(   
+                self.private_group.group_name,
+                    {                
+                        "type": "chat.message",
+                        "message": f"{self.user.player}: {message}",
+                        "from_player": self.user.player
+                    }
+                )
 
     def get_or_create_new_room(self, to_player):
         from_player = self.user.player
@@ -265,8 +283,8 @@ class PongConsumer(WebsocketConsumer):
         # user_id = data["user"]['id'] # Test using user in scope
 
         if data.get('Authorization'):
-            user = handle_authentication(self, data.get('Authorization'))
-            if user:
+            self.user = handle_authentication(self, data.get('Authorization'))
+            if self.user:
                 async_to_sync(self.channel_layer.group_send)(
                     self.pong_match, 
                     {
@@ -310,7 +328,7 @@ class PongConsumer(WebsocketConsumer):
                 {
                     "type": "pong.move",
                     "action": data.get('action'),
-                    "user_id": user.id,
+                    "user_id": self.user.id,
                     "key_move": key
                 }
             )
@@ -324,7 +342,7 @@ class PongConsumer(WebsocketConsumer):
                 {
                     "type": "ball.track",
                     "action": data.get('action'),
-                    "user_id": user.id,
+                    "user_id": self.user.id,
                     "ball_x": ball_x,
                     "ball_y": ball_y,
                     "ballSpeedY": ballSpeedY,
@@ -342,7 +360,7 @@ class PongConsumer(WebsocketConsumer):
                 {
                     "type": "score.track",
                     "action": data.get('action'),
-                    "user_id": user.id,
+                    "user_id": self.user.id,
                     "player_score": player_score,
                     "opponent_score": opponent_score,
                     "game_over": game_over
