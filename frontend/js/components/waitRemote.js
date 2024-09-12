@@ -1,7 +1,9 @@
 import { initPongSocket } from './pong/pongSocket.js'
 
+const urlParams = new URLSearchParams(window.location.search);
+const groupNameURL = urlParams.get('group_name');
 
-export const waitRemote = () => {
+export const waitRemote = (groupName) => {
     const app = document.getElementById('app');
     app.innerHTML =
     `
@@ -10,14 +12,21 @@ export const waitRemote = () => {
     </div>
     `;
     sessionStorage.setItem('modality', 'remote');
-    initPongSocket('ws://localhost:8000/ws/pong_match/pong1/');
+    console.log("GroupName: ", groupName)
+    console.log("groupNameURL: ", groupNameURL)
+    if (groupName)
+        initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+    else if (groupNameURL)
+        initPongSocket(`ws://localhost:8000/ws/pong_match/${groupNameURL}/`);
+    else
+        alert("Something went wrong with groupName")
 };
 
 
     // <form id="sendinv">
     // <input type="text" id="nickFriend" placeholder="nickname" required class="form-control mb-2">
     // <button id="submit" type="submit" class="btn">Submit</button>
-    // </form>
+    // </form>  
     // <form id="accept-teste">
     // <input type="text" id="nickaccept" placeholder="nickname" required class="form-control mb-2">
     // <button id="submit" type="submit" class="btn">Submit</button>

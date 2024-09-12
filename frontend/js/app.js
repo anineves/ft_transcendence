@@ -27,7 +27,7 @@ const routes = {
     '/star-menu': startMenu,
     '/select-playerOrAI': selectPlayerorAI,
     '/friendPanel': renderRequestPanel,
-    'wait-remote': waitRemote,
+    '/wait-remote': waitRemote,
     '/player-profile': renderPlayerProfile,
     '/3d-pong': render3DPong,
 };

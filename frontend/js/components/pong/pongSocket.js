@@ -4,7 +4,7 @@ let ws = null;
 const jwttoken = sessionStorage.getItem('jwtToken'); 
 
 //Need to get URL dinamically
-export function initPongSocket(url='ws://localhost:8000/ws/pong_match/pong1/') {
+export function initPongSocket(url) {
     
     if (!ws) {
         ws = new WebSocket(url);

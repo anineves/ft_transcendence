@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 
 from accounts.serializers import MatchSerializer
-from accounts.models import PlayerChannel, Player, PrivateGroup
+from accounts.models import PlayerChannel, Player, PrivateGroup, MatchGroup
 
 from myproject.chat_config.jwt_middleware import authenticate_user, handle_authentication
 
@@ -107,7 +107,8 @@ class ChatConsumer(WebsocketConsumer):
         message = event["message"]
         action = event["action"]
         from_user = event["from_user"]
-        self.send(text_data=json.dumps({"action": action, "message": message, "from_user": from_user}))
+        group_name = event["group_name"]
+        self.send(text_data=json.dumps({"action": action, "message": message, "from_user": from_user, "group_name": group_name}))
 
     def handle_private_chat(self, data):
         message = data.get("message")
@@ -144,7 +145,8 @@ class ChatConsumer(WebsocketConsumer):
                                 "type": "request.duel",
                                 "action": "duel",
                                 "message": f"{self.user.player}: {message}",
-                                "from_user": self.user.id
+                                "from_user": self.user.id,
+                                "group_name": self.private_group.group_name
                             }
                         )
         else:
@@ -212,55 +214,20 @@ class ChatConsumer(WebsocketConsumer):
 
 
 
-
-pong_group = {}
-
 class PongConsumer(WebsocketConsumer):
     
     def connect(self):
         self.group_name = self.scope["url_route"]["kwargs"]["pong_match"]
-        self.pong_match = f"{self.group_name}_match"
-        self.user = self.scope["user"]
-
-        async_to_sync(self.channel_layer.group_add)(
-            self.pong_match, self.channel_name)
-        
+        self.pong_match = f"pong_group_{self.group_name}"
+        self.user = self.scope["user"]       
         self.accept()
-        async_to_sync(self.channel_layer.group_send)(
-            self.pong_match, 
-            {
-                'type': 'pong.log',
-                'message': f"{self.user} joined the match"
-            }
-        )
-
-        # print(f"User Player: {self.user.player}")
-        #TODO: Change it to right player IDs
-        if len(pong_group) == 0:
-            pong_group['player'] = 1 #self.channel_name
-        else:
-            pong_group['opponent'] = 2 #self.channel_name
-
-        if len(pong_group) == 2:
-            async_to_sync(self.channel_layer.group_send)(
-                self.pong_match, 
-                {
-                    'type': 'pong.log',
-                    'action': 'full_lobby',
-                    'message': {
-                        'player': pong_group['player'],
-                        'opponent': pong_group['opponent']
-                    }
-                }
-            )
-            pong_group.clear()
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
-            self.pong_match, self.channel_name
+            self.match_group.group_name, self.channel_name
         )
         # async_to_sync(self.channel_layer.group_send)(
-        #     self.pong_match, 
+        #     self.match_group.group_name, 
         #     {
         #         'type': 'match.message',
         #         'message': f"{self.user} left the match"
@@ -271,7 +238,6 @@ class PongConsumer(WebsocketConsumer):
                 "Authentication failed. \
                 Ensure you must have a valid account and a player to access this feature."
             )
-        pong_group.clear()
         self.close()
         return super().disconnect(close_code)
 
@@ -285,14 +251,15 @@ class PongConsumer(WebsocketConsumer):
         if data.get('Authorization'):
             self.user = handle_authentication(self, data.get('Authorization'))
             if self.user:
-                async_to_sync(self.channel_layer.group_send)(
-                    self.pong_match, 
-                    {
-                        'type': 'pong.log',
-                        'message': f"{self.user.player.nickname} has joined the lobby" \
-                                if self.user != AnonymousUser() else "Anonymous has joined the lobby"
-                    }   
-                )
+                self.get_or_create_new_room()
+                # async_to_sync(self.channel_layer.group_send)(
+                #     self.match_group.group_name, 
+                #     {
+                #         'type': 'pong.log',
+                #         'message': f"{self.user.player.nickname} has joined the lobby" \
+                #                 if self.user != AnonymousUser() else "Anonymous has joined the lobby"
+                #     }   
+                # )
             else:
                 return self.disconnect(400)
 
@@ -324,7 +291,7 @@ class PongConsumer(WebsocketConsumer):
         if data.get('action') == 'move_paddle' or data.get('action') == 'stop_paddle':
             key = data["key"]
             async_to_sync(self.channel_layer.group_send)(
-                self.pong_match, 
+                self.match_group.group_name, 
                 {
                     "type": "pong.move",
                     "action": data.get('action'),
@@ -338,7 +305,7 @@ class PongConsumer(WebsocketConsumer):
             ballSpeedY = data["ballSpeedY"]
             ballSpeedX = data["ballSpeedX"]
             async_to_sync(self.channel_layer.group_send)(
-                self.pong_match, 
+                self.match_group.group_name, 
                 {
                     "type": "ball.track",
                     "action": data.get('action'),
@@ -356,7 +323,7 @@ class PongConsumer(WebsocketConsumer):
             opponent_score = data["opponentScore"]
             game_over = data["gameOver"]
             async_to_sync(self.channel_layer.group_send)(
-                self.pong_match, 
+                self.match_group.group_name, 
                 {
                     "type": "score.track",
                     "action": data.get('action'),
@@ -425,3 +392,32 @@ class PongConsumer(WebsocketConsumer):
                 "type": "pong.log",
                 "message": message
             })
+        
+    def get_or_create_new_room(self):
+        player = self.user.player
+        try:
+            self.match_group, created = MatchGroup.objects.get_or_create(
+                group_name=self.pong_match
+            )
+            if created:
+                self.match_group.player = player
+            else:
+                self.match_group.opponent = player
+                async_to_sync(self.channel_layer.group_send)(
+                    self.match_group.group_name, 
+                    {
+                        'type': 'pong.log',
+                        'action': 'full_lobby',
+                        'message': {
+                            'player': self.match_group.player,
+                            'opponent': self.match_group.opponent
+                        }
+                    }
+                )
+            self.match_group.save()
+
+            async_to_sync(self.channel_layer.group_add)(
+                self.match_group.group_name, self.channel_name)
+        except Exception as e:
+            print(f"# Something went wrong with creating_new_room: \n{e}")
+        return

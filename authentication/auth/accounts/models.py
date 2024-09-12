@@ -112,3 +112,12 @@ class PrivateGroup(models.Model):
 
     def __str__(self):        
         return f"{self.group_name}"
+    
+
+class MatchGroup(models.Model):
+    group_name = models.CharField(max_length=255, unique=True)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, null=True, related_name="player")
+    opponent = models.ForeignKey(Player, on_delete=models.CASCADE, null=True, related_name="opponent")
+
+    def __str__(self):
+        return f"{self.group_name}"
