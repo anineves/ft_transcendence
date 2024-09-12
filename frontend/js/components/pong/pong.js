@@ -263,7 +263,7 @@ function initialize() {
             console.log("remote", remote);
             if (remote != 'accept') {
                 try {
-                    const winner_id = playerScore > opponentScore ? 1 : 2;
+                    const winner_id = 2;
                     const score = `${playerScore}-${opponentScore}`;
                     const duration = "10";
 

@@ -16,6 +16,7 @@ import { waitRemote } from './components/waitRemote.js';
 import { liveChat } from './components/live-chat.js';
 import { renderPlayerProfile } from './components/friendsPanel.js';
 import { render3DPong } from './components/3dPong.js';
+import { stats } from './components/stats.js';
 
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
@@ -37,6 +38,7 @@ export const routes = {
     '/live-chat' : liveChat,
     '/player-profile': renderPlayerProfile,
     '/3d-pong': render3DPong,
+    '/stats': stats,
 };
 
 // Altera a URL do navegador e atualizar a exibição da página

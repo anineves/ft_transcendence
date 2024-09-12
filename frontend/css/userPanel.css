@@ -3,8 +3,8 @@
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    width: 40vw;
-    height: 70vh;
+    width: 60vw;
+    height: 85vh;
     margin: auto;
     color: #fff;
     font-family: "Arial", sans-serif;
@@ -23,7 +23,7 @@
 .user-panel p {
     margin: 8px 0;
     line-height: 1.5;
-    margin-left: 35%;
+    margin-left: 40%;
 }
 
 
@@ -36,23 +36,47 @@
     cursor: pointer;
     font-size: 16px;
     margin: 10px 5px;
-    transition: background 0.3s, transform 0.3s;
+    transition:  0.3s, transform 0.3s;
 }
 
 .user-panel .btn:hover {
     background: #cc00cc;
 }
 
+.profile-content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+    margin-left: 7%;
+}
 .avatar {
     width: 20%;
     height: auto;
     border-radius: 50%;
     cursor: pointer;
     margin-bottom: 20px;
-    border: 2px solid #fff;
-    margin-left: 30%;
+    border: 0.5px solid #fff;
+    margin-left: 40%;
+}
+.info, .stats {
+    width: 45%;
+    box-sizing: border-box;
 }
 
+.stats h2, .info h2 {
+    text-align: left;
+    font-size: 20px;
+}
+
+.info p, .stats p {
+    margin: 3px 0;
+    line-height: 1.5;
+}
+
+.all-btn {
+    margin-left: 15%;
+}
 #editBtn {
     background: linear-gradient(145deg, #00ff99, #0044cc);
     border: none;
@@ -108,63 +132,23 @@
 }
 
 
+@media (max-width: 480px) {
+    .user-panel {
+        width: 100%;
+        font-size: 12px;
+        padding: 10px;
+    }
 
+    .avatar {
+        width: 50%;
+    }
 
-.chat-panel {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-.chat-box {
-    height: 400px;
-    overflow-y: scroll;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #fff; /* White background for the chat area */
-}
-
-.message {
-    margin-bottom: 10px;
-    padding: 5px;
-    border-radius: 5px;
-    max-width: 80%;
-}
-
-.own-message {
-    background-color: #ffdddd; /* Light red for own messages */
-    color: red;
-    text-align: right;
-    margin-left: auto;
-}
-
-.other-message {
-    background-color: #ffffff; /* White for other messages */
-    color: black;
-}
-
-.message-input-panel {
-    display: flex;
-}
-
-#message-input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-#send-button {
-    padding: 10px;
-    margin-left: 5px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-}
-
-#send-button:hover {
-    background-color: #0056b3;
+    .btn {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
+    
+    #updateProfileSection {
+        width: 100%;
+    }
 }

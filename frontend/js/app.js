@@ -14,6 +14,7 @@ import { renderRequestPanel } from './components/requestPanel.js';
 import { waitRemote } from './components/waitRemote.js';
 import { renderPlayerProfile } from './components/friendsPanel.js';
 import { render3DPong } from './components/3dPong.js';
+import { stats } from './components/stats.js';
 // Define as rotas da aplicação e suas funções de renderização correspondentes
 const routes = {
     '/': renderMenu,
@@ -30,6 +31,7 @@ const routes = {
     'wait-remote': waitRemote,
     '/player-profile': renderPlayerProfile,
     '/3d-pong': render3DPong,
+    '/stats': stats,
 };
 
 // Adiciona um listener que chama a função de renderização quando o DOM é carregado
