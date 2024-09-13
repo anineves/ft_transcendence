@@ -59,10 +59,10 @@ export const renderGameSelection = async () => {
                 </div>
             </div>
             <div class="game-selection-item">
-                <div id="4line-select">
-                    <button id="4LineBtn" class="btn">
-                        <img src="./assets/4lineneon.png" alt="4 in a Line" class="button-image-select">
-                        <h3>4 in a Line</h3>
+                <div id="snake-select">
+                    <button id="snakeBtn" class="btn">
+                        <img src="./assets/snake3d.png" alt="snake" class="button-image-select">
+                        <h3>Snake</h3>
                     </button>
                 </div>
             </div>
@@ -71,5 +71,5 @@ export const renderGameSelection = async () => {
 
     // Adicionar eventos de clique aos botões
     document.getElementById('pongBtn').addEventListener('click', () => navigateTo('/select-playerOrAI'));
-    document.getElementById('4LineBtn').addEventListener('click', () => navigateTo('/4line'));
+    document.getElementById('snakeBtn').addEventListener('click', () => navigateTo('/3d-snake'));
 };

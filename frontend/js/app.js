@@ -14,6 +14,7 @@ import { renderRequestPanel } from './components/requestPanel.js';
 import { waitRemote } from './components/waitRemote.js';
 import { renderPlayerProfile } from './components/friendsPanel.js';
 import { render3DPong } from './components/3dPong.js';
+import { render3Snake } from './components/3dsnake.js';
 import { stats } from './components/stats.js';
 // Define as rotas da aplicação e suas funções de renderização correspondentes
 const routes = {
@@ -31,6 +32,7 @@ const routes = {
     'wait-remote': waitRemote,
     '/player-profile': renderPlayerProfile,
     '/3d-pong': render3DPong,
+    '/3d-snake': render3Snake,
     '/stats': stats,
 };
 
