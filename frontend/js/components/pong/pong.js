@@ -117,16 +117,18 @@ export function updateBall() {
 
     if (ballY + ballRadius > canvas.height || ballY - ballRadius < 0) {
         ballSpeedY = -ballSpeedY;
-        
-        if (currentPlayer === playerID) {
-            ws.send(JSON.stringify({
-                'action': 'ball_track',
-                'user': user_json,
-                'ball_x': ballX,
-                'ball_y': ballY,
-                'ballSpeedY': ballSpeedY,
-                'ballSpeedX': ballSpeedX
-            }));
+        if(modality2 == 'remote')
+        {
+            if (currentPlayer === playerID) {
+                ws.send(JSON.stringify({
+                    'action': 'ball_track',
+                    'user': user_json,
+                    'ball_x': ballX,
+                    'ball_y': ballY,
+                    'ballSpeedY': ballSpeedY,
+                    'ballSpeedX': ballSpeedX
+                }));
+            }
         }
     } 
 }
