@@ -226,13 +226,9 @@ class PongConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(
             self.match_group.group_name, self.channel_name
         )
-        # async_to_sync(self.channel_layer.group_send)(
-        #     self.match_group.group_name, 
-        #     {
-        #         'type': 'match.message',
-        #         'message': f"{self.user} left the match"
-        #     }
-        # )
+        if close_code == 401:
+            self.match_group.delete()
+
         if close_code == 400:
             self.send_self_channel_messages(
                 "Authentication failed. \
@@ -242,51 +238,14 @@ class PongConsumer(WebsocketConsumer):
         return super().disconnect(close_code)
 
     def receive(self, text_data=None):
-        # print(f"Data In Consumer: {text_data}")
-        # print(f"User: {self.user}")
-
         data = json.loads(text_data)
-        # user_id = data["user"]['id'] # Test using user in scope
 
         if data.get('Authorization'):
             self.user = handle_authentication(self, data.get('Authorization'))
             if self.user:
                 self.get_or_create_new_room()
-                # async_to_sync(self.channel_layer.group_send)(
-                #     self.match_group.group_name, 
-                #     {
-                #         'type': 'pong.log',
-                #         'message': f"{self.user.player.nickname} has joined the lobby" \
-                #                 if self.user != AnonymousUser() else "Anonymous has joined the lobby"
-                #     }   
-                # )
             else:
                 return self.disconnect(400)
-
-        # if data.get('action') == 'create_match':
-        #     game = data['game']
-        #     players = data['players']
-
-            # if user.player.id == players[0]:
-            #     serializer = MatchSerializer(data={
-            #         'game': game,
-            #         'players': players
-            #     })
-            #     if serializer.is_valid():
-            #         try:
-            #             match = serializer.save()
-            #             self.send(text_data=json.dumps({
-            #                 'action': 'match_created',
-            #                 'match_id': match.id,
-            #                 'game': match.game,
-            #                 'players': match.players
-            #             }))
-            #             return 
-            #         except:
-            #             self.send(text_data=json.dumps({
-            #             'action': 'error',
-            #             'errors': serializer.errors
-            #         }))
 
         if data.get('action') == 'move_paddle' or data.get('action') == 'stop_paddle':
             key = data["key"]
@@ -317,11 +276,11 @@ class PongConsumer(WebsocketConsumer):
                 }
             )
         if data.get('action') == 'score_track':
-            # print(f"Data In ScoreTrack")
-            # pprint.pp(data)
             player_score = data["playerScore"]
             opponent_score = data["opponentScore"]
             game_over = data["gameOver"]
+            if game_over == True:
+                return self.disconnect(401)
             async_to_sync(self.channel_layer.group_send)(
                 self.match_group.group_name, 
                 {
