@@ -141,10 +141,19 @@ export const liveChat = () => {
                 <a href="http://localhost:8080/wait-remote" id="accept-link">Accept</a>
             `;
             chatBox.appendChild(duelMessage);
-            socket.close();
             if (user_json.id == data.from_user) {
                 navigateTo('/wait-remote');
             }
+            
+            const timeout = setTimeout(() => {
+                duelMessage.innerHTML = 'You lost the invite!';
+            }, 5000); 
+            
+            const acceptLink = document.getElementById('accept-link');
+            acceptLink.addEventListener('click', () => {
+                socket.close();
+                clearTimeout(timeout); 
+            });
         }
     };
 

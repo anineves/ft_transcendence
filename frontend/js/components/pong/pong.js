@@ -65,29 +65,32 @@ export const startPongGame = async () => {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initialize);
     } else {
-        ws = initPongSocket('ws://localhost:8000/ws/pong_match/pong1/');
+        if(modality2 == 'remote')
+        {
+            ws = initPongSocket('ws://localhost:8000/ws/pong_match/pong1/');
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                if (data.action === 'ball_track') {
+                    ballX = data.ball_x;
+                    ballY = data.ball_y;
+                    ballSpeedY = data.ballSpeedY;
+                    ballSpeedX = data.ballSpeedX;
+                }
+                if (data.action === 'move_paddle') {
+                    movePaddle(data);
+                }
+                if (data.action === 'stop_paddle') {
+                    stopPaddle(data);
+                }
+                if (data.action === 'score_track') {
+                    playerScore = data.player_score;
+                    opponentScore = data.opponent_score;
+                    gameOver = data.game_over;
+                }
+            }; 
+        }
         
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            
-            if (data.action === 'ball_track') {
-                ballX = data.ball_x;
-                ballY = data.ball_y;
-                ballSpeedY = data.ballSpeedY;
-                ballSpeedX = data.ballSpeedX;
-            }
-            if (data.action === 'move_paddle') {
-                movePaddle(data);
-            }
-            if (data.action === 'stop_paddle') {
-                stopPaddle(data);
-            }
-            if (data.action === 'score_track') {
-                playerScore = data.player_score;
-                opponentScore = data.opponent_score;
-                gameOver = data.game_over;
-            }
-        }; 
         
         initialize();
     }
