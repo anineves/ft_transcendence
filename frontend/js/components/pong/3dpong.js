@@ -477,4 +477,3 @@ document.addEventListener('keyup', onDocumentKeyUp, false);
 
 // Iniciar a animação
 animate();
-

@@ -1,6 +1,10 @@
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x555555);
 
+// NOME DOS PLAYERS
+const redNickname ="asousa-n";
+const blueNickname ="jegger-s";
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 500);
 camera.position.z = 7;
 camera.position.x = 0;
@@ -110,10 +114,10 @@ document.body.appendChild(renderer.domElement);
 //Criar a Snake
 const redSnake = [];
 let redSnakeDir = new THREE.Vector3(-1, 0, 0);
-let redSnakeLen = 5;
+let redSnakeLen = 8;
 const blueSnake = [];
 let blueSnakeDir = new THREE.Vector3(-1, 0, 0);
-let blueSnakeLen = 5;
+let blueSnakeLen = 8;
 
 function createSphere(x, y, z, color) {
     const sphereGeometry = new THREE.SphereGeometry(0.2, 32, 32);
@@ -125,30 +129,30 @@ function createSphere(x, y, z, color) {
 }
 
 // Snake Vermelha
-for (let i = 0; i < redSnakeLen; i++) {
-    redSnake.push(createSphere(i * 0.3, 0.2, 0, 0xff0000));
+for (let i = 4; i < redSnakeLen; i++) {
+    redSnake.push(createSphere(i * 0.3, 0.2, -3, 0xff0000));
 }
 
 // Snake Azul
-for (let i = 0; i < blueSnakeLen; i++) {
-    blueSnake.push(createSphere(i* 0.3, 0.2, 1, 0x0000ff));
+for (let i = 4; i < blueSnakeLen; i++) {
+    blueSnake.push(createSphere(i * 0.3, 0.2, 3, 0x0000ff));
 }
 
 //variaveis para a colisao da mesa
 const tableLimits = {
-    minX: -3.8,
-    maxX: 3.8,
-    minZ: -3.8,
-    maxZ: 3.8
+    minX: -4,
+    maxX: 4,
+    minZ: -4,
+    maxZ: 4
 }
 
 // funcao que verifica a colisao com as paredes
-function checkCollisionWall(snake, snakeColor) {
+function checkCollisionWall(snake) {
     const head = snake[0];
 
     if (head.position.x < tableLimits.minX || head.position.x > tableLimits.maxX ||
         head.position.z < tableLimits.minZ || head.position.z > tableLimits.maxZ) {
-        return snakeColor;
+        return true;
     }
     return null;
 }
@@ -185,7 +189,7 @@ function checkHeadCollision(snakeA, snakeB) {
 function checkCollisionSnakes(snakeA, snakeB) {
     const headA = snakeA[0];
 
-    for (let i = 0; i < snakeB.length; i++) {
+    for (let i = 1; i < snakeB.length; i++) {
         if (headA.position.distanceTo(snakeB[i].position) < 0.35) {
             return true;
         }
@@ -200,22 +204,18 @@ function updateSnake(snake, direction, snakeColor) {
         const nextPosition = snake[i - 1].position.clone();
         snake[i].position.lerp(nextPosition, 0.5);
     }
-
+    // VERIFY THE FOOD COLLISION OF THE SNAKE
     if (checkCollisionFood(snake)) {
         growSnake(snake)
         scene.remove(food);
         food = createFood();
-    }
+        if (snakeColor === 'red') {
+            redScore++;
+        } else if (snakeColor === 'blue') {
+            blueScore++;
+        }
+        // WIN CONDITION IF SNAKE EATS THE FOOD 8 TIMES
 
-    // Verification Collision with Walls
-    const collisionWallResult = checkCollisionWall(snake, snakeColor);
-    if (collisionWallResult === 'red') {
-        console.log("RED tocou na parede ou nela propria");
-        // colocar blue win aqui!
-    }
-    if (collisionWallResult === 'blue') {
-        console.log("BLUE tocou na parede ou nela propria");
-        // colocar redwin aqui!
     }
 }
 
@@ -276,11 +276,28 @@ function createFood() {
     const foodMaterial = new THREE.MeshStandardMaterial({color: 0xffffff});
     const food = new THREE.Mesh(foodGeo, foodMaterial);
 
-    food.position.set (
-        THREE.MathUtils.randFloat(tableLimits.minX + 0.5, tableLimits.maxX - 0.5), 
-        0.2,
-        THREE.MathUtils.randFloat(tableLimits.minZ + 0.5, tableLimits.maxZ - 0.5)
-    );
+    let validPosition = false
+    while (!validPosition) {
+
+        food.position.set (
+            THREE.MathUtils.randFloat(tableLimits.minX + 0.5, tableLimits.maxX - 0.5), 
+            0.2,
+            THREE.MathUtils.randFloat(tableLimits.minZ + 0.5, tableLimits.maxZ - 0.5)
+        );
+
+        validPosition = true;
+        for (let snake of [redSnake, blueSnake]) {
+            for (let segment of snake) {
+                if (food.position.distanceTo(segment.position) < 0.4) {
+                    validPosition = false;
+                    break ;
+                }
+            }
+            if (!validPosition) {
+                break ;
+            }
+        }
+    }
     scene.add(food);
     return food;
 }
@@ -305,13 +322,161 @@ function growSnake(snake) {
     snake.push(newSphere);
 }
 
-//variveis para controlar o tempo de movimentacao
+// VICTORY FUNCTION
+
+let redPoints = 0;
+let bluePoints = 0;
+let loadedFont;
+
+const loader = new THREE.FontLoader();
+loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', function (font) {
+    loadedFont = font;
+});
+
+
+function showGameOver(result) {
+    const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff});
+    
+    // gameover text
+    const gameOverGeometry = new THREE.TextGeometry("GAME OVER!", {
+        font: loadedFont,
+        size: 0.8,
+        height: 0.2,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.03,
+        bevelSize: 0.02,
+        bevelOffset: 0,
+        bevelSegments: 5
+    });
+    const gameOverMesh = new THREE.Mesh(gameOverGeometry, whiteMaterial);
+    gameOverGeometry.computeBoundingBox();
+    const gameOverBB = gameOverGeometry.boundingBox;
+    gameOverMesh.position.set(-(gameOverBB.max.x - gameOverBB.min.x) / 2, 0, -1.7);
+    gameOverMesh.rotation.set(-Math.PI / 2, 0, 0);
+    scene.add(gameOverMesh);
+    
+    // WINS! TEXT
+    if (result === 'win') {
+        const winTextGeometry = new THREE.TextGeometry("WINS!", {
+            font: loadedFont,
+            size: 0.8,
+            height: 0.2,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 0.03,
+            bevelSize: 0.02,
+            bevelOffset: 0,
+            bevelSegments: 5
+        });
+        const winTextMesh = new THREE.Mesh(winTextGeometry, whiteMaterial);
+        winTextGeometry.computeBoundingBox();
+        const winTextBB = winTextGeometry.boundingBox;
+        winTextMesh.position.set(-(winTextBB.max.x - winTextBB.min.x) / 2, 0, 2.3);
+        winTextMesh.rotation.set(-Math.PI / 2, 0, 0);
+        scene.add(winTextMesh);
+    } else if (result === 'tie') {
+        const tieText_g = new THREE.TextGeometry("TIE!", {
+            font: loadedFont,
+            size: 0.8,
+            height: 0.2,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 0.03,
+            bevelSize: 0.02,
+            bevelOffset: 0,
+            bevelSegments: 5
+        });
+        const tieTextM = new THREE.Mesh(tieText_g, whiteMaterial);
+        tieText_g.computeBoundingBox();
+        const tieTextBB = tieText_g.boundingBox;
+        tieTextM.rotation.set(-Math.PI / 2, 0, 0);
+        tieTextM.position.set(-(tieTextBB.max.x) / 2, 0, 2.3);
+        scene.add(tieTextM);
+    }
+}
+
+// TIE FUNCTION
+function tieResult() {
+    scene.remove(food);
+    redSnake.forEach(segment => scene.remove(segment));
+    blueSnake.forEach(segment => scene.remove(segment));
+    showGameOver('tie');
+}
+
+// NAME OF THE RED PLAYER + REDVICTORY FUNCTION
+function redVictory() {
+    scene.remove(food);
+    redSnake.forEach(segment => scene.remove(segment));
+    blueSnake.forEach(segment => scene.remove(segment));
+    showGameOver('win');
+    const redVictory_g = new THREE.TextGeometry(`${redNickname}`, {
+        font: loadedFont,
+        size: 0.8,
+        height: 0.2,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.03,
+        bevelSize: 0.02,
+        bevelOffset: 0,
+        bevelSegments: 5
+    });
+    const redVictory_m = new THREE.MeshStandardMaterial({color: 0xff0000});
+    const redVictoryM = new THREE.Mesh(redVictory_g, redVictory_m);
+    redVictory_g.computeBoundingBox();
+    const redBB = redVictory_g.boundingBox;
+    redVictoryM.rotation.set(-Math.PI / 2, 0, 0);
+    redVictoryM.position.set(-(redBB.max.x - redBB.min.x) / 2, 0 , 0);
+    scene.add(redVictoryM);
+}
+
+// NAME OF THE BLUE PLAYER + BLUE VICTORY FUNCTION
+
+function blueVictory() {
+    scene.remove(food);
+    redSnake.forEach(segment => scene.remove(segment));
+    blueSnake.forEach(segment => scene.remove(segment));
+    showGameOver('win');
+    const blueVictory_g = new THREE.TextGeometry(`${blueNickname}`, {
+        font: loadedFont,
+        size: 0.8,
+        height: 0.2,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.03,
+        bevelSize: 0.02,
+        bevelOffset: 0,
+        bevelSegments: 5
+    });
+    const blueVictory_m = new THREE.MeshStandardMaterial({color: 0x0000ff});
+    const blueVictoryM = new THREE.Mesh(blueVictory_g, blueVictory_m);
+    blueVictory_g.computeBoundingBox();
+    const blueBB = blueVictory_g.boundingBox;
+    blueVictoryM.rotation.set(-Math.PI / 2, 0, 0);
+    blueVictoryM.position.set(-(blueBB.max.x - blueBB.min.x) / 2, 0, 0);
+    scene.add(blueVictoryM);
+}
+
+// SCORE FUNCTIONS FOR THE TWO DIFFERENT VIEWS (TOPVIEW AND REGULAR VIEW[45º])
+let redScore = 0;
+let blueScore = 0;
+
+
+// VARIABLE TO CONTROLE THE MOVEMENT OF THE SNAKE BY TIME
 const interval = 0.02;
 let elapsedTime = 0;
 let lastTime = 0;
 let food = createFood();
+let gameOver = false;
+
 
 function animate(time) {
+    renderer.render(scene, activatedCam);
+    if (gameOver) {
+        requestAnimationFrame(animate);
+        return;
+    }
+
     //controlar o tempo de movimentacao
     const deltaTime = (time - lastTime) / 1000;
     lastTime = time;
@@ -327,22 +492,43 @@ function animate(time) {
         const redTouchBlue = checkCollisionSnakes(redSnake, blueSnake);
         const blueTouchRed = checkCollisionSnakes(blueSnake, redSnake);
         if (redTouchBlue) {
-            console.log("Red touch blue");
-            // adicionar vitoria blue!!
+            //console.log("Red touch blue");
+            blueVictory();
+            gameOver = true;
         }
         if (blueTouchRed) {
-            console.log("Red touch blue");
-            // adicionar vitoria red!!
+            //console.log("Red touch blue");
+            redVictory();
+            gameOver = true;
+        }
+
+        // Check collision wall
+        const collisionWallRed = checkCollisionWall(redSnake);
+        const collisionWallBlue = checkCollisionWall(blueSnake);
+        if (collisionWallRed && collisionWallBlue) {
+            tieResult();
+            gameOver = true;
+        }
+        else if (collisionWallRed) {
+            blueVictory();
+            gameOver = true;
+        }
+        else if (collisionWallBlue) {
+            redVictory();
+            gameOver = true;
         }
 
         const redHeadTouch = checkHeadCollision(redSnake, blueSnake);
         const blueHeadTouch = checkHeadCollision(blueSnake, redSnake);
-        if (redHeadTouch === 1 || blueHeadTouch === 2) {
-            console.log("red é maior basteu na cabeca ganhou");
-            // adicionar vitoria red!!
+        if (redHeadTouch === 1 || blueHeadTouch === 2 || redScore === 8) {
+            //console.log("red é maior basteu na cabeca ganhou");
+            redVictory();
+            gameOver = true;
         }
-        if (redHeadTouch === 2 || blueHeadTouch === 1) {
-            console.log("blue é maior basteu na cabeca ganhou");
+        if (redHeadTouch === 2 || blueHeadTouch === 1 || blueScore === 8) {
+            //console.log("blue é maior basteu na cabeca ganhou");
+            blueVictory();
+            gameOver = true;
         }
     }
     renderer.render(scene, activatedCam);

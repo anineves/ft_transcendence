@@ -148,6 +148,16 @@ export const liveChat = () => {
                 navigateTo(`/wait-remote`, groupName);
                 socket.close();
             }
+            
+            const timeout = setTimeout(() => {
+                duelMessage.innerHTML = 'You lost the invitation!';
+            }, 10000); 
+            
+            const acceptLink = document.getElementById('accept-link');
+            acceptLink.addEventListener('click', () => {
+                socket.close();
+                clearTimeout(timeout); 
+            });
         }
     };
 

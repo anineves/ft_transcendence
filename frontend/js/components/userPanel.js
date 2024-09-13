@@ -1,30 +1,64 @@
-// frontend/components/userPanel.js
-
 import { navigateTo, checkLoginStatus, logout } from '../utils.js';
 import { renderFriendsPage } from './friendsPage.js';
 
-export const renderPanel = (user) => {
+export const renderPanel = async (user) => {
     const app = document.getElementById('app');
     const defaultAvatar = '../../assets/avatar.png';
-    const nickname = sessionStorage.getItem('nickname');
     const avatarUrl = user.avatar || defaultAvatar;
+    const player = JSON.parse(sessionStorage.getItem('playerInfo'));
+    const nickname = sessionStorage.getItem('nickname') || 'N/A';
 
-    app.innerHTML = `
+    try {
+        const response = await fetch('http://localhost:8000/api/matches/');
+        const matches = await response.json();
+
+        let totalWins = 0;
+
+        matches.forEach(match => {
+            console.log(player.id, match.winner_id, totalWins);
+            if (match.players.includes(player.id) && match.winner_id == player.id) {
+                totalWins++;
+            }
+        });
+
+        const level = Math.floor(totalWins / 5) + 1;
+        const winsInCurrentLevel = totalWins % 5;
+        const progressPercentage = (winsInCurrentLevel / 5) * 100;
+
+        const progressBar = Array(5).fill('⬜').map((segment, index) => {
+            return index < winsInCurrentLevel ? '🟦' : '⬜';
+        }).join('');
+
+        app.innerHTML = `
         <div class="user-panel">
             <div id="profileSection">
+                <button id="closeBtn" class="close-btn"><i class="fa-solid fa-times"></i></button>
                 <h2>User Profile</h2>
                 <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="User Avatar" class="avatar">
-                <p><strong>Username:</strong> ${user.username}</p>
-                <p><strong>Nickname:</strong> ${nickname}</p>
-                <p><strong>Email:</strong> ${user.email}</p>
-                <p><strong>Firstname:</strong> ${user.first_name}</p>
-                <p><strong>Lastname:</strong> ${user.last_name}</p>
-                <p><strong>Id:</strong> ${user.id}</p>
-                <button id="logoutBtn" class="btn">Logout</button>
-                <button id="editBtn" class="btn">Edit</button>
-                <button id="friendBtn" class="btn">Friends</button>
-                <button id="createBtn" class="btn">Create Player</button>
-                <button id="sendMensageBtn" class="btn">Send Mensage</button>
+                <div class="profile-content">
+                    <div class="info">
+                        <h2 id="editBtn2">Info <i class="fas fa-pencil-alt"></i></h2>
+                        <p><strong>Username:</strong> ${user.username}</p>
+                        <p><strong>Nickname:</strong> ${nickname}</p>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>Firstname:</strong> ${user.first_name}</p>
+                        <p><strong>Lastname:</strong> ${user.last_name}</p>
+                        <p><strong>Id:</strong> ${user.id}</p>
+                    </div>
+                    <div class="progression">
+                        <div class="progress-bar" id="progressBar" style="cursor: pointer;">
+                            <p><strong>Level:</strong> ${level}</p>
+                            <span class="progress-label">${progressBar}</span>
+                            <p>${winsInCurrentLevel}/5 wins to reach next level</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="all-btn">
+                    <button id="logoutBtn" class="btn">Logout <i class="fa-solid fa-right-from-bracket"></i></button>
+                    <button id="friendBtn" class="btn">Friends <i class="fas fa-user-group"></i></button>
+                    <button id="createBtn" class="btn">Create Player</button>
+                    <button id="sendMensageBtn" class="btn">Send Message <i class="fa-solid fa-message"></i></button>
+                </div>
             </div>
             <div id="updateProfileSection" style="display: none;">
                 <h2>Update Profile</h2>
@@ -37,6 +71,7 @@ export const renderPanel = (user) => {
                     <input type="email" id="updateEmail" placeholder="Email" class="form-control mb-2" value="${user.email}">
                     <button type="submit" class="btn">Update</button>
                 </form>
+                <button id="backProfileBtn" class="btn">Back to Profile</button>
             </div>
             <div id="inviteSection" style="display: none;">
                 <form id="inviteForm">
@@ -47,72 +82,82 @@ export const renderPanel = (user) => {
         </div>
     `;
 
-    document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('progressBar').addEventListener('click', () => {
+            navigateTo('/stats');
+        });
 
-    document.getElementById('editBtn').addEventListener('click', () => {
-        const profileSection = document.getElementById('profileSection');
-        const updateProfileSection = document.getElementById('updateProfileSection');
-        const isHidden = updateProfileSection.style.display === 'none';
-
-        updateProfileSection.style.display = isHidden ? 'flex' : 'none';
-        profileSection.style.display = isHidden ? 'none' : 'flex';
-    });
-
- 
-
-    document.getElementById('friendBtn').addEventListener('click', () => {
-        renderFriendsPage(user);
-    });
-
-    document.getElementById('createBtn').addEventListener('click', () => {
-        navigateTo('/create-player');
-    });
-    document.getElementById('sendMensageBtn').addEventListener('click', () => {
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('editBtn2').addEventListener('click', toggleEditProfile);
+        document.getElementById('friendBtn').addEventListener('click', () => renderFriendsPage(user));
+        document.getElementById('createBtn').addEventListener('click', () => navigateTo('/create-player'));
+        document.getElementById('sendMensageBtn').addEventListener('click', handleSendMessage);
+        document.getElementById('updateProfileForm').addEventListener('submit', handleUpdateProfile);
+        document.getElementById('backProfileBtn').addEventListener('click', () => navigateTo('/user-panel', user));
+        document.getElementById('closeBtn').addEventListener('click', () => navigateTo('/'));
+    } catch (error) {
+        console.error('Failed to fetch player stats:', error);
         navigateTo('/live-chat');
-    });
+    }
+};
 
+const toggleEditProfile = () => {
+    const profileSection = document.getElementById('profileSection');
+    const updateProfileSection = document.getElementById('updateProfileSection');
+    const isHidden = updateProfileSection.style.display === 'none';
 
-    document.getElementById('updateProfileForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
+    updateProfileSection.style.display = isHidden ? 'flex' : 'none';
+    profileSection.style.display = isHidden ? 'none' : 'flex';
+};
 
-        const formData = new FormData();
-        const avatarFile = document.getElementById('updateAvatar').files[0];
-        const firstName = document.getElementById('updateFirstName').value;
-        const lastName = document.getElementById('updateLastName').value;
-        const username = document.getElementById('updateUsername').value;
-        const email = document.getElementById('updateEmail').value;
-        const nickname = document.getElementById('updateNickname').value;
+const handleSendMessage = () => {
+    const nickname = sessionStorage.getItem('nickname');
+    if (nickname !== 'N/A') {
+        navigateTo('/live-chat');
+    } else {
+        alert("You need to create a player!");
+        navigateTo('/create-player');
+    }
+};
 
-        sessionStorage.setItem('nickname', nickname);
+const handleUpdateProfile = async (e) => {
+    e.preventDefault();
 
-        if (avatarFile) formData.append('avatar', avatarFile);
-        formData.append('first_name', firstName);
-        formData.append('last_name', lastName);
-        formData.append('username', username);
-        formData.append('email', email);
+    const formData = new FormData();
+    const avatarFile = document.getElementById('updateAvatar').files[0];
+    const firstName = document.getElementById('updateFirstName').value;
+    const lastName = document.getElementById('updateLastName').value;
+    const username = document.getElementById('updateUsername').value;
+    const email = document.getElementById('updateEmail').value;
+    const nickname = document.getElementById('updateNickname').value;
 
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/api/user/${user.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`
-                },
-                body: formData
-            });
+    if (avatarFile) formData.append('avatar', avatarFile);
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    formData.append('username', username);
+    formData.append('email', email);
+    formData.append('nickname', nickname);
 
-            const data = await response.json();
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/user/${user.id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`
+            },
+            body: formData
+        });
 
-            if (response.ok) {
-                alert('Profile updated successfully!');
-                sessionStorage.setItem('user', JSON.stringify(data));
-                checkLoginStatus();
-                navigateTo('/game-selection', data);
-            } else {
-                alert('Update failed: ' + JSON.stringify(data));
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while updating the profile.');
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Profile updated successfully!');
+            sessionStorage.setItem('user', JSON.stringify(data));
+            checkLoginStatus();
+            navigateTo('/user-panel', data);
+        } else {
+            alert('Update failed: ' + JSON.stringify(data));
         }
-    });
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating the profile.');
+    }
 };

@@ -8,12 +8,22 @@ export function initPongSocket(url) {
     if (!ws) {
         ws = new WebSocket(url);
     }
-
+    let lobbyTimeout = null;
     ws.onopen = function (event) {
         console.log("Connected to Pong WebSocket");
         ws.send(JSON.stringify({
             Authorization: jwttoken,
         }));
+        
+        lobbyTimeout = setTimeout(() => {
+            console.log("The opponent did not accept the duel");
+            ws.send(JSON.stringify({
+                action: 'end_game'
+            }));
+            alert("The opponent did not accept the duel");
+            ws.close();
+            navigateTo('/live-chat'); 
+        }, 10000);
     };
 
     ws.onmessage = (event) => {
@@ -26,6 +36,7 @@ export function initPongSocket(url) {
             console.log(`Match created with ID: ${data.match_id}`);
         }
         if (data.action === 'full_lobby') {
+            clearTimeout(lobbyTimeout);
             sessionStorage.setItem('playerID', data.message.player);
             sessionStorage.setItem('friendID', data.message.opponent);
             navigateTo('/pong');

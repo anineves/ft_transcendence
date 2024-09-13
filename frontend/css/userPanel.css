@@ -1,170 +1,278 @@
 .user-panel {
-    background: rgba(0, 0, 0, 0.8);
-    padding: 20px;
+    background: linear-gradient(135deg, #1d1f21, #111);
+    padding: 10px;
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    width: 40vw;
-    height: 70vh;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+    width: 60vw;
+    height: 85vh;
     margin: auto;
     color: #fff;
-    font-family: "Arial", sans-serif;
+    font-family: 'Press Start 2P', cursive; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     font-size: 18px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    overflow: hidden; 
+    
 }
 
 .user-panel h2 {
+    font-size: 26px;
+    color: #00ff99;
+    text-align: center;
+    text-shadow: 0 0 8px #00ff99, 0 0 15px rgba(0, 255, 153, 0.7);
     margin-bottom: 20px;
-    font-size: 24px;
 }
 
 .user-panel p {
-    margin: 8px 0;
+    margin: 8px 8px;
     line-height: 1.5;
-    margin-left: 35%;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }
 
-
 .user-panel .btn {
-    background: #ff00ff;
+    background: linear-gradient(145deg, #ff00ff, #cc00cc);
     color: #fff;
-    border: none;
+    border: 1px solid #fff;
     padding: 12px 24px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
     margin: 10px 5px;
-    transition: background 0.3s, transform 0.3s;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 0 8px rgba(255, 0, 255, 0.6), 0 0 12px rgba(255, 0, 255, 0.3);
 }
 
 .user-panel .btn:hover {
-    background: #cc00cc;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.9), 0 0 25px rgba(255, 0, 255, 0.6);
 }
 
 .avatar {
-    width: 20%;
-    height: auto;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
-    cursor: pointer;
     margin-bottom: 20px;
-    border: 2px solid #fff;
-    margin-left: 30%;
+    transition: transform 0.3s;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-#editBtn {
-    background: linear-gradient(145deg, #00ff99, #0044cc);
-    border: none;
-    border-radius: 8px;
-    padding: 12px 24px;
-    color: white;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 14px;
-    cursor: pointer;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    box-shadow: 0 4px 12px rgba(0, 255, 153, 0.5);
-    transition: background 0.3s, transform 0.3s;
-}
-
-#editBtn:hover {
-    background: linear-gradient(145deg, #00cc66, #0055cc);
-    box-shadow: 0 6px 18px rgba(0, 255, 153, 0.7);
+.avatar:hover {
     transform: scale(1.05);
 }
 
-#editBtn:active {
-    background: linear-gradient(145deg, #00ff99, #0044cc);
-    box-shadow: 0 4px 12px rgba(0, 255, 153, 0.5);
-    transform: scale(0.95);
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
 }
 
+.close-btn:hover {
+    color: #ff0000; 
+}
+
+#profileSection {
+    position: relative; 
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #ff0000; 
+}
+.profile-content {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    width: 100%;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.info, .progression {
+    width: 40%;
+    text-align: center;
+}
+
+.progression .progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #00ff99;
+    border-radius: 8px;
+    padding: 10px;
+    font-family: 'Press Start 2P', cursive;
+    color: #00ff99;
+    text-shadow: 0 0 6px #00ff99;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.progression .progress-bar:hover {
+    background: rgba(0, 255, 153, 0.2);
+}
+
+.info {
+    width: 40%;
+    padding: 20px;
+
+    text-align: left;
+    color: #fff;
+    position: relative;
+}
+
+.info h2 {
+    color: #00ff99;
+    font-size: 22px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px #00ff99, 0 0 15px rgba(0, 255, 153, 0.7);
+    text-align: center;
+}
+
+.info p {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 30px; 
+    transition: all 0.3s ease;
+}
+
+.info p:hover {
+    color: #00ff99;
+    text-shadow: 0 0 10px #00ff99;
+    transform: scale(1.05);
+}
+
+
+
+@keyframes neon-pulse {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(0, 255, 153, 0.7), 0 0 20px rgba(0, 255, 153, 0.5);
+    }
+    50% {
+        text-shadow: 0 0 15px rgba(0, 255, 153, 1), 0 0 30px rgba(0, 255, 153, 0.7);
+    }
+}
+
+.info h2 {
+    animation: neon-pulse 1.5s infinite alternate;
+}
+
+.all-btn {
+    display: flex;
+    justify-content: center; 
+    margin-left: 15%;
+    gap: 10px; 
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px; 
+}
+.all-btn .btn {
+    width: calc(50% - 20px); 
+    text-align: center;
+    padding: 12px;
+    margin: 10px;
+    background: linear-gradient(145deg, #ff00ff, #cc00cc);
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 0 8px rgba(255, 0, 255, 0.6), 0 0 12px rgba(255, 0, 255, 0.3);
+    overflow: hidden;
+}
+
+.all-btn .btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.9), 0 0 25px rgba(255, 0, 255, 0.6);
+}
+
+
 #updateProfileSection {
-    display: none; 
-    flex-direction: column; 
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 20px;
+    text-align: center;
 }
 
 #updateProfileSection h2 {
-    margin-bottom: 20px; 
-    font-size: 24px; 
+    margin-bottom: 20px;
+    font-size: 26px;
+    color: #ff00ff;
+    text-shadow: 0 0 10px #ff00ff, 0 0 20px rgba(255, 0, 255, 0.6);
 }
 
 #updateProfileSection form {
     display: flex;
-    flex-direction: column; 
-    margin-left: 20%;
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
 }
 
 #updateProfileSection input {
-    margin-bottom: 10px; 
-    padding: 10px; 
-    border-radius: 4px; 
-    border: 1px solid #ccc; 
-}
-
-.user-panel button {
-    margin-top: 10px; 
-    width: 40%;
-}
-
-
-
-
-.chat-panel {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-.chat-box {
-    height: 400px;
-    overflow-y: scroll;
-    border: 1px solid #ddd;
     margin-bottom: 10px;
     padding: 10px;
-    background-color: #fff; /* White background for the chat area */
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-family: 'Press Start 2P', cursive;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
-.message {
-    margin-bottom: 10px;
-    padding: 5px;
-    border-radius: 5px;
-    max-width: 80%;
+#updateProfileSection input:focus {
+    outline: none;
+    border: 1px solid #00ff99;
+    box-shadow: 0 0 10px #00ff99;
 }
 
-.own-message {
-    background-color: #ffdddd; /* Light red for own messages */
-    color: red;
-    text-align: right;
-    margin-left: auto;
-}
+@media (max-width: 480px) {
+    .user-panel {
+        width: 95%;
+        font-size: 12px;
+        padding: 10px;
+    }
 
-.other-message {
-    background-color: #ffffff; /* White for other messages */
-    color: black;
-}
+    .avatar {
+        width: 80px;
+        height: 80px;
+    }
 
-.message-input-panel {
-    display: flex;
-}
+    .btn {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
 
-#message-input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
+    .profile-content {
+        flex-direction: column;
+        gap: 10px;
+    }
 
-#send-button {
-    padding: 10px;
-    margin-left: 5px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-}
-
-#send-button:hover {
-    background-color: #0056b3;
+    #updateProfileSection {
+        width: 100%;
+    }
 }

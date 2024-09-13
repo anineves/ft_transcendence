@@ -223,17 +223,18 @@ class PongConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, close_code):
+        if close_code == 400:
+            self.send_self_channel_messages(
+                "Authentication failed. \
+                Ensure you must have a valid account and a player to access this feature."
+            )
+
         async_to_sync(self.channel_layer.group_discard)(
             self.match_group.group_name, self.channel_name
         )
         if close_code == 401:
             self.match_group.delete()
 
-        if close_code == 400:
-            self.send_self_channel_messages(
-                "Authentication failed. \
-                Ensure you must have a valid account and a player to access this feature."
-            )
         self.close()
         return super().disconnect(close_code)
 
@@ -258,6 +259,10 @@ class PongConsumer(WebsocketConsumer):
                     "key_move": key
                 }
             )
+
+        if data.get('action') == 'end_game':
+            return self.disconnect(401)
+
         if data.get('action') == 'ball_track':
             ball_x = data["ball_x"]
             ball_y = data["ball_y"]
@@ -275,10 +280,12 @@ class PongConsumer(WebsocketConsumer):
                     "ballSpeedX": ballSpeedX
                 }
             )
+
         if data.get('action') == 'score_track':
             player_score = data["playerScore"]
             opponent_score = data["opponentScore"]
             game_over = data["gameOver"]
+            print(f"GameOver: {game_over}")
             if game_over == True:
                 return self.disconnect(401)
             async_to_sync(self.channel_layer.group_send)(

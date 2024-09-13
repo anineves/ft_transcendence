@@ -36,10 +36,9 @@ export const createPlayer = () => {
             if (response.ok) {
                 alert('Player created successfully!');
                 sessionStorage.setItem('player', JSON.stringify(data.id));
+                sessionStorage.setItem('playerInfo', JSON.stringify(data));
                 sessionStorage.setItem('playerID', JSON.stringify(data.id));
                 sessionStorage.setItem('nickname', JSON.stringify(data.nickname));
-                //console.log("player"); 
-                //console.log(data);
                 navigateTo('/game-selection'); 
             } else {
                 alert('Player creation failed: ' + JSON.stringify(data));

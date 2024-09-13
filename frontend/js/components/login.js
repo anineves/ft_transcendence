@@ -6,18 +6,12 @@ export const renderLogin = () => {
 
     app.innerHTML = `
         <div class="background-form" id="form-login">
-            <h2>Logiin</h2>
+            <h2>Login</h2>
             <form id="loginForm">
                 <input type="text" id="emailOrUsername" placeholder="Email or Username" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
                 <button type="submit" id="btn-login"class="btn">Submit</button>
             </form>
-            <div id="presence"><span class="tag is-success" id="pre_cnt">0</span> users online</div>
-            <ul id="messages"></ul>
-            <div class="box">
-                <h1 class="title">Online Users</h1>
-                <div id="online-users"></div>
-            </div>
         </div>
     `;
 
@@ -71,6 +65,7 @@ export const renderLogin = () => {
                         
                         if (player) {
                             sessionStorage.setItem('player', JSON.stringify(player.id));
+                            sessionStorage.setItem('playerInfo', JSON.stringify(player));
                             sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
                         } else {
                             console.log("You need create a player");

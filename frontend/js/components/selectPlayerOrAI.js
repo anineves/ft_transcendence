@@ -45,14 +45,14 @@ export const selectPlayerorAI = () => {
             <div class="game-selection-item">
                 <div id="3D-select">
                     <button id="3DBtn" class="btn">
-                        <img src="./assets/3D.png" alt="3D" class="button-image-select">
+                        <img src="./assets/3dpong.png" alt="3D" class="button-image-select">
                         <h3>3D</h3>
                     </button>
                 </div>
             </div>
         </div>
     `;
-    if (player) {
+   /* if (player) {
         app.innerHTML += `
             <div class="select-game">
                 <div class="game-selection-item">
@@ -65,7 +65,7 @@ export const selectPlayerorAI = () => {
                 </div>
             </div>
         `;
-    }
+    }*/
     document.getElementById('remoteBtn')?.addEventListener('click', () => {
         navigateTo('/wait-remote');
         sessionStorage.setItem('modality', 'remote');

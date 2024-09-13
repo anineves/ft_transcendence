@@ -65,30 +65,33 @@ export const startPongGame = async () => {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initialize);
     } else {
-        const groupName = sessionStorage.getItem("groupName");
-        ws = initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+        if(modality2 == 'remote')
+        {
+            const groupName = sessionStorage.getItem("groupName");
+            ws = initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                if (data.action === 'ball_track') {
+                    ballX = data.ball_x;
+                    ballY = data.ball_y;
+                    ballSpeedY = data.ballSpeedY;
+                    ballSpeedX = data.ballSpeedX;
+                }
+                if (data.action === 'move_paddle') {
+                    movePaddle(data);
+                }
+                if (data.action === 'stop_paddle') {
+                    stopPaddle(data);
+                }
+                if (data.action === 'score_track') {
+                    playerScore = data.player_score;
+                    opponentScore = data.opponent_score;
+                    gameOver = data.game_over;
+                }
+            }; 
+        }
         
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            
-            if (data.action === 'ball_track') {
-                ballX = data.ball_x;
-                ballY = data.ball_y;
-                ballSpeedY = data.ballSpeedY;
-                ballSpeedX = data.ballSpeedX;
-            }
-            if (data.action === 'move_paddle') {
-                movePaddle(data);
-            }
-            if (data.action === 'stop_paddle') {
-                stopPaddle(data);
-            }
-            if (data.action === 'score_track') {
-                playerScore = data.player_score;
-                opponentScore = data.opponent_score;
-                gameOver = data.game_over;
-            }
-        }; 
         
         initialize();
     }
@@ -115,16 +118,18 @@ export function updateBall() {
 
     if (ballY + ballRadius > canvas.height || ballY - ballRadius < 0) {
         ballSpeedY = -ballSpeedY;
-        
-        if (currentPlayer === playerID) {
-            ws.send(JSON.stringify({
-                'action': 'ball_track',
-                'user': user_json,
-                'ball_x': ballX,
-                'ball_y': ballY,
-                'ballSpeedY': ballSpeedY,
-                'ballSpeedX': ballSpeedX
-            }));
+        if(modality2 == 'remote')
+        {
+            if (currentPlayer === playerID) {
+                ws.send(JSON.stringify({
+                    'action': 'ball_track',
+                    'user': user_json,
+                    'ball_x': ballX,
+                    'ball_y': ballY,
+                    'ballSpeedY': ballSpeedY,
+                    'ballSpeedX': ballSpeedX
+                }));
+            }
         }
     } 
 }
@@ -185,15 +190,18 @@ function initialize() {
                 if (opponentScore >= 5) {
                     gameOver = true;
                 }
+                
                 ballOutOfBoundsLeft = true;
-                if (currentPlayer === playerID) {
-                    ws.send(JSON.stringify({
-                        'action': 'score_track',
-                        'user': user_json,
-                        'playerScore': playerScore,
-                        'opponentScore': opponentScore,
-                        'gameOver': gameOver
-                    }));
+                if(modality2 == 'remote') {
+                    if (currentPlayer === playerID) {
+                        ws.send(JSON.stringify({
+                            'action': 'score_track',
+                            'user': user_json,
+                            'playerScore': playerScore,
+                            'opponentScore': opponentScore,
+                            'gameOver': gameOver
+                        }));
+                    }
                 }
                 resetBall();
             }
@@ -207,15 +215,18 @@ function initialize() {
                 if (playerScore >= 5) {
                     gameOver = true;
                 }
+                
                 ballOutOfBoundsRight = true;
-                if (currentPlayer === playerID) {
-                    ws.send(JSON.stringify({
-                        'action': 'score_track',
-                        'user': user_json,
-                        'playerScore': playerScore,
-                        'opponentScore': opponentScore,
-                        'gameOver': gameOver
-                    }));
+                if(modality2 == 'remote') {
+                    if (currentPlayer === playerID) {
+                        ws.send(JSON.stringify({
+                            'action': 'score_track',
+                            'user': user_json,
+                            'playerScore': playerScore,
+                            'opponentScore': opponentScore,
+                            'gameOver': gameOver
+                        }));
+                    }
                 }
                 resetBall();
             }
@@ -224,30 +235,36 @@ function initialize() {
         }
         
         if (ballX - ballRadius < paddleWidth && ballY > playerY && ballY < playerY + paddleHeight) {
+            
             ballSpeedX = -ballSpeedX;
-            if (currentPlayer === playerID) {
-                ws.send(JSON.stringify({
-                    'action': 'ball_track',
-                    'user': user_json,
-                    'ball_x': ballX,
-                    'ball_y': ballY,
-                    'ballSpeedY': ballSpeedY,
-                    'ballSpeedX': ballSpeedX
-                }));
+            if(modality2 == 'remote') {
+                if (currentPlayer === playerID) {
+                    ws.send(JSON.stringify({
+                        'action': 'ball_track',
+                        'user': user_json,
+                        'ball_x': ballX,
+                        'ball_y': ballY,
+                        'ballSpeedY': ballSpeedY,
+                        'ballSpeedX': ballSpeedX
+                    }));
+                }
             }
         }
         
         if (ballX + ballRadius > canvas.width - paddleWidth && ballY > opponentY && ballY < opponentY + paddleHeight) {
+            
             ballSpeedX = -ballSpeedX;
-            if (currentPlayer === playerID) {
-                ws.send(JSON.stringify({
-                    'action': 'ball_track',
-                    'user': user_json,
-                    'ball_x': ballX,
-                    'ball_y': ballY,
-                    'ballSpeedY': ballSpeedY,
-                    'ballSpeedX': ballSpeedX
-                }));
+            if(modality2 == 'remote') {
+                if (currentPlayer === playerID) {
+                    ws.send(JSON.stringify({
+                        'action': 'ball_track',
+                        'user': user_json,
+                        'ball_x': ballX,
+                        'ball_y': ballY,
+                        'ballSpeedY': ballSpeedY,
+                        'ballSpeedX': ballSpeedX
+                    }));
+                }
             }
         }
     }
@@ -264,7 +281,7 @@ function initialize() {
             console.log("remote", remote);
             if (remote != 'accept') {
                 try {
-                    const winner_id = playerScore > opponentScore ? 1 : 2;
+                    const winner_id = 2;
                     const score = `${playerScore}-${opponentScore}`;
                     const duration = "10";
 
