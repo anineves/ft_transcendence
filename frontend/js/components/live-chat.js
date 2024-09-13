@@ -134,17 +134,17 @@ export const liveChat = () => {
         if (data.action == "duel")
         {
             const groupName = data.group_name;
+            sessionStorage.setItem("groupName", groupName);
 
             const chatBox = document.getElementById('chat-box'); 
             const duelMessage = document.createElement('p');
             duelMessage.innerHTML = 
             `
             has challenged you to a duel! 
-            <a href="http://localhost:8080/wait-remote?group_name=${groupName}" id="accept-link">Accept</a>
+            <a href="http://localhost:8080/wait-remote" id="accept-link">Accept</a>
             `;
             chatBox.appendChild(duelMessage);
             if (user_json.id == data.from_user) {
-                console.log("Livechat groupName", groupName)
                 navigateTo(`/wait-remote`, groupName);
                 socket.close();
             }

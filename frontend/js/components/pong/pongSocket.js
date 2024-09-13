@@ -3,7 +3,6 @@ import { navigateTo } from '../../utils.js';
 let ws = null;
 const jwttoken = sessionStorage.getItem('jwtToken'); 
 
-//Need to get URL dinamically
 export function initPongSocket(url) {
     
     if (!ws) {

@@ -65,7 +65,8 @@ export const startPongGame = async () => {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initialize);
     } else {
-        ws = initPongSocket('ws://localhost:8000/ws/pong_match/pong1/');
+        const groupName = sessionStorage.getItem("groupName");
+        ws = initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
         
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);

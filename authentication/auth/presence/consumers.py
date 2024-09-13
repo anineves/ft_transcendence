@@ -401,23 +401,24 @@ class PongConsumer(WebsocketConsumer):
             )
             if created:
                 self.match_group.player = player
+                async_to_sync(self.channel_layer.group_add)(
+                    self.match_group.group_name, self.channel_name)
             else:
                 self.match_group.opponent = player
+                async_to_sync(self.channel_layer.group_add)(
+                    self.match_group.group_name, self.channel_name)
                 async_to_sync(self.channel_layer.group_send)(
                     self.match_group.group_name, 
                     {
                         'type': 'pong.log',
                         'action': 'full_lobby',
                         'message': {
-                            'player': self.match_group.player,
-                            'opponent': self.match_group.opponent
+                            'player': self.match_group.player.id,
+                            'opponent': self.match_group.opponent.id
                         }
                     }
                 )
             self.match_group.save()
-
-            async_to_sync(self.channel_layer.group_add)(
-                self.match_group.group_name, self.channel_name)
         except Exception as e:
             print(f"# Something went wrong with creating_new_room: \n{e}")
         return
