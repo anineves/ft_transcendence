@@ -1,12 +1,15 @@
 // Criar a cena
+const blueNickname = "jegger-s";
+const redNickname = "asousa-n";
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x555555); // Adicionar uma cor de fundo
 
 // Criar a câmara
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 500);
-camera.position.z = 5;  // Afasta a câmara para podermos ver os objetos
+camera.position.z = 4;  // Afasta a câmara para podermos ver os objetos
 camera.position.x = 0;
-camera.position.y = 6;
+camera.position.y = 4.5;
 
 camera.rotation.x = -1;
 camera.rotation.y = 0;
@@ -14,7 +17,7 @@ camera.rotation.z = 0;
 
 // Segunda camera para a vista de cima / 2D
 const cameraTopView = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 500);
-cameraTopView.position.set(0, 8, 0);
+cameraTopView.position.set(0, 6, 0);
 cameraTopView.lookAt(0, 0, 0);
 cameraTopView.rotation.set(-Math.PI/2, 0, 0);
 
@@ -146,7 +149,7 @@ function onDocumentKeyUp(event) {
 }
 
 // Switch camera function
-let activatedCam = camera;
+let activatedCam = cameraTopView;
 
 function switchCamera() {
     if (activatedCam === camera) {
@@ -182,11 +185,13 @@ function showGameOver(PlayerVictoryMaterial) {
     });
     const gameOverMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff});
     const gameOverMesh = new THREE.Mesh(gameOverGeometry, gameOverMaterial);
-    gameOverMesh.position.set(-3.4, 0, -1.5);
+    gameOverGeometry.computeBoundingBox();
+    const gameOverBB = gameOverGeometry.boundingBox;
+    gameOverMesh.position.set(-(gameOverBB.max.x - gameOverBB.min.x) / 2, 0, -1.5);
     gameOverMesh.rotation.set(-Math.PI / 2, 0, 0);
 
     // win text
-    const winTextGeometry = new THREE.TextGeometry("WINS!" , {
+    const winTextGeometry = new THREE.TextGeometry("WINS!", {
         font: loadedFont,
         size: 0.8,
         height: 0.2,
@@ -198,12 +203,14 @@ function showGameOver(PlayerVictoryMaterial) {
         bevelSegments: 5
     });
     const winTextMesh = new THREE.Mesh(winTextGeometry, gameOverMaterial);
-    winTextMesh.position.set(-1.5, 0, 2.3);
+    winTextGeometry.computeBoundingBox();
+    const winTextBB = winTextGeometry.boundingBox;
+    winTextMesh.position.set(-(winTextBB.max.x - winTextBB.min.x) / 2, 0, 2.3);
     winTextMesh.rotation.set(-Math.PI / 2, 0, 0);
     
     // player text for blue and red
     if (winblue) {
-        PlayerVictoryGeometry = new THREE.TextGeometry("Blue Player", {
+        PlayerVictoryGeometry = new THREE.TextGeometry(`${blueNickname}`, {
             font: loadedFont,
             size: 0.8,
             height: 0.2,
@@ -216,7 +223,7 @@ function showGameOver(PlayerVictoryMaterial) {
         });
         PlayerVictoryMaterial = new THREE.MeshStandardMaterial({color: 0x0000ff});
     } else if (winred) {
-        PlayerVictoryGeometry = new THREE.TextGeometry("Red Player", {
+        PlayerVictoryGeometry = new THREE.TextGeometry(`${redNickname}`, {
             font: loadedFont,
             size: 0.8,
             height: 0.2,
@@ -229,13 +236,11 @@ function showGameOver(PlayerVictoryMaterial) {
         });
         PlayerVictoryMaterial = new THREE.MeshStandardMaterial({color: 0xff0000});      
     }
+    PlayerVictoryGeometry.computeBoundingBox();
+    const PlayerVictoryBB = PlayerVictoryGeometry.boundingBox;
     PlayerVictoryMesh = new THREE.Mesh(PlayerVictoryGeometry, PlayerVictoryMaterial);
     PlayerVictoryMesh.rotation.set(-Math.PI / 2, 0, 0);
-    if (winred) {
-        PlayerVictoryMesh.position.set(-2.7, 0, 0.5);
-    } else if (winblue) {
-        PlayerVictoryMesh.position.set(-2.7, 0, 0.5);
-    }
+    PlayerVictoryMesh.position.set(-(PlayerVictoryBB.max.x - PlayerVictoryBB.min.x) / 2, 0, 0.5);
 
     scene.add(PlayerVictoryMesh);
     scene.add(winTextMesh);
@@ -294,7 +299,7 @@ function updateScore() {
     if (!loadedFont) {return;}
 
     // Score red player
-    const redScoreGeometry = new THREE.TextGeometry("Red  " + `${redPlayerScore}`, {
+    const redScoreGeometry = new THREE.TextGeometry("RED  " + `${redPlayerScore}`, {
         font: loadedFont,
         size: 0.7,
         height: 0.15,
@@ -383,9 +388,15 @@ let topview_bluePlayerScore = 0;
 let ballSpeedX = 0.06;
 let ballSpeedZ = 0.06;
 const paddleSpeed = 0.08;
+let gameOver = false;
 
 // funcao de animacao do jogo
 function animate() {
+    renderer.render(scene, activatedCam);
+    requestAnimationFrame(animate);
+    if (gameOver) {
+        return;
+    }
 
     // paddle vermelho
     if (keyState['w']) {
@@ -448,6 +459,7 @@ function animate() {
         //console.log("Blue Player score -> " + `${bluePlayerScore}`);
         if (bluePlayerScore === 5) {
             bluePlayerWin();
+            gameOver = true;
         } else {
             ball.position.set(0, 0.15, 0);
         }
@@ -462,13 +474,12 @@ function animate() {
             //console.log("Red Player score -> " + `${redPlayerScore}`);
         if (redPlayerScore === 5) {
             redPlayerWin();
+            gameOver = true;
         } else {   
             ball.position.set(0, 0.15, 0);
         }
     }
 
-    renderer.render(scene, activatedCam);
-    requestAnimationFrame(animate);
 }
 
 // Adicionando eventos de teclado ao documento
@@ -477,3 +488,4 @@ document.addEventListener('keyup', onDocumentKeyUp, false);
 
 // Iniciar a animação
 animate();
+

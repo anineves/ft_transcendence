@@ -18,7 +18,7 @@ cameraTopView.position.set(0, 9, 0);
 cameraTopView.lookAt(0, 0, 0);
 cameraTopView.rotation.set(-Math.PI/2, 0, 0);
 
-let activatedCam = camera;
+let activatedCam = cameraTopView;
 
 function switchCamera() {
     if (activatedCam === camera) {
@@ -76,7 +76,7 @@ pointLight4.position.set(-5, 5, 5);
 scene.add(pointLight4);
 
 // Criacao Mesa
-const tableGeometry = new THREE.BoxGeometry(10, 2, 10); // largura, altura, profundidade
+const tableGeometry = new THREE.BoxGeometry(10, 2, 20); // largura, altura, profundidade
 const tableMaterial = new THREE.MeshStandardMaterial({ color: 0x1f1f2f });
 const table = new THREE.Mesh(tableGeometry, tableMaterial);
 //
@@ -85,25 +85,26 @@ table.position.set(0, -0.9, 0);
 table.rotation.y = -Math.PI/2;
 
 // Barras
-const tableBarsGeometry = new THREE.BoxGeometry(1, 1, 10);
+const tableTopBotBarsGeometry = new THREE.BoxGeometry(1, 1, 20);
+const tableBarTopBotLeftRightMaterial = new THREE.BoxGeometry(1, 1, 10);
 const tableBarMaterial = new THREE.MeshStandardMaterial({color: 0x9ffff0});
 
-const topBar = new THREE.Mesh(tableBarsGeometry, tableBarMaterial);
+const topBar = new THREE.Mesh(tableTopBotBarsGeometry, tableBarMaterial);
 topBar.rotation.set(0, -Math.PI / 2, 0);
 topBar.position.set(0, 0, -4.5);
 scene.add(topBar);
 
-const leftBar = new THREE.Mesh(tableBarsGeometry, tableBarMaterial);
-leftBar.position.set(-4.5, 0, 0);
+const leftBar = new THREE.Mesh(tableBarTopBotLeftRightMaterial, tableBarMaterial);
+leftBar.position.set(-9.5, 0, 0);
 scene.add(leftBar);
 
-const bottomBar = new THREE.Mesh(tableBarsGeometry, tableBarMaterial);
+const bottomBar = new THREE.Mesh(tableTopBotBarsGeometry, tableBarMaterial);
 bottomBar.position.set(0, 0, 4.5);
 bottomBar.rotation.set(0, -Math.PI / 2, 0)
 scene.add(bottomBar);
 
-const rightBar = new THREE.Mesh(tableBarsGeometry, tableBarMaterial);
-rightBar.position.set(4.5, 0, 0);
+const rightBar = new THREE.Mesh(tableBarTopBotLeftRightMaterial, tableBarMaterial);
+rightBar.position.set(9.5, 0, 0);
 scene.add(rightBar);
 
 const renderer = new THREE.WebGLRenderer();
@@ -114,10 +115,10 @@ document.body.appendChild(renderer.domElement);
 //Criar a Snake
 const redSnake = [];
 let redSnakeDir = new THREE.Vector3(-1, 0, 0);
-let redSnakeLen = 8;
+let redSnakeLen = 6;
 const blueSnake = [];
 let blueSnakeDir = new THREE.Vector3(-1, 0, 0);
-let blueSnakeLen = 8;
+let blueSnakeLen = 6;
 
 function createSphere(x, y, z, color) {
     const sphereGeometry = new THREE.SphereGeometry(0.2, 32, 32);
@@ -129,19 +130,19 @@ function createSphere(x, y, z, color) {
 }
 
 // Snake Vermelha
-for (let i = 4; i < redSnakeLen; i++) {
+for (let i = 3; i < redSnakeLen; i++) {
     redSnake.push(createSphere(i * 0.3, 0.2, -3, 0xff0000));
 }
 
 // Snake Azul
-for (let i = 4; i < blueSnakeLen; i++) {
+for (let i = 3; i < blueSnakeLen; i++) {
     blueSnake.push(createSphere(i * 0.3, 0.2, 3, 0x0000ff));
 }
 
 //variaveis para a colisao da mesa
 const tableLimits = {
-    minX: -4,
-    maxX: 4,
+    minX: -9,
+    maxX: 9,
     minZ: -4,
     maxZ: 4
 }
@@ -149,46 +150,37 @@ const tableLimits = {
 // funcao que verifica a colisao com as paredes
 function checkCollisionWall(snake) {
     const head = snake[0];
-
+    
     if (head.position.x < tableLimits.minX || head.position.x > tableLimits.maxX ||
         head.position.z < tableLimits.minZ || head.position.z > tableLimits.maxZ) {
-        return true;
-    }
-    return null;
-}
-
-// !!NOT WORKING PROPABLY NOT USING!!
-/* function checkSelfCollision(snake, snakeColor) {
-    const head = snake[0];
-
-    for (let i = 1; i < snake.length; i++) {
-        if (head.position.distanceTo(snake[i].position) < 0.01) {
-            return snakeColor;
+            return true;
         }
-    }
-    return false;
-} */
-
-// Colisao de cabecas das cobras
+        return null;
+}
+    
 function checkHeadCollision(snakeA, snakeB) {
     const headA = snakeA[0];
     const headB = snakeB[0];
-
+    
     if(headA.position.distanceTo(headB.position) < 0.35) {
+        // Colisao de cabecas das cobras
         if (snakeA.length > snakeB.length) {
             return 1;
         }
-        if (snakeA.length < snakeB.length || snakeA.length === snakeB.length) {
+        else if (snakeA.length < snakeB.length) {
             return 2;
+        }
+        else if (snakeA.length === snakeB.length) {
+            return 3;
         }
     }
     return 0;
 }
-
+    
 // Colisao entre as cobras
 function checkCollisionSnakes(snakeA, snakeB) {
     const headA = snakeA[0];
-
+    
     for (let i = 1; i < snakeB.length; i++) {
         if (headA.position.distanceTo(snakeB[i].position) < 0.35) {
             return true;
@@ -197,9 +189,46 @@ function checkCollisionSnakes(snakeA, snakeB) {
     return false;
 }
 
+function scoreBoard() {
+    const scoreboard = document.createElement('div');
+    scoreboard.id = 'scoreboard';
+    scoreboard.style.position = 'absolute';
+    scoreboard.style.top = '105px';
+    scoreboard.style.left = '50%';
+    scoreboard.style.transform = 'translateX(-50%)';
+    scoreboard.style.fontSize = '48px';
+    scoreboard.style.color = 'white';
+    scoreboard.style.fontFamily = 'Arial, sans-serif';
+    scoreboard.style.fontWeight = 'bold';
+    scoreboard.style.display = 'flex';
+    scoreboard.style.gap = '20px';
+
+    const redScoreText = document.createElement('span');
+    redScoreText.id = 'red-score';
+    redScoreText.style.color = 'red';
+    redScoreText.textContent = redNickname + ' ' + redScore;
+
+    const whiteDash = document.createElement('span');
+    whiteDash.style.color = 'white';
+    whiteDash.textContent = '-';
+
+    const blueScoreText = document.createElement('span');
+    blueScoreText.id = 'blue-score';
+    blueScoreText.style.color = 'blue';
+    blueScoreText.textContent = blueScore + ' ' + blueNickname;
+
+    scoreboard.appendChild(redScoreText);
+    scoreboard.appendChild(whiteDash);
+    scoreboard.appendChild(blueScoreText);
+
+    document.body.appendChild(scoreboard);
+}
+
+//scoreBoard();
+
 function updateSnake(snake, direction, snakeColor) {
     snake[0].position.add(direction.clone().multiplyScalar(0.1));
-
+    
     for (let i = snake.length - 1; i > 0; i--) {
         const nextPosition = snake[i - 1].position.clone();
         snake[i].position.lerp(nextPosition, 0.5);
@@ -211,16 +240,16 @@ function updateSnake(snake, direction, snakeColor) {
         food = createFood();
         if (snakeColor === 'red') {
             redScore++;
+            document.getElementById('red-score').textContent = redNickname + ' ' + redScore;
         } else if (snakeColor === 'blue') {
             blueScore++;
+            document.getElementById('blue-score').textContent = blueScore + ' ' + blueNickname;
         }
-        // WIN CONDITION IF SNAKE EATS THE FOOD 8 TIMES
-
     }
 }
-
-// FUNCAO PARA PROIBIR A INVERSAO DE MARCHA DIRETAMENTE
-function isOppositeDir(currentDir, newDir) {
+    
+    // FUNCAO PARA PROIBIR A INVERSAO DE MARCHA DIRETAMENTE
+function isOppositeDir(currentDir, newDir) {    
     return currentDir.equals(newDir.clone().negate());
 }
 
@@ -268,23 +297,23 @@ document.addEventListener('keydown', (event) => {
             }
             break;
     }
-});
-
+});              
+                                    
 // FUNCAO DE CRIAR A COMIDA E COLOCAR NUMA POSICAO ALEATORIA
 function createFood() {
     const foodGeo = new THREE.SphereGeometry(0.2, 32, 32);
     const foodMaterial = new THREE.MeshStandardMaterial({color: 0xffffff});
     const food = new THREE.Mesh(foodGeo, foodMaterial);
-
+    
     let validPosition = false
     while (!validPosition) {
-
+        
         food.position.set (
             THREE.MathUtils.randFloat(tableLimits.minX + 0.5, tableLimits.maxX - 0.5), 
             0.2,
             THREE.MathUtils.randFloat(tableLimits.minZ + 0.5, tableLimits.maxZ - 0.5)
         );
-
+        
         validPosition = true;
         for (let snake of [redSnake, blueSnake]) {
             for (let segment of snake) {
@@ -309,7 +338,7 @@ function checkCollisionFood(snake) {
     }
     return false;
 }
-
+    
 // UPDATE AO TAMANHO APOS COMER
 function growSnake(snake) {
     const tail = snake[snake.length - 1];
@@ -333,6 +362,54 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', 
     loadedFont = font;
 });
 
+/* function blueScoreText() {
+    const blueScoreText_g = new THREE.TextGeometry(`${blueScore}`, {
+        font: loadedFont,
+        size: 0.8,
+        height: 0.2,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.03,
+        bevelSize: 0.02,
+        bevelOffset: 0,
+        bevelSegments: 5
+    });
+    const blueScoreText_m = new THREE.MeshStandardMaterial({color: 0x0000ff});
+    const blueScoreTextM = new THREE.Mesh(blueScoreText_g, blueScoreText_m);
+    blueScoreTextM.position.set(2, 0, -8);
+    if (activatedCam === camera) {
+        blueScoreTextM.position.set(1, 0, -8);
+        blueScoreTextM.rotation.set(0, 0, 0);
+    } else if (activatedCam === cameraTopView) {
+        blueScoreTextM.position.set(1, -2, -7);
+        blueScoreTextM.rotation.set(-Math.PI / 2, 0, 0);
+    }
+    scene.add(blueScoreTextM);
+} */
+
+/* function redScoreText() {
+    const redScoreText_g = new THREE.TextGeometry(`${redScore}`, {
+        font: loadedFont,
+        size: 0.8,
+        height: 0.2,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.03,
+        bevelSize: 0.02,
+        bevelOffset: 0,
+        bevelSegments: 5
+    });
+    const redScoreText_m = new THREE.MeshStandardMaterial({color: 0xff0000});
+    const redScoreTextM = new THREE.Mesh(redScoreText_g, redScoreText_m);
+    if (activatedCam === camera) {
+        redScoreTextM.position.set(-1, 0, -8);
+        redScoreTextM.rotation.set(0, 0, 0);
+    } else if (activatedCam === cameraTopView) {
+        redScoreTextM.position.set(-1, -2, -7);
+        redScoreTextM.rotation.set(-Math.PI / 2, 0, 0);
+    }
+    scene.add(redScoreTextM);
+} */
 
 function showGameOver(result) {
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff});
@@ -469,7 +546,40 @@ let lastTime = 0;
 let food = createFood();
 let gameOver = false;
 
+/* function PlayerNicknames() {
+    if (!loadedFont) {
+        return ;
+    }
+    const bNickname_g = new THREE.TextGeometry(`${blueNickname}`, {
+            font: loadedFont,
+            size: 0.8,
+            height: 0.2,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 0.03,
+            bevelSize: 0.02,
+            bevelOffset: 0,
+            bevelSegments: 5
+    });
+    const rNickname_g = new THREE.TextGeometry(`${redNickname}`, {
+        font: loadedFont,
+            size: 0.8,
+            height: 0.2,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 0.03,
+            bevelSize: 0.02,
+            bevelOffset: 0,
+            bevelSegments: 5
+    });
+    const bNickname_m = new THREE.MeshStandardMaterial({color: 0x0000ff});
+    const rNickname_m = new THREE.MeshStandardMaterial({color: 0xff0000});
+    const bNicknameM = new THREE.Mesh(bNickname_g, bNickname_m);
+    const rNicknameM = new THREE.Mesh(rNickname_g, rNickname_m);
+    scene.add(bNicknameM, rNicknameM);
+} */
 
+scoreBoard();
 function animate(time) {
     renderer.render(scene, activatedCam);
     if (gameOver) {
@@ -481,11 +591,13 @@ function animate(time) {
     const deltaTime = (time - lastTime) / 1000;
     lastTime = time;
     elapsedTime += deltaTime
-
+    
     if (elapsedTime > interval) {
+        //PlayerNicknames();
         //animacao de movimentacao das cobras
         updateSnake(redSnake, redSnakeDir, 'red');
         updateSnake(blueSnake, blueSnakeDir, 'blue');
+
 
         elapsedTime = 0;
 
@@ -506,32 +618,44 @@ function animate(time) {
         const collisionWallRed = checkCollisionWall(redSnake);
         const collisionWallBlue = checkCollisionWall(blueSnake);
         if (collisionWallRed && collisionWallBlue) {
-            tieResult();
+            if (redScore === blueScore) {
+                tieResult();
+            }
+            else if (redScore > blueScore) {
+                redVictory();
+            }
+            else if (redScore < blueScore) {
+                blueVictory();
+            }
             gameOver = true;
         }
-        else if (collisionWallRed) {
+        else if (collisionWallRed && !collisionWallBlue) {
             blueVictory();
             gameOver = true;
         }
-        else if (collisionWallBlue) {
+        else if (collisionWallBlue && !collisionWallRed) {
             redVictory();
             gameOver = true;
         }
 
         const redHeadTouch = checkHeadCollision(redSnake, blueSnake);
         const blueHeadTouch = checkHeadCollision(blueSnake, redSnake);
-        if (redHeadTouch === 1 || blueHeadTouch === 2 || redScore === 8) {
+        if ((redHeadTouch === 3 || blueHeadTouch === 3) && !gameOver) {
+            tieResult();
+            gameOver = true;
+        }
+        else if ((redHeadTouch === 1 || blueHeadTouch === 2 || redScore === 8) && !gameOver) {
             //console.log("red é maior basteu na cabeca ganhou");
             redVictory();
             gameOver = true;
         }
-        if (redHeadTouch === 2 || blueHeadTouch === 1 || blueScore === 8) {
+        else if ((redHeadTouch === 2 || blueHeadTouch === 1 || blueScore === 8) && !gameOver) {
             //console.log("blue é maior basteu na cabeca ganhou");
             blueVictory();
             gameOver = true;
         }
     }
-    renderer.render(scene, activatedCam);
+    //renderer.render(scene, activatedCam);
     requestAnimationFrame(animate);
 }
 
