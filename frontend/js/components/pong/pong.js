@@ -72,11 +72,12 @@ export const startPongGame = async () => {
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 
+                console.log("Data   : ", data)
                 if (data.action === 'ball_track') {
-                    ballX = data.ball_x;
-                    ballY = data.ball_y;
-                    ballSpeedY = data.ballSpeedY;
-                    ballSpeedX = data.ballSpeedX;
+                    ballX = data.message.ball_x;
+                    ballY = data.message.ball_y;
+                    ballSpeedY = data.message.ballSpeedY;
+                    ballSpeedX = data.message.ballSpeedX;
                 }
                 if (data.action === 'move_paddle') {
                     movePaddle(data);
@@ -85,9 +86,9 @@ export const startPongGame = async () => {
                     stopPaddle(data);
                 }
                 if (data.action === 'score_track') {
-                    playerScore = data.player_score;
-                    opponentScore = data.opponent_score;
-                    gameOver = data.game_over;
+                    playerScore = data.message.player_score;
+                    opponentScore = data.message.opponent_score;
+                    gameOver = data.message.game_over;
                 }
             }; 
         }
@@ -112,6 +113,19 @@ export function initializeBall() {
 const playerID = sessionStorage.getItem('playerID');
 const currentPlayer = sessionStorage.getItem('player');
 
+// export function sendMessage(action, message) {
+//     ws.send(JSON.stringify({
+//         'action': action,
+//         'message': {
+//             'user': message.user_json,
+//             'ball_x': message.ballX,
+//             'ball_y': message.ballY,
+//             'ballSpeedY': message.ballSpeedY,
+//             'ballSpeedX': message.ballSpeedX
+//         }
+//     }));
+// }
+
 export function updateBall() {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
@@ -123,11 +137,13 @@ export function updateBall() {
             if (currentPlayer === playerID) {
                 ws.send(JSON.stringify({
                     'action': 'ball_track',
-                    'user': user_json,
-                    'ball_x': ballX,
-                    'ball_y': ballY,
-                    'ballSpeedY': ballSpeedY,
-                    'ballSpeedX': ballSpeedX
+                    'message': {
+                        'user': user_json,
+                        'ball_x': ballX,
+                        'ball_y': ballY,
+                        'ballSpeedY': ballSpeedY,
+                        'ballSpeedX': ballSpeedX
+                    }
                 }));
             }
         }
@@ -196,10 +212,12 @@ function initialize() {
                     if (currentPlayer === playerID) {
                         ws.send(JSON.stringify({
                             'action': 'score_track',
-                            'user': user_json,
-                            'playerScore': playerScore,
-                            'opponentScore': opponentScore,
-                            'gameOver': gameOver
+                            'message': {
+                                'user': user_json,
+                                'player_score': playerScore,
+                                'opponent_score': opponentScore,
+                                'game_over': gameOver
+                            }
                         }));
                     }
                 }
@@ -221,10 +239,12 @@ function initialize() {
                     if (currentPlayer === playerID) {
                         ws.send(JSON.stringify({
                             'action': 'score_track',
-                            'user': user_json,
-                            'playerScore': playerScore,
-                            'opponentScore': opponentScore,
-                            'gameOver': gameOver
+                            'message': {
+                                'user': user_json,
+                                'player_score': playerScore,
+                                'opponent_score': opponentScore,
+                                'game_over': gameOver
+                            }
                         }));
                     }
                 }
@@ -241,11 +261,13 @@ function initialize() {
                 if (currentPlayer === playerID) {
                     ws.send(JSON.stringify({
                         'action': 'ball_track',
-                        'user': user_json,
-                        'ball_x': ballX,
-                        'ball_y': ballY,
-                        'ballSpeedY': ballSpeedY,
-                        'ballSpeedX': ballSpeedX
+                        'message': {
+                            'user': user_json,
+                            'ball_x': ballX,
+                            'ball_y': ballY,
+                            'ballSpeedY': ballSpeedY,
+                            'ballSpeedX': ballSpeedX
+                        }
                     }));
                 }
             }
@@ -258,11 +280,13 @@ function initialize() {
                 if (currentPlayer === playerID) {
                     ws.send(JSON.stringify({
                         'action': 'ball_track',
-                        'user': user_json,
-                        'ball_x': ballX,
-                        'ball_y': ballY,
-                        'ballSpeedY': ballSpeedY,
-                        'ballSpeedX': ballSpeedX
+                        'message': {
+                            'user': user_json,
+                            'ball_x': ballX,
+                            'ball_y': ballY,
+                            'ballSpeedY': ballSpeedY,
+                            'ballSpeedX': ballSpeedX
+                        }
                     }));
                 }
             }
@@ -360,8 +384,10 @@ function initialize() {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
                 ws.send(JSON.stringify({
                     'action': 'move_paddle',
-                    'user': user_json,
-                    'key': event.key
+                    'message': {
+                        'user': user_json,
+                        'key': event.key
+                    }
                 }));
             }
         });
@@ -369,8 +395,10 @@ function initialize() {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
                 ws.send(JSON.stringify({
                     'action': 'stop_paddle',
-                    'user': user_json,
-                    'key': event.key
+                    'message': {
+                        'user': user_json,
+                        'key': event.key
+                    }
                 }));
             }
         });

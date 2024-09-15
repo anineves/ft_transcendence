@@ -240,7 +240,6 @@ class PongConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None):
         data = json.loads(text_data)
-
         if data.get('Authorization'):
             self.user = handle_authentication(self, data.get('Authorization'))
             if self.user:
@@ -248,108 +247,56 @@ class PongConsumer(WebsocketConsumer):
             else:
                 return self.disconnect(400)
 
+
         if data.get('action') == 'move_paddle' or data.get('action') == 'stop_paddle':
-            key = data["key"]
+            message = data.get('message')
             async_to_sync(self.channel_layer.group_send)(
                 self.match_group.group_name, 
                 {
-                    "type": "pong.move",
+                    "type": "pong.log",
                     "action": data.get('action'),
-                    "user_id": self.user.id,
-                    "key_move": key
+                    "message": message
                 }
             )
-
+            
         if data.get('action') == 'end_game':
             return self.disconnect(401)
 
         if data.get('action') == 'ball_track':
-            ball_x = data["ball_x"]
-            ball_y = data["ball_y"]
-            ballSpeedY = data["ballSpeedY"]
-            ballSpeedX = data["ballSpeedX"]
+            message = data.get('message')
             async_to_sync(self.channel_layer.group_send)(
                 self.match_group.group_name, 
                 {
-                    "type": "ball.track",
+                    "type": "pong.log",
                     "action": data.get('action'),
-                    "user_id": self.user.id,
-                    "ball_x": ball_x,
-                    "ball_y": ball_y,
-                    "ballSpeedY": ballSpeedY,
-                    "ballSpeedX": ballSpeedX
+                    "message": message
                 }
             )
 
         if data.get('action') == 'score_track':
-            player_score = data["playerScore"]
-            opponent_score = data["opponentScore"]
-            game_over = data["gameOver"]
-            print(f"GameOver: {game_over}")
+            print("Data:")
+            pprint.pp(data)
+            print()
+            message = data.get('message')
+            game_over = message.get('game_over')
             if game_over == True:
                 return self.disconnect(401)
             async_to_sync(self.channel_layer.group_send)(
                 self.match_group.group_name, 
                 {
-                    "type": "score.track",
+                    "type": "pong.log",
                     "action": data.get('action'),
-                    "user_id": self.user.id,
-                    "player_score": player_score,
-                    "opponent_score": opponent_score,
-                    "game_over": game_over
+                    "message": message
                 }
             )
-
-    def pong_move(self, event):
-        user_id = event["user_id"]
-        key = event["key_move"]
-        action = event["action"]
-        self.send(text_data=json.dumps(
-        {
-            "action": action,
-            "user_id": user_id,
-            "key": key
-        }))
-
-    def ball_track(self, event):
-        user_id = event["user_id"]
-        ball_x = event["ball_x"]
-        ball_y = event["ball_y"]
-        ballSpeedY = event["ballSpeedY"]
-        ballSpeedX = event["ballSpeedX"]
-        action = event["action"]
-        self.send(text_data=json.dumps(
-        {
-            "action": action,
-            "user_id": user_id,
-            "ball_x": ball_x,
-            "ball_y": ball_y,
-            "ballSpeedY": ballSpeedY,
-            "ballSpeedX": ballSpeedX
-        }))
-
-    def score_track(self, event):
-        action = event["action"]
-        user_id = event["user_id"]
-        player_score = event["player_score"]
-        opponent_score = event["opponent_score"]
-        game_over = event["game_over"]
-        self.send(text_data=json.dumps(
-        {
-            "action": action,
-            "user_id": user_id,
-            "player_score": player_score,
-            "opponent_score": opponent_score,
-            'game_over': game_over
-        }))
 
     def pong_log(self, event):
         message = event["message"]
         action = event.get("action")
         
         self.send(text_data=json.dumps({
-            "message": message,
-            "action": action if action else "Null"
+            "action": action if action else "Null",
+            "message": message
         }))
 
     def send_self_channel_messages(self, message):

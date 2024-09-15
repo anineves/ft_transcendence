@@ -125,7 +125,7 @@ export const liveChat = () => {
     socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         
-        console.log('Data;', event.data)
+        console.log('Data: ', data)
         
         const firstWord = data.message.split(' ')[0];
         const isOwnMessage = firstWord === nickname;
@@ -143,6 +143,7 @@ export const liveChat = () => {
             has challenged you to a duel! 
             <a href="http://localhost:8080/wait-remote" id="accept-link">Accept</a>
             `;
+
             chatBox.appendChild(duelMessage);
             if (user_json.id == data.from_user) {
                 navigateTo(`/wait-remote`, groupName);
@@ -153,11 +154,13 @@ export const liveChat = () => {
                 duelMessage.innerHTML = 'You lost the invitation!';
             }, 10000); 
             
-            const acceptLink = document.getElementById('accept-link');
-            acceptLink.addEventListener('click', () => {
-                socket.close();
-                clearTimeout(timeout); 
-            });
+            if (user_json.id != data.from_user) {
+                const acceptLink = document.getElementById('accept-link');
+                acceptLink.addEventListener('click', () => {
+                    socket.close();
+                    clearTimeout(timeout); 
+                });
+            }
         }
     };
 

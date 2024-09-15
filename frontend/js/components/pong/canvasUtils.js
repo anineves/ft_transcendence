@@ -62,30 +62,30 @@ export function movePaddle(event) {
     }
     else if(modality === 'remote')
     {
-        // console.log("Move Paddle Event: ", event);
         const playerID = sessionStorage.getItem('playerID');
         const friendID = sessionStorage.getItem('friendID');
-        // console.log("Canvas Player ID: ", playerID );
-        // console.log("Canvas Friend ID: ", friendID );
-        if (event.key === 'ArrowUp' && event.user_id == playerID) {
+        let arrow_key = event.message.key
+        let user_id = event.message.user.id
+
+        if (arrow_key === 'ArrowUp' && user_id == playerID) {
             clearInterval(playerPaddleInterval);
             playerPaddleInterval = setInterval(() => {
                 playerY -= paddleSpeed;
                 if (playerY < 0) playerY = 0;
             }, 16);
-        } else if (event.key === 'ArrowDown' && event.user_id == playerID) {
+        } else if (arrow_key === 'ArrowDown' && user_id == playerID) {
             clearInterval(playerPaddleInterval);
             playerPaddleInterval = setInterval(() => {
                 playerY += paddleSpeed;
                 if (playerY + paddleHeight > canvas.height) playerY = canvas.height - paddleHeight;
             }, 16);
-        } else if (event.key === 'ArrowUp' && event.user_id == friendID) {
+        } else if (arrow_key === 'ArrowUp' && user_id == friendID) {
             clearInterval(opponentPaddleInterval);
             opponentPaddleInterval = setInterval(() => {
                 opponentY -= paddleSpeed;
                 if (opponentY < 0) opponentY = 0;
             }, 16);
-        } else if (event.key === 'ArrowDown' && event.user_id == friendID) {
+        } else if (arrow_key === 'ArrowDown' && user_id == friendID) {
             clearInterval(opponentPaddleInterval);
             opponentPaddleInterval = setInterval(() => {
                 opponentY += paddleSpeed;
@@ -107,12 +107,12 @@ export function stopPaddle(event) {
     else if(modality === 'remote') {
         const playerID = sessionStorage.getItem('playerID');
         const friendID = sessionStorage.getItem('friendID');
+        let arrow_key = event.message.key
+        let user_id = event.message.user.id
 
-        if (event.key === 'ArrowUp' || event.key === 'ArrowDown' && event.user_id == playerID) {
-            // console.log("StopPaddlePlayer")
+        if (arrow_key === 'ArrowUp' || arrow_key === 'ArrowDown' && user_id == playerID) {
             clearInterval(playerPaddleInterval);
-        } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' && event.user_id == friendID) {
-                // console.log("StopPaddleOpponent")
+        } else if (arrow_key === 'ArrowUp' || arrow_key === 'ArrowDown' && user_id == friendID) {
                 clearInterval(opponentPaddleInterval);
             }
         }
