@@ -124,16 +124,17 @@ export const liveChat = () => {
   
     socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
+        const message = data.message
         
         console.log('Data: ', data)
-        
-        const firstWord = data.message.split(' ')[0];
+        console.log('Message: ', message)
+        const firstWord = message.content.split(' ')[0];
         const isOwnMessage = firstWord === nickname;
         
-        addMessage(data.message, isOwnMessage);
+        addMessage(message.content, isOwnMessage);
         if (data.action == "duel")
         {
-            const groupName = data.group_name;
+            const groupName = message.group_name;
             sessionStorage.setItem("groupName", groupName);
 
             const chatBox = document.getElementById('chat-box'); 
@@ -145,7 +146,7 @@ export const liveChat = () => {
             `;
 
             chatBox.appendChild(duelMessage);
-            if (user_json.id == data.from_user) {
+            if (user_json.id == message.from_user) {
                 navigateTo(`/wait-remote`, groupName);
                 socket.close();
             }
@@ -154,7 +155,7 @@ export const liveChat = () => {
                 duelMessage.innerHTML = 'You lost the invitation!';
             }, 10000); 
             
-            if (user_json.id != data.from_user) {
+            if (user_json.id != message.from_user) {
                 const acceptLink = document.getElementById('accept-link');
                 acceptLink.addEventListener('click', () => {
                     socket.close();

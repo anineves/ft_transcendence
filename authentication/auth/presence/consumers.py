@@ -5,9 +5,6 @@ import pprint
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
-
 from accounts.models import PlayerChannel, Player, PrivateGroup, MatchGroup
 
 from myproject.chat_config.jwt_middleware import handle_authentication
@@ -37,7 +34,9 @@ class ChatConsumer(WebsocketConsumer):
                 self.global_chat, 
                 {
                     'type': 'chat.message',
-                    'message': f"{self.user.player} left the chat"
+                    'message': {
+                        'content': f"{self.user.player} left the chat"
+                    }
                 }
             )
         if close_code == 400:
@@ -47,14 +46,16 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data=None):
         data = json.loads(text_data)
         
-        if data.get('Authorization'): #Should we receive the token for every message?
+        if data.get('Authorization'):
             user = handle_authentication(self, data.get('Authorization'))
             if user:
                 async_to_sync(self.channel_layer.group_send)(
                     self.global_chat, 
                     {
                         'type': 'chat.message',
-                        'message': f"{self.user.player.nickname} has joined the chat"
+                        'message': {
+                            'content': f"{self.user.player.nickname} has joined the chat"
+                        }
                     }   
                 )
                 return
@@ -65,37 +66,32 @@ class ChatConsumer(WebsocketConsumer):
             return self.block_player(data.get('player'), data.get('action'))
         
         message = data["message"]
-        is_private = data["is_private"]
-        
         sender = self.user.player
-        
-        if is_private:
+        if data.get("is_private"):
             self.handle_private_chat(data)
         else:
             async_to_sync(self.channel_layer.group_send)(
                 self.global_chat, 
                 {
                     "type": "chat.message",
-                    "message": f"{sender}: {message}",
-                    "from_player": self.user.player
+                    "message": {
+                        'content': f"{sender}: {message}",
+                        "from_player": sender.id
+                    }
                 }
             )
 
     def chat_message(self, event):
         message = event["message"]
-        self.send(text_data=json.dumps({"message": message}))
-    
-    def request_duel(self, event):
-        message = event["message"]
-        action = event["action"]
-        from_user = event["from_user"]
-        group_name = event["group_name"]
-        self.send(text_data=json.dumps({"action": action, "message": message, "from_user": from_user, "group_name": group_name}))
+        action = event.get("action")
+        print(message)
+        self.send(text_data=json.dumps({
+            "action": action if action else "Null",
+            "message": message
+        }))
 
     def handle_private_chat(self, data):
         message = data.get("message")
-        # if self.user == AnonymousUser():
-        #     return self.send_self_channel_messages("Login to send private messages")
         #TODO: Handle these three try
         try:
             message_split = message.split(" ", 1)
@@ -120,26 +116,31 @@ class ChatConsumer(WebsocketConsumer):
             return self.send_self_channel_messages("Message was not sent")
         
         if data.get("action") == "duel":
-            print(f"{data.get('action')}: {data.get('action')}")
-            async_to_sync(self.channel_layer.group_send)(   
-                        self.private_group.group_name,
-                            {                
-                                "type": "request.duel",
-                                "action": "duel",
-                                "message": f"{self.user.player}: {message}",
-                                "from_user": self.user.id,
-                                "group_name": self.private_group.group_name
-                            }
-                        )
-        else:
-            async_to_sync(self.channel_layer.group_send)(   
+            async_to_sync(self.channel_layer.group_send)
+            (   
                 self.private_group.group_name,
                     {                
                         "type": "chat.message",
-                        "message": f"{self.user.player}: {message}",
-                        "from_player": self.user.player
+                        "action": "duel",
+                        "message": {
+                            'content': f"{self.user.player}: {message}",
+                            "from_user": self.user.id,
+                            "group_name": self.private_group.group_name
+                        }
                     }
-                )
+            )
+        else:
+            async_to_sync(self.channel_layer.group_send)
+            (   
+                self.private_group.group_name,
+                    {                
+                        "type": "chat.message",
+                        "message": {
+                            'content': f"{self.user.player}: {message}",
+                            "from_player": self.user.player.id
+                        }
+                }
+            )
 
     def get_or_create_new_room(self, to_player):
         from_player = self.user.player
@@ -170,7 +171,8 @@ class ChatConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.send)(self.channel_name, 
             {
                 "type": "chat.message",
-                "message": message
+                "action": "self_message",
+                "message": {'content': message}
             })
 
     def block_player(self, nickname, action):
