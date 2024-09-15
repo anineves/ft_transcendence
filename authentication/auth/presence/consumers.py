@@ -8,12 +8,9 @@ from asgiref.sync import async_to_sync
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 
-from accounts.serializers import MatchSerializer
 from accounts.models import PlayerChannel, Player, PrivateGroup, MatchGroup
 
-from myproject.chat_config.jwt_middleware import authenticate_user, handle_authentication
-
-from django.db.models import Q
+from myproject.chat_config.jwt_middleware import handle_authentication
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -25,19 +22,6 @@ class ChatConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_add)(
             self.global_chat, self.channel_name
         )
-        
-        # self.user = AnonymousUser()
-
-        # Using it for Postman tests
-        self.user = self.scope["user"]
-        if self.user != AnonymousUser():
-            User = get_user_model()
-            user = User.objects.select_related('player').get(id=self.user.id)
-            PlayerChannel.objects.create(
-                channel_name=self.channel_name, 
-                player=user.player
-            )
-
         self.accept()
 
     def disconnect(self, close_code):
@@ -53,8 +37,7 @@ class ChatConsumer(WebsocketConsumer):
                 self.global_chat, 
                 {
                     'type': 'chat.message',
-                    'message': f"{self.user.player} left the chat" \
-                        if self.user != AnonymousUser() else "Anonymous left the chat"
+                    'message': f"{self.user.player} left the chat"
                 }
             )
         if close_code == 400:
@@ -77,7 +60,6 @@ class ChatConsumer(WebsocketConsumer):
                 return
             else:
                 return self.disconnect(400)
-            # return self.handle_authentication(data.get('Authorization'))
         
         if data.get('action') == "block" or data.get('action') == "unblock":
             return self.block_player(data.get('player'), data.get('action'))
@@ -85,7 +67,7 @@ class ChatConsumer(WebsocketConsumer):
         message = data["message"]
         is_private = data["is_private"]
         
-        sender = self.user.player if self.user != AnonymousUser() else "Anonymous"
+        sender = self.user.player
         
         if is_private:
             self.handle_private_chat(data)
@@ -95,7 +77,7 @@ class ChatConsumer(WebsocketConsumer):
                 {
                     "type": "chat.message",
                     "message": f"{sender}: {message}",
-                    "from_player": self.user.player if self.user != AnonymousUser() else "Anonymous"
+                    "from_player": self.user.player
                 }
             )
 
@@ -112,8 +94,8 @@ class ChatConsumer(WebsocketConsumer):
 
     def handle_private_chat(self, data):
         message = data.get("message")
-        if self.user == AnonymousUser():
-            return self.send_self_channel_messages("Login to send private messages")
+        # if self.user == AnonymousUser():
+        #     return self.send_self_channel_messages("Login to send private messages")
         #TODO: Handle these three try
         try:
             message_split = message.split(" ", 1)
@@ -203,10 +185,14 @@ class ChatConsumer(WebsocketConsumer):
         group_to_block = PrivateGroup.objects.filter(
             players__id=self.user.player.id).filter(players__id=player_to_block.id).first()
         if group_to_block:
-            if action == "block":
+            if action == "block" and group_to_block.blocked == False:
                 group_to_block.blocked = True
-            else:
+                group_to_block.blocked_id = player_to_block.id
+            elif action == "unblock" and group_to_block.blocked_id != self.user.player.id:
                 group_to_block.blocked = False
+                group_to_block.blocked_id = None
+            else:
+                return self.send_self_channel_messages("Cannot block or unblock this user.")
             group_to_block.save()
             self.send_self_channel_messages(f"{nickname} was {action}")
         else:
@@ -247,6 +233,8 @@ class PongConsumer(WebsocketConsumer):
             else:
                 return self.disconnect(400)
 
+        if data.get('action') == 'end_game':
+            return self.disconnect(401)
 
         if data.get('action') == 'move_paddle' or data.get('action') == 'stop_paddle':
             message = data.get('message')
@@ -259,8 +247,6 @@ class PongConsumer(WebsocketConsumer):
                 }
             )
             
-        if data.get('action') == 'end_game':
-            return self.disconnect(401)
 
         if data.get('action') == 'ball_track':
             message = data.get('message')
@@ -274,9 +260,6 @@ class PongConsumer(WebsocketConsumer):
             )
 
         if data.get('action') == 'score_track':
-            print("Data:")
-            pprint.pp(data)
-            print()
             message = data.get('message')
             game_over = message.get('game_over')
             if game_over == True:

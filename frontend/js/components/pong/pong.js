@@ -72,7 +72,7 @@ export const startPongGame = async () => {
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 
-                console.log("Data   : ", data)
+                console.log("Data: ", data)
                 if (data.action === 'ball_track') {
                     ballX = data.message.ball_x;
                     ballY = data.message.ball_y;
@@ -112,19 +112,6 @@ export function initializeBall() {
 
 const playerID = sessionStorage.getItem('playerID');
 const currentPlayer = sessionStorage.getItem('player');
-
-// export function sendMessage(action, message) {
-//     ws.send(JSON.stringify({
-//         'action': action,
-//         'message': {
-//             'user': message.user_json,
-//             'ball_x': message.ballX,
-//             'ball_y': message.ballY,
-//             'ballSpeedY': message.ballSpeedY,
-//             'ballSpeedX': message.ballSpeedX
-//         }
-//     }));
-// }
 
 export function updateBall() {
     ballX += ballSpeedX;
