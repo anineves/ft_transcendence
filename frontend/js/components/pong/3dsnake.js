@@ -1,5 +1,5 @@
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x555555);
+scene.background = new THREE.Color(0x1f1f2f);
 
 // NOME DOS PLAYERS
 const redNickname ="asousa-n";
@@ -193,7 +193,7 @@ function scoreBoard() {
     const scoreboard = document.createElement('div');
     scoreboard.id = 'scoreboard';
     scoreboard.style.position = 'absolute';
-    scoreboard.style.top = '105px';
+    scoreboard.style.top = '0px';
     scoreboard.style.left = '50%';
     scoreboard.style.transform = 'translateX(-50%)';
     scoreboard.style.fontSize = '48px';
@@ -206,6 +206,7 @@ function scoreBoard() {
     const redScoreText = document.createElement('span');
     redScoreText.id = 'red-score';
     redScoreText.style.color = 'red';
+    redScoreText.style.textShadow = '1px 1px 2px white, -1px -1px 2px white'; // Adiciona contorno
     redScoreText.textContent = redNickname + ' ' + redScore;
 
     const whiteDash = document.createElement('span');
@@ -215,6 +216,7 @@ function scoreBoard() {
     const blueScoreText = document.createElement('span');
     blueScoreText.id = 'blue-score';
     blueScoreText.style.color = 'blue';
+    blueScoreText.style.textShadow = '1px 1px 2px white, -1px -1px 2px white'; // Adiciona contorno
     blueScoreText.textContent = blueScore + ' ' + blueNickname;
 
     scoreboard.appendChild(redScoreText);
