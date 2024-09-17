@@ -31,7 +31,8 @@ export const startPongGame = async () => {
     const duration = "01:30:00";
     const game = 1;
     console.log("player o", player);
-    const players = [player, 2];
+    let opponent = 2; 
+    const players = [player, opponent];
     sessionStorage.setItem('game', game);
     sessionStorage.setItem('players', players);
     const modality2 = sessionStorage.getItem('modality');
@@ -62,9 +63,9 @@ export const startPongGame = async () => {
         }
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initialize);
-    } else {
+   // if (document.readyState === 'loading') {
+    //    document.addEventListener('DOMContentLoaded', initialize);
+    //} else {
         if(modality2 == 'remote')
         {
             const groupName = sessionStorage.getItem("groupName");
@@ -95,7 +96,7 @@ export const startPongGame = async () => {
         
         
         initialize();
-    }
+   // }
 }
 
 
@@ -195,7 +196,7 @@ function initialize() {
                 }
                 
                 ballOutOfBoundsLeft = true;
-                if(modality2 == 'remote') {
+                if (modality2 == 'remote') {
                     if (currentPlayer === playerID) {
                         ws.send(JSON.stringify({
                             'action': 'score_track',
@@ -208,12 +209,14 @@ function initialize() {
                         }));
                     }
                 }
+               // alert("OUT off Bounds Left");
                 resetBall();
             }
         } else {
             ballOutOfBoundsLeft = false;
         }
         
+   
         if (ballX + ballRadius > canvas.width) {
             if (!ballOutOfBoundsRight) {
                 playerScore++;
@@ -222,7 +225,7 @@ function initialize() {
                 }
                 
                 ballOutOfBoundsRight = true;
-                if(modality2 == 'remote') {
+                if (modality2 == 'remote') {
                     if (currentPlayer === playerID) {
                         ws.send(JSON.stringify({
                             'action': 'score_track',
@@ -235,16 +238,18 @@ function initialize() {
                         }));
                     }
                 }
+                //alert("OUT off Bounds Rightttt");
                 resetBall();
             }
         } else {
             ballOutOfBoundsRight = false;
         }
         
+     
         if (ballX - ballRadius < paddleWidth && ballY > playerY && ballY < playerY + paddleHeight) {
-            
+            ballX = paddleWidth + ballRadius;
             ballSpeedX = -ballSpeedX;
-            if(modality2 == 'remote') {
+            if (modality2 == 'remote') {
                 if (currentPlayer === playerID) {
                     ws.send(JSON.stringify({
                         'action': 'ball_track',
@@ -261,9 +266,9 @@ function initialize() {
         }
         
         if (ballX + ballRadius > canvas.width - paddleWidth && ballY > opponentY && ballY < opponentY + paddleHeight) {
-            
+            ballX = canvas.width - paddleWidth - ballRadius; 
             ballSpeedX = -ballSpeedX;
-            if(modality2 == 'remote') {
+            if (modality2 == 'remote') {
                 if (currentPlayer === playerID) {
                     ws.send(JSON.stringify({
                         'action': 'ball_track',
@@ -279,6 +284,7 @@ function initialize() {
             }
         }
     }
+    
 
     async function gameLoop() {
         update();
@@ -292,6 +298,7 @@ function initialize() {
             console.log("remote", remote);
             if (remote != 'accept') {
                 try {
+                    
                     const winner_id = 2;
                     const score = `${playerScore}-${opponentScore}`;
                     const duration = "10";
