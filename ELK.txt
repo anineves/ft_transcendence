@@ -1,0 +1,27 @@
+1#
+Servicos criados no docker-compose
+    Elasticsearch
+    Logstash
+    kibana
+
+2#
+Entrar no container do Elasticsearch para gerar o enrollment token
+docker exec -it <container_id> /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
+
+3#
+De seguida vai ser pedido um codigo de verificacao para o obter temos de entrar no container do kibana
+    docker exec -it <kibana_container_id> /bin/bash
+
+    usar o seguinte comando para obter o codigo de verificacao
+    /usr/share/kibana/bin/kibana-verification-code
+
+4#
+Connectar atraves de um user
+    login: elastics
+    password:
+        Tem de ser gerada novamente dentro do container do elasticsearch utilizando este comando =>
+            docker exec -it 64dcb4f996e3 /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
+
+5#
+Aplicar integracoes
+    
