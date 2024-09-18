@@ -2,8 +2,14 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1f1f2f);
 
 // NOME DOS PLAYERS
-const redNickname ="asousa-n";
-const blueNickname ="jegger-s";
+
+const player = sessionStorage.getItem("nickname");
+console.log(player);
+let redNickname = "Player";
+console.log("nickname", player);
+if(player)
+    redNickname = player;
+const blueNickname ="Opponent";
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 500);
 camera.position.z = 7;
@@ -278,22 +284,22 @@ document.addEventListener('keydown', (event) => {
                 redSnakeDir.set(1, 0, 0);
             }
             break;
-        case 'o':
+        case 'i':
             if (!isOppositeDir(blueSnakeDir, new THREE.Vector3(0, 0, -1))) {
                 blueSnakeDir.set(0, 0, -1);
             }
             break;
-        case 'l':
+        case 'k':
             if (!isOppositeDir(blueSnakeDir, new THREE.Vector3(0, 0, 1))) {
                 blueSnakeDir.set(0, 0, 1);
             }
             break;
-        case 'k':
+        case 'j':
             if (!isOppositeDir(blueSnakeDir, new THREE.Vector3(-1, 0, 0))) {
                 blueSnakeDir.set(-1, 0, 0);
             }
             break;
-        case 'ç':
+        case 'l':
             if (!isOppositeDir(blueSnakeDir, new THREE.Vector3(1, 0, 0))) {
                 blueSnakeDir.set(1, 0, 0);
             }
