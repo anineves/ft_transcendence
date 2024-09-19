@@ -1,7 +1,4 @@
 // Criar a cena
-const blueNickname = "jegger-s";
-const redNickname = "asousa-n";
-
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x555555); // Adicionar uma cor de fundo
 
@@ -276,119 +273,67 @@ function redPlayerWin() {
     showGameOver();
 }
 
-// Score em 3D
 
-let redScoreMesh, blueScoreMesh;
 let loadedFont;
 
 const loader = new THREE.FontLoader();
 loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', function (font) {
     loadedFont = font;
-    updateScore(); // Criar os textos iniciais
-    topviewupdateScore(); // Cria o 0 - 0 incial
 });
 
 
-function updateScore() {
+function scoreBoard() {
+    const scoreboard = document.createElement('div');
+    scoreboard.id = 'scoreboard';
+    scoreboard.style.position = 'absolute';
+    scoreboard.style.top = '105px';
+    scoreboard.style.left = '50%';
+    scoreboard.style.transform = 'translateX(-50%)';
+    scoreboard.style.fontSize = '48px';
+    scoreboard.style.color = 'white';
+    scoreboard.style.fontFamily = 'Arial, sans-serif';
+    scoreboard.style.fontWeight = 'bold';
+    scoreboard.style.display = 'flex';
+    scoreboard.style.gap = '20px';
 
-    // Remover os scores antigos
-    if (redScoreMesh) {scene.remove(redScoreMesh);}
-    if (blueScoreMesh) {scene.remove(blueScoreMesh);}
-    
-    // Verificar se a fonte já foi carregada
-    if (!loadedFont) {return;}
+    const redScoreText = document.createElement('span');
+    redScoreText.id = 'red-score';
+    redScoreText.style.color = 'red';
+    redScoreText.textContent = redNickname + ' ' + redScore;
 
-    // Score red player
-    const redScoreGeometry = new THREE.TextGeometry("RED  " + `${redPlayerScore}`, {
-        font: loadedFont,
-        size: 0.7,
-        height: 0.15,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.02,
-        bevelOffset: 0,
-        bevelSegments: 5
-    });
-    const redScoreMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-    redScoreMesh = new THREE.Mesh(redScoreGeometry, redScoreMaterial);
-    redScoreMesh.position.set(-3.5, -2, -8);
-    redScoreMesh.rotation.set(0, 0, 0);
-    scene.add(redScoreMesh);
-    
-    // Score blue player
-    const blueScoreGeometry = new THREE.TextGeometry(`${bluePlayerScore}` + "  Blue" , {
-        font: loadedFont,
-        size: 0.7,
-        height: 0.15,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.02,
-        bevelOffset: 0,
-        bevelSegments: 5
-    });
-    const blueScoreMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff});
-    blueScoreMesh = new THREE.Mesh(blueScoreGeometry, blueScoreMaterial);
-    blueScoreMesh.position.set(0.6, -2, -8);
-    blueScoreMesh.rotation.set(0, 0, 0);
-    scene.add(blueScoreMesh);
+    const whiteDash = document.createElement('span');
+    whiteDash.style.color = 'white';
+    whiteDash.textContent = '-';
+
+    const blueScoreText = document.createElement('span');
+    blueScoreText.id = 'blue-score';
+    blueScoreText.style.color = 'blue';
+    blueScoreText.textContent = blueScore + ' ' + blueNickname;
+
+    scoreboard.appendChild(redScoreText);
+    scoreboard.appendChild(whiteDash);
+    scoreboard.appendChild(blueScoreText);
+
+    document.body.appendChild(scoreboard);
 }
 
+function updateScoreBoard() {
+    const redScoreText = document.getElementById('red-score');
+    const blueScoreText = document.getElementById('blue-score');
 
-// TOP view Score 
-let topviewredScoreMesh, topviewblueScoreMesh;
-
-function topviewupdateScore() {
-    if (topviewredScoreMesh) {scene.remove(topviewredScoreMesh);}
-    if (topviewblueScoreMesh) {scene.remove(topviewblueScoreMesh);}
-
-    if (!loadedFont) {return;}
-
-    const topviewredScoreGeometry = new THREE.TextGeometry("Red  " + `${topview_redPlayerScore}`, {
-        font: loadedFont,
-        size: 0.6,
-        height: 0.08,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.02,
-        bevelOffset: 0,
-        bevelSegments: 5
-    });
-    const topviewRedScoreMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-    topviewredScoreMesh = new THREE.Mesh(topviewredScoreGeometry, topviewRedScoreMaterial);
-    topviewredScoreMesh.position.set(-3.5, -1.5, -4);
-    topviewredScoreMesh.rotation.set(-Math.PI / 2, 0, 0);
-    scene.add(topviewredScoreMesh);
-
-    const topviewblueScoreGeometry = new THREE.TextGeometry("Blue  " + `${topview_bluePlayerScore}`, {
-        font: loadedFont,
-        size: 0.6,
-        height: 0.08,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.02,
-        bevelOffset: 0,
-        bevelSegments: 5
-    });
-    const topviewblueScoreMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff });
-    topviewblueScoreMesh = new THREE.Mesh(topviewblueScoreGeometry, topviewblueScoreMaterial);
-    topviewblueScoreMesh.position.set(0.6, -1.5, -4);
-    topviewblueScoreMesh.rotation.set((-Math.PI / 2) , 0, 0);
-    scene.add(topviewblueScoreMesh);
+    redScoreText.textContent = redNickname + ' ' + redScore;
+    blueScoreText.textContent = blueScore + ' ' + blueNickname;
 }
-    
+
 let ballMoving = true;
-let redPlayerScore = 0;
-let bluePlayerScore = 0;
-let topview_redPlayerScore = 0;
-let topview_bluePlayerScore = 0;
+let redScore = 0;
+let blueScore = 0;
 let ballSpeedX = 0.06;
 let ballSpeedZ = 0.06;
 const paddleSpeed = 0.08;
 let gameOver = false;
+
+scoreBoard();
 
 // funcao de animacao do jogo
 function animate() {
@@ -450,14 +395,12 @@ function animate() {
     }
     
     if (ball.position.x <= line_p1.position.x) {
-        if (bluePlayerScore < 5) {
-            bluePlayerScore++;
-            topview_bluePlayerScore++;
-            updateScore();
-            topviewupdateScore();
+        if (blueScore < 5) {
+            blueScore++;
+            updateScoreBoard();
         }
         //console.log("Blue Player score -> " + `${bluePlayerScore}`);
-        if (bluePlayerScore === 5) {
+        if (blueScore === 5) {
             bluePlayerWin();
             gameOver = true;
         } else {
@@ -465,14 +408,13 @@ function animate() {
         }
     }
     if (ball.position.x >= line_p2.position.x) {
-        if (redPlayerScore < 5) {
-            redPlayerScore++;
-            topview_redPlayerScore++;
-            updateScore();
-            topviewupdateScore();
+        if (redScore < 5) {
+            redScore++;
+            updateScoreBoard();
+            //topviewupdateScore();
         }   
             //console.log("Red Player score -> " + `${redPlayerScore}`);
-        if (redPlayerScore === 5) {
+        if (redScore === 5) {
             redPlayerWin();
             gameOver = true;
         } else {   
@@ -488,4 +430,3 @@ document.addEventListener('keyup', onDocumentKeyUp, false);
 
 // Iniciar a animação
 animate();
-
