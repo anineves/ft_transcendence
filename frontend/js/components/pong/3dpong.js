@@ -106,7 +106,7 @@ tableBotbar.rotation.z = 0;
 
 
 //paddles
-const paddleGeometry = new THREE.BoxGeometry(0.2, 0.6, 1.4)
+const paddleGeometry = new THREE.BoxGeometry(0.2, 0.6, 1.2)
 
 //paddle player red
 const paddleMaterial_red = new THREE.MeshStandardMaterial({ color: 0xff0000});
@@ -126,7 +126,7 @@ paddle_player_blue.position.z = 0;
 
 
 //Bola de jogo ou disco?
-const ball_geometry = new THREE.SphereGeometry(0.13, 32, 32);
+const ball_geometry = new THREE.SphereGeometry(0.12, 32, 32);
 const ball_Material = new THREE.MeshStandardMaterial({ color: 0xffffff});
 const ball = new THREE.Mesh(ball_geometry, ball_Material);
 scene.add(ball);
@@ -433,19 +433,19 @@ function animate() {
     }
     
     // com barras laterais
-    if (ball.position.z >= (3 - 0.15) || ball.position.z <= (-3 + 0.15))
+    if (ball.position.z >= (3 - 0.16) || ball.position.z <= (-3 + 0.16))
         ballSpeedZ = -ballSpeedZ;
     
     //com os paddles
-    if (ball.position.x <= paddle_player_red.position.x + 0.15 && 
-        ball.position.z >= paddle_player_red.position.z - 0.75 && 
-        ball.position.z <= paddle_player_red.position.z + 0.75) {
+    if (ball.position.x <= paddle_player_red.position.x + 0.16 && 
+        (ball.position.z >= paddle_player_red.position.z - 0.6 && 
+        ball.position.z <= paddle_player_red.position.z + 0.6)) {
         ballSpeedX = -ballSpeedX;
     }
 
-    if (ball.position.x >= paddle_player_blue.position.x - 0.15 && 
-        ball.position.z >= paddle_player_blue.position.z - 0.75 && 
-        ball.position.z <= paddle_player_blue.position.z + 0.75) {
+    if (ball.position.x >= paddle_player_blue.position.x - 0.16 && 
+        (ball.position.z >= paddle_player_blue.position.z - 0.6 && 
+        ball.position.z <= paddle_player_blue.position.z + 0.6)) {
         ballSpeedX = -ballSpeedX;
     }
     
