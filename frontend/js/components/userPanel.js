@@ -15,8 +15,7 @@ export const renderPanel = async (user) => {
         let totalWins = 0;
 
         matches.forEach(match => {
-            console.log(player.id, match.winner_id, totalWins);
-            if (match.players.includes(player.id) && match.winner_id == player.id) {
+            if (match.players.includes(player.id) && match.winner_id === player.id) {
                 totalWins++;
             }
         });
@@ -57,18 +56,18 @@ export const renderPanel = async (user) => {
                     <button id="logoutBtn" class="btn">Logout <i class="fa-solid fa-right-from-bracket"></i></button>
                     <button id="friendBtn" class="btn">Friends <i class="fas fa-user-group"></i></button>
                     <button id="createBtn" class="btn">Create Player</button>
-                    <button id="sendMensageBtn" class="btn">Send Message <i class="fa-solid fa-message"></i></button>
+                    <button id="playBtn" class="btn">Play</button>
+                    <button id="sendMessageBtn" class="btn">Send Message <i class="fa-solid fa-message"></i></button>
                 </div>
             </div>
             <div id="updateProfileSection" style="display: none;">
                 <h2>Update Profile</h2>
                 <form id="updateProfileForm">
                     <input type="file" id="updateAvatar" class="form-control mb-2">
-                    <input type="text" id="updateFirstName" placeholder="First Name" class="form-control mb-2" value="${user.first_name}">
-                    <input type="text" id="updateNickname" placeholder="Nickname" class="form-control mb-2" value="${nickname}">
-                    <input type="text" id="updateLastName" placeholder="Last Name" class="form-control mb-2" value="${user.last_name}">
-                    <input type="text" id="updateUsername" placeholder="Username" class="form-control mb-2" value="${user.username}">
-                    <input type="email" id="updateEmail" placeholder="Email" class="form-control mb-2" value="${user.email}">
+                    <input type="text" id="updateFirstName" placeholder="First Name" class="form-control mb-2" }">
+                    <input type="text" id="updateLastName" placeholder="Last Name" class="form-control mb-2" ">
+                    <input type="text" id="updateUsername" placeholder="Username" class="form-control mb-2" ">
+                    <input type="email" id="updateEmail" placeholder="Email" class="form-control mb-2" ">
                     <button type="submit" class="btn">Update</button>
                 </form>
                 <button id="backProfileBtn" class="btn">Back to Profile</button>
@@ -85,13 +84,16 @@ export const renderPanel = async (user) => {
         document.getElementById('progressBar').addEventListener('click', () => {
             navigateTo('/stats');
         });
+        document.getElementById('playBtn').addEventListener('click', () => {
+            navigateTo('/game-selection');
+        });
 
         document.getElementById('logoutBtn').addEventListener('click', logout);
         document.getElementById('editBtn2').addEventListener('click', toggleEditProfile);
         document.getElementById('friendBtn').addEventListener('click', () => renderFriendsPage(user));
         document.getElementById('createBtn').addEventListener('click', () => navigateTo('/create-player'));
-        document.getElementById('sendMensageBtn').addEventListener('click', handleSendMessage);
-        document.getElementById('updateProfileForm').addEventListener('submit', handleUpdateProfile);
+        document.getElementById('sendMessageBtn').addEventListener('click', handleSendMessage);
+        document.getElementById('updateProfileForm').addEventListener('submit', (e) => handleUpdateProfile(e, user));
         document.getElementById('backProfileBtn').addEventListener('click', () => navigateTo('/user-panel', user));
         document.getElementById('closeBtn').addEventListener('click', () => navigateTo('/'));
     } catch (error) {
@@ -119,7 +121,7 @@ const handleSendMessage = () => {
     }
 };
 
-const handleUpdateProfile = async (e) => {
+const handleUpdateProfile = async (e, user) => {
     e.preventDefault();
 
     const formData = new FormData();
@@ -128,14 +130,12 @@ const handleUpdateProfile = async (e) => {
     const lastName = document.getElementById('updateLastName').value;
     const username = document.getElementById('updateUsername').value;
     const email = document.getElementById('updateEmail').value;
-    const nickname = document.getElementById('updateNickname').value;
 
     if (avatarFile) formData.append('avatar', avatarFile);
     formData.append('first_name', firstName);
     formData.append('last_name', lastName);
     formData.append('username', username);
     formData.append('email', email);
-    formData.append('nickname', nickname);
 
     try {
         const response = await fetch(`http://127.0.0.1:8000/api/user/${user.id}`, {

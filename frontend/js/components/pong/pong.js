@@ -295,11 +295,14 @@ function initialize() {
             const id = sessionStorage.getItem('id_match');
             console.log('Match ID:', id);
             const remote = sessionStorage.getItem('remote');
+            const player = sessionStorage.getItem('player');
             console.log("remote", remote);
+            let winner_id = 2; 
             if (remote != 'accept') {
                 try {
                     
-                    const winner_id = 2;
+                    if (playerScore > opponentScore)
+                        winner_id = player;
                     const score = `${playerScore}-${opponentScore}`;
                     const duration = "10";
 

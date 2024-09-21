@@ -6,8 +6,7 @@ export const renderFriendsPage = async (user) => {
 
     app.innerHTML = `
         <div class="friendship-management-panel background-form">
-            <h2>Friendship Management</h2>
-            <h3>Friends:</h3>
+            <h2>Friends:</h2>
             <ul id="friendsList"></ul> 
             <button id="inviteBtn2" class="btn">Invite friends</button>
             <button id="friendsBtn2" class="btn">Friend Requests</button>
@@ -51,7 +50,7 @@ export const renderFriendsPage = async (user) => {
                                 console.log(friendData);
                                 const listItem = document.createElement('li');
                                 const friendButton = document.createElement('button');
-                                friendButton.textContent = friendData.nickname;
+                                friendButton.textContent = "•" + friendData.nickname;
                                 friendButton.className = 'friend-nickname-btn';
 
                                 friendButton.onclick = () => {
