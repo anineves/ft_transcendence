@@ -45,7 +45,7 @@ export const renderLogin = () => {
                 sessionStorage.setItem('refreshToken', data.refresh); 
                 // Armazena as informações do usuário (por exemplo, nome, email).
                 sessionStorage.setItem('user', JSON.stringify(data.user)); 
-                console.log("Login");
+
                 console.log(data);
                 const userId = data.user.id;
                 const token = data.access;
@@ -67,6 +67,7 @@ export const renderLogin = () => {
                             sessionStorage.setItem('player', JSON.stringify(player.id));
                             sessionStorage.setItem('playerInfo', JSON.stringify(player));
                             sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
+                            putPlayer("ON");
                         } else {
                             console.log("You need create a player");
                         }
@@ -87,4 +88,44 @@ export const renderLogin = () => {
             alert('An error occurred during login'); 
         }
     });
+};
+
+
+export const putPlayer = async (status) => {
+    const jwtToken = sessionStorage.getItem('jwtToken');
+    const user = sessionStorage.getItem('user');
+    const playerId = sessionStorage.getItem('player');
+    console.log("Player", playerId);
+    console.log("Status", status)
+    const stat = status;
+
+    console.log("Entrei Put");
+    try {
+        const player = await fetch(`http://127.0.0.1:8000/api/player/${playerId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status : stat })
+        });
+        console.log("Entrei Try");
+        console.log(player)
+        if (player.ok) {
+            console.log("Entrei IF");
+            const playerT = await player.json();
+            sessionStorage.setItem('playerStatus', playerT.status);
+            console.log(playerT)
+
+            checkLoginStatus();
+            navigateTo('/game-selection');
+
+        } else {
+            alert("Player not found");
+            console.log("Error player not found");
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+
 };

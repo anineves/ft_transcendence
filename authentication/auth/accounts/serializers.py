@@ -88,7 +88,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ['id', 'nickname', 'friendship', 'user', \
-                  'created_at', 'total_winner', 'pong_winner', 'linha_winner']
+                  'created_at', 'total_winner', 'pong_winner', 'linha_winner', 'status']
         
         read_only_fields = ['id' ,'created_at', 'user']
 
@@ -96,6 +96,11 @@ class PlayerSerializer(serializers.ModelSerializer):
         current_user = self.context.get('user')
         validated_data['user'] = current_user
         return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        instance.status=validated_data.get('status', instance.status)
+        instance.save()
+        return(instance)
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):

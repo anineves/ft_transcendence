@@ -18,6 +18,7 @@ import { renderPlayerProfile } from './components/friendsPanel.js';
 import { render3DPong } from './components/3dPong.js';
 import { render3Snake } from './components/3dsnake.js';
 import { stats } from './components/stats.js';
+import { putPlayer } from './components/login.js';
 
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
@@ -92,9 +93,11 @@ export const checkLoginStatus = () => {
 
 
 export const logout = () => {
+    
+    putPlayer('OF');
     sessionStorage.removeItem('user'); 
     sessionStorage.clear();
-    sessionStorage.clear();
+    localStorage.clear();
     checkLoginStatus(); 
     navigateTo('/'); 
 };

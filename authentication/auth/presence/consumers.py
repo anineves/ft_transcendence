@@ -116,8 +116,7 @@ class ChatConsumer(WebsocketConsumer):
             return self.send_self_channel_messages("Message was not sent")
         
         if data.get("action") == "duel":
-            async_to_sync(self.channel_layer.group_send)
-            (   
+            async_to_sync(self.channel_layer.group_send)(   
                 self.private_group.group_name,
                     {                
                         "type": "chat.message",
@@ -130,8 +129,7 @@ class ChatConsumer(WebsocketConsumer):
                     }
             )
         else:
-            async_to_sync(self.channel_layer.group_send)
-            (   
+            async_to_sync(self.channel_layer.group_send)(   
                 self.private_group.group_name,
                     {                
                         "type": "chat.message",

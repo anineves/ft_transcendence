@@ -21,11 +21,8 @@ export const renderPlayerProfile = async () => {
                 <div id="profileSection">
                     <h2>Player Profile</h2>
                     <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="Player Avatar" class="avatar">
-                    <p><strong>Username:</strong> ${player.username}</p>
                     <p><strong>Nickname:</strong> ${player.nickname}</p>
-                    <p><strong>Email:</strong> ${player.email}</p>
-                    <p><strong>Firstname:</strong> ${player.first_name}</p>
-                    <p><strong>Lastname:</strong> ${player.last_name}</p>
+                    <p><strong>Status:</strong> ${player.status}</p>
                     <p><strong>Id:</strong> ${player.id}</p>
                     <p><strong>Total Wins:</strong> <span id="totalWins">Loading...</span></p>
                     <p><strong>Total Losses:</strong> <span id="totalLosses">Loading...</span></p>

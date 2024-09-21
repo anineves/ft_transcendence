@@ -7,7 +7,7 @@ export const renderFriendsPage = async (user) => {
     app.innerHTML = `
         <div class="friendship-management-panel background-form">
             <h2>Friendship Management</h2>
-            <h3>Friends</h3>
+            <h3>Friends:</h3>
             <ul id="friendsList"></ul> 
             <button id="inviteBtn2" class="btn">Invite friends</button>
             <button id="friendsBtn2" class="btn">Friend Requests</button>
@@ -36,11 +36,37 @@ export const renderFriendsPage = async (user) => {
             if (response.ok) {
                 const data = await response.json();
                 if (data.friendship && data.friendship.length > 0) {
-                    data.friendship.forEach(friendId => {
-                        const listItem = document.createElement('li');
-                        listItem.textContent = `Friend ID: ${friendId}`;
-                        friendsList.appendChild(listItem);
-                    });
+                    for (let friendId of data.friendship) {
+                        try {
+                            const friendResponse = await fetch(`http://127.0.0.1:8000/api/player/${friendId}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+
+                            if (friendResponse.ok) {
+                                const friendData = await friendResponse.json();
+                                console.log(friendData);
+                                const listItem = document.createElement('li');
+                                const friendButton = document.createElement('button');
+                                friendButton.textContent = friendData.nickname;
+                                friendButton.className = 'friend-nickname-btn';
+
+                                friendButton.onclick = () => {
+                                    sessionStorage.setItem('playerProfile', JSON.stringify(friendData));
+                                    navigateTo('/player-profile');
+                                };
+                                listItem.appendChild(friendButton);
+                                friendsList.appendChild(listItem);
+                            } else {
+                                console.log(`Failed to load friend with ID: ${friendId}`);
+                            }
+                        } catch (friendError) {
+                            console.error('Error fetching friend data:', friendError);
+                        }
+                    }
                 } else {
                     friendsList.innerHTML = `<li>No friends found</li>`;
                 }
@@ -55,6 +81,7 @@ export const renderFriendsPage = async (user) => {
         alert('You need to create a Player');
         navigateTo('/create-player');
     }
+
 
     document.getElementById('inviteBtn2').addEventListener('click', () => {
         const inviteSection = document.getElementById('inviteSection');
