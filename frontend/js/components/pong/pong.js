@@ -41,6 +41,7 @@ export const startPongGame = async () => {
     const modality2 = sessionStorage.getItem('modality');
     const inviter = sessionStorage.getItem("Inviter");
     console.log("Inviter", inviter);
+    const match_type = "SP"
     if (modality2 != 'remote' || inviter == "True") {
 
         try {
@@ -50,7 +51,7 @@ export const startPongGame = async () => {
                     'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ game, players })
+                body: JSON.stringify({ game, players, match_type })
             });
 
             const data = await response.json();

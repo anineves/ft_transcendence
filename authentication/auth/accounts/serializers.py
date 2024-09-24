@@ -142,7 +142,7 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
-        fields = ['id' ,'date', 'duration', 'game', 'players', 'winner_id', 'score']
+        fields = ['id' ,'date', 'duration', 'game', 'players', 'winner_id', 'score', 'match_type']
         read_only_fields = ['id' ,'date']
     
     def update(self, instance, validated_data):
