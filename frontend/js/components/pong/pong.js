@@ -17,6 +17,9 @@ let ws;
 const user = sessionStorage.getItem('user');
 const user_json = JSON.parse(user);
 
+const player_id = sessionStorage.getItem("player"); 
+
+
 export let ballX, ballY;
 export const ballRadius = 10;
 let isAIActive = false;
@@ -36,8 +39,9 @@ export const startPongGame = async () => {
     sessionStorage.setItem('game', game);
     sessionStorage.setItem('players', players);
     const modality2 = sessionStorage.getItem('modality');
-
-    if (modality2 != 'remote') {
+    const inviter = sessionStorage.getItem("Inviter");
+    console.log("Inviter", inviter);
+    if (modality2 != 'remote' || inviter == "True") {
 
         try {
             const response = await fetch('http://localhost:8000/api/matches/', {
@@ -383,7 +387,7 @@ function initialize() {
                 ws.send(JSON.stringify({
                     'action': 'move_paddle',
                     'message': {
-                        'user': user_json,
+                        'user': player_id,
                         'key': event.key
                     }
                 }));
@@ -394,7 +398,7 @@ function initialize() {
                 ws.send(JSON.stringify({
                     'action': 'stop_paddle',
                     'message': {
-                        'user': user_json,
+                        'user': player_id,
                         'key': event.key
                     }
                 }));

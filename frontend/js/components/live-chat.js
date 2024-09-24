@@ -147,6 +147,7 @@ export const liveChat = () => {
 
             chatBox.appendChild(duelMessage);
             if (user_json.id == message.from_user) {
+                sessionStorage.setItem("Inviter", "True");
                 navigateTo(`/wait-remote`, groupName);
                 socket.close();
             }

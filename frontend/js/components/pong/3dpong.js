@@ -162,7 +162,8 @@ document.addEventListener('keydown', (event) => {
         switchCamera();
     }
 });
-
+let redNickname = "ola"
+let blueNickname = "ola"
 // Funcao para aparecer o "GameOver!" + Palyer red/blue + "WINS!"
 let PlayerVictoryMaterial = 0;
 let PlayerVictoryGeometry = 0;

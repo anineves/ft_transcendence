@@ -62,30 +62,31 @@ export function movePaddle(event) {
     }
     else if(modality === 'remote')
     {
+        
         const playerID = sessionStorage.getItem('playerID');
         const friendID = sessionStorage.getItem('friendID');
         let arrow_key = event.message.key
-        let user_id = event.message.user.id
-
-        if (arrow_key === 'ArrowUp' && user_id == playerID) {
+        let current_player = event.message.user
+        
+        if (arrow_key === 'ArrowUp' && current_player == playerID) {
             clearInterval(playerPaddleInterval);
             playerPaddleInterval = setInterval(() => {
                 playerY -= paddleSpeed;
                 if (playerY < 0) playerY = 0;
             }, 16);
-        } else if (arrow_key === 'ArrowDown' && user_id == playerID) {
+        } else if (arrow_key === 'ArrowDown' && current_player == playerID) {
             clearInterval(playerPaddleInterval);
             playerPaddleInterval = setInterval(() => {
                 playerY += paddleSpeed;
                 if (playerY + paddleHeight > canvas.height) playerY = canvas.height - paddleHeight;
             }, 16);
-        } else if (arrow_key === 'ArrowUp' && user_id == friendID) {
+        } else if (arrow_key === 'ArrowUp' && current_player == friendID) {
             clearInterval(opponentPaddleInterval);
             opponentPaddleInterval = setInterval(() => {
                 opponentY -= paddleSpeed;
                 if (opponentY < 0) opponentY = 0;
             }, 16);
-        } else if (arrow_key === 'ArrowDown' && user_id == friendID) {
+        } else if (arrow_key === 'ArrowDown' && current_player == friendID) {
             clearInterval(opponentPaddleInterval);
             opponentPaddleInterval = setInterval(() => {
                 opponentY += paddleSpeed;
@@ -108,11 +109,11 @@ export function stopPaddle(event) {
         const playerID = sessionStorage.getItem('playerID');
         const friendID = sessionStorage.getItem('friendID');
         let arrow_key = event.message.key
-        let user_id = event.message.user.id
+        let current_player = event.message.user
 
-        if (arrow_key === 'ArrowUp' || arrow_key === 'ArrowDown' && user_id == playerID) {
+        if (arrow_key === 'ArrowUp' || arrow_key === 'ArrowDown' && current_player == playerID) {
             clearInterval(playerPaddleInterval);
-        } else if (arrow_key === 'ArrowUp' || arrow_key === 'ArrowDown' && user_id == friendID) {
+        } else if (arrow_key === 'ArrowUp' || arrow_key === 'ArrowDown' && current_player == friendID) {
                 clearInterval(opponentPaddleInterval);
             }
         }

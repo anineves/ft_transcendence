@@ -54,7 +54,7 @@ class Player(models.Model):
     nickname = models.CharField(max_length=15)
     created_at = models.DateTimeField(auto_now_add=True)
     friendship = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="friends")
-    status = models.CharField(max_length=2, choices=OnlineStatus, default=OnlineStatus.ONLINE)
+    status = models.CharField(max_length=2, choices=OnlineStatus, default=OnlineStatus.OFFLINE)
 
     def __str__(self):
         return self.nickname
@@ -80,6 +80,10 @@ class Game(models.Model):
 
 
 class Match(models.Model):
+    class MatchType(models.TextChoices):
+        SINGLE = "SP", ("Single Player")
+        REMOTE = "RM", ("Remote")
+        PVP = "MP", ("Player vs Player")
 
     date = models.DateTimeField(auto_now_add=True)
     duration = models.DurationField(null=True, blank=True)
@@ -87,6 +91,7 @@ class Match(models.Model):
     players = models.ManyToManyField(Player, related_name='players')
     winner_id = models.IntegerField(null=True, blank=True)
     score = models.CharField(max_length=5, null=True, blank=True)
+    match_type = models.CharField(max_length=2, choices=MatchType, null=True)
 
     def get_winner(self):
         try:
