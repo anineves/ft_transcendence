@@ -1,8 +1,8 @@
-/*TV*/
-
+/* TV */
 .tv-container {
-    width: 980px;
-    height: 680px; 
+    width: 90vw; /* Responsivo */
+    max-width: 980px;
+    height: auto; 
     background: #222;
     border: 10px solid #666;
     border-radius: 20px;
@@ -13,27 +13,12 @@
     position: relative;
 }
 
-
-
-.tv-container::after {
-    content: "";
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: #ff0000;
-    border-radius: 50%;
-    bottom: 20px;
-    right: 20px;
-}
-
-
-
-/*arcade*/
-
+/* Arcade */
 .arcade-container {
     margin-top: 30px;
-    width: 700px;
-    height: 750px; 
+    width: 90%; /* Responsivo */
+    max-width: 700px; /* Limite máximo */
+    height: 80vh; /* Altura responsiva */
     background: linear-gradient(to bottom, #ff00ff, #00ffff);
     border: 10px solid #fff;
     border-radius: 20px;
@@ -43,39 +28,44 @@
     align-items: center;
     position: relative;
     padding: 20px;
+    transform: perspective(800px) rotateX(5deg); /* Efeito 3D na arcade */
 }
 
+/* Arcade Screen */
 .arcade-screen {
-    width: 90%;
-    height: 60%;
+    width: 95%; /* Aumentado */
+    height: 75%; /* Aumentado */
     background: #000;
     border: 5px solid #444;
     border-radius: 5px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px #00ffff;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 30px #00ffff; /* Efeito de brilho */
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center; 
     position: relative;
     padding: 20px;
 }
 
+/* Arcade Title */
 .arcade-title {
     position: absolute;
-    top: 25px;
-    font-size: 20px;
+    top: 20px; 
+    font-size: 24px; /* Aumentado */
+    font-family: 'Press Start 2P', cursive; /* Fonte de estilo retrô */
     left: 50%;
     transform: translateX(-50%);
-    color: #fff;
+    color: #ffcc00; /* Amarelo neon */
+    text-shadow: 0 0 5px rgba(255, 204, 0, 0.8); /* Sombra para destaque */
     margin: 0;
 }
 
+/* Arcade Controls */
 .arcade-controls {
-
     width: 80%;
-    height: 25%;
-    background: #222;
+    height: 20%;
+    background: rgba(34, 34, 34, 0.9); /* Semitransparente */
     border-top: 10px solid #444;
     border-radius: 5px;
     display: flex;
@@ -85,42 +75,89 @@
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px #ff00ff;
 }
 
+/* Arcade Button */
 .arcade-button {
-    width: 50px;
-    height: 50px;
+    width: 60px; /* Aumentado */
+    height: 60px; /* Aumentado */
     background: linear-gradient(to bottom, #ff00ff, #00ffff);
     border-radius: 50%;
     margin: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px #00ffff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 20px #00ffff; /* Efeito de brilho */
     border: 2px solid #fff;
+    transition: transform 0.2s, box-shadow 0.2s; /* Transição suave */
+    transform: translateZ(10px); /* Efeito 3D no botão */
 }
 
+.arcade-button:hover {
+    transform: scale(1.1) translateZ(15px); /* Efeito de aumento com profundidade */
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5), 0 0 25px #00ffff; /* Brilho aumentado no hover */
+}
+
+/* Arcade Joystick */
 .arcade-joystick {
-    width: 20px; 
-    height: 80px;
+    width: 30px; /* Aumentado */
+    height: 100px; /* Aumentado */
     background: #000;
     position: relative;
     margin: 10px;
+    transform: translateZ(5px); /* Efeito 3D no joystick */
 }
 
 .arcade-joystick::after {
     content: "";
-    width: 40px;
-    height: 40px;
+    width: 50px; /* Aumentado */
+    height: 50px; /* Aumentado */
     background: linear-gradient(to bottom, #ff00ff, #00ffff);
     border-radius: 50%;
     position: absolute;
-    top: -25px;
-    left: -12px;
+    top: -30px; 
+    left: -10px; 
     border: 2px solid #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 10px #00ffff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 15px #00ffff; /* Efeito de brilho */
+    transform: translateZ(10px); /* Efeito 3D no botão do joystick */
 }
 
+/* Canvas */
 canvas {
     display: block;
-    margin: 35px auto;
-    background-color: rgba(0, 0, 0, 0.8);
+    margin: 0; 
+    background-color: rgba(0, 0, 0, 0.9); 
     border: 2px solid #ffcc00; 
     border-radius: 10px; 
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); 
+    width: 100%; /* Preenche o espaço da arcade screen */
+    height: auto; /* Mantém proporção */
+    max-width: 100%; /* Ajustado para preencher toda a tela */
+}
+
+/* Exit Button */
+#exitBtn {
+    background-color: #ff4444; /* Vermelho brilhante */
+    color: white; /* Texto branco */
+    border: none;
+    padding: 10px 20px; /* Aumentado */
+    border-radius: 5px; /* Bordas arredondadas */
+    cursor: pointer; /* Cursor de ponteiro */
+    transition: background-color 0.2s, transform 0.2s; /* Transições suaves */
+}
+
+#exitBtn:hover {
+    background-color: #cc0000; /* Vermelho mais escuro ao passar o mouse */
+    transform: scale(1.05); /* Efeito de aumento ao passar o mouse */
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .arcade-container {
+        height: 80vh; /* Altura responsiva */
+    }
+
+    .arcade-screen {
+        height: 70%; /* Ajustado para melhor ajuste */
+    }
+
+    .arcade-button {
+        width: 50px; /* Ajuste no tamanho do botão */
+        height: 50px; /* Ajuste no tamanho do botão */
+    }
 }

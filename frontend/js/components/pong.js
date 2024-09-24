@@ -23,9 +23,8 @@ export const renderPong = () => {
     `;
     resetGameState(); 
     startPongGame();
-    document.getElementById('exitBtn').addEventListener('click', () =>
-        {
-            stopGame();   
-            navigateTo('/select-playerOrAI');
-        });
+    document.getElementById('exitBtn').addEventListener('click', () => {
+        stopGame();   
+        navigateTo('/select-playerOrAI');
+    });
 };

@@ -12,20 +12,33 @@ export const renderPanel = async (user) => {
         const response = await fetch('http://localhost:8000/api/matches/');
         const matches = await response.json();
 
-        let totalWins = 0;
+        let pongWins = 0;
+        let snakeWins = 0;
 
+        // Contabilizando vitórias no Pong e Snake
         matches.forEach(match => {
-            if (match.players.includes(player.id) && match.winner_id === player.id) {
-                totalWins++;
+            if (match.players.includes(player.id)) {
+                if (match.game === 'Pong' && match.winner_id === player.id) {
+                    pongWins++;
+                }
+                if (match.game === 'Snake' && match.winner_id === player.id) {
+                    snakeWins++;
+                }
             }
         });
 
-        const level = Math.floor(totalWins / 5) + 1;
-        const winsInCurrentLevel = totalWins % 5;
-        const progressPercentage = (winsInCurrentLevel / 5) * 100;
+        // Cálculo do nível e progresso para Pong
+        const pongLevel = Math.floor(pongWins / 5) + 1;
+        const pongWinsInCurrentLevel = pongWins % 5;
+        const pongProgressBar = Array(5).fill('⬜').map((segment, index) => {
+            return index < pongWinsInCurrentLevel ? '🟦' : '⬜';
+        }).join('');
 
-        const progressBar = Array(5).fill('⬜').map((segment, index) => {
-            return index < winsInCurrentLevel ? '🟦' : '⬜';
+        // Cálculo do nível e progresso para Snake
+        const snakeLevel = Math.floor(snakeWins / 5) + 1;
+        const snakeWinsInCurrentLevel = snakeWins % 5;
+        const snakeProgressBar = Array(5).fill('⬜').map((segment, index) => {
+            return index < snakeWinsInCurrentLevel ? '🟦' : '⬜';
         }).join('');
 
         app.innerHTML = `
@@ -46,9 +59,16 @@ export const renderPanel = async (user) => {
                     </div>
                     <div class="progression">
                         <div class="progress-bar" id="progressBar" style="cursor: pointer;">
-                            <p><strong>Level:</strong> ${level}</p>
-                            <span class="progress-label">${progressBar}</span>
-                            <p>${winsInCurrentLevel}/5 wins to reach next level</p>
+                          <div class="progress-bar" id="pongProgressBar">
+                            <p><strong>Pong Level:</strong> ${pongLevel}</p>
+                            <span class="progress-label">${pongProgressBar}</span>
+                            <p>${pongWinsInCurrentLevel}/5 wins to reach next level</p>
+                        </div>
+                        <div class="progress-bar" id="snakeProgressBar">
+                            <p><strong>Snake Level:</strong> ${snakeLevel}</p>
+                            <span class="progress-label">${snakeProgressBar}</span>
+                            <p>${snakeWinsInCurrentLevel}/5 wins to reach next level</p>
+                        </div>
                         </div>
                     </div>
                 </div>

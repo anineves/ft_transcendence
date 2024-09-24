@@ -177,7 +177,8 @@ function initialize() {
         if (gameOver) return;
         updateBall();
         if (sessionStorage.getItem('modality') === 'ai') {
-            moveOpponentPaddleAI();
+
+            moveOpponentPaddleAI(ballY);
             isAIActive = true;
         }
         checkCollisions();

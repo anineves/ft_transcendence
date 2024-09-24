@@ -1,4 +1,4 @@
-export let canvas, context, paddleHeight, paddleWidth, ballRadius, playerY, opponentY, ballY;
+export let canvas, context, paddleHeight, paddleWidth, ballRadius, playerY, opponentY, ballY, ballX;
 
 
 export function initializeCanvas() {
@@ -128,21 +128,57 @@ export function stopPaddle(event) {
 // }
 
 
-let opponentPaddleDirection = 1;
-const opponentPaddleSpeed = 2;  
+let aiUpdateRate = 1000;  
+let aiTargetY = 0;       
+let lastAITime = 0;       
+let opponentPaddleDirection = 0;  
+const opponentPaddleSpeed = 2.5;    
 
-export function moveOpponentPaddleAI() {
-    if (!canvas) {
-        console.error('Canvas not initialized');
-        return;
+function simulateKeyPress(direction) {
+    
+    if (direction === -1) {
+        opponentY -= opponentPaddleSpeed; 
+    } else if (direction === 1) {
+        opponentY += opponentPaddleSpeed;  
     }
 
-    opponentY += opponentPaddleSpeed * opponentPaddleDirection;
-    if (opponentY <= 0) {
+    if (opponentY < 0) {
         opponentY = 0;
-        opponentPaddleDirection = 1; 
-    } else if (opponentY + paddleHeight >= canvas.height) {
+    } else if (opponentY + paddleHeight > canvas.height) {
         opponentY = canvas.height - paddleHeight;
-        opponentPaddleDirection = -1; 
     }
 }
+
+
+export function moveOpponentPaddleAI(ballY) {
+    const currentTime = Date.now(); 
+
+   
+    if (currentTime - lastAITime >= aiUpdateRate) {
+        aiTargetY = ballY - paddleHeight / 2; 
+        lastAITime = currentTime;  
+    }
+
+  
+    if (opponentY + paddleHeight / 2 < aiTargetY) {
+        opponentPaddleDirection = 1; 
+    } else if (opponentY + paddleHeight / 2 > aiTargetY) {
+        opponentPaddleDirection = -1;  
+    } else {
+        opponentPaddleDirection = 0; 
+    }
+}
+
+
+function updateAIPaddleMovement() {
+   
+    if (opponentPaddleDirection !== 0) {
+        simulateKeyPress(opponentPaddleDirection);
+    }
+
+    
+    requestAnimationFrame(updateAIPaddleMovement);
+}
+
+requestAnimationFrame(updateAIPaddleMovement);
+
