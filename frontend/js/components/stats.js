@@ -35,7 +35,7 @@ export const stats = async () => {
 
                 const dayIndex = days.indexOf(matchFormattedDate);
                 if (dayIndex !== -1) {
-                    if (match.game == '1') {
+                    if (match.game == 'pong') {
                         pongMatches++;
                         pongMatchesPerDay[dayIndex]++;
                         totalPongTime += convertDurationToSeconds(match.duration);
@@ -46,7 +46,7 @@ export const stats = async () => {
                         } else {
                             pongLosses++;
                         }
-                    } else if (match.game === 'snake') {
+                    } else if (match.game == 'snake') {
                         snakeMatches++;
                         snakeMatchesPerDay[dayIndex]++;
                         totalSnakeTime += convertDurationToSeconds(match.duration);

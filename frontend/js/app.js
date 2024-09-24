@@ -4,10 +4,8 @@ import { renderLogin } from './components/login.js';
 import { renderRegister } from './components/register.js';
 import { renderGameSelection } from './components/gameSelection.js';
 import { renderPong } from './components/pong.js';
-import { render4line } from './components/fourLine.js';
 import { renderPanel } from './components/userPanel.js';
 import { createPlayer } from './components/createPlayer.js';
-import { teste} from './components/teste.js';
 import {startMenu} from './components/startMenu.js';
 import { selectPlayerorAI } from './components/selectPlayerOrAI.js';
 import { renderRequestPanel } from './components/requestPanel.js';
@@ -22,7 +20,6 @@ const routes = {
     '/login': renderLogin,
     '/game-selection': renderGameSelection,
     '/pong': renderPong,
-    '/4line': render4line,
     '/register': renderRegister,
     '/user-panel':  renderPanel,
     '/create-player': createPlayer, 

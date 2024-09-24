@@ -3,7 +3,6 @@ import { renderLogin } from './components/login.js';
 import { renderRegister } from './components/register.js';
 import { renderGameSelection } from './components/gameSelection.js';
 import { renderPong } from './components/pong.js';
-import { render4line } from './components/fourLine.js';
 import { renderPanel } from './components/userPanel.js';
 import { createPlayer } from './components/createPlayer.js';
 import { startMenu } from './components/startMenu.js';
@@ -26,7 +25,6 @@ export const routes = {
     '/login': renderLogin,
     '/game-selection': renderGameSelection,
     '/pong': renderPong,
-    '/4line': render4line,
     '/register': renderRegister,
     '/user-panel': renderPanel, 
     '/create-player': createPlayer, 
@@ -64,7 +62,6 @@ export const render = () => {
 };
 
 export const checkLoginStatus = () => {
-    console.log("entrei");
     const user = JSON.parse(sessionStorage.getItem('user'));
     const jwtToken = sessionStorage.getItem('jwtToken');
     const userAvatar = document.getElementById('userAvatar');
