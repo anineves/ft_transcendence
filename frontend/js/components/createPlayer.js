@@ -2,7 +2,20 @@ import { navigateTo, checkLoginStatus } from '../utils.js';
 
 export const createPlayer = () => {
     const app = document.getElementById('app');
-
+    const Player = sessionStorage.getItem("playerInfo");
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    if(Player != null)
+    {
+        app.innerHTML = `
+        <div class="background-form">
+            <h2>Player already created</h2>
+            <button id="exitBtn"type="submit" class="btn">Exit</button>
+        </div>
+    `;
+    document.getElementById('exitBtn').addEventListener('click', () => navigateTo('/user-panel', user));
+    }
+    else
+    {
     app.innerHTML = `
         <div class="background-form">
             <h2>Create Your Player</h2>
@@ -48,4 +61,5 @@ export const createPlayer = () => {
             alert('An error occurred while creating the player.');
         }
     });
+    }
 };

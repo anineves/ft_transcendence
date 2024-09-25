@@ -142,7 +142,7 @@ export const liveChat = () => {
             duelMessage.innerHTML = 
             `
             has challenged you to a duel! 
-            <a href="http://localhost:8080/wait-remote" id="accept-link">Accept</a>
+            <a href="https://localhost:8080/wait-remote" id="accept-link">Accept</a>
             `;
 
             chatBox.appendChild(duelMessage);

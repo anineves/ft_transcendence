@@ -32,13 +32,13 @@ export const stats = async () => {
             if (match.players.includes(player.id)) {
                 const matchDate = new Date(match.date);
                 const matchFormattedDate = `${String(matchDate.getDate()).padStart(2, '0')}/${String(matchDate.getMonth() + 1).padStart(2, '0')}`;
-
+                console.log(match, match.game)
                 const dayIndex = days.indexOf(matchFormattedDate);
                 if (dayIndex !== -1) {
-                    if (match.game == 1) {
+                    if (match.game == 1 ) {
                         pongMatches++;
                         pongMatchesPerDay[dayIndex]++;
-                        totalPongTime += convertDurationToSeconds(match.duration);
+                        //totalPongTime += convertDurationToSeconds(match.duration);
                         if (match.winner_id === player.id) {
                             pongWins++;
                             pongWinsPerDay[dayIndex]++;
@@ -49,7 +49,7 @@ export const stats = async () => {
                     } else if (match.game == 'snake') {
                         snakeMatches++;
                         snakeMatchesPerDay[dayIndex]++;
-                        totalSnakeTime += convertDurationToSeconds(match.duration);
+                        //totalSnakeTime += convertDurationToSeconds(match.duration);
                         if (match.winner_id === player.id) {
                             snakeWins++;
                             if (match.score === '5-0') cleanSheetSnake++;
@@ -64,6 +64,7 @@ export const stats = async () => {
                     <tr>
                         <td>${matchDate.toLocaleDateString()}</td>
                         <td>${match.game == '1' ? 'Pong' : 'Snake'}</td>
+                        <td>${match.match_type}</td>
                         <td>${result}</td>
                         <td>${match.duration}</td>
                     </tr>
@@ -100,6 +101,7 @@ export const stats = async () => {
                             <tr>
                                 <th>Date</th>
                                 <th>Game</th>
+                                <th>Type</th>
                                 <th>Result</th>
                                 <th>Duration</th>
                             </tr>

@@ -25,6 +25,7 @@ export const ballRadius = 10;
 let isAIActive = false;
 let animationFrameId;
 const modality2 = sessionStorage.getItem('modality');
+const inviter = sessionStorage.getItem("Inviter");
 
 export const startPongGame = async () => {
     
@@ -39,7 +40,6 @@ export const startPongGame = async () => {
     sessionStorage.setItem('game', game);
     sessionStorage.setItem('players', players);
     const modality2 = sessionStorage.getItem('modality');
-    const inviter = sessionStorage.getItem("Inviter");
     console.log("Inviter", inviter);
     let match_type = "MP"
     console.log(modality2)
@@ -311,7 +311,9 @@ function initialize() {
             const player = sessionStorage.getItem('player');
             console.log("remote", remote);
             let winner_id = 2; 
-            if (remote != 'accept') {
+            console.log("modality" ,sessionStorage.getItem('modality' ))
+            console.log("inviter ", inviter)
+            if (remote != 'accept' && inviter) {
                 try {
                     
                     if (playerScore > opponentScore)
@@ -339,10 +341,19 @@ function initialize() {
                     console.error('Error processing match:', error);
                     alert('An error occurred while processing the match.');
                 }
-                if (sessionStorage.getItem('modality') === 'tournament') {
+                if (sessionStorage.getItem('modality') == 'tournament') {
                     showNextMatchButton();
                 }
             }
+
+            /*if (modality2 == "remote") {
+                ws.send(JSON.stringify({
+                    'message': {
+                        'action': "end_game",
+                        'msg': "fim",
+                    }
+                }));
+            }*/
         }
     }
 
@@ -351,7 +362,7 @@ function initialize() {
         const nextMatchButton = document.createElement('button');
         nextMatchButton.innerText = 'Next Match';
         nextMatchButton.className = 'btn';
-        nextMatchButton.style.display = 'block';
+        //nextMatchButton.style.display = 'block';
         nextMatchButton.style.margin = '20px auto';
 
         nextMatchButton.addEventListener('click', () => {
@@ -360,6 +371,8 @@ function initialize() {
             endMatch(winner);
         });
         app.appendChild(nextMatchButton);
+        console.log(app);
+        console.log("aaa");
 
     }
 
