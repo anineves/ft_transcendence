@@ -81,10 +81,10 @@ class Game(models.Model):
 
 class Match(models.Model):
     class MatchType(models.TextChoices):
-        SINGLE = "SP", ("Single Player")
+        AI = "AI", ("AI")
         REMOTE = "RM", ("Remote")
         PVP = "MP", ("Player vs Player")
-
+        TORN = "TN", ("Tournament")
     date = models.DateTimeField(auto_now_add=True)
     duration = models.DurationField(null=True, blank=True)
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game')

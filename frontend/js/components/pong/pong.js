@@ -41,7 +41,14 @@ export const startPongGame = async () => {
     const modality2 = sessionStorage.getItem('modality');
     const inviter = sessionStorage.getItem("Inviter");
     console.log("Inviter", inviter);
-    const match_type = "SP"
+    let match_type = "MP"
+    console.log(modality2)
+    if (modality2 == "ai")
+        match_type = "AI"
+    if (modality2 == "tournament")
+        match_type = "TN"
+    if (modality2 == "player" || modality2 == "3D")
+        match_type = "MP"
     if (modality2 != 'remote' || inviter == "True") {
 
         try {

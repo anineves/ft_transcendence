@@ -18,7 +18,7 @@ export const renderPanel = async (user) => {
         // Contabilizando vitórias no Pong e Snake
         matches.forEach(match => {
             if (match.players.includes(player.id)) {
-                if (match.game === 'Pong' && match.winner_id === player.id) {
+                if (match.game == 1 && match.winner_id === player.id) {
                     pongWins++;
                 }
                 if (match.game === 'Snake' && match.winner_id === player.id) {
