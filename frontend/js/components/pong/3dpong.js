@@ -1,6 +1,9 @@
 // Criar a cena
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x555555); // Adicionar uma cor de fundo
+scene.background = new THREE.Color(0x1f1f2f); // Adicionar uma cor de fundo
+
+let redNickname = "Player"
+let blueNickname = "Opponent"
 
 // Criar a câmara
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 500);
@@ -162,8 +165,7 @@ document.addEventListener('keydown', (event) => {
         switchCamera();
     }
 });
-let redNickname = "ola"
-let blueNickname = "ola"
+
 // Funcao para aparecer o "GameOver!" + Palyer red/blue + "WINS!"
 let PlayerVictoryMaterial = 0;
 let PlayerVictoryGeometry = 0;
@@ -287,7 +289,7 @@ function scoreBoard() {
     const scoreboard = document.createElement('div');
     scoreboard.id = 'scoreboard';
     scoreboard.style.position = 'absolute';
-    scoreboard.style.top = '105px';
+    scoreboard.style.top = '40px';
     scoreboard.style.left = '50%';
     scoreboard.style.transform = 'translateX(-50%)';
     scoreboard.style.fontSize = '48px';
@@ -300,6 +302,7 @@ function scoreBoard() {
     const redScoreText = document.createElement('span');
     redScoreText.id = 'red-score';
     redScoreText.style.color = 'red';
+    redScoreText.style.textShadow = '1px 1px 2px white, -1px -1px 2px white'; // Adiciona contorno
     redScoreText.textContent = redNickname + ' ' + redScore;
 
     const whiteDash = document.createElement('span');
@@ -309,6 +312,7 @@ function scoreBoard() {
     const blueScoreText = document.createElement('span');
     blueScoreText.id = 'blue-score';
     blueScoreText.style.color = 'blue';
+    blueScoreText.style.textShadow = '1px 1px 2px white, -1px -1px 2px white'; // Adiciona contorno
     blueScoreText.textContent = blueScore + ' ' + blueNickname;
 
     scoreboard.appendChild(redScoreText);
