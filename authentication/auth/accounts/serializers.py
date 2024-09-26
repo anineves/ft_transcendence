@@ -84,6 +84,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     total_winner = serializers.IntegerField(read_only=True) 
     pong_winner = serializers.IntegerField(read_only=True)
     linha_winner = serializers.IntegerField(read_only=True)
+    status = serializers.SerializerMethodField()
 
     class Meta:
         model = Player
@@ -101,6 +102,9 @@ class PlayerSerializer(serializers.ModelSerializer):
         instance.status=validated_data.get('status', instance.status)
         instance.save()
         return(instance)
+    
+    def get_status(self, obj):
+        return obj.get_status_display()
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
@@ -140,6 +144,8 @@ class FriendRequestSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
     
 class MatchSerializer(serializers.ModelSerializer):
+    match_type = serializers.SerializerMethodField()
+
     class Meta:
         model = Match
         fields = ['id' ,'date', 'duration', 'game', 'players', 'winner_id', 'score', 'match_type']
@@ -151,3 +157,6 @@ class MatchSerializer(serializers.ModelSerializer):
         instance.duration=validated_data.get('duration', instance.duration)
         instance.save()
         return instance
+    
+    def get_match_type(self, obj):
+        return obj.get_match_type_display()

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.core.validators import FileExtensionValidator
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomUserManager(BaseUserManager):
@@ -47,11 +48,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 class Player(models.Model):
     class OnlineStatus(models.TextChoices):
-        ONLINE = "ON", ("Online")
-        OFFLINE = "OF", ("Offline")
+        ONLINE = "ON", _("Online")
+        OFFLINE = "OF", _("Offline")
 
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    nickname = models.CharField(max_length=15)
+    nickname = models.CharField(max_length=15, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     friendship = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="friends")
     status = models.CharField(max_length=2, choices=OnlineStatus, default=OnlineStatus.OFFLINE)
