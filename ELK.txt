@@ -1,3 +1,22 @@
+ELK stack configuration
+https://www.appsdeveloperblog.com/getting-started-with-elasticsearch-logstash-and-kibana-elk-stack/
+
+Download and basic steps
+https://www.youtube.com/watch?v=jjLIKEn6eAw&list=PLwfbCU-sjpjGOZn7D6-90BqvHA5zuiLmM&index=2
+
+
+https://www.youtube.com/watch?v=LqXj1oC1FH0
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html
+
+https://www.elastic.co/guide/en/logstash/current/index.html
+
+https://www.elastic.co/guide/en/kibana/current/install.html
+
+https://www.elastic.co/docs
+
+https://www.youtube.com/watch?v=G2TUmPZ1slw
+
 1#
 Servicos criados no docker-compose
     Elasticsearch
