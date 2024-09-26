@@ -1,21 +1,20 @@
-.three{
-    body {
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden;
-        background-color: #000;
-    }
-    canvas {
-        display: block;
-        width: 90vw;
-        height: 80vh;
-        max-width: 90%;
-        max-height: 80%;
-        border: 2px solid white;
-    }
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #000;
+}
+
+canvas {
+    display: block;
+    width: 90vw;
+    height: 80vh;
+    max-width: 90%;
+    max-height: 80%;
+    border: 2px solid white;
 }
 
 .menu {
@@ -27,7 +26,7 @@
 }
 
 .menu h1 {
-    font-size: 100px;
+    font-size: 8vw; 
     animation-name: example;
     animation-duration: 4s;
     color: #00ff99; 
@@ -48,48 +47,68 @@
 
 #startGameBtn {
     position: absolute;
-    width: 50px; 
-    height: 50px;
+    width: 5vw; 
+    height: 5vw; 
     background-color: rgba(16, 248, 248, 0);
 }
 
-
-#startGameBtn img
-{
-    width: 300px;
-    height: 300px;;
+#startGameBtn img {
+    width: 30vw; 
+    height: auto; 
 }
 
 .background-form {
     background-color: rgba(0, 0, 0, 0.7); 
     border-radius: 10px;
     font-family: "VT323", monospace;
-    font-size: 30px;
+    font-size: 1.6vw;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 75vh; 
-    width: 30vw;
+    width: 80vw; 
+    max-width: 500px; 
     box-shadow: 0 4px 20px rgba(0, 255, 255, 0.5);
     border: 2px solid rgba(0, 255, 255, 0.7);
-    
 }
 
-#loginForm{
+
+#form-startmenu img{
+    width: 40vw;
+    height: auto;
+}
+
+#loginForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     margin-top: 10%;
-    margin-left: 18%;
+    margin-left: 0; 
+    width: 100%; 
 }
 
+#registerForm
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+
+}
 
 .form-control {
+    align-items: center;
+    justify-content: center;
     background: transparent;
     border: 2px solid #00FFFF;
     color: #00FFFF;
-    padding: 15px;
+    padding: 2vw; 
     font-family: 'Press Start 2P', cursive;
     width: 70%;
-    margin-bottom: 15px;
+    margin-bottom: 1.5vw; 
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(0, 255, 255, 0.5);
 }
@@ -102,79 +121,59 @@
 .form-control:focus {
     outline: none;
     border-color: #FF00FF;
-    box-shadow: 0 0 10px rgba(255, 0, 255, 0.8), inset 0 0 10px rgba(255, 0, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 255, 0.8), inset 0 0 10px rgba(0, 0, 255, 0.5);
 }
 
 .background-form img {
-    
-    max-width: 60%;
-    height: 50%;
+    max-width: 60%; 
+    height: auto; 
 }
 
-.background-form button
-{
+.background-form button {
     font-family: "VT323", monospace;
-    font-size: 30px;
+    font-size: 3vw; 
     width: 40%;
     border-radius: 10px;
 }
 
 .background-form h2 {
     font-family: "VT323", monospace;
-    font-size: 50px;
+    font-size: 5vw; 
     margin-top: 1px;
-    margin-bottom: 15px;
+    margin-bottom: 1.5vw; 
     color: #FF00FF; 
     text-shadow: 0 0 8px rgba(255, 0, 255, 0.8);
 }
-
-#btn-login{
-    margin-left: 18%;
-}
-
-#registerForm
-{
-    max-width: 80%;
-    max-height: 80%;
-    margin-left: 20%;
-
-}
-
 
 .button-container {
     display: flex;
     justify-content: space-between;
     width: 100%;
     max-width: 300px;
-    margin-left: 5%;
-   height: 15%;
+    height: 15%;
 }
 
-#playerForm
-{
+#playerForm {
     margin: 8%;
-    margin-left: 22%;
 }
 
-#playerForm button
-{
+#playerForm button {
     margin-top: 8%;
-    margin-left: 15%;
 }
 
 .select-game {
     display: flex;
     justify-content: center; 
     flex-wrap: wrap; 
-    padding: 20px;
-    gap: 20px; 
+    padding: 2vw; 
+    gap: 2vw; 
 }
 
 .game-selection-item {
     background-color: rgba(0, 0, 0, 0.7); 
     width: 55%;   
     max-width: 250px; 
-    height: 45vh;  
+    height: auto; 
     display: flex;
     flex-direction: column; 
     align-items: center; 
@@ -205,10 +204,54 @@
     border-radius: 5px; 
 }
 
-
-
-
 @keyframes example {
-    from {font-size: 100px;}
-    to {font-size: 60;}
+    from { font-size: 10vw; } 
+    to { font-size: 5vw; } 
+}
+
+
+@media (max-width: 768px) {
+    .menu h1 {
+        font-size: 8vw; 
+    }
+    
+    .menu h2 {
+        font-size: 4vw; 
+    }
+
+    .background-form {
+        width: 90vw; 
+        height: 80vh; 
+    }
+
+    #startGameBtn {
+        width: 8vw; 
+        height: 8vw; 
+    }
+
+    #startGameBtn img {
+        width: 40vw; 
+    }
+}
+
+@media (max-width: 480px) {
+    .menu h1 {
+        font-size: 7vw; 
+    }
+    
+    .menu h2 {
+        font-size: 3.5vw;
+    }
+
+    .form-control {
+        padding: 3vw; 
+    }
+
+    .background-form h2 {
+        font-size: 4.5vw; 
+    }
+
+    .background-form button {
+        font-size: 3.5vw;
+    }
 }

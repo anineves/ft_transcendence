@@ -35,7 +35,7 @@ export const stats = async () => {
                 console.log(match, match.game)
                 const dayIndex = days.indexOf(matchFormattedDate);
                 if (dayIndex !== -1) {
-                    if (match.game == 1 ) {
+                    if (match.game == 1) {
                         pongMatches++;
                         pongMatchesPerDay[dayIndex]++;
                         //totalPongTime += convertDurationToSeconds(match.duration);
@@ -63,6 +63,7 @@ export const stats = async () => {
                 matchHistoryRows += `
                     <tr>
                         <td>${matchDate.toLocaleDateString()}</td>
+                        <td>${match.id}</td>
                         <td>${match.game == '1' ? 'Pong' : 'Snake'}</td>
                         <td>${match.match_type}</td>
                         <td>${result}</td>
@@ -94,25 +95,28 @@ export const stats = async () => {
                     <p><strong>Clean Sheet:</strong> <span id="cleanSheetSnake">${cleanSheetSnake}</span></p>
                 </div>
                 <button id="toggleMatchHistory">Show Match History</button>
-                <div class="match-history" style="display: none;">
-                    <h3>Match History</h3>
-                    <table id="matchHistoryTable">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Game</th>
-                                <th>Type</th>
-                                <th>Result</th>
-                                <th>Duration</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${matchHistoryRows}
-                        </tbody>
-                    </table>
-                </div>
-                <canvas id="victoryChart" width="400" height="200"></canvas>
+        <div class="match-history" style="display: none;">
+            <h3>Match History</h3>
+            <div class="match-history-container">
+                <table id="matchHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>ID</th>
+                            <th>Game</th>
+                            <th>Type</th>
+                            <th>Result</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${matchHistoryRows}
+                    </tbody>
+                </table>
             </div>
+        </div>
+        <canvas id="victoryChart" width="400" height="200"></canvas>
+    </div>
         `;
 
         const ctx = document.getElementById('victoryChart').getContext('2d');
@@ -165,7 +169,6 @@ export const stats = async () => {
             }
         });
 
-        // Evento para mostrar/ocultar histórico de partidas
         document.getElementById('toggleMatchHistory').addEventListener('click', () => {
             const matchHistory = document.querySelector('.match-history');
             if (matchHistory.style.display === 'none') {
@@ -183,7 +186,7 @@ export const stats = async () => {
     }
 };
 
-// Função para converter duração no formato "HH:MM:SS" em segundos
+
 function convertDurationToSeconds(duration) {
     const parts = duration.split(':');
     return (parseInt(parts[0]) * 3600) + (parseInt(parts[1]) * 60) + (parseInt(parts[2]));

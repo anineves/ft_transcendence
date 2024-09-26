@@ -306,14 +306,12 @@ function initialize() {
             animationFrameId = requestAnimationFrame(gameLoop);
         } else {
             const id = sessionStorage.getItem('id_match');
-            console.log('Match ID:', id);
             const remote = sessionStorage.getItem('remote');
             const player = sessionStorage.getItem('player');
-            console.log("remote", remote);
             let winner_id = 2; 
-            console.log("modality" ,sessionStorage.getItem('modality' ))
-            console.log("inviter ", inviter)
-            if (remote != 'accept' && inviter) {
+            //console.log("modality" ,sessionStorage.getItem('modality' ))
+            //console.log("inviter ", inviter)
+            if (remote != 'accept' || inviter) {
                 try {
                     
                     if (playerScore > opponentScore)

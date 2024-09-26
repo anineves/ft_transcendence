@@ -10,13 +10,10 @@ export const renderGameSelection = async () => {
     `;
 
     const register = sessionStorage.getItem('register');
-    console.log(register);
 
     if (register === "42") {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
-        console.log("code");
-        console.log(code);
 
         if (code) {
             try {
@@ -31,11 +28,11 @@ export const renderGameSelection = async () => {
                 const data = await response.json();
 
                 if (data.access_token) {
-                    console.log(data);
+                    //console.log(data);
                     sessionStorage.setItem('jwtToken', data.access_token);
                     sessionStorage.setItem('user', JSON.stringify(data.user));
                     const user = sessionStorage.getItem('user');
-                    console.log(user);
+                    //console.log(user);
                     checkLoginStatus();
                 } else {
                     console.error('OAuth login failed', data);
