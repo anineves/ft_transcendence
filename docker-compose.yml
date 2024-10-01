@@ -50,7 +50,8 @@ services:
     command: -f /etc/logstash/conf.d/logstash.conf
     volumes:
       - ./logstash.d:/etc/logstash/conf.d
-      - ./logs:var/log/nginx
+      - ./logstash.yml:/usr/share/logstash/config/logstash.yml
+      #- ./logs:var/log/nginx
     depends_on:
       - elasticsearch
     ports:

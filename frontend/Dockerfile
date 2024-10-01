@@ -10,11 +10,12 @@ RUN openssl req -x509 -nodes \
     -keyout /etc/ssl/private/localhost.key \
     -subj "/C=PT/ST=OPO/L=PT/O=42porto/$UNIT=42/CN=localhost/UID=localhost"
 
-COPY nginx.conf /etc/nginx/sites-available/default
+#COPY nginx.conf /etc/nginx/sites-available/default
+RUN mkdir -p ../logs
 
+RUN chmod -R 755 ../logs
 
 COPY . /usr/share/nginx/html
-
 
 EXPOSE 8080
 

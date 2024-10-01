@@ -23,6 +23,10 @@ Servicos criados no docker-compose
     Logstash
     kibana
 
+    1.1#
+        Trocar o parametro do logstash.yml (container do logstash /usr/share/logstash/config/)
+            [http.host] -> [api.http.host: "0.0.0.0"]
+
 2#
 Entrar no container do Elasticsearch para gerar o enrollment token
 docker exec -it <container_id> /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
