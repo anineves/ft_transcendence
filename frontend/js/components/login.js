@@ -1,21 +1,52 @@
 import { navigateTo, checkLoginStatus } from '../utils.js'; 
 
 export const renderLogin = () => {
-    // Obtem a app onde o formulário de login será inserido.
-    const app = document.getElementById('app'); 
+  
+    const translations = {
+        english: {
+            login: "Login",
+            email: "Email or Username",
+            password: "Password",
+            submit: "Login",
+            submit2: "Login using 2FA",
+        },
+        portuguese: {
+            login: "Entrar",
+            email: "Email ou Nome de Usuário",
+            password: "Palavra passe",
+            submit: "Entrar",
+            submit2: "Entrar com 2FA",
+            guest: "Jogar como Convidado",
+        },
+        french: {
+            login: "Se connecter",
+            email: "Email ou Nom d'utilisateur",
+            password: "Mot de passe",
+            submit: "Entrer",
+            submit2: "Entrer avec 2FA",
+            guest: "Jouer en tant qu'invité",
+        }
+        
+    };
+    let savedLanguage = localStorage.getItem('language');
 
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    } 
+  ;
     app.innerHTML = `
-        <div class="background-form" id="form-login">
-            <h2>Login</h2>
-            <form id="loginForm">
-                <input type="text" id="emailOrUsername" placeholder="Email or Username" required class="form-control mb-2">
-                <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
-                <button type="submit" id="btn-login"class="btn">Submit</button>
+        <div class="background-form" id="loginForm" class="form-log-reg">
+            <h2>${translations[savedLanguage].login}</h2>
+            <form >
+                <input type="text" id="emailOrUsername" placeholder="${translations[savedLanguage].email}}" required class="form-control mb-2">
+                <input type="password" id="password" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
+                <button type="submit" id="btn-login"class="btn">${translations[savedLanguage].submit}</button>
             </form>
             <form id="loginForm2f">
-               <input type="text" id="emailOrUsername" placeholder="Email or Username" required class="form-control mb-2">
-                <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
-                <button type="submit" id="btn-login2f"class="btn">Submit 2f</button>
+               <input type="text" id="emailOrUsername2" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
+                <input type="password" id="password2" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
+                <button type="submit" id="btn-login2f"class="btn">${translations[savedLanguage].submit2}</button>
             </form>
         </div>
     `;
@@ -96,7 +127,7 @@ export const renderLogin = () => {
 
     /*document.getElementById('loginForm2f').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const emailOrUsername = document.getElementById('emailOrUsername').value;
+        const emailOrUsername = document.getElementById('emailOrUsername2').value;
         const password = document.getElementById('password').value;
 
         try {

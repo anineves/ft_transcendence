@@ -5,19 +5,16 @@ import { navigateTo } from '../utils.js';
 export const startMenu = () => {
   const translations = {
     english: {
-        title: "Welcome to Django!",
         login: "Login",
         register: "Sign in",
         guest: "Play as Guest",
     },
     portuguese: {
-        title: "Bem-vindo ao Django!",
         login: "Entrar",
         register: "Registrar",
         guest: "Jogar como Convidado",
     },
     french: {
-      title: "Bienvenue à Django!",
       login: "Se connecter",
       register: "S'inscrire",
       guest: "Jouer en tant qu'invité",

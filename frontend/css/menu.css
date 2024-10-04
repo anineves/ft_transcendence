@@ -1,3 +1,4 @@
+
 canvas {
     display: block;
     width: 90vw;
@@ -56,8 +57,8 @@ canvas {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 75vh; 
-    width: 80vw; 
+    height: 80vh; 
+    width: 90vw; 
     max-width: 500px; 
     box-shadow: 0 4px 20px rgba(0, 255, 255, 0.5);
     border: 2px solid rgba(0, 255, 255, 0.7);
@@ -69,24 +70,101 @@ canvas {
     height: auto;
 }
 
-#loginForm {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10%;
-    margin-left: 0; 
-    width: 100%; 
+#form-startmenu button{
+    margin: 2%;
+    width: 50%;
+    height: auto;
+    font-size: 2.5vw;
 }
 
-#registerForm
-{
+#loginForm  {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: center;  
+    align-items: center;     
+    padding: 20px; 
+}
 
+#loginForm h2 {
+    font-size: 3.5vw;  
+    margin-top: 10px;
+    margin-bottom: 10%;   
+    color: #00FFFF;  
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+}
 
+#loginForm form {
+    
+    display: flex;
+    flex-direction: column;
+    width: 100%;  
+    align-items: center; 
+}
+
+#loginForm input {
+    width: 80%;  
+    max-width: 300px;  
+    margin-bottom: 15px;  
+    padding: 10px;  
+    font-size: 1vw;  
+}
+
+#loginForm button {
+
+    margin-top: 5%;
+    margin-bottom: 15%;
+    width: 50%;
+    height: auto;
+    font-size: 2vw;
+}
+
+#loginForm button:hover {
+    background-color: rgba(16, 248, 248, 0.5); 
+}
+
+#registerForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  
+    align-items: center;     
+    padding: 20px; 
+}
+
+#registerForm h2 {
+    font-size: 3.5vw;  
+    margin-top: 10px;
+    margin-bottom: 10%;   
+    color: #00FFFF;  
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+}
+
+#registerForm form {
+    
+    display: flex;
+    flex-direction: column;
+    width: 100%;  
+    align-items: center; 
+}
+
+#registerForm input {
+    width: 80%;  
+    max-width: 300px;  
+    margin-bottom: 15px;  
+    padding: 10px;  
+    font-size: 1vw;  
+}
+
+#registerForm button {
+
+    margin-top: 5%;
+    margin-bottom: 15%;
+    width: 50%;
+    height: auto;
+    font-size: 2vw;
+}
+
+#registerForm button:hover {
+    background-color: rgba(16, 248, 248, 0.5); 
 }
 
 .form-control {
@@ -140,7 +218,12 @@ canvas {
     justify-content: space-between;
     width: 100%;
     max-width: 300px;
-    height: 15%;
+    height: 20%;
+}
+.button-container img
+{
+    width: 60px;
+    height: auto;
 }
 
 #playerForm {
@@ -241,7 +324,7 @@ canvas {
         font-size: 4.5vw; 
     }
 
-    .background-form button {
+    .form-starmenu button {
         font-size: 3.5vw;
     }
 }

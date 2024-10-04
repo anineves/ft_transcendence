@@ -2,20 +2,60 @@ import { navigateTo, checkLoginStatus  } from '../utils.js';
 
 export const renderRegister = () => {
     const app = document.getElementById('app');
+    const translations = {
+        english: {
+            register: "Register",
+            first: "First Name",
+            last: "Last Name",
+            user: "Username",
+            email: "Email", 
+            pass: "Password",
+            confirmPass: "Confirm Password",
+            submit: "Register",
+        },
+        portuguese: {
+            register: "Registar",
+            first: "Primeiro Nome",
+            last: "Último Nome",
+            user: "Nome de Utilizador",
+            email: "Email", 
+            pass: "Palavra-passe",
+            confirmPass: "Confirmar Palavra-passe",
+            submit: "Registar",
+        },
+        french: {
+            register: "S'inscrire",
+            first: "Prénom",
+            last: "Nom de famille",
+            user: "Nom d'utilisateur",
+            email: "Email", 
+            pass: "Mot de passe",
+            confirmPass: "Confirmer le mot de passe",
+            submit: "S'inscrire",
+        }
+    };
+    
+    // Obtenção do idioma salvo ou definição do padrão
+    let savedLanguage = localStorage.getItem('language');
+    
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    }
+    
     
     app.innerHTML = `
-        <div class="background-form" id="form-register">
-            <h2>Register</h2>
-            <form id="registerForm" enctype="multipart/form-data">
-                <input type="text" id="firstName" placeholder="First Name" required class="form-control mb-2">
-                <input type="text" id="lastName" placeholder="Last Name" required class="form-control mb-2">
-                <input type="text" id="username" placeholder="Username" required class="form-control mb-2">
-                <input type="text" id="email" placeholder="Email" required class="form-control mb-2">
-                <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
-                <input type="password" id="password2" placeholder="Confirm Password" required class="form-control mb-2">
+        <div class="background-form" id="registerForm" class="form-log-reg">
+            <h2>${translations[savedLanguage].register}</h2>
+            <form  enctype="multipart/form-data">
+                <input type="text" id="firstName" placeholder="${translations[savedLanguage].first}" required class="form-control mb-2">
+                <input type="text" id="lastName" placeholder="${translations[savedLanguage].last}" required class="form-control mb-2">
+                <input type="text" id="username" placeholder="${translations[savedLanguage].user}" required class="form-control mb-2">
+                <input type="text" id="email" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
+                <input type="password" id="password" placeholder="${translations[savedLanguage].pass}" required class="form-control mb-2">
+                <input type="password" id="password2" placeholder="${translations[savedLanguage].confirmPass}" required class="form-control mb-2">
                 <input type="file" id="avatar" accept="image/*" class="form-control mb-2">
                 <div class="button-container">
-                    <button type="submit" class="btn">Submit</button>
+                    <button type="submit" class="btn">${translations[savedLanguage].submit}</button>
                     <button type="button" id="btn-register42" class="btn">
                         <img src="./assets/42.png" alt="Pong" class="button-image">
                     </button>
