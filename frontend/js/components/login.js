@@ -94,7 +94,7 @@ export const renderLogin = () => {
         }
     });
 
-    document.getElementById('loginForm2f').addEventListener('submit', async (e) => {
+    /*document.getElementById('loginForm2f').addEventListener('submit', async (e) => {
         e.preventDefault();
         const emailOrUsername = document.getElementById('emailOrUsername').value;
         const password = document.getElementById('password').value;
@@ -117,7 +117,7 @@ export const renderLogin = () => {
             console.error('Error:', error);
             alert('An error occurred during login');
         }
-    });
+    });*/
 
 };
 

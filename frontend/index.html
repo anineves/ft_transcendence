@@ -30,9 +30,28 @@
         </div>
         <nav>
             <ul>
-                <button id="startBtn" class="btn-header">
-                    <img src="./assets/barrasf.png" alt="Pong">
-                </button>
+                <li id="languageDropdown">
+                    <button id="selectedLanguage" class="btn-header">
+                        <img id="flagIcon" src="./assets/usa.png" alt="Language Flag">
+                    </button>
+                    <ul id="languageList" class="hidden">
+                        <li class="languageOption" data-language="english" data-flag="./assets/usa.png">
+                            <img class="language-flag" src="./assets/usa.png" alt="USA Flag"> EN
+                        </li>
+                        <li class="languageOption" data-language="portuguese" data-flag="./assets/portugal.png">
+                            <img class="language-flag" src="./assets/portugal.png" alt="Portugal Flag"> PT
+                        </li>
+                        <li class="languageOption" data-language="french" data-flag="./assets/france.png">
+                            <img class="language-flag" src="./assets/france.png" alt="France Flag"> FR
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <button id="startBtn" class="btn-header">
+                        <img src="./assets/barrasf.png" alt="Pong">
+                    </button>
+                </li>
+                
                 <li id="userAvatar" style="display: none;">
                     <img id="avatarImg" src="./assets/avatar.png" alt="User Avatar">
                 </li>
@@ -43,7 +62,7 @@
     <div id="app"></div>
     
     <footer>
-        <p id="text-footer">Created by: alexfern asousa-n jegger-s</p>
+        <p id="text-footer"></p>
     </footer>
 
     <!-- Importacao de modulos js-->

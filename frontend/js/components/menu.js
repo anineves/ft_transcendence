@@ -2,10 +2,31 @@ import { navigateTo } from '../utils.js';
 
 export const renderMenu = () => {
     const app = document.getElementById('app');
+    
+    // Definir traduções
+    const translations = {
+        english: {
+            welcome: 'Welcome to Pong!',
+        },
+        portuguese: {
+            welcome: 'Bem-vindo ao Pong!',
+        },
+        french: {
+            welcome: "Bienvenue à Django!",
+        }
+    };
+
+    let savedLanguage = localStorage.getItem('language');
+
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    }
+
     app.innerHTML = `
         <div class="menu">
             <h1>FT TRANSCENDENCE</h1>
-            <h2>Welcome to the Django</h2>
+            <h2>${translations[savedLanguage].welcome}</h2>
             <div class="btn-container">
                 <button id="startGameBtn" class="btn">
                     <img src="./assets/play.png" alt="Pong" class="button-image">
@@ -15,11 +36,10 @@ export const renderMenu = () => {
     `;
 
     const button = document.getElementById('startGameBtn');
-
-   
     let xSpeed = 4;
     let ySpeed = 5; 
 
+    // Função para movimentar o botão na tela
     const moveButton = () => {
         const buttonWidth = button.offsetWidth;
         const buttonHeight = button.offsetHeight;
@@ -53,18 +73,18 @@ export const renderMenu = () => {
     };
 
 
-    const intervalId = setInterval(moveButton, 18);
+    const intervalId = setInterval(moveButton, 10);
 
     button.addEventListener('click', () => {
-
         clearInterval(intervalId);
         navigateTo('/game-selection');
     });
 
- 
+  
     button.style.position = 'absolute';
     button.style.left = '0px';
     button.style.top = '0px';
 
+   
     document.body.style.overflow = 'hidden';
 };

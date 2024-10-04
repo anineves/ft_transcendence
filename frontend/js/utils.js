@@ -42,6 +42,21 @@ export const routes = {
     '/stats': stats,
 };
 
+const protectedRoutes = [
+    '/user-panel',
+    '/create-player',
+    '/friendPanel',
+    '/wait-remote',
+    '/player-profile',
+    '/stats',
+    '/live-chat',
+];
+
+const isAuthenticated = () => {
+    const jwtToken = sessionStorage.getItem('jwtToken');
+    return jwtToken !== null;
+};
+
 // Altera a URL do navegador e atualizar a exibição da página
 export const navigateTo = (path, user = null) => {
     window.history.pushState({ user }, path, window.location.origin + path); // Atualiza o histórico com o novo estado
@@ -53,6 +68,12 @@ export const render = () => {
     const path = window.location.pathname; // Obtém o caminho atual da URL
     const route = routes[path] || renderMenu;
     const state = window.history.state; // Obtém o estado atual do histórico
+
+    if (protectedRoutes.includes(path) && !isAuthenticated()) {
+        navigateTo('/'); 
+        return;
+    }
+
     if (path === '/user-panel' && state?.user) { // Se tiver na rota do user.pna e o estado contem um user
         route(state.user); // Renderiza o painel do usuário com os dados do usuário
         checkLoginStatus();

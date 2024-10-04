@@ -6,7 +6,7 @@ import { renderGameSelection } from './components/gameSelection.js';
 import { renderPong } from './components/pong.js';
 import { renderPanel } from './components/userPanel.js';
 import { createPlayer } from './components/createPlayer.js';
-import {startMenu} from './components/startMenu.js';
+import { startMenu } from './components/startMenu.js';
 import { selectPlayerorAI } from './components/selectPlayerOrAI.js';
 import { renderRequestPanel } from './components/requestPanel.js';
 import { waitRemote } from './components/waitRemote.js';
@@ -14,7 +14,15 @@ import { renderPlayerProfile } from './components/friendsPanel.js';
 import { render3DPong } from './components/3dPong.js';
 import { render3Snake } from './components/3dsnake.js';
 import { stats } from './components/stats.js';
-// Define as rotas da aplicação e suas funções de renderização correspondentes
+
+// Traduções para o rodapé
+const translations = {
+    english: "Created by: alexfern asousa-n jegger-s",
+    portuguese: "Criado por: alexfern asousa-n jegger-s",
+    french: "Créé par : alexfern asousa-n jegger-s",
+};
+
+// Definir as rotas da aplicação e suas funções de renderização correspondentes
 const routes = {
     '/': renderMenu,
     '/login': renderLogin,
@@ -22,7 +30,7 @@ const routes = {
     '/pong': renderPong,
     '/register': renderRegister,
     '/user-panel':  renderPanel,
-    '/create-player': createPlayer, 
+    '/create-player': createPlayer,
     '/star-menu': startMenu,
     '/select-playerOrAI': selectPlayerorAI,
     '/friendPanel': renderRequestPanel,
@@ -33,22 +41,70 @@ const routes = {
     '/stats': stats,
 };
 
-// Adiciona um listener que chama a função de renderização quando o DOM é carregado
+// Função para atualizar o texto do rodapé baseado no idioma
+const updateFooterTranslation = () => {
+    const footerText = document.getElementById('text-footer');
+    const savedLanguage = localStorage.getItem('language') || 'portuguese';
+    footerText.innerText = translations[savedLanguage];
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    render(); // Renderiza a página atual com base na URL
+    render(); 
     checkLoginStatus();
+
+    // Atualiza o rodapé inicialmente
+    updateFooterTranslation();
 
     document.getElementById('startBtn').addEventListener('click', () => {
         navigateTo('/star-menu');
     });
 
     document.getElementById('userAvatar').addEventListener('click', () => {
-        const user = JSON.parse(sessionStorage.getItem('user')); // Obtém o usuário do sessionStorage
+        const user = JSON.parse(sessionStorage.getItem('user'));
         if (user) {
             navigateTo('/user-panel', user);
         }
     });
+
+    const languageDropdown = document.getElementById('languageDropdown');
+    const languageList = document.getElementById('languageList');
+    const selectedLanguageBtn = document.getElementById('selectedLanguage');
+    const flagIcon = document.getElementById('flagIcon');
+
+    const savedLanguage = localStorage.getItem('language');
+    if (savedLanguage) {
+        const selectedFlag = document.querySelector(`[data-language="${savedLanguage}"]`).getAttribute('data-flag');
+        flagIcon.src = selectedFlag;
+    } else {
+        flagIcon.src = './assets/portugal.png';
+        localStorage.setItem('language', 'portuguese');
+    }
+
+    selectedLanguageBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        languageList.classList.toggle('hidden');
+    });
+
+    document.querySelectorAll('.languageOption').forEach(option => {
+        option.addEventListener('click', (event) => {
+            const language = event.currentTarget.getAttribute('data-language');
+            const flag = event.currentTarget.getAttribute('data-flag');
+
+            // Atualiza o ícone da bandeira e salva a linguagem no localStorage
+            flagIcon.src = flag;
+            localStorage.setItem('language', language);
+
+            // Renderiza a aplicação e atualiza o rodapé
+            render(); 
+            updateFooterTranslation(); // Atualiza o rodapé após a mudança de idioma
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!languageDropdown.contains(event.target)) {
+            languageList.classList.add('hidden');
+        }
+    });
 });
 
-// Define uma função para lidar com eventos de navegação do histórico (ex.: botões de voltar e avançar do navegador)
 window.onpopstate = render;
