@@ -51,12 +51,15 @@ export const renderPanel = async (user) => {
                 first: "First Name",
                 last: "Last Name",
                 level: "Level",
-                levelMsg: "wins to reach next level",
+                levelMsg: "wins to reach next levekkl",
                 logoutBtn: "Logout",
                 friendBtn: "Friends",
                 creationBtn: "Create Player",
                 playBtn: "Play",
                 chatBtn: "Chat",
+                update: "Update Profile", 
+                updateBtn: "Update", 
+                backBtn: "Back to Profile"
             },
             portuguese: {
                 title: "Perfil do Usuário",
@@ -73,6 +76,9 @@ export const renderPanel = async (user) => {
                 creationBtn: "Criar Jogador",
                 playBtn: "Jogar",
                 chatBtn: "Chat",
+                update: "Atualizar Perfil",
+                updateBtn: "Atualizar",
+                backBtn: "Voltar ao Perfil"
             },
             french: {
                 title: "Profil de l'utilisateur",
@@ -89,8 +95,12 @@ export const renderPanel = async (user) => {
                 creationBtn: "Créer un joueur",
                 playBtn: "Jouer",
                 chatBtn: "Chat",
+                update: "Mettre à jour le profil",
+                updateBtn: "Mettre à jour",
+                backBtn: "Retour au profil"
             }
-        };        
+        };
+        
         
         let savedLanguage = localStorage.getItem('language');
     
@@ -119,14 +129,14 @@ export const renderPanel = async (user) => {
                     <div class="progression">
                         <div class="progress-bar" id="progressBar" style="cursor: pointer;">
                           <div class="progress-bar" id="pongProgressBar">
-                            <p><strong>Pong Level:</strong> ${pongLevel}</p>
+                            <p><strong>${translations[savedLanguage].level} Pong:</strong> ${pongLevel}</p>
                             <span class="progress-label">${pongProgressBar}</span>
-                            <p>${pongWinsInCurrentLevel}/5 wins to reach next level</p>
+                            <p>${pongWinsInCurrentLevel}/5 ${translations[savedLanguage].levelMsg}</p>
                         </div>
                         <div class="progress-bar" id="snakeProgressBar">
-                            <p><strong>Snake Level:</strong> ${snakeLevel}</p>
+                            <p><strong>${translations[savedLanguage].level}Snake :</strong> ${snakeLevel}</p>
                             <span class="progress-label">${snakeProgressBar}</span>
-                            <p>${snakeWinsInCurrentLevel}/5 wins to reach next level</p>
+                            <p>${snakeWinsInCurrentLevel}/5 ${translations[savedLanguage].levelMsg}</p>
                         </div>
                         </div>
                     </div>
@@ -140,22 +150,16 @@ export const renderPanel = async (user) => {
                 </div>
             </div>
             <div id="updateProfileSection" style="display: none;">
-                <h2>Update Profile</h2>
+                <h2>${translations[savedLanguage].update}</h2>
                 <form id="updateProfileForm">
                     <input type="file" id="updateAvatar" class="form-control mb-2">
-                    <input type="text" id="updateFirstName" placeholder="First Name" class="form-control mb-2" }">
-                    <input type="text" id="updateLastName" placeholder="Last Name" class="form-control mb-2" ">
-                    <input type="text" id="updateUsername" placeholder="Username" class="form-control mb-2" ">
-                    <input type="email" id="updateEmail" placeholder="Email" class="form-control mb-2" ">
-                    <button type="submit" class="btn">Update</button>
+                    <input type="text" id="updateFirstName" placeholder="${translations[savedLanguage].first}" class="form-control mb-2" }">
+                    <input type="text" id="updateLastName" placeholder="${translations[savedLanguage].last}" class="form-control mb-2" ">
+                    <input type="text" id="updateUsername" placeholder="${translations[savedLanguage].user}" class="form-control mb-2" ">
+                    <input type="email" id="updateEmail" placeholder="${translations[savedLanguage].email}" class="form-control mb-2" ">
+                    <button type="submit" class="btn">${translations[savedLanguage].updateBtn}</button>
                 </form>
-                <button id="backProfileBtn" class="btn">Back to Profile</button>
-            </div>
-            <div id="inviteSection" style="display: none;">
-                <form id="inviteForm">
-                    <input type="number" id="friendId" placeholder="Friend ID" class="form-control mb-2" required>
-                    <button type="submit" class="btn">Send Request</button>
-                </form>
+                <button id="backProfileBtn" class="btn">${translations[savedLanguage].backBtn}</button>
             </div>
         </div>
     `;
@@ -169,7 +173,7 @@ export const renderPanel = async (user) => {
 
         document.getElementById('logoutBtn').addEventListener('click', logout);
         document.getElementById('editBtn2').addEventListener('click', toggleEditProfile);
-        document.getElementById('friendBtn').addEventListener('click', () => renderFriendsPage(user));
+        document.getElementById('friendBtn').addEventListener('click', () =>navigateTo('/friendPage',user));
         document.getElementById('createBtn').addEventListener('click', () => navigateTo('/create-player'));
         document.getElementById('sendMessageBtn').addEventListener('click', handleSendMessage);
         document.getElementById('updateProfileForm').addEventListener('submit', (e) => handleUpdateProfile(e, user));

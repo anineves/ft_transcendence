@@ -30,7 +30,7 @@ export const routes = {
     '/create-player': createPlayer, 
     '/star-menu': startMenu,
     '/select-playerOrAI': selectPlayerorAI,
-    '/friendPanel': renderRequestPanel,
+    '/requestPanel': renderRequestPanel,
     '/friendPage' : renderFriendsPage,
     '/tournament' : selectTournamentPlayers,
     '/tournament-setup' : setupTournament,

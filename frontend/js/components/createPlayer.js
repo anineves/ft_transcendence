@@ -4,12 +4,43 @@ export const createPlayer = () => {
     const app = document.getElementById('app');
     const Player = sessionStorage.getItem("playerInfo");
     const user = JSON.parse(sessionStorage.getItem('user'));
+    const translations = {
+        english: {
+            title: 'Create Your Player',
+            nick: 'Please insert a nickname',
+            submitBtn: 'Submit', 
+            created: 'Player already created',
+            exitBtn: 'Exit',
+        },
+        portuguese: {
+            title: 'Crie Seu Jogador',
+            nick: 'Por favor, insira um apelido',
+            submitBtn: 'Enviar',
+            created: 'Jogador já criado',
+            exitBtn: 'Sair',
+        },
+        french: {
+            title: 'Créez Votre Joueur',
+            nick: 'Veuillez insérer un pseudonyme',
+            submitBtn: 'Soumettre',
+            created: 'Joueur déjà créé',
+            exitBtn: 'Quitter',
+        }
+    };
+    
+    let savedLanguage = localStorage.getItem('language');
+
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    } 
+  ;
     if(Player != null)
     {
         app.innerHTML = `
         <div class="background-form">
-            <h2>Player already created</h2>
-            <button id="exitBtn"type="submit" class="btn">Exit</button>
+            <h2>${translations[savedLanguage].created}</h2>
+            <button id="exitBtn"type="submit" class="btn">${translations[savedLanguage].exitBtn}</button>
         </div>
     `;
     document.getElementById('exitBtn').addEventListener('click', () => navigateTo('/user-panel', user));
@@ -18,10 +49,10 @@ export const createPlayer = () => {
     {
     app.innerHTML = `
         <div class="background-form">
-            <h2>Create Your Player</h2>
+            <h2>${translations[savedLanguage].title}</h2>
             <form id="playerForm">
-               <input type="text" id="nickname" placeholder="Nickname" required class="form-control mb-2">
-               <button type="submit" class="btn">Submit</button>
+               <input type="text" id="nickname" placeholder="${translations[savedLanguage].nick}" required class="form-control mb-2">
+               <button type="submit" class="btn">${translations[savedLanguage].submitBtn}</button>
             </form>
         </div>
     `;

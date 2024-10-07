@@ -2,6 +2,75 @@ export const stats = async () => {
     const app = document.getElementById('app');
     const player = JSON.parse(sessionStorage.getItem('playerInfo'));
 
+    const translations = {
+        english: {
+            pWin: "Pong Wins",
+            pLosses: "Pong Losses",
+            pMatches: "Pong Matches",
+            sWin: "Snake Wins",
+            sLosses: "Snake Losses",
+            sMatches: "Snake Matches",
+            gameTime: "Gaming time (sec)",
+            cleanSheet: "Shutout",
+            showBtn: "Show Matches History",
+            hideBtn: "Hide Matches History",
+            dateInfo: "Date", 
+            idInfo: "Id", 
+            gameInfo: "Game",
+            typeInfo: "Type", 
+            resultInfo: "Result",
+            durationInfo: "Duration",
+            titleMatch: "Match History", 
+            
+        },
+        portuguese: {
+            pWin: "Vitorias Pong",
+            pLosses: "Derrotas Pong",
+            pMatches: "Partidas Pong",
+            sWin: "Vitorias Snake",
+            sLosses: "Derrotas Snake ",
+            sMatches: "Partidas Snake",
+            gameTime: "Tempo de Jogo (seg)",
+            cleanSheet: "Sem Pontos Sofridos",
+            showBtn: "Mostrar Histórico de Partidas",
+            hideBtn: "Ocultar Histórico de Partidas",
+            dateInfo: "Data", 
+            idInfo: "Id", 
+            gameInfo: "Jogo",
+            typeInfo: "Tipo", 
+            resultInfo: "Resultado",
+            durationInfo: "Duração",
+            titleMatch: "Histórico de Partidas"
+        },
+        french: {
+            pWin: "Pong Vitoires",
+            pLosses: "Pong Défaites",
+            pMatches: "Matchs de Pong",
+            sWin: "Snake Vitoires",
+            sLosses: "Snake Défaites",
+            sMatches: "Matchs de Snake",
+            gameTime: "Temps de Jeu (sec)",
+            cleanSheet: "Feuille Propre",
+            showBtn: "Afficher l'Historique des Matchs",
+            hideBtn: "Cacher l'Historique des Matchs",
+            dateInfo: "Date", 
+            idInfo: "Id", 
+            gameInfo: "Jeu",
+            typeInfo: "Type", 
+            resultInfo: "Résultat",
+            durationInfo: "Durée",
+            titleMatch: "Historique des Matchs"
+        }
+    };
+    
+    let savedLanguage = localStorage.getItem('language');
+
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    } 
+  ;
+
     try {
         const response = await fetch('http://localhost:8000/api/matches/');
         const matches = await response.json();
@@ -80,33 +149,33 @@ export const stats = async () => {
                 ${indestrutivelTitle}
                 <div class="pong-stats">
                     <h3>Pong</h3>
-                    <p><strong>Pong Wins:</strong> <span id="pongWins">${pongWins}</span></p>
-                    <p><strong>Pong Losses:</strong> <span id="pongLosses">${pongLosses}</span></p>
-                    <p><strong>Pong Matches:</strong> <span id="pongMatches">${pongMatches}</span></p>
-                    <p><strong>Gaming Time (seconds):</strong> <span id="pongGamingTime">${totalPongTime}</span></p>
-                    <p><strong>Clean Sheet:</strong> <span id="cleanSheetPong">${cleanSheetPong}</span></p>
+                    <p><strong>${translations[savedLanguage].pWin}:</strong> <span id="pongWins">${pongWins}</span></p>
+                    <p><strong>${translations[savedLanguage].pLosses}:</strong> <span id="pongLosses">${pongLosses}</span></p>
+                    <p><strong>${translations[savedLanguage].pMatches}:</strong> <span id="pongMatches">${pongMatches}</span></p>
+                    <p><strong>${translations[savedLanguage].gameTime}:</strong> <span id="pongGamingTime">${totalPongTime}</span></p>
+                    <p><strong>${translations[savedLanguage].cleanSheet}:</strong> <span id="cleanSheetPong">${cleanSheetPong}</span></p>
                 </div>
                 <div class="snake-stats">
                     <h3>Snake</h3>
-                    <p><strong>Snake Wins:</strong> <span id="snakeWins">${snakeWins}</span></p>
-                    <p><strong>Snake Losses:</strong> <span id="snakeLosses">${snakeLosses}</span></p>
-                    <p><strong>Snake Matches:</strong> <span id="snakeMatches">${snakeMatches}</span></p>
-                    <p><strong>Gaming Time (seconds):</strong> <span id="snakeGamingTime">${totalSnakeTime}</span></p>
-                    <p><strong>Clean Sheet:</strong> <span id="cleanSheetSnake">${cleanSheetSnake}</span></p>
+                    <p><strong>${translations[savedLanguage].sWin}:</strong> <span id="snakeWins">${snakeWins}</span></p>
+                    <p><strong>${translations[savedLanguage].sLosses}:</strong> <span id="snakeLosses">${snakeLosses}</span></p>
+                    <p><strong>${translations[savedLanguage].sMatches}:</strong> <span id="snakeMatches">${snakeMatches}</span></p>
+                    <p><strong>${translations[savedLanguage].gameTime}:</strong> <span id="snakeGamingTime">${totalSnakeTime}</span></p>
+                    <p><strong>${translations[savedLanguage].cleanSheet}:</strong> <span id="cleanSheetSnake">${cleanSheetSnake}</span></p>
                 </div>
-                <button id="toggleMatchHistory">Show Match History</button>
+                <button id="toggleMatchHistory">${translations[savedLanguage].showBtn}</button>
         <div class="match-history" style="display: none;">
-            <h3>Match History</h3>
+            <h3>${translations[savedLanguage].titleMatch}</h3>
             <div class="match-history-container">
                 <table id="matchHistoryTable">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>ID</th>
-                            <th>Game</th>
-                            <th>Type</th>
-                            <th>Result</th>
-                            <th>Duration</th>
+                            <th>${translations[savedLanguage].dateInfo}</th>
+                            <th>${translations[savedLanguage].idInfo}</th>
+                            <th>${translations[savedLanguage].gameInfo}</th>
+                            <th>${translations[savedLanguage].typeInfo}</th>
+                            <th>${translations[savedLanguage].resultInfo}</th>
+                            <th>${translations[savedLanguage].durationInfo}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -126,7 +195,7 @@ export const stats = async () => {
                 labels: days.reverse(),
                 datasets: [
                     {
-                        label: 'Pong Wins',
+                        label: `${translations[savedLanguage].pWin}`,
                         data: pongWinsPerDay.reverse(),
                         borderColor: '#00FFFF',
                         backgroundColor: 'rgba(0, 255, 255, 0.2)',
@@ -134,7 +203,7 @@ export const stats = async () => {
                         tension: 0.3,
                     },
                     {
-                        label: 'Pong Matches',
+                        label: `${translations[savedLanguage].pMatches}`,
                         data: pongMatchesPerDay.reverse(),
                         borderColor: '#FF00FF',
                         backgroundColor: 'rgba(255, 0, 255, 0.2)',
@@ -142,7 +211,7 @@ export const stats = async () => {
                         tension: 0.3,
                     },
                     {
-                        label: 'Snake Wins',
+                        label: `${translations[savedLanguage].sWin}`,
                         data: snakeWinsPerDay.reverse(),
                         borderColor: '#FFFF00',
                         backgroundColor: 'rgba(255, 255, 0, 0.2)',
@@ -150,7 +219,7 @@ export const stats = async () => {
                         tension: 0.3,
                     },
                     {
-                        label: 'Snake Matches',
+                        label: `${translations[savedLanguage].sMatches}`,
                         data: snakeMatchesPerDay.reverse(),
                         borderColor: '#FF4500',
                         backgroundColor: 'rgba(255, 69, 0, 0.2)',
@@ -173,10 +242,10 @@ export const stats = async () => {
             const matchHistory = document.querySelector('.match-history');
             if (matchHistory.style.display === 'none') {
                 matchHistory.style.display = 'block';
-                document.getElementById('toggleMatchHistory').innerText = 'Hide Match History';
+                document.getElementById('toggleMatchHistory').innerText = `${translations[savedLanguage].hideBtn}`;
             } else {
                 matchHistory.style.display = 'none';
-                document.getElementById('toggleMatchHistory').innerText = 'Show Match History';
+                document.getElementById('toggleMatchHistory').innerText = `${translations[savedLanguage].showBtn}`;
             }
         });
 

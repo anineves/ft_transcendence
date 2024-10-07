@@ -1,13 +1,53 @@
 import { navigateTo } from '../utils.js';
 import { resetGameState } from './pong/pong.js';
 
+const translations = {
+    english: {
+        numberPlayers: "Select Number of Players",
+        fourPlayers: "4 Players",
+        eightPlayers: "8 Players",
+        playert: "Player ",
+        namet: "Name ", 
+        enterName: "Enter Player Names",
+        startBtn: "Start Tournament",
+        winner: "Winner of the tournament is ",
+    },
+    portuguese: {
+        numberPlayers: "Selecionar Número de Jogadores",
+        fourPlayers: "4 Jogadores",
+        eightPlayers: "8 Jogadores",
+        playert: "Jogador ",
+        namet: "Nome ", 
+        enterName: "Insira os Nomes dos Jogadores",
+        startBtn: "Iniciar Torneio",
+        winner: "O vencedor do torneio é ",
+    },
+    french: {
+        numberPlayers: "Sélectionnez le Nombre de Joueurs",
+        fourPlayers: "4 Joueurs",
+        eightPlayers: "8 Joueurs",
+        playert: "Joueur ",
+        namet: "Nom ", 
+        enterName: "Entrez les Noms des Joueurs",
+        startBtn: "Démarrer le Tournoi",
+        winner: "Le vainqueur du tournoi est ",
+    }
+};
+
+let savedLanguage = localStorage.getItem('language');
+
+
+if (!savedLanguage || !translations[savedLanguage]) {
+    savedLanguage = 'english'; 
+} 
+;
 export const selectTournamentPlayers = () => {
     const app = document.getElementById('app');
     app.innerHTML = `
         <div class="select-players">
-            <h2>Select Number of Players</h2>
-            <button id="select4Players" class="btn">4 Players</button>
-            <button id="select8Players" class="btn">8 Players</button>
+            <h2>${translations[savedLanguage].numberPlayers}</h2>
+            <button id="select4Players" class="btn">${translations[savedLanguage].fourPlayers}</button>
+            <button id="select8Players" class="btn">${translations[savedLanguage].eightPlayers}</button>
         </div>
     `;
 
@@ -33,14 +73,14 @@ export const setupTournament = () => {
         if (i === 1 && nickname) {
             playersForm += `
                 <div class="player-input">
-                    <label for="player${i}">Player ${i} Name:</label>
+                    <label for="player${i}">${translations[savedLanguage].playert} ${i} ${translations[savedLanguage].namet}:</label>
                     <span>${nickname}</span>
                     <input type="hidden" id="player${i}" name="player${i}" value="${nickname}">
                 </div>`;
         } else {
             playersForm += `
                 <div class="player-input">
-                    <label for="player${i}">Player ${i} Name:</label>
+                    <label for="player${i}">${translations[savedLanguage].playert}${i} ${translations[savedLanguage].namet}:</label>
                     <input type="text" id="player${i}" name="player${i}">
                 </div>`;
         }
@@ -48,10 +88,10 @@ export const setupTournament = () => {
 
     app.innerHTML = `
         <div class="setup-tournament">
-            <h2>Enter Player Names</h2>
+            <h2>${translations[savedLanguage].enterName}</h2>
             <form id="tournamentForm">
                 ${playersForm}
-                <button type="submit" class="btn">Start Tournament</button>
+                <button type="submit" class="btn">${translations[savedLanguage].startBtn}</button>
             </form>
         </div>
     `;
@@ -113,7 +153,7 @@ const startMatch = () => {
                 startMatch();
             }, 200);  
         } else {
-            alert(`Winner of the tournament is ${winners[0][0]}!`);
+            alert(`${translations[savedLanguage].winner} ${winners[0][0]}!`);
             navigateTo('/select-playerOrAI'); 
         }
     }

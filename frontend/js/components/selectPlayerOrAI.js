@@ -14,6 +14,31 @@ export const selectPlayerorAI = () => {
     sessionStorage.removeItem('remote');
     resetGameState();
     const player = sessionStorage.getItem('player');
+    const translations = {
+        english: {
+            vsPlayer: "vs Player",
+            vsAi: "vs AI",
+            tournament: "Tournament",
+        },
+        portuguese: {
+            vsPlayer: "vs Jogador",
+            vsAi: "vs IA",
+            tournament: "Torneio",
+        },
+        french: {
+            vsPlayer: "vs Joueur",
+            vsAi: "vs IA",
+            tournament: "Tournoi",
+        }
+    };
+    
+    let savedLanguage = localStorage.getItem('language');
+
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    } 
+  ;
 
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -22,7 +47,7 @@ export const selectPlayerorAI = () => {
                 <div id="player-select">
                     <button id="vsPlayerBtn" class="btn">
                         <img src="./assets/ppp.png" alt="Player" class="button-image-select">
-                        <h3>vs Player</h3>
+                        <h3>${translations[savedLanguage].vsPlayer}</h3>
                     </button>
                 </div>
             </div>
@@ -30,7 +55,7 @@ export const selectPlayerorAI = () => {
                 <div id="AI-select">
                     <button id="vsAIBtn" class="btn">
                         <img src="./assets/vsAI.png" alt="AI" class="button-image-select">
-                        <h3>vs Ai </h3>
+                        <h3>${translations[savedLanguage].vsAi}</h3>
                     </button>
                 </div>
             </div>
@@ -38,7 +63,7 @@ export const selectPlayerorAI = () => {
                 <div id="tourn-select">
                     <button id="tournBtn" class="btn">
                         <img src="./assets/tournament.png" alt="Tournament" class="button-image-select">
-                        <h3>Tournament </h3>
+                        <h3>${translations[savedLanguage].tournament}</h3>
                     </button>
                 </div>
             </div>
