@@ -57,6 +57,7 @@ export const renderLogin = () => {
         e.preventDefault(); 
         const emailOrUsername = document.getElementById('emailOrUsername').value; 
         const password = document.getElementById('password').value; 
+        
 
         try {
             const response = await fetch('http://127.0.0.1:8000/api/token/', {

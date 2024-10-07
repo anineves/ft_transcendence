@@ -41,20 +41,79 @@ export const renderPanel = async (user) => {
             return index < snakeWinsInCurrentLevel ? '🟦' : '⬜';
         }).join('');
 
+        const translations = {
+            english: {
+                title: "User Profile",
+                info: "Information",
+                user: "Username",
+                email: "Email",
+                nick: "Nickname",
+                first: "First Name",
+                last: "Last Name",
+                level: "Level",
+                levelMsg: "wins to reach next level",
+                logoutBtn: "Logout",
+                friendBtn: "Friends",
+                creationBtn: "Create Player",
+                playBtn: "Play",
+                chatBtn: "Chat",
+            },
+            portuguese: {
+                title: "Perfil do Usuário",
+                info: "Informação",
+                user: "Nome de Usuário",
+                email: "Email",
+                nick: "Apelido",
+                first: "Primeiro Nome",
+                last: "Último Nome",
+                level: "Nível",
+                levelMsg: "vitórias para alcançar o próximo nível",
+                logoutBtn: "Sair",
+                friendBtn: "Amigos",
+                creationBtn: "Criar Jogador",
+                playBtn: "Jogar",
+                chatBtn: "Chat",
+            },
+            french: {
+                title: "Profil de l'utilisateur",
+                info: "Informations",
+                user: "Nom d'utilisateur",
+                email: "Email",
+                nick: "Surnom",
+                first: "Prénom",
+                last: "Nom de famille",
+                level: "Niveau",
+                levelMsg: "victoires pour atteindre le niveau suivant",
+                logoutBtn: "Déconnexion",
+                friendBtn: "Amis",
+                creationBtn: "Créer un joueur",
+                playBtn: "Jouer",
+                chatBtn: "Chat",
+            }
+        };        
+        
+        let savedLanguage = localStorage.getItem('language');
+    
+    
+        if (!savedLanguage || !translations[savedLanguage]) {
+            savedLanguage = 'english'; 
+        } 
+      ;
+
         app.innerHTML = `
         <div class="user-panel">
             <div id="profileSection">
                 <button id="closeBtn" class="close-btn"><i class="fa-solid fa-times"></i></button>
-                <h2>User Profile</h2>
-                <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="User Avatar" class="avatar">
+                <h2>${translations[savedLanguage].title}</h2>
+                <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="user-avatar" class="avatar">
                 <div class="profile-content">
                     <div class="info">
-                        <h2 id="editBtn2">Info <i class="fas fa-pencil-alt"></i></h2>
-                        <p><strong>Username:</strong> ${user.username}</p>
-                        <p><strong>Nickname:</strong> ${nickname}</p>
-                        <p><strong>Email:</strong> ${user.email}</p>
-                        <p><strong>Firstname:</strong> ${user.first_name}</p>
-                        <p><strong>Lastname:</strong> ${user.last_name}</p>
+                        <h2 id="editBtn2">${translations[savedLanguage].info}<i class="fas fa-pencil-alt"></i></h2>
+                        <p><strong>${translations[savedLanguage].user}:</strong> ${user.username}</p>
+                        <p><strong>${translations[savedLanguage].nick}:</strong> ${nickname}</p>
+                        <p><strong>${translations[savedLanguage].email}:</strong> ${user.email}</p>
+                        <p><strong>${translations[savedLanguage].first}:</strong> ${user.first_name}</p>
+                        <p><strong>${translations[savedLanguage].last}:</strong> ${user.last_name}</p>
                         <p><strong>Id:</strong> ${user.id}</p>
                     </div>
                     <div class="progression">
@@ -73,11 +132,11 @@ export const renderPanel = async (user) => {
                     </div>
                 </div>
                 <div class="all-btn">
-                    <button id="logoutBtn" class="btn">Logout <i class="fa-solid fa-right-from-bracket"></i></button>
-                    <button id="friendBtn" class="btn">Friends <i class="fas fa-user-group"></i></button>
-                    <button id="createBtn" class="btn">Create Player</button>
-                    <button id="playBtn" class="btn">Play</button>
-                    <button id="sendMessageBtn" class="btn">Send Message <i class="fa-solid fa-message"></i></button>
+                    <button id="logoutBtn" class="btn">${translations[savedLanguage].logoutBtn} <i class="fa-solid fa-right-from-bracket"></i></button>
+                    <button id="friendBtn" class="btn">${translations[savedLanguage].friendBtn}<i class="fas fa-user-group"></i></button>
+                    <button id="createBtn" class="btn">${translations[savedLanguage].creationBtn}</button>
+                    <button id="playBtn" class="btn">${translations[savedLanguage].playBtn}</button>
+                    <button id="sendMessageBtn" class="btn">${translations[savedLanguage].chatBtn} <i class="fa-solid fa-message"></i></button>
                 </div>
             </div>
             <div id="updateProfileSection" style="display: none;">
