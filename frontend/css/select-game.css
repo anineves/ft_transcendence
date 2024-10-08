@@ -1,0 +1,137 @@
+.select-game {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 2vw;
+    width: 80vw;
+    margin: 0 auto; 
+}
+
+.game-selection {
+    background-color: rgba(0, 0, 0, 0.8);
+    width: 60%;
+    max-width: 500px;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1.5vw;
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(0, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 1vw; 
+}
+
+.game-selection:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.4);
+}
+
+.btn-game {
+    background: transparent;
+    border: none;
+    width: 100%;
+    padding: 0;
+    position: relative; 
+}
+
+.button-image-select {
+    background: transparent;
+    width: 90%;
+    max-width: 300px;
+    height: auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: pulse 3s infinite ease-in-out;
+}
+
+.btn-game:hover{
+    background: transparent;
+}
+.btn-game:hover .button-image-select {
+    background-color: #00FFFF;
+    border-radius: 10px;
+}
+
+.button-image-select:hover {
+    background: transparent;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+}
+
+h3 {
+    font-size: 2vw;
+    color: #00FF99;
+    font-family: 'VT323', monospace;
+    text-shadow: 0 0 8px #ff3399, 0 0 10px #00ff99, 0 0 15px #ff3399;
+    margin-top: 1vw;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
+    }
+}
+
+
+/*SELECT TYPE OF GAME */
+
+.game-selection-item {
+    background-color: rgba(0, 0, 0, 0.8);
+    width: calc(50% - 2vw); 
+    max-width: 500px;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5vw;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(0, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.game-selection-item:hover {
+    transform: translateY(-8px) scale(1.10);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.4);
+}
+
+
+.btn-type {
+    background: transparent;
+    border: none;
+    width: 100%;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.button-image-type {
+    width: 45%;
+    max-width: 250px;
+    height: auto;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: pulse 3s infinite ease-in-out;
+    background-color: transparent;
+}
+
+.btn-type:hover  {
+    background-color: transparent; 
+    border-radius: 10px;
+}
+
+.button-image-type:hover {
+    transform: scale(1.1);
+    animation-name: pulse;
+}

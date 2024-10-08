@@ -44,29 +44,27 @@ export const renderGameSelection = async () => {
         }
     }
 
-    // Após a autenticação, renderizar a interface de seleção de jogos
+   
     app.innerHTML = `
-        <div class="select-game">
-            <div class="game-selection-item">
-                <div id="pong-select">
-                    <button id="pongBtn" class="btn">
-                        <img src="./assets/pongneon2.png" alt="Pong" class="button-image-select">
-                        <h3>Pong</h3>
-                    </button>
-                </div>
-            </div>
-            <div class="game-selection-item">
-                <div id="snake-select">
-                    <button id="snakeBtn" class="btn">
-                        <img src="./assets/snake3d.png" alt="snake" class="button-image-select">
-                        <h3>Snake</h3>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
+    <div class="select-game">
+    
+    <div class="game-selection" id="pong-select">
+        <button id="pongBtn" class="btn-game">
+            <img src="./assets/pongneon2.png" alt="Pong" class="button-image-select">
+            <h3>Pong</h3>
+        </button>
+    </div>
+    <div class="game-selection" id="snake-select">
+        <button id="snakeBtn" class="btn-game">
+            <img src="./assets/snake3d.png" alt="Snake" class="button-image-select">
+            <h3>Snake</h3>
+        </button>
+    </div>
+</div>
 
-    // Adicionar eventos de clique aos botões
+`;
+
+
     document.getElementById('pongBtn').addEventListener('click', () => navigateTo('/select-playerOrAI'));
     document.getElementById('snakeBtn').addEventListener('click', () => navigateTo('/3d-snake'));
 };

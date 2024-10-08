@@ -51,6 +51,8 @@ export const startPongGame = async () => {
         match_type = "MP"
     if (modality2 != 'remote' || inviter == "True") {
 
+    if(user)
+    {
         try {
             const response = await fetch('http://localhost:8000/api/matches/', {
                 method: 'POST',
@@ -106,7 +108,7 @@ export const startPongGame = async () => {
             }; 
         }
         
-        
+    }
         initialize();
    // }
 }
@@ -311,7 +313,7 @@ function initialize() {
             let winner_id = 2; 
             //console.log("modality" ,sessionStorage.getItem('modality' ))
             //console.log("inviter ", inviter)
-            if (remote != 'accept' || inviter) {
+            if (user && (remote != 'accept' || inviter)) {
                 try {
                     
                     if (playerScore > opponentScore)

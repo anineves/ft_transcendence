@@ -44,36 +44,31 @@ export const selectPlayerorAI = () => {
     app.innerHTML = `
         <div class="select-game">
             <div class="game-selection-item">
-                <div id="player-select">
-                    <button id="vsPlayerBtn" class="btn">
-                        <img src="./assets/ppp.png" alt="Player" class="button-image-select">
+                
+                    <button id="vsPlayerBtn" class="btn-type">
+                        <img src="./assets/ppp.png" alt="Player" class="button-image-type">
                         <h3>${translations[savedLanguage].vsPlayer}</h3>
                     </button>
-                </div>
+            
             </div>
             <div class="game-selection-item">
-                <div id="AI-select">
-                    <button id="vsAIBtn" class="btn">
-                        <img src="./assets/vsAI.png" alt="AI" class="button-image-select">
+              
+                    <button id="vsAIBtn" class="btn-type">
+                        <img src="./assets/vsAI.png" alt="AI" class="button-image-type">
                         <h3>${translations[savedLanguage].vsAi}</h3>
                     </button>
-                </div>
             </div>
             <div class="game-selection-item">
-                <div id="tourn-select">
-                    <button id="tournBtn" class="btn">
-                        <img src="./assets/tournament.png" alt="Tournament" class="button-image-select">
+                    <button id="tournBtn" class="btn-type">
+                        <img src="./assets/tournament.png" alt="Tournament" class="button-image-type">
                         <h3>${translations[savedLanguage].tournament}</h3>
                     </button>
-                </div>
             </div>
             <div class="game-selection-item">
-                <div id="3D-select">
-                    <button id="3DBtn" class="btn">
-                        <img src="./assets/3dpong.png" alt="3D" class="button-image-select">
+                    <button id="3DBtn" class="btn-type">
+                        <img src="./assets/3dpong.png" alt="3D" class="button-image-type">
                         <h3>3D</h3>
                     </button>
-                </div>
             </div>
         </div>
     `;
