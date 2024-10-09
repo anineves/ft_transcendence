@@ -28,19 +28,14 @@ const modality2 = sessionStorage.getItem('modality');
 const inviter = sessionStorage.getItem("Inviter");
 
 export const startPongGame = async () => {
-    
+    resetGameState();
     const player = sessionStorage.getItem('player');
-    console.log(player);
-    console.log("Starting game...");
-    const duration = "01:30:00";
     const game = 1;
-    console.log("player o", player);
-    let opponent = 2; 
+    let opponent = 1; 
     const players = [player, opponent];
     sessionStorage.setItem('game', game);
     sessionStorage.setItem('players', players);
     const modality2 = sessionStorage.getItem('modality');
-    console.log("Inviter", inviter);
     let match_type = "MP"
     console.log(modality2)
     if (modality2 == "ai")
@@ -51,8 +46,9 @@ export const startPongGame = async () => {
         match_type = "MP"
     if (modality2 != 'remote' || inviter == "True") {
 
-    if(user)
+    if(player)
     {
+
         try {
             const response = await fetch('http://localhost:8000/api/matches/', {
                 method: 'POST',
@@ -60,7 +56,7 @@ export const startPongGame = async () => {
                     'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ game, players, match_type })
+                body: JSON.stringify({ game, players, match_type})
             });
 
             const data = await response.json();
@@ -76,10 +72,6 @@ export const startPongGame = async () => {
             alert('Error occurred while processing match.');
         }
     }
-
-   // if (document.readyState === 'loading') {
-    //    document.addEventListener('DOMContentLoaded', initialize);
-    //} else {
         if(modality2 == 'remote')
         {
             const groupName = sessionStorage.getItem("groupName");
@@ -110,7 +102,7 @@ export const startPongGame = async () => {
         
     }
         initialize();
-   // }
+  
 }
 
 
@@ -224,7 +216,6 @@ function initialize() {
                         }));
                     }
                 }
-               // alert("OUT off Bounds Left");
                 resetBall();
             }
         } else {
@@ -253,7 +244,6 @@ function initialize() {
                         }));
                     }
                 }
-                //alert("OUT off Bounds Rightttt");
                 resetBall();
             }
         } else {
@@ -311,8 +301,7 @@ function initialize() {
             const remote = sessionStorage.getItem('remote');
             const player = sessionStorage.getItem('player');
             let winner_id = 2; 
-            //console.log("modality" ,sessionStorage.getItem('modality' ))
-            //console.log("inviter ", inviter)
+         
             if (user && (remote != 'accept' || inviter)) {
                 try {
                     
@@ -345,15 +334,6 @@ function initialize() {
                     showNextMatchButton();
                 }
             }
-
-            /*if (modality2 == "remote") {
-                ws.send(JSON.stringify({
-                    'message': {
-                        'action': "end_game",
-                        'msg': "fim",
-                    }
-                }));
-            }*/
         }
     }
 
@@ -362,7 +342,6 @@ function initialize() {
         const nextMatchButton = document.createElement('button');
         nextMatchButton.innerText = 'Next Match';
         nextMatchButton.className = 'btn';
-        //nextMatchButton.style.display = 'block';
         nextMatchButton.style.margin = '20px auto';
 
         nextMatchButton.addEventListener('click', () => {
@@ -372,8 +351,6 @@ function initialize() {
         });
         app.appendChild(nextMatchButton);
         console.log(app);
-        console.log("aaa");
-
     }
 
 
@@ -442,6 +419,7 @@ export function resetGameState() {
     opponentScore = 0;
     ballSpeedX = 2;
     ballSpeedY = 2;
+    gameOver = false;
     initializeCanvas();
     initializeBall();
     stopGame();

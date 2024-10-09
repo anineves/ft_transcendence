@@ -68,6 +68,7 @@ export const setupTournament = () => {
     const playersCount = sessionStorage.getItem('playersCount');
     const nickname = sessionStorage.getItem('nickname');
     let playersForm = '';
+    playersForm += `<div class="player-inputs-container">`;
 
     for (let i = 1; i <= playersCount; i++) {
         if (i === 1 && nickname) {
@@ -86,6 +87,8 @@ export const setupTournament = () => {
         }
     }
 
+    playersForm += `</div>`; // Fechando o contêiner
+
     app.innerHTML = `
         <div class="setup-tournament">
             <h2>${translations[savedLanguage].enterName}</h2>
@@ -95,7 +98,7 @@ export const setupTournament = () => {
             </form>
         </div>
     `;
-
+   
     document.getElementById('tournamentForm').addEventListener('submit', (event) => {
         event.preventDefault();
 
@@ -132,7 +135,6 @@ const startMatch = () => {
     if (currentRound < rounds.length) {
         const [player1, player2] = rounds[currentRound];
         sessionStorage.setItem('currentMatch', JSON.stringify({ player1, player2 }));
-
         setTimeout(() => {
             resetGameState();
             navigateTo('/pong');

@@ -151,6 +151,12 @@ class MatchSerializer(serializers.ModelSerializer):
         fields = ['id' ,'date', 'duration', 'game', 'players', 'winner_id', 'score', 'match_type']
         read_only_fields = ['id' ,'date']
     
+    def create(self, validated_data):
+        print("Dados:", validated_data)
+        if 'match_type' not in validated_data:
+            validated_data['match_type'] = self.initial_data.get('match_type') 
+        return super().create(validated_data)
+
     def update(self, instance, validated_data):
         instance.winner_id=validated_data.get('winner_id', instance.winner_id)
         instance.score=validated_data.get('score', instance.score)

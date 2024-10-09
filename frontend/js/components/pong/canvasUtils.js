@@ -2,6 +2,7 @@ export let canvas, context, paddleHeight, paddleWidth, ballRadius, playerY, oppo
 
 
 export function initializeCanvas() {
+    console.log("chamada aquiiii")
     canvas = document.getElementById('pongCanvas');
     if (canvas) {
         context = canvas.getContext('2d');
@@ -118,15 +119,6 @@ export function stopPaddle(event) {
             }
         }
 }
-// } else if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
-    
-// export function stopPaddle(event) {
-//     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-//         clearInterval(playerPaddleInterval);
-//     } else if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
-//         clearInterval(opponentPaddleInterval);
-//     }
-// }
 
 
 let aiUpdateRate = 1000;  

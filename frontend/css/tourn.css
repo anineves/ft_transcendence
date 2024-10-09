@@ -1,0 +1,58 @@
+/* Estilo para o formulário de configuração do torneio */
+.setup-tournament {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2vw;
+    width: 80vw;
+    margin: 0 auto; /* Centraliza o container */
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    animation: fadeIn 0.5s ease; /* Animação ao entrar na página */
+}
+
+/* Estilo para o contêiner dos campos de entrada em duas colunas */
+.player-inputs-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os itens se movam para a próxima linha se não houver espaço */
+    justify-content: center; /* Centraliza os itens */
+    width: 100%;
+}
+
+/* Estilo para cada entrada de jogador no torneio */
+.player-input {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinha os rótulos à esquerda */
+    width: 45%; /* Usa 45% da largura, permitindo duas colunas */
+    margin: 1vw; /* Espaçamento entre os campos */
+}
+
+/* Adicionando uma pequena margem ao último item em telas menores */
+.player-input:last-child {
+    margin-bottom: 0; /* Remove a margem inferior do último item */
+}
+
+/* Rótulo de entrada no formulário de torneio */
+.player-input label {
+    font-size: 1.2vw;
+    color: #00FF99;
+    margin-bottom: 0.5vw;
+}
+
+/* Estilo para os campos de entrada de texto no torneio */
+.player-input input[type="text"] {
+    padding: 0.5vw;
+    border: 2px solid #00FFFF;
+    border-radius: 5px;
+    width: 95%; /* Para ocupar quase toda a largura */
+    transition: border-color 0.3s ease;
+}
+
+/* Efeito de foco nos campos de entrada no torneio */
+.player-input input[type="text"]:focus {
+    border-color: #00FF99;
+    outline: none; /* Remove o contorno padrão */
+}
