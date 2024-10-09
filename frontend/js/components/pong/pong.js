@@ -17,7 +17,7 @@ let ws;
 const user = sessionStorage.getItem('user');
 const user_json = JSON.parse(user);
 
-const player_id = sessionStorage.getItem("player"); 
+const player_id = sessionStorage.getItem("player");
 
 
 export let ballX, ballY;
@@ -31,7 +31,7 @@ export const startPongGame = async () => {
     resetGameState();
     const player = sessionStorage.getItem('player');
     const game = 1;
-    let opponent = 1; 
+    let opponent = 1;
     const players = [player, opponent];
     sessionStorage.setItem('game', game);
     sessionStorage.setItem('players', players);
@@ -40,71 +40,71 @@ export const startPongGame = async () => {
     console.log(modality2)
     if (modality2 == "ai")
         match_type = "AI"
+    if (modality2 == "remote")
+        match_type = "RM"
     if (modality2 == "tournament")
         match_type = "TN"
     if (modality2 == "player" || modality2 == "3D")
         match_type = "MP"
+
     if (modality2 != 'remote' || inviter == "True") {
+        if (player) {
+            try {
+                const response = await fetch('http://localhost:8000/api/matches/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ game, players, match_type })
+                });
 
-    if(player)
-    {
+                const data = await response.json();
 
-        try {
-            const response = await fetch('http://localhost:8000/api/matches/', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ game, players, match_type})
-            });
-
-            const data = await response.json();
-
-            if (data) {
-                console.log('Data:', data);
-                sessionStorage.setItem('id_match', data.id);
-            } else {
-                console.error('Match error', data);
+                if (data) {
+                    console.log('Data:', data);
+                    sessionStorage.setItem('id_match', data.id);
+                } else {
+                    console.error('Match error', data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error occurred while processing match.');
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error occurred while processing match.');
         }
     }
-        if(modality2 == 'remote')
-        {
-            const groupName = sessionStorage.getItem("groupName");
-            ws = initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                
-                console.log("Data: ", data)
-                if (data.action === 'ball_track') {
-                    ballX = data.message.ball_x;
-                    ballY = data.message.ball_y;
-                    ballSpeedY = data.message.ballSpeedY;
-                    ballSpeedX = data.message.ballSpeedX;
-                }
-                if (data.action === 'move_paddle') {
-                    movePaddle(data);
-                }
-                if (data.action === 'stop_paddle') {
-                    stopPaddle(data);
-                }
-                if (data.action === 'score_track') {
-                    playerScore = data.message.player_score;
-                    opponentScore = data.message.opponent_score;
-                    gameOver = data.message.game_over;
-                }
-            }; 
-        }
-        
-    }
-        initialize();
-  
-}
+    if (modality2 == 'remote') {
+        const groupName = sessionStorage.getItem("groupName");
+        ws = initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
 
+            console.log("Data: ", data)
+            if (data.action === 'ball_track') {
+                ballX = data.message.ball_x;
+                ballY = data.message.ball_y;
+                ballSpeedY = data.message.ballSpeedY;
+                ballSpeedX = data.message.ballSpeedX;
+            }
+            if (data.action === 'move_paddle') {
+                movePaddle(data);
+            }
+            if (data.action === 'stop_paddle') {
+                stopPaddle(data);
+            }
+            if (data.action === 'score_track') {
+                playerScore = data.message.player_score;
+                opponentScore = data.message.opponent_score;
+                gameOver = data.message.game_over;
+            }
+        };
+    }
+
+
+    initialize();
+
+
+}
 
 export function initializeBall() {
     if (!canvas) {
@@ -126,8 +126,7 @@ export function updateBall() {
 
     if (ballY + ballRadius > canvas.height || ballY - ballRadius < 0) {
         ballSpeedY = -ballSpeedY;
-        if(modality2 == 'remote')
-        {
+        if (modality2 == 'remote') {
             if (currentPlayer === playerID) {
                 ws.send(JSON.stringify({
                     'action': 'ball_track',
@@ -141,7 +140,7 @@ export function updateBall() {
                 }));
             }
         }
-    } 
+    }
 }
 
 export function resetBall() {
@@ -201,7 +200,7 @@ function initialize() {
                 if (opponentScore >= 5) {
                     gameOver = true;
                 }
-                
+
                 ballOutOfBoundsLeft = true;
                 if (modality2 == 'remote') {
                     if (currentPlayer === playerID) {
@@ -221,15 +220,15 @@ function initialize() {
         } else {
             ballOutOfBoundsLeft = false;
         }
-        
-   
+
+
         if (ballX + ballRadius > canvas.width) {
             if (!ballOutOfBoundsRight) {
                 playerScore++;
                 if (playerScore >= 5) {
                     gameOver = true;
                 }
-                
+
                 ballOutOfBoundsRight = true;
                 if (modality2 == 'remote') {
                     if (currentPlayer === playerID) {
@@ -249,8 +248,8 @@ function initialize() {
         } else {
             ballOutOfBoundsRight = false;
         }
-        
-     
+
+
         if (ballX - ballRadius < paddleWidth && ballY > playerY && ballY < playerY + paddleHeight) {
             ballX = paddleWidth + ballRadius;
             ballSpeedX = -ballSpeedX;
@@ -269,9 +268,9 @@ function initialize() {
                 }
             }
         }
-        
+
         if (ballX + ballRadius > canvas.width - paddleWidth && ballY > opponentY && ballY < opponentY + paddleHeight) {
-            ballX = canvas.width - paddleWidth - ballRadius; 
+            ballX = canvas.width - paddleWidth - ballRadius;
             ballSpeedX = -ballSpeedX;
             if (modality2 == 'remote') {
                 if (currentPlayer === playerID) {
@@ -289,7 +288,7 @@ function initialize() {
             }
         }
     }
-    
+
 
     async function gameLoop() {
         update();
@@ -300,11 +299,11 @@ function initialize() {
             const id = sessionStorage.getItem('id_match');
             const remote = sessionStorage.getItem('remote');
             const player = sessionStorage.getItem('player');
-            let winner_id = 2; 
-         
+            let winner_id = 2;
+
             if (user && (remote != 'accept' || inviter)) {
                 try {
-                    
+
                     if (playerScore > opponentScore)
                         winner_id = player;
                     const score = `${playerScore}-${opponentScore}`;

@@ -83,7 +83,7 @@ export const renderLogin = () => {
                 // Armazena as informações do usuário (por exemplo, nome, email).
                 sessionStorage.setItem('user', JSON.stringify(data.user)); 
 
-                console.log(data);
+                //console.log(data);
                 const userId = data.user.id;
                 const token = data.access;
                 try {
@@ -109,7 +109,7 @@ export const renderLogin = () => {
                             console.log("You need create a player");
                         }
                     } else {
-                        console.log("error loading players");
+                        console.error("error loading players");
                     }
                 } catch (error) {
                     console.error('Error', error);
@@ -217,20 +217,15 @@ const handleSuccessfulLogin = async () => {
 
         if (playerResponse.ok) {
             const playerData = await playerResponse.json();
-            console.log("-----------------------------------------------------------")
-            console.log(playerData)
-            console.log("-----------------------------------------------------------")
-            console.log(user)
-            console.log(userID);
+
 
             let player = null;
 
             for (const p of playerData) {
-               // console.log("User:", p.user);
-                //console.log("UserID:", userID);
+              
 
                 if (p.user == userID) {
-                 //console.log("Entrei")
+    
                     player = p;
                 }
             }
@@ -257,11 +252,9 @@ export const putPlayer = async (status) => {
     const jwtToken = sessionStorage.getItem('jwtToken');
     const user = sessionStorage.getItem('user');
     const playerId = sessionStorage.getItem('player');
-    console.log("Player", playerId);
-    console.log("Status", status)
+    //console.log("Player", playerId);
+    //console.log("Status", status)
     const stat = status;
-
-    console.log("Entrei Put");
     try {
         const player = await fetch(`http://127.0.0.1:8000/api/player/${playerId}`, {
             method: 'PUT',
@@ -271,18 +264,14 @@ export const putPlayer = async (status) => {
             },
             body: JSON.stringify({ status : stat })
         });
-        console.log("Entrei Try");
-        console.log(player)
+      
         if (player.ok) {
-            console.log("Entrei IF");
             const playerT = await player.json();
             sessionStorage.setItem('playerStatus', playerT.status);
-            console.log(playerT)
-
             checkLoginStatus();
             navigateTo('/game-selection');
 
-        } else {
+        } else if (user) {
             alert("Player not found");
             console.log("Error player not found");
         }
