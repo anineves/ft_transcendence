@@ -215,6 +215,10 @@ export const liveChat = () => {
                 acceptLink.addEventListener('click', () => {
                     socket.close();
                     clearTimeout(timeout); 
+                    const playMessage = document.createElement('p');
+                    console.log(`${nickname} vai jogar contra ${message.from_user}, para que os outros membros vejam!`);
+                playMessage.textContent = `${nickname} vai jogar contra ${message.from_user}, para que os outros membros vejam!`;
+                chatBox.appendChild(playMessage);
                 });
             }
         }

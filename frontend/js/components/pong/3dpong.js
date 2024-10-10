@@ -1,9 +1,80 @@
 // Criar a cena
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x1f1f2f); // Adicionar uma cor de fundo
+const modality2 = sessionStorage.getItem('modality');
+const user = sessionStorage.getItem('user');
+const user_json = JSON.parse(user);
 
-let redNickname = "Player"
+const player_id = sessionStorage.getItem("player");
+let nickname = sessionStorage.getItem('nickname'); 
+console.log(nickname);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1f1f2f); 
+
+let redNickname = nickname;
 let blueNickname = "Opponent"
+let match_type = "3D"
+const game = 1;
+let opponent = 1;
+const players = [player_id, opponent];
+
+async function createMatch() {
+    try {
+        const response = await fetch('http://localhost:8000/api/matches/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ game, players, match_type })
+        });
+
+        const data = await response.json();
+
+        if (data) {
+            console.log('Data:', data);
+            sessionStorage.setItem('id_match', data.id);
+        } else {
+            console.error('Match error', data);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error occurred while processing match.');
+    }
+}
+
+if(user)
+    createMatch();
+
+async function updateMatch()
+{
+    const id = sessionStorage.getItem('id_match');
+    try {
+        let winner_id = 6;
+        if (redScore > blueScore)
+            winner_id = player_id;
+        const score = `${redScore}-${blueScore}`;
+        const duration = "10";
+
+        const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ winner_id, score, duration })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log('Match updated successfully:', data);
+        } else {
+            console.error('Error updating match:', data);
+        }
+    } catch (error) {
+        console.error('Error processing match:', error);
+        alert('An error occurred while processing the match.');
+    }
+}
 
 // Criar a câmara
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 500);
@@ -41,7 +112,7 @@ pointLight_red.position.set(-3, 2, 0);
 scene.add(pointLight_red);
 
 // Luz branca para o meio
-const pointLight_middle = new THREE.PointLight(0xffffff, 0.8, 20); 
+const pointLight_middle = new THREE.PointLight(0xff00ff, 0.8, 20); 
 pointLight_middle.position.set(0, 2, 10);
 scene.add(pointLight_middle);
 
@@ -78,7 +149,7 @@ line_p1.position.z = 0;
 scene.add(line_p2); //linha final player da direita
 line_p2.position.x = 5;
 line_p2.position.y = 0;
-line_p2.position.z = 0;
+line_p2.position.z = 0; 
 
 //barras
 const tablebarGeo = new THREE.BoxGeometry(0.2, 0.2, 10);
@@ -109,7 +180,7 @@ tableBotbar.rotation.z = 0;
 const paddleGeometry = new THREE.BoxGeometry(0.2, 0.6, 1.2)
 
 //paddle player red
-const paddleMaterial_red = new THREE.MeshStandardMaterial({ color: 0xff0000});
+const paddleMaterial_red = new THREE.MeshStandardMaterial({ color: 0xFF00FF});
 const paddle_player_red = new THREE.Mesh(paddleGeometry, paddleMaterial_red);
 scene.add(paddle_player_red);
 paddle_player_red.position.x = -5;
@@ -117,7 +188,7 @@ paddle_player_red.position.y = 0;
 paddle_player_red.position.z = 0;
 
 
-const paddleMaterial_blue = new THREE.MeshStandardMaterial({ color: 0x0000ff});
+const paddleMaterial_blue = new THREE.MeshStandardMaterial({ color: 0x198a8b});
 const paddle_player_blue = new THREE.Mesh(paddleGeometry, paddleMaterial_blue);
 scene.add(paddle_player_blue);
 paddle_player_blue.position.x = 5;
@@ -172,6 +243,8 @@ let PlayerVictoryGeometry = 0;
 let PlayerVictoryMesh = 0;
 
 function showGameOver(PlayerVictoryMaterial) {
+    if(user)
+        updateMatch();
     const gameOverGeometry = new THREE.TextGeometry("GAME OVER!" , {
         font: loadedFont,
         size: 0.8,
@@ -181,7 +254,8 @@ function showGameOver(PlayerVictoryMaterial) {
         bevelThickness: 0.03,
         bevelSize: 0.02,
         bevelOffset: 0,
-        bevelSegments: 5
+        bevelSegments: 5,
+        color: 0x123422
     });
     const gameOverMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff});
     const gameOverMesh = new THREE.Mesh(gameOverGeometry, gameOverMaterial);
@@ -221,7 +295,7 @@ function showGameOver(PlayerVictoryMaterial) {
             bevelOffset: 0,
             bevelSegments: 5
         });
-        PlayerVictoryMaterial = new THREE.MeshStandardMaterial({color: 0x0000ff});
+        PlayerVictoryMaterial = new THREE.MeshStandardMaterial({color: 0xff00ff});
     } else if (winred) {
         PlayerVictoryGeometry = new THREE.TextGeometry(`${redNickname}`, {
             font: loadedFont,
@@ -234,7 +308,7 @@ function showGameOver(PlayerVictoryMaterial) {
             bevelOffset: 0,
             bevelSegments: 5
         });
-        PlayerVictoryMaterial = new THREE.MeshStandardMaterial({color: 0xff0000});      
+        PlayerVictoryMaterial = new THREE.MeshStandardMaterial({ color: 0x800080 });      
     }
     PlayerVictoryGeometry.computeBoundingBox();
     const PlayerVictoryBB = PlayerVictoryGeometry.boundingBox;
@@ -301,7 +375,7 @@ function scoreBoard() {
 
     const redScoreText = document.createElement('span');
     redScoreText.id = 'red-score';
-    redScoreText.style.color = 'red';
+    redScoreText.style.color = 'purple';
     redScoreText.style.textShadow = '1px 1px 2px white, -1px -1px 2px white'; // Adiciona contorno
     redScoreText.textContent = redNickname + ' ' + redScore;
 
@@ -341,6 +415,9 @@ let gameOver = false;
 scoreBoard();
 
 // funcao de animacao do jogo
+document.addEventListener('keydown', onDocumentKeyDown);
+document.addEventListener('keyup', onDocumentKeyUp);
+
 function animate() {
     renderer.render(scene, activatedCam);
     requestAnimationFrame(animate);
@@ -418,7 +495,7 @@ function animate() {
             updateScoreBoard();
             //topviewupdateScore();
         }   
-            //console.log("Red Player score -> " + `${redPlayerScore}`);
+          
         if (redScore === 5) {
             redPlayerWin();
             gameOver = true;

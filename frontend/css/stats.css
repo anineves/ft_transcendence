@@ -1,53 +1,100 @@
-body {
-    font-family: 'Courier New', Courier, monospace;
-    background-color: #121212;
-    color: #00FFFF;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-}
-
 .stats {
     background-color: rgba(20, 20, 20, 0.8);
     border: 2px solid rgba(0, 255, 255, 0.7);
     box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
-    padding: 40px;
-    width: 90%;
-    max-width: 700px;
+    padding: 10px;
+    width: 90vw;
+    max-width: 1200px;
+    height: 85vh;
     border-radius: 30px;
     text-align: center;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-.stats h2 {
-    font-size: 32px;
+.stats-container{
+   
+    width: 90vw;
+    max-width: 1200px;
+    height: 85vh;
+    border-radius: 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+}
+.center-title {
+    font-size: 30px;
     color: #FF00FF;
     text-shadow: 0 0 15px rgba(255, 0, 255, 0.9), 0 0 25px rgba(255, 0, 255, 1);
+    animation: glow 1.5s infinite alternate;
     margin-bottom: 25px;
+    text-align: center;
 }
 
-.achievement {
-    font-size: 28px;
-    color: #FF00FF;
-    text-shadow: 0 0 15px rgba(255, 0, 255, 0.9), 0 0 25px rgba(255, 0, 255, 1);
-    margin: 20px 0;
+.stats-container {
+    display: flex;
+    gap: 20px;
+    height: 100%;
 }
+
+.stats-column, .charts-column {
+    flex: 1; 
+    min-width: 0; 
+    overflow-y: auto;
+}
+
+.charts-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+@keyframes glow {
+    0% { text-shadow: 0 0 5px rgba(255, 0, 255, 0.5); }
+    50% { text-shadow: 0 0 20px rgba(255, 0, 255, 1); }
+    100% { text-shadow: 0 0 5px rgba(255, 0, 255, 0.5); }
+}
+
+
+.stats-column::-webkit-scrollbar, .charts-column::-webkit-scrollbar, .match-history-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.stats-column::-webkit-scrollbar-track, .charts-column::-webkit-scrollbar-track, .match-history-container::-webkit-scrollbar-track {
+    background: rgba(20, 20, 20, 0.5);
+    border-radius: 10px;
+}
+
+.stats-column::-webkit-scrollbar-thumb, .charts-column::-webkit-scrollbar-thumb, .match-history-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.8);
+    border-radius: 10px;
+    border: 2px solid rgba(20, 20, 20, 0.5);
+}
+
+.stats-column::-webkit-scrollbar-thumb:hover, .charts-column::-webkit-scrollbar-thumb:hover, .match-history-container::-webkit-scrollbar-thumb:hover {
+    background: #00CED1;
+}
+
+
+
 
 .stats h3 {
-    font-size: 28px;
+    font-size: 20px;
     color: #00FFFF;
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.7), 0 0 20px rgba(0, 255, 255, 1);
-    margin: 15px 0;
+    text-shadow: 0 0 7px rgba(0, 255, 255, 0.6), 0 0 14px rgba(0, 255, 255, 0.8);
+    align-items: center;
 }
 
+
+
 .stats p {
-    font-size: 20px;
+    font-size: 15px;
     margin: 5px 0;
+    color: #d3d3d3;
 }
 
 .stats strong {
@@ -55,7 +102,8 @@ body {
     text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
 }
 
-button {
+/* Button Styling Within .stats */
+.stats button {
     background-color: #00FFFF;
     color: #121212;
     border: none;
@@ -67,12 +115,12 @@ button {
     margin: 20px 0;
 }
 
-button:hover {
+.stats button:hover {
     background-color: #00CED1;
     transform: scale(1.05);
 }
 
-canvas {
+.stats canvas {
     margin-top: 30px;
     background-color: #1e1e1e;
     border-radius: 10px;
@@ -88,8 +136,8 @@ canvas {
 }
 
 .match-history-container {
-    max-height: 200px; 
-    overflow-y: auto; 
+    max-height: 150px;
+    overflow-y: auto;
     border: 1px solid rgba(0, 255, 255, 0.5);
     border-radius: 5px;
 }
@@ -110,23 +158,13 @@ canvas {
     background-color: rgba(0, 255, 255, 0.2);
 }
 
-@keyframes glow {
-    0% { text-shadow: 0 0 5px rgba(255, 0, 255, 0.5); }
-    50% { text-shadow: 0 0 20px rgba(255, 0, 255, 1); }
-    100% { text-shadow: 0 0 5px rgba(255, 0, 255, 0.5); }
-}
-
-.stats h2, .stats h3 {
-    animation: glow 1.5s infinite alternate;
-}
-
+/* Responsive Styles */
 @media (max-width: 768px) {
-    .stats {
-        width: 90vw;
-        padding: 30px;
+    .stats-container {
+        flex-direction: column;
     }
 
-    .stats h2 {
+    .center-title {
         font-size: 28px;
     }
 
@@ -134,19 +172,14 @@ canvas {
         font-size: 18px;
     }
 
-    button {
+    .stats button {
         font-size: 16px;
         padding: 8px 16px;
     }
 }
 
 @media (max-width: 480px) {
-    .stats {
-        width: 90vw;
-        padding: 20px;
-    }
-
-    .stats h2 {
+    .center-title {
         font-size: 26px;
     }
 
@@ -154,7 +187,7 @@ canvas {
         font-size: 16px;
     }
 
-    button {
+    .stats button {
         font-size: 14px;
         padding: 6px 12px;
     }

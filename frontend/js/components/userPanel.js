@@ -24,7 +24,7 @@ const translations = {
     portuguese: {
         title: "Perfil do Usuário",
         info: "Informação",
-        user: "Nome de Usuário",
+        user: "Utilizador",
         email: "Email",
         nick: "Apelido",
         first: "Primeiro Nome",
@@ -43,7 +43,7 @@ const translations = {
     french: {
         title: "Profil de l'utilisateur",
         info: "Informations",
-        user: "Nom d'utilisateur",
+        user: "Utilisateur",
         email: "Email",
         nick: "Surnom",
         first: "Prénom",
@@ -96,18 +96,17 @@ export const renderPanel = async (user) => {
     app.innerHTML = `
         <div class="user-panel">
             <div id="profileSection">
+            <h2>${escapeHTML(translations[savedLanguage].title)}</h2>
+            <div class="profile-content">
                 <button id="closeBtn" class="close-btn"><i class="fa-solid fa-times"></i></button>
-                <h2>${escapeHTML(translations[savedLanguage].title)}</h2>
+                <div class="info">
                 <img id="avatarImg" src="${escapeHTML(avatarUrl)}?${new Date().getTime()}" alt="user-avatar" class="avatar">
-                <div class="profile-content">
-                    <div class="info">
-                        <h2 id="editBtn2">${escapeHTML(translations[savedLanguage].info)}<i class="fas fa-pencil-alt"></i></h2>
+                        <h2 id="editBtn2">                        <i class="fas fa-pencil-alt"></i></h2>
                         <p><strong>${escapeHTML(translations[savedLanguage].user)}:</strong> ${escapeHTML(user.username)}</p>
                         <p><strong>${escapeHTML(translations[savedLanguage].nick)}:</strong> ${escapeHTML(nickname)}</p>
                         <p><strong>${escapeHTML(translations[savedLanguage].email)}:</strong> ${escapeHTML(user.email)}</p>
                         <p><strong>${escapeHTML(translations[savedLanguage].first)}:</strong> ${escapeHTML(user.first_name)}</p>
                         <p><strong>${escapeHTML(translations[savedLanguage].last)}:</strong> ${escapeHTML(user.last_name)}</p>
-                        <p><strong>Id:</strong> ${escapeHTML(user.id)}</p>
                     </div>
                     <div class="progression" id="progression"></div>
                 </div>

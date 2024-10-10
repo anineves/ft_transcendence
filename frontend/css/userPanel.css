@@ -7,22 +7,21 @@
     height: 85vh;
     margin: auto;
     color: #fff;
-    font-family: 'Press Start 2P', cursive; 
+    font-family: 'Press Start 2P', cursive;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     font-size: 18px;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-    overflow: hidden; 
-    
+    overflow: hidden;
 }
 
 .user-panel h2 {
-    font-size: 26px;
-    color: #00ff99;
+    font-size: 24px;
+    color: #aa00ff; 
     text-align: center;
-    text-shadow: 0 0 8px #00ff99, 0 0 15px rgba(0, 255, 153, 0.7);
+    text-shadow: 0 2px #aa00ff, 0 0 8px rgba(170, 0, 255, 0.7);
     margin-bottom: 20px;
 }
 
@@ -33,7 +32,7 @@
 }
 
 .user-panel .btn {
-    background: linear-gradient(145deg, #ff00ff, #cc00cc);
+    background: linear-gradient(145deg, #00FFFF);
     color: #fff;
     border: 1px solid #fff;
     padding: 12px 24px;
@@ -65,7 +64,6 @@
     transform: scale(1.05);
 }
 
-
 .close-btn {
     position: absolute;
     top: 10px;
@@ -78,27 +76,9 @@
 }
 
 .close-btn:hover {
-    color: #ff0000; 
+    color: #ff0000;
 }
 
-#profileSection {
-    position: relative; 
-}
-
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: transparent;
-    border: none;
-    color: #fff;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.close-btn:hover {
-    color: #ff0000; 
-}
 .profile-content {
     display: flex;
     justify-content: center;
@@ -110,90 +90,86 @@
 
 .info, .progression {
     width: 40%;
+    height: 40%;
     text-align: center;
 }
 
 .progression .progress-bar {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid #00ff99;
+    
+    border: 1px solid #aa00ff;
     border-radius: 8px;
     padding: 10px;
     font-family: 'Press Start 2P', cursive;
-    color: #00ff99;
-    text-shadow: 0 0 6px #00ff99;
+    color: #aa00ff;
+    text-shadow: 0 0 6px #aa00ff;
     margin-top: 10px;
     cursor: pointer;
     transition: background 0.3s ease;
 }
 
 .progression .progress-bar:hover {
-    background: rgba(0, 255, 153, 0.2);
+    background: rgba(195, 71, 233, 0.2);
 }
 
 .info {
     width: 40%;
     padding: 20px;
-
     text-align: left;
     color: #fff;
     position: relative;
 }
 
 .info h2 {
-    color: #00ff99;
-    font-size: 22px;
+    color:#aa00ff;
+    font-size: 20px;
     margin-bottom: 15px;
-    text-shadow: 0 0 10px #00ff99, 0 0 15px rgba(0, 255, 153, 0.7);
+    
     text-align: center;
+    animation: neon-pulse 1.5s infinite alternate;
 }
 
-.info p {
+p {
     display: flex;
     align-items: center;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.8;
     margin-bottom: 10px;
     position: relative;
-    padding-left: 30px; 
+    padding-left: 30px;
     transition: all 0.3s ease;
 }
 
 .info p:hover {
-    color: #00ff99;
-    text-shadow: 0 0 10px #00ff99;
+    color: #aa00ff;
+    text-shadow: 0 0 5px #aa00ff;
     transform: scale(1.05);
 }
 
-
-
 @keyframes neon-pulse {
     0%, 100% {
-        text-shadow: 0 0 10px rgba(0, 255, 153, 0.7), 0 0 20px rgba(0, 255, 153, 0.5);
+        text-shadow: 0 0 10px rgba(157, 4, 196, 0.7), 0 0 20px rgba(0, 255, 153, 0.5);
     }
     50% {
-        text-shadow: 0 0 15px rgba(0, 255, 153, 1), 0 0 30px rgba(0, 255, 153, 0.7);
+        text-shadow: 0 0 15px rgba(157, 4, 196, 0.7), 0 0 30px rgba(0, 255, 153, 0.7);
     }
-}
-
-.info h2 {
-    animation: neon-pulse 1.5s infinite alternate;
 }
 
 .all-btn {
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     margin-left: 15%;
-    gap: 10px; 
+    gap: 10px;
     margin-top: 20px;
     width: 100%;
-    max-width: 600px; 
+    max-width: 600px;
 }
+
 .all-btn .btn {
-    width: calc(50% - 20px); 
+    width: calc(50% - 20px);
     text-align: center;
     padding: 12px;
     margin: 10px;
-    background: linear-gradient(145deg, #ff00ff, #cc00cc);
+    background: linear-gradient(145deg, #00FFFF, #cc00cc);
     color: #fff;
     border: 1px solid #fff;
     border-radius: 6px;
@@ -201,7 +177,6 @@
     font-size: 16px;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     box-shadow: 0 0 8px rgba(255, 0, 255, 0.6), 0 0 12px rgba(255, 0, 255, 0.3);
-    overflow: hidden;
 }
 
 .all-btn .btn:hover {
@@ -209,20 +184,20 @@
     box-shadow: 0 0 15px rgba(255, 0, 255, 0.9), 0 0 25px rgba(255, 0, 255, 0.6);
 }
 
-
 #updateProfileSection {
     display: none;
     flex-direction: column;
     width: 100%;
     margin-top: 20px;
     text-align: center;
+    padding: 20px;
 }
 
 #updateProfileSection h2 {
     margin-bottom: 20px;
     font-size: 26px;
-    color: #ff00ff;
-    text-shadow: 0 0 10px #ff00ff, 0 0 20px rgba(255, 0, 255, 0.6);
+    color: #aa00ff; /* Cor roxa neon */
+    text-shadow: 0 0 8px #aa00ff, 0 0 15px rgba(170, 0, 255, 0.7);
 }
 
 #updateProfileSection form {
@@ -237,17 +212,36 @@
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid #ccc;
-    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(0, 0, 0, 0.281);
     color: #fff;
     font-family: 'Press Start 2P', cursive;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    transition: border 0.3s, box-shadow 0.3s;
 }
 
 #updateProfileSection input:focus {
     outline: none;
     border: 1px solid #00ff99;
     box-shadow: 0 0 10px #00ff99;
+}
+
+#updateProfileSection button {
+    background: linear-gradient(145deg, #00FFFF, #cc00cc);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 0 8px rgba(255, 0, 255, 0.6), 0 0 12px rgba(255, 0, 255, 0.3);
+    width: 10%;
+}
+
+#updateProfileSection button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.9), 0 0 25px rgba(255, 0, 255, 0.6);
 }
 
 @media (max-width: 480px) {

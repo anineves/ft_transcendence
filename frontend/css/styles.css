@@ -108,7 +108,10 @@ footer {
 .hidden {
     display: none;
 }
-
+button
+{
+    background: #2bcfd4;
+}
 
 #languageDropdown {
     position: relative;

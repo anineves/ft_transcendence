@@ -86,6 +86,7 @@ class Match(models.Model):
         REMOTE = "RM", ("Remote")
         PVP = "MP", ("Player vs Player")
         TORN = "TN", ("Tournament")
+        THREE = "3D", ("3D-Player vs Player")
     date = models.DateTimeField(auto_now_add=True)
     duration = models.DurationField(null=True, blank=True)
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game')

@@ -103,6 +103,7 @@ export const renderLogin = () => {
                         if (player) {
                             sessionStorage.setItem('player', JSON.stringify(player.id));
                             sessionStorage.setItem('playerInfo', JSON.stringify(player));
+                            console.log("nickname", player.nickname)
                             sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
                             putPlayer("ON");
                         } else {
@@ -231,8 +232,6 @@ const handleSuccessfulLogin = async () => {
             }
 
             if (player) {
-                sessionStorage.setItem('player', player.id);
-                sessionStorage.setItem('nickname', player.nickname);
                 checkLoginStatus();
                 putPlayer("ON");
             } else {
