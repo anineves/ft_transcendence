@@ -1,3 +1,6 @@
-api.http.host: "0.0.0.0"
+node.name: logstash_transcendence
+api.environment: dev
+
 xpack.monitoring.enabled: true
 xpack.monitoring.elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+api.http.host: "0.0.0.0"

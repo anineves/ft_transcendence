@@ -8,6 +8,8 @@ all: up
 
 up:
 	docker compose -p $(NAME) -f $(COMPOSE) up --build -d
+	@sudo chown $(whoami):$(whoami) ./elk
+	@sudo chmod 755 ./elk
 
 down:
 	docker compose -p $(NAME) down --volumes
@@ -26,5 +28,7 @@ clean: down rm-image
 fclean: clean
 	
 	@docker system prune -a
+	@sudo rm -rf ./logs
+	@sudo rm -rf ./elk/elastic/data/*
 
 re: fclean up

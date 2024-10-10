@@ -13,7 +13,7 @@ RUN openssl req -x509 -nodes \
 #COPY nginx.conf /etc/nginx/sites-available/default
 RUN mkdir -p ../logs
 
-RUN chmod -R 755 ../logs
+RUN chmod -R 777 ../logs
 
 COPY . /usr/share/nginx/html
 
