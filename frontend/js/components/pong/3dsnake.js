@@ -2,14 +2,83 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1f1f2f);
 
 // NOME DOS PLAYERS
+const modality2 = sessionStorage.getItem('modality');
+const user = sessionStorage.getItem('user');
+const user_json = JSON.parse(user);
 
-const player = sessionStorage.getItem("nickname");
-console.log(player);
-let redNickname = "Player";
-console.log("nickname", player);
-if(player)
-    redNickname = player;
-const blueNickname ="Opponent";
+const player_id = sessionStorage.getItem("player");
+let nickname = sessionStorage.getItem('nickname'); 
+console.log(nickname);
+
+
+let redNickname = nickname;
+let blueNickname = "Opponent"
+let match_type = "3D"
+const game = 2;
+let opponent = 1;
+const players = [player_id, opponent];
+
+
+async function createMatch() {
+    try {
+        const response = await fetch('http://localhost:8000/api/matches/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ game, players, match_type })
+        });
+
+        const data = await response.json();
+
+        if (data) {
+            console.log('Data:', data);
+            sessionStorage.setItem('id_match', data.id);
+        } else {
+            console.error('Match error', data);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error occurred while processing match.');
+    }
+}
+
+if(user)
+    createMatch();
+
+async function updateMatch()
+{
+    const id = sessionStorage.getItem('id_match');
+    try {
+        let winner_id = 6;
+        if (redScore > blueScore)
+            winner_id = player_id;
+        const score = `${redScore}-${blueScore}`;
+        const duration = "10";
+
+        const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ winner_id, score, duration })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log('Match updated successfully:', data);
+        } else {
+            console.error('Error updating match:', data);
+        }
+    } catch (error) {
+        console.error('Error processing match:', error);
+        alert('An error occurred while processing the match.');
+    }
+}
+
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 500);
 camera.position.z = 7;
@@ -423,6 +492,7 @@ function showGameOver(result) {
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff});
     
     // gameover text
+    updateMatch();
     const gameOverGeometry = new THREE.TextGeometry("GAME OVER!", {
         font: loadedFont,
         size: 0.8,
@@ -612,12 +682,12 @@ function animate(time) {
         const redTouchBlue = checkCollisionSnakes(redSnake, blueSnake);
         const blueTouchRed = checkCollisionSnakes(blueSnake, redSnake);
         if (redTouchBlue) {
-            //console.log("Red touch blue");
+          
             blueVictory();
             gameOver = true;
         }
         if (blueTouchRed) {
-            //console.log("Red touch blue");
+         
             redVictory();
             gameOver = true;
         }
@@ -653,17 +723,17 @@ function animate(time) {
             gameOver = true;
         }
         else if ((redHeadTouch === 1 || blueHeadTouch === 2 || redScore === 8) && !gameOver) {
-            //console.log("red é maior basteu na cabeca ganhou");
+            
             redVictory();
             gameOver = true;
         }
         else if ((redHeadTouch === 2 || blueHeadTouch === 1 || blueScore === 8) && !gameOver) {
-            //console.log("blue é maior basteu na cabeca ganhou");
+           
             blueVictory();
             gameOver = true;
         }
     }
-    //renderer.render(scene, activatedCam);
+   
     requestAnimationFrame(animate);
 }
 

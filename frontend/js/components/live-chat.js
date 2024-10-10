@@ -180,7 +180,7 @@ export const liveChat = () => {
         const data = JSON.parse(event.data);
         const message = data.message
         
-        console.log('Data: ', data)
+        console.log('Dataaa: ', data)
         console.log('Message: ', message)
         const firstWord = message.content.split(' ')[0];
         const isOwnMessage = firstWord === nickname;
@@ -190,7 +190,7 @@ export const liveChat = () => {
         {
             const groupName = message.group_name;
             sessionStorage.setItem("groupName", groupName);
-
+            console.log("groupname ", groupName);
             const chatBox = document.getElementById('chat-box'); 
             const duelMessage = document.createElement('p');
             duelMessage.innerHTML = 
@@ -202,6 +202,7 @@ export const liveChat = () => {
             chatBox.appendChild(duelMessage);
             if (user_json.id == message.from_user) {
                 sessionStorage.setItem("Inviter", "True");
+                console.log("live Inviter:", sessionStorage.getItem("Inviter"))
                 navigateTo(`/wait-remote`, groupName);
                 socket.close();
             }
@@ -211,14 +212,11 @@ export const liveChat = () => {
             }, 10000); 
             
             if (user_json.id != message.from_user) {
+                sessionStorage.setItem("Inviter", "False");
                 const acceptLink = document.getElementById('accept-link');
                 acceptLink.addEventListener('click', () => {
                     socket.close();
                     clearTimeout(timeout); 
-                    const playMessage = document.createElement('p');
-                    console.log(`${nickname} vai jogar contra ${message.from_user}, para que os outros membros vejam!`);
-                playMessage.textContent = `${nickname} vai jogar contra ${message.from_user}, para que os outros membros vejam!`;
-                chatBox.appendChild(playMessage);
                 });
             }
         }

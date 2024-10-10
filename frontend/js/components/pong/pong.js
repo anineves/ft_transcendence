@@ -28,6 +28,7 @@ const modality2 = sessionStorage.getItem('modality');
 const inviter = sessionStorage.getItem("Inviter");
 
 export const startPongGame = async () => {
+    console.log("Inviter:", sessionStorage.getItem("Inviter"))
     resetGameState();
     const player = sessionStorage.getItem('player');
     const game = 1;
@@ -47,7 +48,7 @@ export const startPongGame = async () => {
     if (modality2 == "player" || modality2 == "3D")
         match_type = "MP"
 
-    if (modality2 != 'remote' || inviter == "True") {
+    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')))  {
         if (player) {
             try {
                 const response = await fetch('http://localhost:8000/api/matches/', {
@@ -299,9 +300,12 @@ function initialize() {
             const id = sessionStorage.getItem('id_match');
             const remote = sessionStorage.getItem('remote');
             const player = sessionStorage.getItem('player');
-            let winner_id = 2;
+            let winner_id = 1;
+            if(modality2 = remote)
+                winner_id = 
+            console.log("entrei", player)
 
-            if (user && (remote != 'accept' || inviter)) {
+            if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))) {
                 try {
 
                     if (playerScore > opponentScore)
@@ -411,6 +415,8 @@ export function stopGame() {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
     }
+    
+    sessionStorage.removeItem("groupName");
 }
 
 export function resetGameState() {
