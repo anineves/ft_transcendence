@@ -209,13 +209,13 @@ const keyState = {};
 
 // Detecta quando uma tecla é pressionada
 function onDocumentKeyDown(event) {
-    const keycode = event.code;
+    const keycode = event.key;
     keyState[keycode] = true; // Marca a tecla como pressionada
 }
 
 // Detecta quando uma tecla é liberada
 function onDocumentKeyUp(event) {
-    const keycode = event.code;
+    const keycode = event.key;
     keyState[keycode] = false; // Marca a tecla como liberada
 }
 
@@ -415,15 +415,19 @@ let gameOver = false;
 scoreBoard();
 
 // funcao de animacao do jogo
-document.addEventListener("keydown", onDocumentKeyDown);
-document.addEventListener("keyup", onDocumentKeyUp);
+document.addEventListener('keydown', onDocumentKeyDown);
+document.addEventListener('keyup', onDocumentKeyUp);
 
 function animate() {
+    window.focus();
+    console.log("Animate");
     renderer.render(scene, activatedCam);
     requestAnimationFrame(animate);
     if (gameOver) {
         return;
     }
+
+    
 
     // paddle vermelho
     if (keyState['w']) {
@@ -440,13 +444,13 @@ function animate() {
     }
 
     // paddle azul
-    if (keyState['i']) {
+    if (keyState['ArrowUp']) {
         paddle_player_blue.position.z -= paddleSpeed;
         if (paddle_player_blue.position.z <= -2.15) {
             paddle_player_blue.position.z = -2.15;
         }
     }
-    if (keyState['k']) {
+    if (keyState['ArrowDown']) {
         paddle_player_blue.position.z += paddleSpeed;
         if (paddle_player_blue.position.z >= 2.15) {
             paddle_player_blue.position.z = 2.15;
@@ -507,7 +511,8 @@ function animate() {
 }
 
 // Adicionando eventos de teclado ao documento
-
-
+document.addEventListener('keydown', onDocumentKeyDown, false);
+document.addEventListener('keyup', onDocumentKeyUp, false);
+document.body.focus();
 // Iniciar a animação
 animate();

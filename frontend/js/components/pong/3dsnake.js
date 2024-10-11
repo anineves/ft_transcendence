@@ -111,15 +111,6 @@ document.addEventListener('keydown', (event) => {
 
 const keyState = {};
 
-function onDocumentKeyDown(event) {
-    const keycode = event.key.toLowerCase();
-    keyState[keycode] = true;
-}
-
-function onDocumentKeyUp(event) {
-    const keycode = event.key.toLowerCase();
-    keyState[keycode] = false;
-}
 
 // Luzes
 const light = new THREE.DirectionalLight(0xff5555, 0.5);
@@ -353,22 +344,22 @@ document.addEventListener('keydown', (event) => {
                 redSnakeDir.set(1, 0, 0);
             }
             break;
-        case 'i':
+        case 'ArrowUp':
             if (!isOppositeDir(blueSnakeDir, new THREE.Vector3(0, 0, -1))) {
                 blueSnakeDir.set(0, 0, -1);
             }
             break;
-        case 'k':
+        case 'ArrowDown':
             if (!isOppositeDir(blueSnakeDir, new THREE.Vector3(0, 0, 1))) {
                 blueSnakeDir.set(0, 0, 1);
             }
             break;
-        case 'j':
+        case 'ArrowLeft':
             if (!isOppositeDir(blueSnakeDir, new THREE.Vector3(-1, 0, 0))) {
                 blueSnakeDir.set(-1, 0, 0);
             }
             break;
-        case 'l':
+        case 'ArrowRight':
             if (!isOppositeDir(blueSnakeDir, new THREE.Vector3(1, 0, 0))) {
                 blueSnakeDir.set(1, 0, 0);
             }
@@ -659,6 +650,7 @@ let gameOver = false;
 
 scoreBoard();
 function animate(time) {
+    window.focus();
     renderer.render(scene, activatedCam);
     if (gameOver) {
         requestAnimationFrame(animate);
@@ -737,6 +729,5 @@ function animate(time) {
     requestAnimationFrame(animate);
 }
 
-document.addEventListener('keydown', onDocumentKeyDown, false);
-document.addEventListener('keyup', onDocumentKeyUp, false);
+
 requestAnimationFrame(animate);
