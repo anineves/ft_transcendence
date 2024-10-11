@@ -1,7 +1,7 @@
 import { navigateTo } from '../utils.js';
 import { startPongGame, resetGameState } from './pong/pong.js';
 
-export const selectPlayerorAI = () => {
+export const snakeSelect= () => {
     sessionStorage.removeItem('modality');
     sessionStorage.removeItem('playerNames');
     sessionStorage.removeItem('playersCount');
@@ -43,20 +43,11 @@ export const selectPlayerorAI = () => {
     const app = document.getElementById('app');
     app.innerHTML = `
         <div class="select-game">
-            <div class="game-selection-item">
-                
+            <div class="game-selection-item"> 
                     <button id="vsPlayerBtn" class="btn-type">
                         <img src="./assets/ppp.png" alt="Player" class="button-image-type">
                         <h3>${translations[savedLanguage].vsPlayer}</h3>
-                    </button>
-            
-            </div>
-            <div class="game-selection-item">
-              
-                    <button id="vsAIBtn" class="btn-type">
-                        <img src="./assets/vsAI.png" alt="AI" class="button-image-type">
-                        <h3>${translations[savedLanguage].vsAi}</h3>
-                    </button>
+                    </button> 
             </div>
             <div class="game-selection-item">
                     <button id="tournBtn" class="btn-type">
@@ -72,36 +63,16 @@ export const selectPlayerorAI = () => {
             </div>
         </div>
     `;
-   /* if (player) {
-        app.innerHTML += `
-            <div class="select-game">
-                <div class="game-selection-item">
-                    <div id="remote-select">
-                        <button id="remoteBtn" class="btn">
-                            <img src="./assets/remote.png" alt="Remote" class="button-image-select">
-                            <h3>Remote</h3>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }*/
-    document.getElementById('remoteBtn')?.addEventListener('click', () => {
-        sessionStorage.setItem('modality', 'remote');
-        navigateTo('/wait-remote');
-    });
+
+    
     document.getElementById('vsPlayerBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', 'player');
-        navigateTo('/pong');
+        navigateTo('/snake');
     });
-    document.getElementById('vsAIBtn').addEventListener('click', () => {
-        sessionStorage.setItem('modality', 'ai');
-        console.log("select ", sessionStorage.getItem('modality'));
-        navigateTo('/pong');
-    });
+    
     document.getElementById('3DBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', '3D');
-        navigateTo('/3d-pong');
+        navigateTo('/3d-snake');
     });
     document.getElementById('tournBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', 'tournament');

@@ -18,6 +18,8 @@ import { render3DPong } from './components/3dPong.js';
 import { render3Snake } from './components/3dsnake.js';
 import { stats } from './components/stats.js';
 import { putPlayer } from './components/login.js';
+import { renderSnake } from './components/snake.js';
+import { snakeSelect } from './components/snakeSelect.js';
 
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
@@ -25,11 +27,13 @@ export const routes = {
     '/login': renderLogin,
     '/game-selection': renderGameSelection,
     '/pong': renderPong,
+    '/snake': renderSnake,
     '/register': renderRegister,
     '/user-panel': renderPanel, 
     '/create-player': createPlayer, 
     '/star-menu': startMenu,
     '/select-playerOrAI': selectPlayerorAI,
+    '/snake-selector': snakeSelect,
     '/requestPanel': renderRequestPanel,
     '/friendPage' : renderFriendsPage,
     '/tournament' : selectTournamentPlayers,

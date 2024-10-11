@@ -24,8 +24,8 @@ export let ballX, ballY;
 export const ballRadius = 10;
 let isAIActive = false;
 let animationFrameId;
+
 const modality2 = sessionStorage.getItem('modality');
-const inviter = sessionStorage.getItem("Inviter");
 
 export const startPongGame = async () => {
     console.log("Inviter:", sessionStorage.getItem("Inviter"))
@@ -36,9 +36,8 @@ export const startPongGame = async () => {
     const players = [player, opponent];
     sessionStorage.setItem('game', game);
     sessionStorage.setItem('players', players);
-    const modality2 = sessionStorage.getItem('modality');
     let match_type = "MP"
-    console.log(modality2)
+    console.log("modalily", modality2)
     if (modality2 == "ai")
         match_type = "AI"
     if (modality2 == "remote")

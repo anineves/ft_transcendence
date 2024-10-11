@@ -18,6 +18,9 @@ export const renderPong = () => {
                  <button id="exitBtn" class="btn">
                         <h3>Give up </h3>
                 </button>
+                <button id="againBtn" class="btn">
+                        <h3>Again</h3>
+                </button>
             </div>
         </div>
     `;
@@ -26,5 +29,9 @@ export const renderPong = () => {
     document.getElementById('exitBtn').addEventListener('click', () => {
         stopGame();   
         navigateTo('/select-playerOrAI');
+    });
+    document.getElementById('againBtn').addEventListener('click', () => {
+        stopGame();   
+        navigateTo('/pong');
     });
 };

@@ -209,13 +209,13 @@ const keyState = {};
 
 // Detecta quando uma tecla é pressionada
 function onDocumentKeyDown(event) {
-    const keycode = event.key.toLowerCase();
+    const keycode = event.code;
     keyState[keycode] = true; // Marca a tecla como pressionada
 }
 
 // Detecta quando uma tecla é liberada
 function onDocumentKeyUp(event) {
-    const keycode = event.key.toLowerCase();
+    const keycode = event.code;
     keyState[keycode] = false; // Marca a tecla como liberada
 }
 
@@ -415,8 +415,8 @@ let gameOver = false;
 scoreBoard();
 
 // funcao de animacao do jogo
-document.addEventListener('keydown', onDocumentKeyDown);
-document.addEventListener('keyup', onDocumentKeyUp);
+document.addEventListener("keydown", onDocumentKeyDown);
+document.addEventListener("keyup", onDocumentKeyUp);
 
 function animate() {
     renderer.render(scene, activatedCam);
@@ -507,8 +507,7 @@ function animate() {
 }
 
 // Adicionando eventos de teclado ao documento
-document.addEventListener('keydown', onDocumentKeyDown, false);
-document.addEventListener('keyup', onDocumentKeyUp, false);
+
 
 // Iniciar a animação
 animate();

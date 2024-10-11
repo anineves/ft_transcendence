@@ -66,5 +66,5 @@ export const renderGameSelection = async () => {
 
 
     document.getElementById('pongBtn').addEventListener('click', () => navigateTo('/select-playerOrAI'));
-    document.getElementById('snakeBtn').addEventListener('click', () => navigateTo('/3d-snake'));
+    document.getElementById('snakeBtn').addEventListener('click', () => navigateTo('/snake-selector'));
 };

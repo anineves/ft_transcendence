@@ -15,6 +15,8 @@ import { render3DPong } from './components/3dPong.js';
 import { render3Snake } from './components/3dsnake.js';
 import { stats } from './components/stats.js';
 
+
+
 // Traduções para o rodapé
 const translations = {
     english: "Created by: alexfern asousa-n jegger-s",
