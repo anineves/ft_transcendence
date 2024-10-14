@@ -18,6 +18,14 @@ const user = sessionStorage.getItem('user');
 const user_json = JSON.parse(user);
 
 const player_id = sessionStorage.getItem("player");
+let inviter = sessionStorage.getItem("Inviter");
+const player = sessionStorage.getItem('player');
+const game = 1;
+let opponent = 1;
+const players = [player, opponent];
+sessionStorage.setItem('game', game);
+sessionStorage.setItem('players', players);
+const modality2 = sessionStorage.getItem('modality');
 
 
 export let ballX, ballY;
@@ -25,18 +33,10 @@ export const ballRadius = 10;
 let isAIActive = false;
 let animationFrameId;
 
-const modality2 = sessionStorage.getItem('modality');
 
 export const startPongGame = async () => {
-    console.log("Inviter:", sessionStorage.getItem("Inviter"))
     resetGameState();
-    const player = sessionStorage.getItem('player');
-    const game = 1;
-    let opponent = 1;
-    const players = [player, opponent];
-    sessionStorage.setItem('game', game);
-    sessionStorage.setItem('players', players);
-    let match_type = "MP"
+    let match_type = "remote"
     console.log("modalily", modality2)
     if (modality2 == "ai")
         match_type = "AI"
@@ -46,9 +46,11 @@ export const startPongGame = async () => {
         match_type = "TN"
     if (modality2 == "player" || modality2 == "3D")
         match_type = "MP"
+    
 
     if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')))  {
         if (player) {
+            console.log("entrei partida")
             try {
                 const response = await fetch('http://localhost:8000/api/matches/', {
                     method: 'POST',
@@ -299,9 +301,10 @@ function initialize() {
             const id = sessionStorage.getItem('id_match');
             const remote = sessionStorage.getItem('remote');
             const player = sessionStorage.getItem('player');
+            const friendID = sessionStorage.getItem('friendId');
             let winner_id = 1;
-            if(modality2 = remote)
-                winner_id = 
+            if(modality2 == remote)
+                winner_id = friendID;
             console.log("entrei", player)
 
             if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))) {

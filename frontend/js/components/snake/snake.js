@@ -5,7 +5,7 @@ let gameOver = false;
 let gameInterval;
 let speed = 200; 
 
-let snake1 = { 
+let snakePlayer = { 
     body: [{ x: 3, y: 3 }], 
     direction: { x: 1, y: 0 },
     color: 'purple',
@@ -13,7 +13,7 @@ let snake1 = {
     hitWall: false 
 };
 
-let snake2 = { 
+let snakeOpponent = { 
     body: [{ x: 4, y: 4 }], 
     direction: { x: 1, y: 0 },
     color: 'blue',
@@ -26,7 +26,9 @@ let foods = [{
     y: Math.floor(Math.random() * 18) + 1  
 }];
 
-export function startSnakeGame() {
+const modality2 = sessionStorage.getItem('modality');
+const user = sessionStorage.getItem('user');
+export const startSnakeGame = async () => {
     canvas = document.getElementById('snakeCanvas');
     if (!canvas) {
         console.error("Canvas element with id 'snakeCanvas' not found.");
@@ -38,31 +40,72 @@ export function startSnakeGame() {
 
     resetGame();
     gameInterval = setInterval(gameLoop, speed);
+    const player = sessionStorage.getItem('player');
+    const game = 2;
+    let opponent = 1;
+    const players = [player, opponent];
+    sessionStorage.setItem('game', game);
+    sessionStorage.setItem('players', players);
+    let match_type = "MP"
+    console.log("modalily", modality2)
+    if (modality2 == "remote")
+        match_type = "RM"
+    if (modality2 == "tournament")
+        match_type = "TN"
+    if (modality2 == "player" || modality2 == "3D")
+        match_type = "MP"
+
+    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')))  {
+        if (player) {
+            try {
+                const response = await fetch('http://localhost:8000/api/matches/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ game, players, match_type })
+                });
+
+                const data = await response.json();
+
+                if (data) {
+                    console.log('Data:', data);
+                    sessionStorage.setItem('id_match', data.id);
+                } else {
+                    console.error('Match error', data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error occurred while processing match.');
+            }
+        }
+    }
 
     document.addEventListener('keydown', (event) => {
         switch(event.key) {
-            case 'w': if (snake1.direction.y === 0) snake1.direction = { x: 0, y: -1 }; break;
-            case 's': if (snake1.direction.y === 0) snake1.direction = { x: 0, y: 1 }; break;
-            case 'a': if (snake1.direction.x === 0) snake1.direction = { x: -1, y: 0 }; break;
-            case 'd': if (snake1.direction.x === 0) snake1.direction = { x: 1, y: 0 }; break;
-            case 'ArrowUp': if (snake2.direction.y === 0) snake2.direction = { x: 0, y: -1 }; break;
-            case 'ArrowDown': if (snake2.direction.y === 0) snake2.direction = { x: 0, y: 1 }; break;
-            case 'ArrowLeft': if (snake2.direction.x === 0) snake2.direction = { x: -1, y: 0 }; break;
-            case 'ArrowRight': if (snake2.direction.x === 0) snake2.direction = { x: 1, y: 0 }; break;
+            case 'w': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: -1 }; break;
+            case 's': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: 1 }; break;
+            case 'a': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: -1, y: 0 }; break;
+            case 'd': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: 1, y: 0 }; break;
+            case 'ArrowUp': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: -1 }; break;
+            case 'ArrowDown': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: 1 }; break;
+            case 'ArrowLeft': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: -1, y: 0 }; break;
+            case 'ArrowRight': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: 1, y: 0 }; break;
         }
     });
 }
 
 function resetGame() {
-    snake1.body = [{ x: 3, y: 3 }];
-    snake1.direction = { x: 1, y: 0 };
-    snake1.foodCount = 0; 
-    snake1.hitWall = false;
+    snakePlayer.body = [{ x: 3, y: 3 }];
+    snakePlayer.direction = { x: 1, y: 0 };
+    snakePlayer.foodCount = 0; 
+    snakePlayer.hitWall = false;
 
-    snake2.body = [{ x: 4, y: 4 }]; 
-    snake2.direction = { x: 1, y: 0 };
-    snake2.foodCount = 0; 
-    snake2.hitWall = false;
+    snakeOpponent.body = [{ x: 4, y: 4 }]; 
+    snakeOpponent.direction = { x: 1, y: 0 };
+    snakeOpponent.foodCount = 0; 
+    snakeOpponent.hitWall = false;
 
     foods = [{ 
         x: Math.floor(Math.random() * 18) + 1, 
@@ -72,8 +115,8 @@ function resetGame() {
 
 function gameLoop() {
     if (!gameOver) {
-        updateSnake(snake1);
-        updateSnake(snake2);
+        updateSnake(snakePlayer);
+        updateSnake(snakeOpponent);
         checkCollisions();
         drawGame();
     }
@@ -106,7 +149,7 @@ function placeFood() {
 }
 
 function checkCollisions() {
-    const snakes = [snake1, snake2];
+    const snakes = [snakePlayer, snakeOpponent];
 
     for (const snake of snakes) {
         const head = snake.body[0];
@@ -122,7 +165,7 @@ function checkCollisions() {
         }
     }
 
-    if (snake1.body[0].x === snake2.body[0].x && snake1.body[0].y === snake2.body[0].y) {
+    if (snakePlayer.body[0].x === snakeOpponent.body[0].x && snakePlayer.body[0].y === snakeOpponent.body[0].y) {
         endGame();
     }
 }
@@ -131,15 +174,50 @@ function endGame() {
     gameOver = true; 
 }
 
-function drawGame() {
+async function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    drawSnake(snake1);
-    drawSnake(snake2);
+    drawSnake(snakePlayer);
+    drawSnake(snakeOpponent);
     drawFoods();
     drawScore();
 
     if (gameOver) {
+        const id = sessionStorage.getItem('id_match');
+        const remote = sessionStorage.getItem('remote');
+        const player = sessionStorage.getItem('player');
+        let opponent =1;
+        let winner_id = 1;
+        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))) {
+            try {
+                
+                if (snakePlayer.foodCount > snakeOpponent.foodCount)
+                    winner_id = player;
+                const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
+                console.log("score", score);
+                const duration = "10";
+
+                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ winner_id, score, duration })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    console.log('Match updated successfully:', data);
+                } else {
+                    console.error('Error updating match:', data);
+                }
+            } catch (error) {
+                console.error('Error processing match:', error);
+                alert('An error occurred while processing the match.');
+            }
+        }
         drawGameOver();
     }
 }
@@ -197,15 +275,15 @@ function drawEye(x, y) {
 function drawScore() {
     ctx.fillStyle = 'yellow';
     ctx.font = '16px Arial';
-    ctx.fillText(`Player: ${snake1.foodCount}`, 10, 20); 
-    ctx.fillText(`Opponent: ${snake2.foodCount}`, canvas.width - 200, 20); 
+    ctx.fillText(`Player: ${snakePlayer.foodCount}`, 10, 20); 
+    ctx.fillText(`Opponent: ${snakeOpponent.foodCount}`, canvas.width - 200, 20); 
 }
 
 function drawGameOver() {
     ctx.fillStyle = 'yellow';
     ctx.font = '30px Arial';
     ctx.fillText('Game Over!', canvas.width / 2 - 70, canvas.height / 2 - 20);
-    const winner = snake1.foodCount >= snake2.foodCount ? 'Player' : 'Opponent';
+    const winner = snakePlayer.foodCount >= snakeOpponent.foodCount ? 'Player' : 'Opponent';
     ctx.fillText(`${winner} wins!`, canvas.width / 2 - 70, canvas.height / 2 + 20);
 }
 

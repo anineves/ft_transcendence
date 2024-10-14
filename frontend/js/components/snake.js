@@ -1,5 +1,8 @@
 import { startSnakeGame, stopGame, changeGameSpeed, addExtraFood } from './snake/snake.js';
 import { navigateTo } from '../utils.js';
+const user = sessionStorage.getItem('user');
+const modality2 = sessionStorage.getItem('modality');
+let inviter = sessionStorage.getItem("Inviter");
 
 export const renderSnake = () => {
     const app = document.getElementById('app');
@@ -26,10 +29,55 @@ export const renderSnake = () => {
 
     startSnakeGame();
 
-    document.getElementById('exitBtn').addEventListener('click', () => {
+    const recordMatchResult = async () => {
+        const id = sessionStorage.getItem('id_match');
+        const remote = sessionStorage.getItem('remote');
+        const player = sessionStorage.getItem('player');
+        let opponent =1;
+        let winner_id = 1;
+        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))) {
+            try {
+                
+              
+                winner_id = opponent;
+                const score = `${0}-${5}}`;
+                console.log("score", score);
+                const duration = "10";
+
+                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ winner_id, score, duration })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    console.log('Match updated successfully:', data);
+                } else {
+                    console.error('Error updating match:', data);
+                }
+            } catch (error) {
+                console.error('Error processing match:', error);
+                alert('An error occurred while processing the match.');
+            }
+        }
+    };
+
+    const endGameWithScore = async () => {
+        await recordMatchResult();
         stopGame();
-        navigateTo('/snake-selector');
-    });
+        setTimeout(() => {
+            navigateTo('/snake-selector');
+        }, 200);
+    };
+
+   
+    document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
+
 
     document.getElementById('againBtn').addEventListener('click', () => {
         stopGame();

@@ -1,52 +1,75 @@
 
-canvas {
-    display: block;
-    width: 90vw;
-    height: 80vh;
-    max-width: 90%;
-    max-height: 80%;
-    border: 2px solid white;
-}
-
 .menu {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    height: 100vh;
+    padding: 20px;
+    text-align: center;
+    color: #ffffff;
 }
+
 
 .menu h1 {
-    font-size: 8vw; 
-    animation-name: example;
-    animation-duration: 4s;
-    color: #00ff99; 
+    font-size: 5vw;
+    color: #00ff99;
+    margin-bottom: 20px;
     text-shadow: 0 0 5px #13681a, 0 0 10px #096d2a, 0 0 20px #42c76a, 0 0 40px #44947c, 0 0 80px #ff3399;
+    animation: pulsate 2s;
 }
 
+
+
 .menu h2 {
-    color: #ff3399; 
+    color: #ff3399;
     text-shadow: 0 0 5px #ff3300, 0 0 10px #ff3300, 0 0 20px #ff3300, 0 0 40px #ff3399, 0 0 80px #ff3399;
+    margin-top: -10px;
+    font-size: 1.5vw;
+    animation: fadeIn 2s ease-out;
 }
+
+@keyframes pulsate {
+    from { font-size: 12vw; } 
+    to { font-size: 5vw; } 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 
 .btn-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
+    align-items: center;
+    margin-top: 30px;
 }
+
 
 #startGameBtn {
     position: absolute;
-    width: 5vw; 
-    height: 5vw; 
-    background-color: rgba(16, 248, 248, 0);
+    width: 7vw;
+    height: 7vw;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
-#startGameBtn img {
-    width: 30vw; 
-    height: auto; 
+#startGameBtn:hover {
+    transform: scale(1.1);
 }
+
+
+#startGameBtn img {
+    width: 30vw;
+
+    height: auto;
+    filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.3));
+}
+
 
 .background-form {
     background-color: rgba(0, 0, 0, 0.7); 
@@ -254,10 +277,7 @@ canvas {
     border-radius: 5px; 
 }
 
-@keyframes example {
-    from { font-size: 10vw; } 
-    to { font-size: 5vw; } 
-}
+
 
 
 @media (max-width: 768px) {

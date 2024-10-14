@@ -18,11 +18,7 @@ import { stats } from './components/stats.js';
 
 
 // Traduções para o rodapé
-const translations = {
-    english: "Created by: alexfern asousa-n jegger-s",
-    portuguese: "Criado por: alexfern asousa-n jegger-s",
-    french: "Créé par : alexfern asousa-n jegger-s",
-};
+
 
 // Definir as rotas da aplicação e suas funções de renderização correspondentes
 const routes = {
@@ -43,19 +39,13 @@ const routes = {
     '/stats': stats,
 };
 
-// Função para atualizar o texto do rodapé baseado no idioma
-const updateFooterTranslation = () => {
-    const footerText = document.getElementById('text-footer');
-    const savedLanguage = localStorage.getItem('language') || 'portuguese';
-    footerText.innerText = translations[savedLanguage];
-};
+
 
 document.addEventListener('DOMContentLoaded', () => {
     render(); 
     checkLoginStatus();
 
-    // Atualiza o rodapé inicialmente
-    updateFooterTranslation();
+
 
     document.getElementById('startBtn').addEventListener('click', () => {
         navigateTo('/star-menu');
@@ -98,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Renderiza a aplicação e atualiza o rodapé
             render(); 
-            updateFooterTranslation(); // Atualiza o rodapé após a mudança de idioma
+             // Atualiza o rodapé após a mudança de idioma
         });
     });
 

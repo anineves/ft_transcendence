@@ -35,7 +35,6 @@ export const startMenu = () => {
           <button id="loginBtn2" class="btn">${translations[savedLanguage].login}</button>
           <button id="registerBtn2" class="btn">${translations[savedLanguage].register}</button>
           <button id="guestBtn2" class="btn">${translations[savedLanguage].guest}</button>
-          <footer id="text-footer">${translations[savedLanguage].footer}</footer>
       </div>
   `;
 

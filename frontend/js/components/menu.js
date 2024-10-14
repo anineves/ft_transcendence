@@ -6,10 +6,10 @@ export const renderMenu = () => {
     // Definir traduções
     const translations = {
         english: {
-            welcome: 'Welcome to Pong!',
+            welcome: 'Welcome to Django!',
         },
         portuguese: {
-            welcome: 'Bem-vindo ao Pong!',
+            welcome: 'Bem-vindo ao Django!',
         },
         french: {
             welcome: "Bienvenue à Django!",
@@ -39,7 +39,7 @@ export const renderMenu = () => {
     let xSpeed = 4;
     let ySpeed = 5; 
 
-    // Função para movimentar o botão na tela
+
     const moveButton = () => {
         const buttonWidth = button.offsetWidth;
         const buttonHeight = button.offsetHeight;

@@ -21,6 +21,21 @@ import { putPlayer } from './components/login.js';
 import { renderSnake } from './components/snake.js';
 import { snakeSelect } from './components/snakeSelect.js';
 
+
+
+// Função para atualizar o texto do rodapé baseado no idioma
+const updateFooterTranslation = () => {
+    const footerText = document.getElementById('text-footer');
+    const savedLanguage = localStorage.getItem('language') || 'portuguese';
+    footerText.innerText = translations[savedLanguage];
+};
+
+const translations = {
+    english: "Created by: alexfern asousa-n jegger-s",
+    portuguese: "Criado por: alexfern asousa-n jegger-s",
+    french: "Créé par : alexfern asousa-n jegger-s",
+};
+
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
     '/': renderMenu,
@@ -72,6 +87,7 @@ export const render = () => {
     const path = window.location.pathname; // Obtém o caminho atual da URL
     const route = routes[path] || renderMenu;
     const state = window.history.state; // Obtém o estado atual do histórico
+    updateFooterTranslation();
 
     if (protectedRoutes.includes(path) && !isAuthenticated()) {
         navigateTo('/'); 
