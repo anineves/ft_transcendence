@@ -213,6 +213,7 @@ export const liveChat = () => {
             
             if (user_json.id != message.from_user) {
                 sessionStorage.setItem("Inviter", "False");
+                sessionStorage.setItem('modality', 'remote');
                 const acceptLink = document.getElementById('accept-link');
                 acceptLink.addEventListener('click', () => {
                     socket.close();

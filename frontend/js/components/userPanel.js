@@ -19,7 +19,8 @@ const translations = {
         chatBtn: "Chat",
         update: "Update Profile",
         updateBtn: "Update",
-        backBtn: "Back to Profile"
+        backBtn: "Back to Profile",
+        statsBtn: "Stats",
     },
     portuguese: {
         title: "Perfil do Usuário",
@@ -38,7 +39,8 @@ const translations = {
         chatBtn: "Chat",
         update: "Atualizar Perfil",
         updateBtn: "Atualizar",
-        backBtn: "Voltar ao Perfil"
+        backBtn: "Voltar ao Perfil",
+        statsBtn: "Estatistica"
     },
     french: {
         title: "Profil de l'utilisateur",
@@ -57,7 +59,8 @@ const translations = {
         chatBtn: "Chat",
         update: "Mettre à jour le profil",
         updateBtn: "Mettre à jour",
-        backBtn: "Retour au profil"
+        backBtn: "Retour au profil",
+        statsBtn: "Stats",
     }
 };
 
@@ -179,24 +182,33 @@ export const renderPanel = async (user) => {
             }).join('');
 
             const prog = document.getElementById('progression');
+
             prog.innerHTML = `
                 <div class="progress-bar" id="progressBar" style="cursor: pointer;">
                     <div class="progress-bar" id="pongProgressBar">
                         <p><strong>${escapeHTML(translations[savedLanguage].level)} Pong:</strong> ${pongLevel}</p>
                         <span class="progress-label">${pongProgressBar}</span>
-                        <p>${pongWinsInCurrentLevel}/5 ${escapeHTML(translations[savedLanguage].levelMsg)}</p>
+                        <p id="txtpong">${pongWinsInCurrentLevel}/5 ${escapeHTML(translations[savedLanguage].levelMsg)}</p>
                     </div>
                     <div class="progress-bar" id="snakeProgressBar">
                         <p><strong>${escapeHTML(translations[savedLanguage].level)} Snake:</strong> ${snakeLevel}</p>
                         <span class="progress-label">${snakeProgressBar}</span>
-                        <p>${snakeWinsInCurrentLevel}/5 ${escapeHTML(translations[savedLanguage].levelMsg)}</p>
+                        <p id="txtsnake">${snakeWinsInCurrentLevel}/5 ${escapeHTML(translations[savedLanguage].levelMsg)}</p>
                     </div>
-                </div>
+                    </div>
+                    <div class="btn-progress-bar">
+                    <button id="statsBtn" class="btn">${escapeHTML(translations[savedLanguage].statsBtn)}</button>
+                    </div>
             `;
 
             document.getElementById('progressBar').addEventListener('click', () => {
                 navigateTo('/stats');
             });
+            document.getElementById('statsBtn').addEventListener('click', () => {
+                navigateTo('/stats');
+            });
+        
+            
         } catch (error) {
             console.error('Falha ao buscar partidas:', error);
         }

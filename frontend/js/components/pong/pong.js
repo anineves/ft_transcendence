@@ -36,7 +36,7 @@ let animationFrameId;
 
 export const startPongGame = async () => {
     resetGameState();
-    let match_type = "remote"
+    let match_type = "RM"
     console.log("modalily", modality2)
     if (modality2 == "ai")
         match_type = "AI"
