@@ -35,7 +35,7 @@ export function initPongSocket(url) {
         if (data.action === 'match_created') {
             console.log(`Match created with ID: ${data.match_id}`);
         }
-        if (data.action === 'full_lobby') {
+        if (data.action == 'full_lobby') {
             clearTimeout(lobbyTimeout);
             sessionStorage.setItem('playerID', data.message.player);
             sessionStorage.setItem('friendID', data.message.opponent);

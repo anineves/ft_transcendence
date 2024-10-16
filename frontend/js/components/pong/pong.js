@@ -21,13 +21,15 @@ const player_id = sessionStorage.getItem("player");
 let inviter = sessionStorage.getItem("Inviter");
 const player = sessionStorage.getItem('player');
 const game = 1;
+const modality2 = sessionStorage.getItem('modality');
 let opponent = 1;
+let friendId = sessionStorage.getItem('friendID');
+if (modality2 == 'remote' && inviter == "True")
+    opponent = friendId;
 const players = [player, opponent];
 sessionStorage.setItem('game', game);
 sessionStorage.setItem('players', players);
-const modality2 = sessionStorage.getItem('modality');
-
-
+let nickTorn = sessionStorage.getItem("nickTorn");
 export let ballX, ballY;
 export const ballRadius = 10;
 let isAIActive = false;
@@ -47,8 +49,8 @@ export const startPongGame = async () => {
     if (modality2 == "player" || modality2 == "3D")
         match_type = "MP"
     
-
-    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')))  {
+    let nickTorn = sessionStorage.getItem("nickTorn");
+    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))&& (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')))  {
         if (player) {
             console.log("entrei partida")
             try {
@@ -299,15 +301,10 @@ function initialize() {
             animationFrameId = requestAnimationFrame(gameLoop);
         } else {
             const id = sessionStorage.getItem('id_match');
-            const remote = sessionStorage.getItem('remote');
-            const player = sessionStorage.getItem('player');
-            const friendID = sessionStorage.getItem('friendId');
-            let winner_id = 1;
-            if(modality2 == remote)
-                winner_id = friendID;
+            let winner_id = opponent;
             console.log("entrei", player)
-
-            if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))) {
+            let nickTorn = sessionStorage.getItem("nickTorn");
+            if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))&& (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
                 try {
 
                     if (playerScore > opponentScore)
@@ -335,9 +332,9 @@ function initialize() {
                     console.error('Error processing match:', error);
                     alert('An error occurred while processing the match.');
                 }
-                if (sessionStorage.getItem('modality') == 'tournament') {
-                    showNextMatchButton();
-                }
+            }
+            if (sessionStorage.getItem('modality') == 'tournament') {
+                showNextMatchButton();
             }
         }
     }

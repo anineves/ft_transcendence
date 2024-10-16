@@ -209,7 +209,7 @@ export const liveChat = () => {
             
             const timeout = setTimeout(() => {
                 duelMessage.innerHTML = `${translations[savedLanguage].duelBtn}`;
-            }, 10000); 
+            }, 50000); 
             
             if (user_json.id != message.from_user) {
                 sessionStorage.setItem("Inviter", "False");

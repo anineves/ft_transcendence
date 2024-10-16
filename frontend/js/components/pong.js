@@ -3,6 +3,7 @@ import { navigateTo } from '../utils.js';
 const user = sessionStorage.getItem('user');
 const modality2 = sessionStorage.getItem('modality');
 let inviter = sessionStorage.getItem("Inviter");
+let nickTorn = sessionStorage.getItem("nickTorn");
 
 export const renderPong = () => {
     const app = document.getElementById('app');
@@ -35,7 +36,7 @@ export const renderPong = () => {
         const player = sessionStorage.getItem('player');
         let opponent =1;
         let winner_id = 1;
-        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))) {
+        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
             try {
                 
               
