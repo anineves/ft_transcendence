@@ -2,7 +2,6 @@ export let canvas, context, paddleHeight, paddleWidth, ballRadius, playerY, oppo
 
 
 export function initializeCanvas() {
-    console.log("chamada aquiiii")
     canvas = document.getElementById('pongCanvas');
     if (canvas) {
         context = canvas.getContext('2d');
@@ -12,7 +11,7 @@ export function initializeCanvas() {
         playerY = (canvas.height - paddleHeight) / 2;
         opponentY = (canvas.height - paddleHeight) / 2;
     } else {
-        console.error('Canvas element not found');
+        //console.error('Canvas element not found');
     }
 }
 

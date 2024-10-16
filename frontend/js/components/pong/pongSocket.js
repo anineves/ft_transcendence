@@ -1,9 +1,10 @@
 import { navigateTo } from '../../utils.js';
 
-let ws = null;
-const jwttoken = sessionStorage.getItem('jwtToken'); 
 
+let ws = null;
 export function initPongSocket(url) {
+    const jwttoken = sessionStorage.getItem('jwtToken'); 
+    const inviter = sessionStorage.getItem('Inviter'); 
     
     if (!ws) {
         ws = new WebSocket(url);
@@ -15,15 +16,18 @@ export function initPongSocket(url) {
             Authorization: jwttoken,
         }));
         
-        lobbyTimeout = setTimeout(() => {
-            console.log("The opponent did not accept the duel");
-            ws.send(JSON.stringify({
-                action: 'end_game'
-            }));
-            alert("The opponent did not accept the duel");
-            ws.close();
-            navigateTo('/live-chat'); 
-        }, 10000);
+        if(inviter == "True")
+        {
+            lobbyTimeout = setTimeout(() => {
+                console.log("The opponent did not accept the duel");
+                ws.send(JSON.stringify({
+                    action: 'end_game'
+                }));
+                alert("The opponent did not accept the duel");
+                ws.close();
+                navigateTo('/live-chat'); 
+            }, 10000);
+        }
     };
 
     ws.onmessage = (event) => {
@@ -36,7 +40,11 @@ export function initPongSocket(url) {
             console.log(`Match created with ID: ${data.match_id}`);
         }
         if (data.action == 'full_lobby') {
-            clearTimeout(lobbyTimeout);
+            if (lobbyTimeout) {
+                clearTimeout(lobbyTimeout);
+                lobbyTimeout = null;
+            }
+            console.log("Lobby is full");
             sessionStorage.setItem('playerID', data.message.player);
             sessionStorage.setItem('friendID', data.message.opponent);
             navigateTo('/pong');

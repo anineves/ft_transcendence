@@ -2,8 +2,8 @@ import { context, canvas } from './canvasUtils.js';
 import { resetGameState } from './pong.js';
 
 
-const modality = sessionStorage.getItem('modality');
 export function drawScore(playerScore, opponentScore) {
+    const modality = sessionStorage.getItem('modality');
     const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
     //console.log("score" ,sessionStorage.getItem('currentMatch'));
     

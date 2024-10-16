@@ -38,8 +38,6 @@ export const renderPong = () => {
         let winner_id = 1;
         if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
             try {
-                
-              
                 winner_id = opponent;
                 const score = `${0}-${5}}`;
                 console.log("score", score);
