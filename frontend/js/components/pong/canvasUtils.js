@@ -11,7 +11,7 @@ export function initializeCanvas() {
         playerY = (canvas.height - paddleHeight) / 2;
         opponentY = (canvas.height - paddleHeight) / 2;
     } else {
-        //console.error('Canvas element not found');
+        console.error('Canvas element not found');
     }
 }
 
@@ -31,8 +31,8 @@ let opponentPaddleInterval;
 let paddleSpeed = 10;
 
 export function movePaddle(event) {
-    const modality = sessionStorage.getItem('modality');
-    if(modality !== 'remote')
+    const modality2 = sessionStorage.getItem('modality');
+    if(modality2 != 'remote')
     {
         if (event.key === 'ArrowUp') {
             clearInterval(playerPaddleInterval);
@@ -60,7 +60,7 @@ export function movePaddle(event) {
             }, 16);
         }
     }
-    else if(modality === 'remote')
+    else if(modality2 == 'remote')
     {
         
         const playerID = sessionStorage.getItem('playerID');
@@ -97,15 +97,16 @@ export function movePaddle(event) {
 }
 
 export function stopPaddle(event) {
-    const modality = sessionStorage.getItem('modality');
-    if(modality !== 'remote') {
+    const modality2 = sessionStorage.getItem('modality');
+    
+    if(modality2 !== 'remote') {
         if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
             clearInterval(playerPaddleInterval);
         } else if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
             clearInterval(opponentPaddleInterval);
         }
     }
-    else if(modality === 'remote') {
+    else if(modality2 === 'remote') {
         const playerID = sessionStorage.getItem('playerID');
         const friendID = sessionStorage.getItem('friendID');
         let arrow_key = event.message.key
@@ -144,8 +145,7 @@ function simulateKeyPress(direction) {
 
 export function moveOpponentPaddleAI(ballY) {
     const currentTime = Date.now(); 
-
-   
+    //console.log("cc", currentTime, lastAITime, aiUpdateRate)
     if (currentTime - lastAITime >= aiUpdateRate) {
         aiTargetY = ballY - paddleHeight / 2; 
         lastAITime = currentTime;  
@@ -159,18 +159,12 @@ export function moveOpponentPaddleAI(ballY) {
     } else {
         opponentPaddleDirection = 0; 
     }
-}
 
-
-function updateAIPaddleMovement() {
-   
     if (opponentPaddleDirection !== 0) {
         simulateKeyPress(opponentPaddleDirection);
-    }
-
-    
-    requestAnimationFrame(updateAIPaddleMovement);
+     }
 }
 
-requestAnimationFrame(updateAIPaddleMovement);
+
+
 

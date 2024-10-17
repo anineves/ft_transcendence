@@ -3,9 +3,6 @@ import { navigateTo } from '../utils.js';
 
 export const renderPong = () => {
     const user = sessionStorage.getItem('user');
-    const modality2 = sessionStorage.getItem('modality');
-    let inviter = sessionStorage.getItem("Inviter");
-    let nickTorn = sessionStorage.getItem("nickTorn");
     const app = document.getElementById('app');
     app.innerHTML = `
         <div class="arcade-container">
@@ -32,15 +29,17 @@ export const renderPong = () => {
 
     const recordMatchResult = async () => {
         const id = sessionStorage.getItem('id_match');
-        const remote = sessionStorage.getItem('remote');
-        const player = sessionStorage.getItem('player');
+        const modality2 = sessionStorage.getItem('modality');
+        let inviter = sessionStorage.getItem("Inviter");
+        let nickTorn = sessionStorage.getItem("nickTorn");
         let opponent =1;
         let winner_id = 1;
         if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
             try {
+                
+              
                 winner_id = opponent;
                 const score = `${0}-${5}}`;
-                console.log("score", score);
                 const duration = "10";
 
                 const response = await fetch(`http://localhost:8000/api/match/${id}`, {

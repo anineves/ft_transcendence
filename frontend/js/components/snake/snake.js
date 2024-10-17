@@ -26,9 +26,9 @@ let foods = [{
     y: Math.floor(Math.random() * 18) + 1  
 }];
 
-const modality2 = sessionStorage.getItem('modality');
-const user = sessionStorage.getItem('user');
 export const startSnakeGame = async () => {
+    let modality2 = sessionStorage.getItem('modality');
+    const user = sessionStorage.getItem('user');
     canvas = document.getElementById('snakeCanvas');
     if (!canvas) {
         console.error("Canvas element with id 'snakeCanvas' not found.");

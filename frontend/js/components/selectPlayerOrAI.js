@@ -13,6 +13,7 @@ export const selectPlayerorAI = () => {
     sessionStorage.removeItem('game');
     sessionStorage.removeItem('remote');
     //resetGameState();
+    
     const player = sessionStorage.getItem('player');
     const translations = {
         english: {
@@ -72,31 +73,13 @@ export const selectPlayerorAI = () => {
             </div>
         </div>
     `;
-   /* if (player) {
-        app.innerHTML += `
-            <div class="select-game">
-                <div class="game-selection-item">
-                    <div id="remote-select">
-                        <button id="remoteBtn" class="btn">
-                            <img src="./assets/remote.png" alt="Remote" class="button-image-select">
-                            <h3>Remote</h3>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }*/
-    document.getElementById('remoteBtn')?.addEventListener('click', () => {
-        sessionStorage.setItem('modality', 'remote');
-        navigateTo('/wait-remote');
-    });
+  
     document.getElementById('vsPlayerBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', 'player');
         navigateTo('/pong');
     });
     document.getElementById('vsAIBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', 'ai');
-        console.log("select ", sessionStorage.getItem('modality'));
         navigateTo('/pong');
     });
     document.getElementById('3DBtn').addEventListener('click', () => {

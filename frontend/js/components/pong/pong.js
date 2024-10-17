@@ -3,6 +3,7 @@ import { drawScore, drawGameOver } from './score.js';
 import { canvas, context, paddleWidth, paddleHeight, playerY, opponentY, movePaddle, stopPaddle } from './canvasUtils.js';
 import { endMatch } from '../tournament.js';
 import { initPongSocket } from './pongSocket.js'
+import { navigateTo } from '../../utils.js';
 
 let playerScore = 0;
 let opponentScore = 0;
@@ -21,7 +22,7 @@ export const startPongGame = async () => {
     let inviter = sessionStorage.getItem("Inviter");
     const player = sessionStorage.getItem('player');
     const game = 1;
-    const modality2 = sessionStorage.getItem('modality');
+    let modality2 = sessionStorage.getItem('modality');
     let opponent = 1;
     let friendId = sessionStorage.getItem('friendID');
     let nickTorn = sessionStorage.getItem("nickTorn");
@@ -97,7 +98,7 @@ export function initializeBall() {
 }
 
 export function updateBall() {
-    const modality2 = sessionStorage.getItem('modality');
+    let modality2 = sessionStorage.getItem('modality');
     const playerID = sessionStorage.getItem('playerID');
     const currentPlayer = sessionStorage.getItem('player');
     const user = sessionStorage.getItem('user');
@@ -137,6 +138,43 @@ function initialize() {
     initializeBall();
     if (!canvas || !context) return;
     
+    
+    const handleVisibilityChange = () => {
+        const user = sessionStorage.getItem('user');
+    const user_json = JSON.parse(user);
+    let friendID = sessionStorage.getItem('friendID');
+    let playerID = sessionStorage.getItem('player');
+    let inviter = sessionStorage.getItem("Inviter");
+        if (document.visibilityState === 'hidden' && modality2 == ("remote")) {
+            if (ws) {
+                ws.send(JSON.stringify({
+                    'action': 'player_disconnected',
+                    'message': {
+                        'player_id': playerID,
+                        'friend_id': friendID,
+                        'inviter': inviter,
+                    }
+                }));
+            };
+            //ws.close(); 
+            stopGame(); 
+            alert("saiu do jogo."); 
+            navigateTo('/live-chat');
+        }
+    };
+    const handleOffline = () => {
+        if (ws) {
+            ws.send(JSON.stringify({
+                'action': 'player_disconnected'
+            }));
+            ws.close(); 
+        }
+        stopGame(); 
+        alert("Você perdeu a conexão com a internet. O jogo será encerrado.");
+    };
+    window.addEventListener('offline', handleOffline);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
 
     function draw() {
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -156,8 +194,11 @@ function initialize() {
     function update() {
         if (gameOver) return;
         updateBall();
-        if (sessionStorage.getItem('modality') === 'ai') {
+        let modality2 = sessionStorage.getItem('modality');
+        if (modality2 == 'ai') {
             moveOpponentPaddleAI(ballY);
+            isAIActive = true;
+
         }
         checkCollisions();
         draw();
@@ -170,7 +211,7 @@ function initialize() {
         const currentPlayer = sessionStorage.getItem('player');
         const user = sessionStorage.getItem('user');
         const user_json = JSON.parse(user);
-        const modality2 = sessionStorage.getItem('modality');
+        let modality2 = sessionStorage.getItem('modality');
         const playerID = sessionStorage.getItem('playerID');
         if (ballX - ballRadius < 0) {
             if (!ballOutOfBoundsLeft) {
@@ -264,6 +305,7 @@ function initialize() {
         }
     }
     async function gameLoop() {
+
         update();
         const user = sessionStorage.getItem('user');
         let inviter = sessionStorage.getItem("Inviter");
@@ -338,6 +380,7 @@ function initialize() {
 
     const modality2 = sessionStorage.getItem('modality');
     if (modality2 != 'remote') {
+        //console.log("entreiiiiiiiii")
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
                 movePaddle(event);
@@ -363,6 +406,7 @@ function initialize() {
         });
     }
     else if (modality2 == 'remote') {
+        //console.log("entreiiiiiiiii remore")
         const player_id = sessionStorage.getItem("player");
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
