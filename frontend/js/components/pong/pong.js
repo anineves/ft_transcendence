@@ -2,8 +2,6 @@ import { drawCenterLine, initializeCanvas, moveOpponentPaddleAI } from './canvas
 import { drawScore, drawGameOver } from './score.js';
 import { canvas, context, paddleWidth, paddleHeight, playerY, opponentY, movePaddle, stopPaddle } from './canvasUtils.js';
 import { endMatch } from '../tournament.js';
-
-import { waitRemote } from '../waitRemote.js';
 import { initPongSocket } from './pongSocket.js'
 
 let playerScore = 0;
@@ -11,51 +9,37 @@ let opponentScore = 0;
 let gameOver = false;
 let ballSpeedX = 2;
 let ballSpeedY = 2;
-
+let isAIActive = false;
 let ws;
-
-
+let animationFrameId;
 
 export let ballX, ballY;
 export const ballRadius = 10;
-let isAIActive = false;
-let animationFrameId;
 
 export const startPongGame = async () => {
     const user = sessionStorage.getItem('user');
-
-
-let inviter = sessionStorage.getItem("Inviter");
-const player = sessionStorage.getItem('player');
-const game = 1;
-const modality2 = sessionStorage.getItem('modality');
-let opponent = 1;
-let friendId = sessionStorage.getItem('friendID');
-if (modality2 == 'remote' && inviter == "True")
-    opponent = friendId;
-const players = [player, opponent];
-sessionStorage.setItem('game', game);
-sessionStorage.setItem('players', players);
+    let inviter = sessionStorage.getItem("Inviter");
+    const player = sessionStorage.getItem('player');
+    const game = 1;
+    const modality2 = sessionStorage.getItem('modality');
+    let opponent = 1;
+    let friendId = sessionStorage.getItem('friendID');
+    let nickTorn = sessionStorage.getItem("nickTorn");
+    if (modality2 == 'remote' && inviter == "True")
+        opponent = friendId;
+    const players = [player, opponent];
+    sessionStorage.setItem('game', game);
+    sessionStorage.setItem('players', players);
 
     resetGameState();
-    let match_type = "RM"
-    console.log("modalily", modality2)
-    if (modality2 == "ai")
-        match_type = "AI"
-    if (modality2 == "remote")
-        match_type = "RM"
-    if (modality2 == "tournament")
-        match_type = "TN"
-    if (modality2 == "player" || modality2 == "3D")
-        match_type = "MP"
-    
-    let nickTorn = sessionStorage.getItem("nickTorn");
-    console.log("entrei6", modality2, nickTorn, inviter)
-    
+    let match_type = "RM";
+    if (modality2 == "ai") match_type = "AI";
+    if (modality2 == "remote") match_type = "RM";
+    if (modality2 == "tournament") match_type = "TN";
+    if (modality2 == "player" || modality2 == "3D") match_type = "MP";
+
     if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))&& (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')))  {
-        console.log("entrei4")
         if (player) {
-            console.log("entrei partida")
             try {
                 const response = await fetch('http://localhost:8000/api/matches/', {
                     method: 'POST',
@@ -67,9 +51,8 @@ sessionStorage.setItem('players', players);
                 });
 
                 const data = await response.json();
-
                 if (data) {
-                    console.log('Data:', data);
+                    console.log('Match created successfully:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
                     console.error('Match error', data);
@@ -86,20 +69,14 @@ sessionStorage.setItem('players', players);
         
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
-
-            console.log("Data: ", data)
             if (data.action === 'ball_track') {
                 ballX = data.message.ball_x;
                 ballY = data.message.ball_y;
                 ballSpeedY = data.message.ballSpeedY;
                 ballSpeedX = data.message.ballSpeedX;
             }
-            if (data.action === 'move_paddle') {
-                movePaddle(data);
-            }
-            if (data.action === 'stop_paddle') {
-                stopPaddle(data);
-            }
+            if (data.action === 'move_paddle') movePaddle(data);
+            if (data.action === 'stop_paddle') stopPaddle(data);
             if (data.action === 'score_track') {
                 playerScore = data.message.player_score;
                 opponentScore = data.message.opponent_score;
@@ -108,24 +85,16 @@ sessionStorage.setItem('players', players);
         };
     }
 
-
     initialize();
-
-
-}
+};
 
 export function initializeBall() {
-    if (!canvas) {
-        //console.error('Canvas element not found for ball');
-        return;
-    }
+    if (!canvas) return;
     ballX = canvas.width / 2;
     ballY = canvas.height / 2;
     ballSpeedX = 2;
     ballSpeedY = 2;
 }
-
-
 
 export function updateBall() {
     const modality2 = sessionStorage.getItem('modality');
@@ -164,14 +133,10 @@ export function resetBall() {
 }
 
 function initialize() {
-
     initializeCanvas();
     initializeBall();
-
-    if (!canvas || !context) {
-        console.error('Canvas or context not found');
-        return;
-    }
+    if (!canvas || !context) return;
+    
 
     function draw() {
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -185,18 +150,14 @@ function initialize() {
         context.fill();
         context.closePath();
         drawScore(playerScore, opponentScore);
-        if (gameOver) {
-            drawGameOver(playerScore);
-        }
+        if (gameOver) drawGameOver(playerScore);
     }
 
     function update() {
         if (gameOver) return;
         updateBall();
         if (sessionStorage.getItem('modality') === 'ai') {
-
             moveOpponentPaddleAI(ballY);
-            isAIActive = true;
         }
         checkCollisions();
         draw();
@@ -237,15 +198,12 @@ function initialize() {
         } else {
             ballOutOfBoundsLeft = false;
         }
-
-
         if (ballX + ballRadius > canvas.width) {
             if (!ballOutOfBoundsRight) {
                 playerScore++;
                 if (playerScore >= 5) {
                     gameOver = true;
                 }
-
                 ballOutOfBoundsRight = true;
                 if (modality2 == 'remote') {
                     if (currentPlayer === playerID) {
@@ -305,13 +263,9 @@ function initialize() {
             }
         }
     }
-
-
     async function gameLoop() {
         update();
         const user = sessionStorage.getItem('user');
-
-        const player_id = sessionStorage.getItem("player");
         let inviter = sessionStorage.getItem("Inviter");
         const player = sessionStorage.getItem('player');
         const game = 1;
@@ -324,16 +278,16 @@ function initialize() {
         sessionStorage.setItem('game', game);
         sessionStorage.setItem('players', players);
         let nickTorn = sessionStorage.getItem("nickTorn");
+
         if (!gameOver) {
             animationFrameId = requestAnimationFrame(gameLoop);
         } else {
             const id = sessionStorage.getItem('id_match');
             let winner_id = opponent;
-            console.log("entrei", player)
-            
             if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))&& (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
                 try {
-
+                    if(modality2 == 'remote')
+                        ws =  null;
                     if (playerScore > opponentScore)
                         winner_id = player;
                     const score = `${playerScore}-${opponentScore}`;
@@ -347,9 +301,7 @@ function initialize() {
                         },
                         body: JSON.stringify({ winner_id, score, duration })
                     });
-
                     const data = await response.json();
-
                     if (response.ok) {
                         console.log('Match updated successfully:', data);
                     } else {
@@ -363,6 +315,10 @@ function initialize() {
             if (sessionStorage.getItem('modality') == 'tournament') {
                 showNextMatchButton();
             }
+            sessionStorage.removeItem("Inviter");
+            sessionStorage.removeItem("groupName");
+            sessionStorage.setItem('WS', 'clean');
+            ws =  null;
         }
     }
 
@@ -372,15 +328,12 @@ function initialize() {
         nextMatchButton.innerText = 'Next Match';
         nextMatchButton.className = 'btn';
         nextMatchButton.style.margin = '20px auto';
-       
-
         nextMatchButton.addEventListener('click', () => {
             const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
             const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
             endMatch(winner);
         });
         app.appendChild(nextMatchButton);
-        console.log(app);
     }
 
     const modality2 = sessionStorage.getItem('modality');
@@ -434,7 +387,6 @@ function initialize() {
             }
         });
     }
-
     gameLoop();
 }
 
@@ -443,8 +395,6 @@ export function stopGame() {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
     }
-    
-    sessionStorage.removeItem("groupName");
 }
 
 export function resetGameState() {

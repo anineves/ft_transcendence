@@ -6,9 +6,19 @@ export function initPongSocket(url) {
     const jwttoken = sessionStorage.getItem('jwtToken'); 
     const inviter = sessionStorage.getItem('Inviter'); 
     
+    console.log("WS", ws);
+    let wsSession = sessionStorage.getItem('WS');
+    if (wsSession == "clean")
+    {
+        ws = null;
+        sessionStorage.removeItem('WS');
+    }
+
     if (!ws) {
+        console.log("Entrei ws");
         ws = new WebSocket(url);
     }
+    console.log("WS depois:", ws);
     let lobbyTimeout = null;
     ws.onopen = function (event) {
         console.log("Connected to Pong WebSocket");

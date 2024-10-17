@@ -20,6 +20,7 @@ export function drawScore(playerScore, opponentScore) {
     context.fillText(`${player2}: ${opponentScore}`, canvas.width - 220, 20);
 }
 export function drawGameOver(playerScore) {
+    
     context.font = "32px 'Press Start 2P', cursive";
     context.fillStyle = "#ffcc00";
    

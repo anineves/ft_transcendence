@@ -1,11 +1,11 @@
 import { startPongGame, resetGameState, stopGame } from './pong/pong.js';
 import { navigateTo } from '../utils.js';
-const user = sessionStorage.getItem('user');
-const modality2 = sessionStorage.getItem('modality');
-let inviter = sessionStorage.getItem("Inviter");
-let nickTorn = sessionStorage.getItem("nickTorn");
 
 export const renderPong = () => {
+    const user = sessionStorage.getItem('user');
+    const modality2 = sessionStorage.getItem('modality');
+    let inviter = sessionStorage.getItem("Inviter");
+    let nickTorn = sessionStorage.getItem("nickTorn");
     const app = document.getElementById('app');
     app.innerHTML = `
         <div class="arcade-container">
