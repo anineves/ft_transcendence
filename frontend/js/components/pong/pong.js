@@ -137,31 +137,32 @@ function initialize() {
     initializeCanvas();
     initializeBall();
     if (!canvas || !context) return;
-    
-    
+
     const handleVisibilityChange = () => {
         const user = sessionStorage.getItem('user');
-    const user_json = JSON.parse(user);
-    let friendID = sessionStorage.getItem('friendID');
-    let playerID = sessionStorage.getItem('player');
-    let inviter = sessionStorage.getItem("Inviter");
-        if (document.visibilityState === 'hidden' && modality2 == ("remote")) {
-            if (ws) {
-                ws.send(JSON.stringify({
-                    'action': 'player_disconnected',
-                    'message': {
-                        'player_id': playerID,
-                        'friend_id': friendID,
-                        'inviter': inviter,
-                    }
-                }));
-            };
-            //ws.close(); 
-            stopGame(); 
-            alert("saiu do jogo."); 
-            navigateTo('/live-chat');
+        const user_json = JSON.parse(user);
+        let friendID = sessionStorage.getItem('friendID');
+        let playerID = sessionStorage.getItem('player');
+        let inviter = sessionStorage.getItem("Inviter");
+        let groupName = sessionStorage.getItem('groupName')
+        
+        if (ws) {
+            ws.send(JSON.stringify({
+                'action': 'player_disconnected',
+                'message': {
+                    'player_id': playerID,
+                    'friend_id': friendID,
+                    'inviter': inviter,
+                    'group_name': groupName,
+                }
+            }));
+            console.log("group", friendID, groupName);
         }
+        stopGame(); 
+        navigateTo('/');
+        alert("Você saiu do jogo.");
     };
+
     const handleOffline = () => {
         if (ws) {
             ws.send(JSON.stringify({
@@ -172,6 +173,8 @@ function initialize() {
         stopGame(); 
         alert("Você perdeu a conexão com a internet. O jogo será encerrado.");
     };
+
+  
     window.addEventListener('offline', handleOffline);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
