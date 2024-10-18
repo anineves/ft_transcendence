@@ -4,10 +4,8 @@ import { resetGameState } from './pong.js';
 
 export function drawScore(playerScore, opponentScore) {
     const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
-    //console.log("score" ,sessionStorage.getItem('currentMatch'));
     const modality = sessionStorage.getItem('modality');
-    
-    let player1 = "Player";
+    let player1 = "Player"
     let player2 = "Oponente";
     if (modality == 'tournament') {
         ({ player1, player2 } = currentMatch);

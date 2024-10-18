@@ -1,6 +1,12 @@
 import { navigateTo, checkLoginStatus } from '../utils.js'; 
 
 export const liveChat = () => {
+    const player = sessionStorage.getItem('player');
+    if(!player){
+        alert("You need create a player");
+        navigateTo('/create-player');
+        return;
+    }
     const jwttoken = sessionStorage.getItem('jwtToken'); 
     const nickname2 = sessionStorage.getItem('nickname');
     const nickname = nickname2.replace(/^"|"$/g, '');

@@ -139,13 +139,76 @@ function initialize() {
     if (!canvas || !context) return;
 
     const handleVisibilityChange = () => {
+        if (window.location.href !== "https://localhost:8080/pong") {
+            cleanup();
+            return; 
+        }
+        
         const user = sessionStorage.getItem('user');
         const user_json = JSON.parse(user);
         let friendID = sessionStorage.getItem('friendID');
         let playerID = sessionStorage.getItem('player');
         let inviter = sessionStorage.getItem("Inviter");
-        let groupName = sessionStorage.getItem('groupName')
-        
+        let groupName = sessionStorage.getItem('groupName');
+        let modality = sessionStorage.getItem('modality');
+
+        if (modality === 'remote') {
+            if (ws) {
+               
+                ws.send(JSON.stringify({
+                    'action': 'player_disconnected',
+                    'message': {
+                        'player_id': playerID,
+                        'friend_id': friendID,
+                        'inviter': inviter,
+                        'group_name': groupName,
+                    }
+                }));
+                ws.close();
+                ws = null;
+            }
+            stopGame();
+            navigateTo('/'); 
+        }
+    };
+
+    const handleOffline = () => {
+        if (ws) {
+            ws.send(JSON.stringify({
+                'action': 'player_disconnected'
+            }));
+            ws.close();
+            ws = null
+        }
+        stopGame();
+    };
+
+ 
+    window.addEventListener('offline', handleOffline);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('popstate', handleVisibilityChange);
+
+  
+    const originalPushState = history.pushState;
+    history.pushState = function(...args) {
+        originalPushState.apply(this, args);
+        handleVisibilityChange(); 
+    };
+
+    const originalReplaceState = history.replaceState;
+    history.replaceState = function(...args) {
+        originalReplaceState.apply(this, args);
+        handleVisibilityChange(); 
+    };
+
+    const cleanup = () => {
+        const user = sessionStorage.getItem('user');
+
+        let friendID = sessionStorage.getItem('friendID');
+        let playerID = sessionStorage.getItem('player');
+        let inviter = sessionStorage.getItem("Inviter");
+        let groupName = sessionStorage.getItem('groupName');
+
         if (ws) {
             ws.send(JSON.stringify({
                 'action': 'player_disconnected',
@@ -156,29 +219,23 @@ function initialize() {
                     'group_name': groupName,
                 }
             }));
-            console.log("group", friendID, groupName);
-        }
-        stopGame(); 
-        navigateTo('/');
-        alert("Você saiu do jogo.");
-    };
-
-    const handleOffline = () => {
-        if (ws) {
-            ws.send(JSON.stringify({
-                'action': 'player_disconnected'
-            }));
             ws.close(); 
+            ws = null;
+            stopGame();
+            navigateTo('/'); 
         }
-        stopGame(); 
-        alert("Você perdeu a conexão com a internet. O jogo será encerrado.");
+        window.removeEventListener('offline', handleOffline);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('popstate', handleVisibilityChange);
+        history.pushState = originalPushState; 
+        history.replaceState = originalReplaceState; 
     };
 
-  
-    window.addEventListener('offline', handleOffline);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-
+    if (window.location.href !== "https://localhost:8080/pong") {
+        cleanup();
+    }
+    
+    
     function draw() {
         context.clearRect(0, 0, canvas.width, canvas.height);
         drawCenterLine();
@@ -191,6 +248,7 @@ function initialize() {
         context.fill();
         context.closePath();
         drawScore(playerScore, opponentScore);
+
         if (gameOver) drawGameOver(playerScore);
     }
 
@@ -219,6 +277,7 @@ function initialize() {
         if (ballX - ballRadius < 0) {
             if (!ballOutOfBoundsLeft) {
                 opponentScore++;
+                //drawScore(playerScore, opponentScore);
                 if (opponentScore >= 5) {
                     gameOver = true;
                 }
@@ -245,6 +304,7 @@ function initialize() {
         if (ballX + ballRadius > canvas.width) {
             if (!ballOutOfBoundsRight) {
                 playerScore++;
+                //drawScore(playerScore, opponentScore);
                 if (playerScore >= 5) {
                     gameOver = true;
                 }
