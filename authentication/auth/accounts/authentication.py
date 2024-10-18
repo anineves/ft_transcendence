@@ -12,6 +12,7 @@ class EmailOrUsernameBackend(BaseBackend):
             return None
         
         if user.check_password(password):
+            print(f"Senha hasheada3: {password}")
             return user
         return None
 

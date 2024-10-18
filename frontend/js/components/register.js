@@ -52,7 +52,9 @@ export const renderRegister = () => {
                 <input type="text" id="username" placeholder="${translations[savedLanguage].user}" required class="form-control mb-2">
                 <input type="text" id="email" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="${translations[savedLanguage].pass}" required class="form-control mb-2">
+                <div id="passwordError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
                 <input type="password" id="password2" placeholder="${translations[savedLanguage].confirmPass}" required class="form-control mb-2">
+                <div id="confirmPasswordError" class="error-message" style="color:red; font-size: 0.9em;"></div>
                 <input type="file" id="avatar" accept="image/*" class="form-control mb-2">
                 <div class="button-container">
                     <button type="submit" class="btn">${translations[savedLanguage].submit}</button>
@@ -82,6 +84,28 @@ export const renderRegister = () => {
         const password = document.getElementById('password').value;
         const password2 = document.getElementById('password2').value;
         const avatar = document.getElementById('avatar').files[0]; // Obtém o arquivo de imagem de avatar
+
+        const passwordError = document.getElementById('passwordError');
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
+    
+        passwordError.textContent = '';
+        confirmPasswordError.textContent = '';
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        let valid = true;
+    
+        if (!passwordRegex.test(password)) {
+            passwordError.textContent = 'A senha deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula e um dígito.';
+            valid = false; 
+        }
+    
+  
+        if (password !== password2) {
+            confirmPasswordError.textContent = 'As senhas não coincidem!';
+            valid = false;
+        }
+    
+        if (!valid) return;
+
 
         // Cria um objeto FormData para enviar os dados do formulário, incluindo o arquivo de avatar
         const formData = new FormData();

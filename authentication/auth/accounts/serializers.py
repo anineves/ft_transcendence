@@ -27,7 +27,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2', None)
         avatar = validated_data.pop('avatar', None)
-        
+        password=validated_data['password']
+        print(f"Senha hasheada1: {password}")
         try:
             user = CustomUser.objects.create_user(
                 email=validated_data['email'],
