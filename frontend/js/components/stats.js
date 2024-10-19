@@ -72,7 +72,10 @@ export const stats = async () => {
     ;
 
     try {
-        const response = await fetch('http://localhost:8000/api/matches/');
+        const apiUrl = window.config.API_URL;
+        const urlMatches = `${apiUrl}/api/matches/`;
+
+        const response = await fetch(urlMatches);
         const matches = await response.json();
 
 

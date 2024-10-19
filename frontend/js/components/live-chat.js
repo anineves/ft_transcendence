@@ -1,4 +1,6 @@
 import { navigateTo, checkLoginStatus } from '../utils.js'; 
+const apiUrl = window.config.API_URL;
+const apiUri = window.config.API_URI;
 
 export const liveChat = () => {
     const player = sessionStorage.getItem('player');
@@ -15,7 +17,9 @@ export const liveChat = () => {
         return;
     }
 
-    const socket = new WebSocket('ws://localhost:8000/ws/global_chat/');
+    const wssocket= `wss://${apiUri}/ws/global_chat/`
+    const socket = new WebSocket(wssocket);
+
     const translations = {
         english: {
             title: "Chat",
@@ -136,8 +140,9 @@ export const liveChat = () => {
         firstWordButton.className = 'highlighted-player-button';
         firstWordButton.textContent = firstWord;
         firstWordButton.onclick = async () => {
+        const urlPlayers = `${apiUrl}/api/players/`;
             try {
-                const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
+                const playerResponse = await fetch(urlPlayers, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -199,10 +204,11 @@ export const liveChat = () => {
             console.log("groupname ", groupName);
             const chatBox = document.getElementById('chat-box'); 
             const duelMessage = document.createElement('p');
+            const urlWait= `${apiUrl}/wait-remote`
             duelMessage.innerHTML = 
             `
             ${translations[savedLanguage].duelMsg}
-            <a href="https://localhost:8080/wait-remote" id="accept-link">${translations[savedLanguage].acceptBtn}</a>
+            <a href="${urlWait}" id="accept-link">${translations[savedLanguage].acceptBtn}</a>
             `;
 
             chatBox.appendChild(duelMessage);

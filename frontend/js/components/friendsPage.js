@@ -1,6 +1,8 @@
 import { renderRequestPanel } from './requestPanel.js';
 import { navigateTo } from '../utils.js';
 
+const apiUrl = window.config.API_URL;
+
 export const renderFriendsPage = async (user) => {
     const app = document.getElementById('app');
     
@@ -67,8 +69,9 @@ export const renderFriendsPage = async (user) => {
     const player = sessionStorage.getItem('player');
 
     if (player) {
+        const urlPlayer = `${apiUrl}/api/player/${player}`;;
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/player/${player}`, {
+            const response = await fetch(urlPlayer, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
@@ -81,7 +84,8 @@ export const renderFriendsPage = async (user) => {
                 if (data.friendship && data.friendship.length > 0) {
                     for (let friendId of data.friendship) {
                         try {
-                            const friendResponse = await fetch(`http://127.0.0.1:8000/api/player/${friendId}`, {
+                            const urlFriend = `${apiUrl}/api/player/${friendId}`;
+                            const friendResponse = await fetch(urlFriend, {
                                 method: 'GET',
                                 headers: {
                                     'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
@@ -141,7 +145,10 @@ export const renderFriendsPage = async (user) => {
         const friendId = document.getElementById('friendId').value;
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/player/send_friend_request/${friendId}/`, {
+            const apiUrl = window.config.API_URL;
+            const urlSendFriend = `${apiUrl}/api/player/send_friend_request/${friendId}/`;
+
+            const response = await fetch(urlSendFriend, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,

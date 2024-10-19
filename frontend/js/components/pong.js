@@ -41,8 +41,9 @@ export const renderPong = () => {
                 winner_id = opponent;
                 const score = `${0}-${5}}`;
                 const duration = "10";
-
-                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                const apiUrl = window.config.API_URL;
+                const urlmatchID = `${apiUrl}/api/match/${id}`;
+                const response = await fetch(urlmatchID, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,

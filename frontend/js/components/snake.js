@@ -44,7 +44,9 @@ export const renderSnake = () => {
                 console.log("score", score);
                 const duration = "10";
 
-                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                const apiUrl = window.config.API_URL;
+                const urlMatchesID = `${apiUrl}/api/match/${id}`;
+                const response = await fetch(urlMatchesID, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,

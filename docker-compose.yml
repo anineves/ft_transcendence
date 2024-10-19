@@ -35,6 +35,8 @@ services:
     volumes:
       - ./frontend/nginx.conf:/etc/nginx/nginx.conf
       - ./frontend:/usr/share/nginx/html
+    env_file:
+      - ./dotenv_files/.env
 
 #  elasticsearch:
 #    image: elasticsearch:8.15.1

@@ -5,6 +5,9 @@ import { endMatch } from '../tournament.js';
 import { initPongSocket } from './pongSocket.js'
 import { navigateTo } from '../../utils.js';
 
+const apiUrl = window.config.API_URL;
+const apiUri = window.config.API_URI;
+
 let playerScore = 0;
 let opponentScore = 0;
 let gameOver = false;
@@ -13,6 +16,7 @@ let ballSpeedY = 2;
 let isAIActive = false;
 let ws;
 let animationFrameId;
+
 
 export let ballX, ballY;
 export const ballRadius = 10;
@@ -42,7 +46,8 @@ export const startPongGame = async () => {
     if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))&& (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')))  {
         if (player) {
             try {
-                const response = await fetch('http://localhost:8000/api/matches/', {
+                const urlMatches = `${apiUrl}/api/matches/`;
+                const response = await fetch( urlMatches, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
@@ -66,7 +71,8 @@ export const startPongGame = async () => {
     }
     if (modality2 == 'remote') {
         const groupName = sessionStorage.getItem("groupName");
-        ws = initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+        let initws = `wss://${apiUri}/ws/pong_match/${groupName}/`
+        ws = initPongSocket("${initws}");
         
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
@@ -139,7 +145,8 @@ function initialize() {
     if (!canvas || !context) return;
 
     const handleVisibilityChange = () => {
-        if (window.location.href !== "https://localhost:8080/pong") {
+        let urlPong = `${apiUrl}/pong`;
+        if (window.location.href != urlPong) {
             cleanup();
             return; 
         }
@@ -231,7 +238,8 @@ function initialize() {
         history.replaceState = originalReplaceState; 
     };
 
-    if (window.location.href !== "https://localhost:8080/pong") {
+    let urlPong = `${apiUrl}/pong`;
+    if (window.location.href != urlPong) {
         cleanup();
     }
     
@@ -397,8 +405,8 @@ function initialize() {
                         winner_id = player;
                     const score = `${playerScore}-${opponentScore}`;
                     const duration = "10";
-
-                    const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                    const urlMatchesID = `${apiUrl}/api/match/${id}`;
+                    const response = await fetch(urlMatchesID, {
                         method: 'PUT',
                         headers: {
                             'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,

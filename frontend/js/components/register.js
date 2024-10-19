@@ -69,7 +69,8 @@ export const renderRegister = () => {
     document.getElementById('btn-register42').addEventListener('click', async (e) => {
         e.preventDefault();
         sessionStorage.setItem('register', '42');
-        window.location.href = 'https://localhost:8000/oauth/login'; 
+        const apiUrl = window.config.API_URL;
+        window.location.href = `${apiUrl}/oauth/login`; 
     });
 
     // Adiciona um listener para o evento de submissão do formulário de registro
@@ -121,7 +122,10 @@ export const renderRegister = () => {
 
         try {
             // Faz uma requisição POST para a API de registro com os dados do formulário
-            const response = await fetch('http://127.0.0.1:8000/api/register/', {
+            const apiUrl = window.config.API_URL;
+            const urlRegister = `${apiUrl}/api/register/`;
+
+            const response = await fetch(urlRegister, {
                 method: 'POST',
                 body: formData 
             });
@@ -133,7 +137,8 @@ export const renderRegister = () => {
                 sessionStorage.setItem('userReg', JSON.stringify(data)); // Armazena os dados do usuário registrado no sessionStorage
 
                 // Após o registro, faça login automaticamente com as credenciais fornecidas
-                const loginResponse = await fetch('http://127.0.0.1:8000/api/token/', {
+                const urlLogin = `${apiUrl}/api/token/`;
+                const loginResponse = await fetch(urlLogin, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

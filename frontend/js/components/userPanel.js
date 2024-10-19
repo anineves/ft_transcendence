@@ -149,7 +149,9 @@ export const renderPanel = async (user) => {
 
     if (player) {
         try {
-            const response = await fetch('http://localhost:8000/api/matches/');
+            const apiUrl = window.config.API_URL;
+            const urlMatches = `${apiUrl}/api/matches/`;
+            const response = await fetch(urlMatches);
             const matches = await response.json();
 
             let pongWins = 0;
@@ -277,7 +279,9 @@ const handleUpdateProfile = async (e, user) => {
     }
 
     try {
-        const response = await fetch(`http://127.0.0.1:8000/api/user/${user.id}`, {
+        const apiUrl = window.config.API_URL;
+        const urluserID = `${apiUrl}/api/user/${user.id}`;
+        const response = await fetch(urluserID, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`
