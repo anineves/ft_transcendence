@@ -57,8 +57,8 @@ export const renderPlayerProfile = async () => {
         },
         french: {
             title: "Profil d'Ami",
-            nickFriend: "Surnom :",
-            statusFriend: "Statut : ",
+            nickFriend: "Surnom ",
+            statusFriend: "Statut ",
             idFriend: "ID",
             ttWinsPong: "Total des Victoires en Pong :",
             ttLossesPong: "Total des Défaites en Pong :",
@@ -97,7 +97,7 @@ export const renderPlayerProfile = async () => {
         app.innerHTML = `
             <div class="user-panel">
                 <div id="profileSection">
-                    <h2>${translations[savedLanguage].title}/h2>
+                    <h2>${translations[savedLanguage].title}</h2>
                     <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="Player Avatar" class="avatar">
                     <p><strong>${translations[savedLanguage].nickFriend}:</strong> ${player.nickname}</p>
                     <p><strong>${translations[savedLanguage].statusFriend}:</strong> ${player.status}</p>

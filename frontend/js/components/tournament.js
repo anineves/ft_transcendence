@@ -165,7 +165,7 @@ const shuffleArray = (array) => {
     return array;
 };
 
-const initializeTournament = () => {
+export const initializeTournament = () => {
     let players = JSON.parse(sessionStorage.getItem('playerNames'));
 
     
@@ -196,10 +196,17 @@ const startMatch = () => {
             sessionStorage.setItem("nickTorn", "False"); // O jogador não está jogando
         }
         sessionStorage.setItem('currentMatch', JSON.stringify({ player1, player2 }));
+        const match = document.getElementById('match-footer');
+            match.innerHTML = `
+            <div class="match-footer">
+                <p> The next game will be: ${player1} vs ${player2} </p>
+            </div>`
+
         setTimeout(() => {
             resetGameState();
+            
             navigateTo('/pong');
-        }, 200); 
+        }, 2000); 
     } else {
         const winners = JSON.parse(sessionStorage.getItem('winners'));
         if (winners.length > 1) {

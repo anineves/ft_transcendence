@@ -5,7 +5,7 @@ import pprint
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-from accounts.models import PlayerChannel, Player, PrivateGroup, MatchGroup
+from accounts.models import PlayerChannel, Player, PrivateGroup, MatchGroup, Tournament
 
 from myproject.chat_config.jwt_middleware import handle_authentication
 
@@ -318,3 +318,89 @@ class PongConsumer(WebsocketConsumer):
         except Exception as e:
             print(f"# Something went wrong with creating_new_room: \n{e}")
         return
+
+class TournamentConsumer(WebsocketConsumer):
+    tournament_players = []
+    max_players = 4
+
+
+    def connect(self):
+        self.tournament_group_name = "tournament_group"
+        async_to_sync(self.channel_layer.group_add)(
+            self.tournament_group_name, self.channel_name
+        )
+        self.accept()
+
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(self.tournament_group_name, self.channel_name)
+
+    def receive(self, text_data):
+        data = json.loads(text_data)
+
+        if data.get('action') == 'create_tournament':
+            self.create_tournament()
+        elif data.get('action') == 'join_tournament':
+            player = data.get('player')  
+            self.add_player_to_tournament(player) 
+
+    def create_tournament(self):
+        TournamentConsumer.tournament_players.clear()
+        async_to_sync(self.channel_layer.group_send)(
+            self.tournament_group_name,
+            {
+                'type': 'created_tournament',
+                'message': "Tournament created! Players can now join."
+            }
+        )
+
+    def add_player_to_tournament(self, player):
+        print("playe")
+        print(player)
+        if player not in TournamentConsumer.tournament_players:
+            TournamentConsumer.tournament_players.append(player)
+            async_to_sync(self.channel_layer.group_send)(
+                self.tournament_group_name,
+                {
+                    'type': 'tournament_message',
+                    'message': f"{player['nickname']} joined the tournament."
+                }
+            )
+
+        print()
+        if len(TournamentConsumer.tournament_players) >= TournamentConsumer.max_players:
+            self.start_tournament()
+
+    def start_tournament(self):
+        print("aa PArticipantes")
+        print(TournamentConsumer.tournament_players)
+        async_to_sync(self.channel_layer.group_send)(
+            self.tournament_group_name,
+            {
+                'type': 'tournament_full',
+                'message': "The tournament has started!",
+                'participants': TournamentConsumer.tournament_players  
+            }
+        )
+
+    def tournament_message(self, event):
+        message = event['message']
+        self.send(text_data=json.dumps({
+            'action': 'tournament_message',
+            'message': message
+        }))
+
+    def created_tournament(self, event):
+        message = event['message']
+        self.send(text_data=json.dumps({
+            'action': 'created_tournament',
+            'message': message
+        }))
+
+    def tournament_full(self, event):  
+        message = event['message']
+        participants = event['participants']  
+        self.send(text_data=json.dumps({
+            'action': 'tournament_full',
+            'message': message,
+            'participants': TournamentConsumer.tournament_players  # Envie a lista de participantes para o cliente
+        }))

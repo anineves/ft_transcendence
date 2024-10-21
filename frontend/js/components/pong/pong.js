@@ -36,8 +36,16 @@ export const startPongGame = async () => {
     let match_type = "RM";
     if (modality2 == "ai") match_type = "AI";
     if (modality2 == "remote") match_type = "RM";
-    if (modality2 == "tournament") match_type = "TN";
+    if (modality2 == "tournament"){
+        match_type = "TN"
+        const match = document.getElementById('match-footer');
+            match.innerHTML = `
+            <div class="match-footer">
+            </div>`
+    } 
+        
     if (modality2 == "player" || modality2 == "3D") match_type = "MP";
+
 
     if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))&& (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')))  {
         if (player) {
@@ -498,6 +506,7 @@ function initialize() {
 }
 
 export function stopGame() {
+    
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
