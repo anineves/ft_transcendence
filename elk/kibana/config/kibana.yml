@@ -4,3 +4,4 @@ server.port: 5601
 elasticsearch.hosts: [ "http://elasticsearch:9200" ]
 elasticsearch.requestTimeout: 60000
 monitoring.ui.container.elasticsearch.enabled: true
+#xpack.security.enabled: true

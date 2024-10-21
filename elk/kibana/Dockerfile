@@ -1,14 +1,9 @@
 FROM docker.elastic.co/kibana/kibana:8.15.1
 
+EXPOSE 5601
+
 COPY /config/kibana.yml /usr/share/kibana/config/kibana.yml
 
+COPY /config/script.sh /usr/share/kibana/script.sh
 
-COPY /config/script.sh /tmp/
-
-USER root
-RUN chmod +x /tmp/script.sh
-
-USER kibana
-RUN /tmp/script.sh
-
-EXPOSE 5601
+#CMD ["/bin/sh", "-c", "/usr/share/kibana/script.sh" ]

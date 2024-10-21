@@ -9,7 +9,14 @@ all: up
 up:
 	docker compose -p $(NAME) -f $(COMPOSE) up --build -d
 	@sudo chown $(whoami):$(whoami) ./elk
+	@sudo chown -R 1000:1000 ./elk/elastic/data
+	@sudo chmod -R 755 ./elk/elastic/data
 	@sudo chmod 755 ./elk
+	@sudo chmod -R 755 ./data/web
+	@echo "Waiting for kibana to be ready..."
+	sleep 30
+	@echo "Creating Data view..."
+	docker exec -it kibana sh -c "./script.sh"
 
 down:
 	docker compose -p $(NAME) down --volumes

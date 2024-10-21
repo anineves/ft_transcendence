@@ -83,12 +83,15 @@ services:
     build:
       context: ./elk/kibana
       dockerfile: Dockerfile
+    volumes:
+      - ./elk/kibana/config/script.sh:/script.sh
     environment:
       - "xpack.security.encryptionKey"
       - "xpack.encryptedSavedObjects.encryptionKey"
       - "xpack.security.enabled: true"
     depends_on:
       - elasticsearch
+    restart: on-failure
     ports:
       - "5601:5601"
     networks:

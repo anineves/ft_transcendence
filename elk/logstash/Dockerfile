@@ -5,4 +5,5 @@ RUN rm -f /usr/share/logstash/pipeline/longstash.conf
 
 # copy configuration
 COPY pipeline/ /usr/share/logstash/pipeline/
+
 COPY config /usr/share/logstash/config/
