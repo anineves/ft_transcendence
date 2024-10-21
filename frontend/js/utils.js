@@ -3,7 +3,6 @@ import { renderLogin } from './components/login.js';
 import { renderRegister } from './components/register.js';
 import { renderGameSelection } from './components/gameSelection.js';
 import { renderPong } from './components/pong.js';
-import { render4line } from './components/fourLine.js';
 import { renderPanel } from './components/userPanel.js';
 import { createPlayer } from './components/createPlayer.js';
 import { startMenu } from './components/startMenu.js';
@@ -15,7 +14,27 @@ import { setupTournament } from './components/tournament.js';
 import { waitRemote } from './components/waitRemote.js';
 import { liveChat } from './components/live-chat.js';
 import { renderPlayerProfile } from './components/friendsPanel.js';
+import { render3DPong } from './components/3dPong.js';
+import { render3Snake } from './components/3dsnake.js';
+import { stats } from './components/stats.js';
 import { putPlayer } from './components/login.js';
+import { renderSnake } from './components/snake.js';
+import { snakeSelect } from './components/snakeSelect.js';
+
+
+
+// Função para atualizar o texto do rodapé baseado no idioma
+const updateFooterTranslation = () => {
+    const footerText = document.getElementById('text-footer');
+    const savedLanguage = localStorage.getItem('language') || 'portuguese';
+    footerText.innerText = translations[savedLanguage];
+};
+
+const translations = {
+    english: "Created by: alexfern asousa-n jegger-s",
+    portuguese: "Criado por: alexfern asousa-n jegger-s",
+    french: "Créé par : alexfern asousa-n jegger-s",
+};
 
 // Mapeia rotas para suas respectivas funções de renderização
 export const routes = {
@@ -23,19 +42,38 @@ export const routes = {
     '/login': renderLogin,
     '/game-selection': renderGameSelection,
     '/pong': renderPong,
-    '/4line': render4line,
+    '/snake': renderSnake,
     '/register': renderRegister,
     '/user-panel': renderPanel, 
     '/create-player': createPlayer, 
     '/star-menu': startMenu,
     '/select-playerOrAI': selectPlayerorAI,
-    '/friendPanel': renderRequestPanel,
+    '/snake-selector': snakeSelect,
+    '/requestPanel': renderRequestPanel,
     '/friendPage' : renderFriendsPage,
     '/tournament' : selectTournamentPlayers,
     '/tournament-setup' : setupTournament,
     '/wait-remote' : waitRemote,
     '/live-chat' : liveChat,
     '/player-profile': renderPlayerProfile,
+    '/3d-pong': render3DPong,
+    '/3d-snake': render3Snake,
+    '/stats': stats,
+};
+
+const protectedRoutes = [
+    '/user-panel',
+    '/create-player',
+    '/friendPanel',
+    '/wait-remote',
+    '/player-profile',
+    '/stats',
+    '/live-chat',
+];
+
+const isAuthenticated = () => {
+    const jwtToken = sessionStorage.getItem('jwtToken');
+    return jwtToken !== null;
 };
 
 // Altera a URL do navegador e atualizar a exibição da página
@@ -49,6 +87,13 @@ export const render = () => {
     const path = window.location.pathname; // Obtém o caminho atual da URL
     const route = routes[path] || renderMenu;
     const state = window.history.state; // Obtém o estado atual do histórico
+    updateFooterTranslation();
+
+    if (protectedRoutes.includes(path) && !isAuthenticated()) {
+        navigateTo('/'); 
+        return;
+    }
+
     if (path === '/user-panel' && state?.user) { // Se tiver na rota do user.pna e o estado contem um user
         route(state.user); // Renderiza o painel do usuário com os dados do usuário
         checkLoginStatus();
@@ -58,7 +103,6 @@ export const render = () => {
 };
 
 export const checkLoginStatus = () => {
-    console.log("entrei");
     const user = JSON.parse(sessionStorage.getItem('user'));
     const jwtToken = sessionStorage.getItem('jwtToken');
     const userAvatar = document.getElementById('userAvatar');
@@ -91,7 +135,7 @@ export const logout = () => {
     putPlayer('OF');
     sessionStorage.removeItem('user'); 
     sessionStorage.clear();
-    sessionStorage.clear();
+    localStorage.clear();
     checkLoginStatus(); 
     navigateTo('/'); 
 };

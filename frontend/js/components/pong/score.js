@@ -5,8 +5,7 @@ import { resetGameState } from './pong.js';
 export function drawScore(playerScore, opponentScore) {
     const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
     const modality = sessionStorage.getItem('modality');
-    
-    let player1 = "Player";
+    let player1 = "Player"
     let player2 = "Oponente";
     if (modality == 'tournament') {
         ({ player1, player2 } = currentMatch);
@@ -21,6 +20,7 @@ export function drawScore(playerScore, opponentScore) {
 export function drawGameOver(playerScore) {
     context.font = "32px 'Press Start 2P', cursive";
     context.fillStyle = "#ffcc00";
+   
     context.fillText("Game Over", canvas.width / 2 - 150, canvas.height / 2);
     context.fillText("Player Score: " + playerScore, canvas.width / 2 - 150, canvas.height / 2 + 50);
 }

@@ -1,0 +1,105 @@
+.setup-tournament {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2vw;
+    width: 80vw;
+    margin: 0 auto; 
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    animation: fadeIn 0.5s ease; 
+}
+
+.select-players {
+    width: 80vw;
+    height: auto; 
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    gap: 1vh; 
+}
+
+.select-players h2 {
+    margin-top: 2%;
+    font-size: 1.5vw; 
+    color: #00c3ff;
+    text-align: center; 
+}
+
+.select-players .button-container {
+    display: flex; 
+    justify-content: space-around;
+ 
+    gap: 8vw;
+}
+
+.select-players button {
+    background: aliceblue;
+    margin-top: 20%;
+    background-color: transparent;
+    border: none;
+    width: 60vw;
+    height: auto; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.select-players img {
+    width: 150%;
+}
+
+.select-players p {
+    font-size: 1.5vw; 
+    color: #00FF99;
+}
+
+.player-inputs-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; 
+    width: 100%;
+}
+
+
+.player-input {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    width: 45%; 
+    margin: 1vw; 
+}
+
+.player-input:last-child {
+    margin-bottom: 0; 
+}
+
+
+.player-input label {
+    font-size: 1.2vw;
+    color: #00FF99;
+    margin-bottom: 0.5vw;
+}
+
+
+.player-input input[type="text"] {
+    padding: 0.5vw;
+    border: 2px solid #00FFFF;
+    border-radius: 5px;
+    width: 95%; 
+    transition: border-color 0.3s ease;
+}
+
+
+.player-input input[type="text"]:focus {
+    border-color: #00FF99;
+    outline: none; 
+}

@@ -1,12 +1,9 @@
-
-
 NAME = ft_transcendence
 COMPOSE = ./docker-compose.yml
 
-
 all: up 
 
-up:
+up: permissions
 	docker compose -p $(NAME) -f $(COMPOSE) up --build -d
 
 down:
@@ -24,7 +21,9 @@ rm-image:
 clean: down rm-image
 
 fclean: clean
-	
 	@docker system prune -a
 
 re: fclean up
+
+permissions:
+	sudo chmod -R 777 ./data/web

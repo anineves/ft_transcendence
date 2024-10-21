@@ -22,7 +22,7 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
-
+        print(f"Senha hasheada2: {password}")
         return self.create_user(email, username, password, **extra_fields)
 
 
@@ -55,10 +55,10 @@ class Player(models.Model):
         OFFLINE = "OF", _("Offline")
 
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    nickname = models.CharField(max_length=15)
+    nickname = models.CharField(max_length=15, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     friendship = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="friends")
-    status = models.CharField(max_length=2, choices=OnlineStatus, default=OnlineStatus.ONLINE)
+    status = models.CharField(max_length=2, choices=OnlineStatus, default=OnlineStatus.OFFLINE)
 
     def __str__(self):
         return self.nickname
@@ -84,13 +84,19 @@ class Game(models.Model):
 
 
 class Match(models.Model):
-
+    class MatchType(models.TextChoices):
+        AI = "AI", ("AI")
+        REMOTE = "RM", ("Remote")
+        PVP = "MP", ("Player vs Player")
+        TORN = "TN", ("Tournament")
+        THREE = "3D", ("3D-Player vs Player")
     date = models.DateTimeField(auto_now_add=True)
     duration = models.DurationField(null=True, blank=True)
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game')
     players = models.ManyToManyField(Player, related_name='players')
     winner_id = models.IntegerField(null=True, blank=True)
     score = models.CharField(max_length=5, null=True, blank=True)
+    match_type = models.CharField(max_length=2, choices=MatchType, null=True)
 
     def get_winner(self):
         try:
@@ -117,6 +123,16 @@ class PrivateGroup(models.Model):
     group_name = models.CharField(max_length=255, unique=True)
     blocked = models.BooleanField(default=False)
     players = models.ManyToManyField(Player, related_name="players_group")
+    blocked_id = models.IntegerField(default=None, null=True)
 
     def __str__(self):        
+        return f"{self.group_name}"
+    
+
+class MatchGroup(models.Model):
+    group_name = models.CharField(max_length=255, unique=True)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, null=True, related_name="player")
+    opponent = models.ForeignKey(Player, on_delete=models.CASCADE, null=True, related_name="opponent")
+
+    def __str__(self):
         return f"{self.group_name}"

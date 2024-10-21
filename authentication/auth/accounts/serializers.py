@@ -28,7 +28,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2', None)
         avatar = validated_data.pop('avatar', None)
-        
+        password=validated_data['password']
+        print(f"Senha hasheada1: {password}")
         try:
             user = CustomUser.objects.create_user(
                 email=validated_data['email'],
@@ -119,6 +120,14 @@ class PlayerSerializer(serializers.ModelSerializer):
     def get_status(self, obj):
         return obj.get_status_display()
 
+    def update(self, instance, validated_data):
+        instance.status=validated_data.get('status', instance.status)
+        instance.save()
+        return(instance)
+    
+    def get_status(self, obj):
+        return obj.get_status_display()
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -157,14 +166,25 @@ class FriendRequestSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
     
 class MatchSerializer(serializers.ModelSerializer):
+    match_type = serializers.SerializerMethodField()
+
     class Meta:
         model = Match
-        fields = ['id' ,'date', 'duration', 'game', 'players', 'winner_id', 'score']
+        fields = ['id' ,'date', 'duration', 'game', 'players', 'winner_id', 'score', 'match_type']
         read_only_fields = ['id' ,'date']
     
+    def create(self, validated_data):
+        print("Dados:", validated_data)
+        if 'match_type' not in validated_data:
+            validated_data['match_type'] = self.initial_data.get('match_type') 
+        return super().create(validated_data)
+
     def update(self, instance, validated_data):
         instance.winner_id=validated_data.get('winner_id', instance.winner_id)
         instance.score=validated_data.get('score', instance.score)
         instance.duration=validated_data.get('duration', instance.duration)
         instance.save()
         return instance
+    
+    def get_match_type(self, obj):
+        return obj.get_match_type_display()

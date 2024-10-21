@@ -1,20 +1,69 @@
-export const renderRequestPanel = (user) => {
-    const app = document.getElementById('app');
+import { navigateTo } from '../utils.js';
 
+export const renderRequestPanel = () => {
+    const app = document.getElementById('app');
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    console.log(user)
+    const translations = {
+        english: {
+            title: "Friend Requests",
+            recvRequests: "Received Requests",
+            sendRequests: "Sent Requests",
+            acceptBtn: "Accept",
+            rejectBtn: "Reject",
+            sendReq: "Send Request",
+            sendMsg: "You sent a friend request to",
+            recvMsg: "sent you a friend request",
+            backBtn: "Back to Friends Panel",
+        },
+        portuguese: {
+            title: "Solicitações de Amizade",
+            recvRequests: "Solicitações Recebidas",
+            sendRequests: "Solicitações Enviadas",
+            acceptBtn: "Aceitar",
+            rejectBtn: "Rejeitar",
+            sendReq: "Enviar Solicitação",
+            sendMsg: "Você enviou uma solicitação de amizade para",
+            recvMsg: "enviou-lhe uma solicitação de amizade",
+            backBtn: "Voltar ao Painel de Amigos",
+        },
+        french: {
+            title: "Demandes d'Amis",
+            recvRequests: "Demandes Reçues",
+            sendRequests: "Demandes Envoyées",
+            acceptBtn: "Accepter",
+            rejectBtn: "Rejeter",
+            sendReq: "Envoyer la Demande",
+            sendMsg: "Vous avez envoyé une demande d'ami à",
+            recvMsg: "vous a envoyé une demande d'ami",
+            backBtn: "Retour au Panneau d'Amis",
+        }
+    };
+    
+    
+    let savedLanguage = localStorage.getItem('language');
+
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    } 
+  ;
     app.innerHTML = `
         <div class="friend-requests-panel background-form">
-            <h2>Friend Requests</h2>
+            <h2>${translations[savedLanguage].title}</h2>
             <div id="receivedRequestsSection">
-                <h3>Received Requests</h3>
+                <h3>${translations[savedLanguage].recvRequests}</h3>
                 <ul id="receivedRequestsList"></ul>
             </div>
             <div id="sentRequestsSection">
-                <h3>Sent Requests</h3>
+                <h3>${translations[savedLanguage].sendRequests}</h3>
                 <ul id="sentRequestsList"></ul>
             </div>
+             <button id="backFriendsBtn" class="btn">${translations[savedLanguage].backBtn}</button>
         </div>
     `;
-
+    
+    document.getElementById('backFriendsBtn').addEventListener('click', () => navigateTo('/friendPage', user));
     const displayRequests = async () => {
         try {
             const response = await fetch('http://127.0.0.1:8000/api/player/requests/', {
@@ -35,22 +84,22 @@ export const renderRequestPanel = (user) => {
 
                 data.forEach(request => {
                     const listItem = document.createElement('li');
-                    listItem.textContent = `${request.sender} sent you a friend request`;
-
+                    listItem.textContent = `${request.sender} ${translations[savedLanguage].recvMsg}`;
+                    console.log("user", user);
                     if (request.invited === user.username) {
                         const acceptButton = document.createElement('button');
-                        acceptButton.textContent = 'Accept';
+                        acceptButton.textContent = `${translations[savedLanguage].acceptBtn}`;
                         acceptButton.addEventListener('click', () => handleFriendRequest(request.id, true));
 
                         const rejectButton = document.createElement('button');
-                        rejectButton.textContent = 'Reject';
+                        rejectButton.textContent = `${translations[savedLanguage].rejectBtn}`;
                         rejectButton.addEventListener('click', () => handleFriendRequest(request.id, false));
 
                         listItem.appendChild(acceptButton);
                         listItem.appendChild(rejectButton);
                         receivedRequestsList.appendChild(listItem);
                     } else if (request.sender === user.username) {
-                        listItem.textContent = `You sent a friend request to ${request.invited}`;
+                        listItem.textContent = `${translations[savedLanguage].sendMsg} ${request.invited}`;
                         sentRequestsList.appendChild(listItem);
                     }
                 });

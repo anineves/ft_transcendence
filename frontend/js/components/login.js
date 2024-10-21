@@ -1,30 +1,129 @@
 import { navigateTo, checkLoginStatus } from '../utils.js';
 
 export const renderLogin = () => {
-    // Obtem a app onde o formulário de login será inserido.
-    const app = document.getElementById('app');
+  
+    const translations = {
+        english: {
+            login: "Login",
+            email: "Email or Username",
+            password: "Password",
+            submit: "Login",
+            submit2: "Login using 2FA",
+        },
+        portuguese: {
+            login: "Entrar",
+            email: "Email ou Nome de Usuário",
+            password: "Palavra passe",
+            submit: "Entrar",
+            submit2: "Entrar com 2FA",
+            guest: "Jogar como Convidado",
+        },
+        french: {
+            login: "Se connecter",
+            email: "Email ou Nom d'utilisateur",
+            password: "Mot de passe",
+            submit: "Entrer",
+            submit2: "Entrer avec 2FA",
+            guest: "Jouer en tant qu'invité",
+        }
+        
+    };
+    let savedLanguage = localStorage.getItem('language');
 
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    } 
+  ;
     app.innerHTML = `
-        <div class="background-form" id="form-login">
-            <h2>Login</h2>
-            <form id="loginForm">
-                <input type="text" id="emailOrUsername" placeholder="Email or Username" required class="form-control mb-2">
-                <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
-                <button type="submit" id="btn-login" class="btn">Submit</button>
+        <div class="background-form" id="loginForm" class="form-log-reg">
+            <h2>${translations[savedLanguage].login}</h2>
+            <form >
+                <input type="text" id="emailOrUsername" placeholder="${translations[savedLanguage].email}}" required class="form-control mb-2">
+                <input type="password" id="password" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
+                <button type="submit" id="btn-login"class="btn">${translations[savedLanguage].submit}</button>
             </form>
-            <div id="presence"><span class="tag is-success" id="pre_cnt">0</span> users online</div>
-            <ul id="messages"></ul>
-            <div class="box">
-                <h1 class="title">Online Users</h1>
-                <div id="online-users"></div>
-            </div>
+            <form id="loginForm2f">
+               <input type="text" id="emailOrUsername2" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
+                <input type="password" id="password2" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
+                <button type="submit" id="btn-login2f"class="btn">${translations[savedLanguage].submit2}</button>
+            </form>
         </div>
     `;
 
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        // Previne o comportamento padrão do formulário de recarregar a página.
+        e.preventDefault(); 
+        const emailOrUsername = document.getElementById('emailOrUsername').value; 
+        const password = document.getElementById('password').value; 
+
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/otp/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: emailOrUsername, password })
+            });
+
+            if (response.ok) {
+                sessionStorage.setItem('register', 'form');
+                // Armazena o token de acesso JWT.
+                sessionStorage.setItem('jwtToken', data.access); 
+                // Armazena o token de atualização JWT.
+                sessionStorage.setItem('refreshToken', data.refresh); 
+                // Armazena as informações do usuário (por exemplo, nome, email).
+                sessionStorage.setItem('user', JSON.stringify(data.user)); 
+
+                //console.log(data);
+                const userId = data.user.id;
+                const token = data.access;
+                try {
+
+                    const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` 
+                        }
+                    });
+            
+                    if (playerResponse.ok) {
+                        const playerData = await playerResponse.json();
+                        const player = playerData.find(p => p.user === userId);
+                        
+                        if (player) {
+                            sessionStorage.setItem('player', JSON.stringify(player.id));
+                            sessionStorage.setItem('playerInfo', JSON.stringify(player));
+                            console.log("nickname", player.nickname)
+                            sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
+                            putPlayer("ON");
+                        } else {
+                            console.log("You need create a player");
+                        }
+                    } else {
+                        console.error("error loading players");
+                    }
+                } catch (error) {
+                    console.error('Error', error);
+                }
+            
+                checkLoginStatus(); 
+                navigateTo('/game-selection', data); 
+            } else {
+                alert('Failed to send verification code.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred during login');
+        }
+    });
+
+    /*document.getElementById('loginForm2f').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const emailOrUsername = document.getElementById('emailOrUsername').value;
+        const emailOrUsername = document.getElementById('emailOrUsername2').value;
         const password = document.getElementById('password').value;
 
         try {
@@ -45,9 +144,9 @@ export const renderLogin = () => {
             console.error('Error:', error);
             alert('An error occurred during login');
         }
-    });
-};
+    });*/
 
+};
 
 const showCodeForm = (emailOrUsername, password) => {
     const app = document.getElementById('app');
@@ -113,27 +212,16 @@ const handleSuccessfulLogin = async () => {
 
         if (playerResponse.ok) {
             const playerData = await playerResponse.json();
-            console.log("-----------------------------------------------------------")
-            console.log(playerData)
-            console.log("-----------------------------------------------------------")
-            console.log(user)
-            console.log(userID);
 
             let player = null;
 
-            for (const p of playerData) {
-               // console.log("User:", p.user);
-                //console.log("UserID:", userID);
-
+            for (const p of playerData) {            
                 if (p.user == userID) {
-                 //console.log("Entrei")
                     player = p;
                 }
             }
 
             if (player) {
-                sessionStorage.setItem('player', player.id);
-                sessionStorage.setItem('nickname', player.nickname);
                 checkLoginStatus();
                 putPlayer("ON");
             } else {
@@ -153,11 +241,8 @@ export const putPlayer = async (status) => {
     const jwtToken = sessionStorage.getItem('jwtToken');
     const user = sessionStorage.getItem('user');
     const playerId = sessionStorage.getItem('player');
-    console.log("Player", playerId);
-    console.log("Status", status)
     const stat = status;
 
-    console.log("Entrei Put");
     try {
         const player = await fetch(`http://127.0.0.1:8000/api/player/${playerId}`, {
             method: 'PUT',
@@ -167,22 +252,18 @@ export const putPlayer = async (status) => {
             },
             body: JSON.stringify({ status : stat })
         });
-        console.log("Entrei Try");
+      
         if (player.ok) {
-            console.log("Entrei IF");
             const playerT = await player.json();
             sessionStorage.setItem('playerStatus', playerT.status);
-            console.log(playerT)
-
             checkLoginStatus();
             navigateTo('/game-selection');
 
-        } else {
+        } else if (user) {
             alert("Player not found");
             console.log("Error player not found");
         }
     } catch (error) {
         console.error('Error:', error);
     }
-
 };

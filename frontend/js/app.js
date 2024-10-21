@@ -4,48 +4,99 @@ import { renderLogin } from './components/login.js';
 import { renderRegister } from './components/register.js';
 import { renderGameSelection } from './components/gameSelection.js';
 import { renderPong } from './components/pong.js';
-import { render4line } from './components/fourLine.js';
 import { renderPanel } from './components/userPanel.js';
 import { createPlayer } from './components/createPlayer.js';
-import { teste} from './components/teste.js';
-import {startMenu} from './components/startMenu.js';
+import { startMenu } from './components/startMenu.js';
 import { selectPlayerorAI } from './components/selectPlayerOrAI.js';
 import { renderRequestPanel } from './components/requestPanel.js';
 import { waitRemote } from './components/waitRemote.js';
 import { renderPlayerProfile } from './components/friendsPanel.js';
-// Define as rotas da aplicação e suas funções de renderização correspondentes
+import { render3DPong } from './components/3dPong.js';
+import { render3Snake } from './components/3dsnake.js';
+import { stats } from './components/stats.js';
+
+
+
+// Traduções para o rodapé
+
+
+// Definir as rotas da aplicação e suas funções de renderização correspondentes
 const routes = {
     '/': renderMenu,
     '/login': renderLogin,
     '/game-selection': renderGameSelection,
     '/pong': renderPong,
-    '/4line': render4line,
     '/register': renderRegister,
     '/user-panel':  renderPanel,
-    '/create-player': createPlayer, 
+    '/create-player': createPlayer,
     '/star-menu': startMenu,
     '/select-playerOrAI': selectPlayerorAI,
     '/friendPanel': renderRequestPanel,
-    'wait-remote': waitRemote,
+    '/wait-remote': waitRemote,
     '/player-profile': renderPlayerProfile,
+    '/3d-pong': render3DPong,
+    '/3d-snake': render3Snake,
+    '/stats': stats,
 };
 
-// Adiciona um listener que chama a função de renderização quando o DOM é carregado
+
+
 document.addEventListener('DOMContentLoaded', () => {
-    render(); // Renderiza a página atual com base na URL
+    render(); 
     checkLoginStatus();
+
+
 
     document.getElementById('startBtn').addEventListener('click', () => {
         navigateTo('/star-menu');
     });
 
     document.getElementById('userAvatar').addEventListener('click', () => {
-        const user = JSON.parse(sessionStorage.getItem('user')); // Obtém o usuário do sessionStorage
+        const user = JSON.parse(sessionStorage.getItem('user'));
         if (user) {
             navigateTo('/user-panel', user);
         }
     });
+
+    const languageDropdown = document.getElementById('languageDropdown');
+    const languageList = document.getElementById('languageList');
+    const selectedLanguageBtn = document.getElementById('selectedLanguage');
+    const flagIcon = document.getElementById('flagIcon');
+
+    const savedLanguage = localStorage.getItem('language');
+    if (savedLanguage) {
+        const selectedFlag = document.querySelector(`[data-language="${savedLanguage}"]`).getAttribute('data-flag');
+        flagIcon.src = selectedFlag;
+    } else {
+        flagIcon.src = './assets/portugal.png';
+        localStorage.setItem('language', 'portuguese');
+    }
+
+    selectedLanguageBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        languageList.classList.toggle('hidden');
+    });
+
+    document.querySelectorAll('.languageOption').forEach(option => {
+        option.addEventListener('click', (event) => {
+            const language = event.currentTarget.getAttribute('data-language');
+            const flag = event.currentTarget.getAttribute('data-flag');
+
+            // Atualiza o ícone da bandeira e salva a linguagem no localStorage
+            flagIcon.src = flag;
+            localStorage.setItem('language', language);
+
+            // Renderiza a aplicação e atualiza o rodapé
+            render(); 
+             // Atualiza o rodapé após a mudança de idioma
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!languageDropdown.contains(event.target)) {
+            languageList.classList.add('hidden');
+        }
+    });
 });
 
-// Define uma função para lidar com eventos de navegação do histórico (ex.: botões de voltar e avançar do navegador)
 window.onpopstate = render;

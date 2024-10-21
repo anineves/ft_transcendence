@@ -1,19 +1,63 @@
-import { navigateTo } from "../utils.js";
+import { renderRequestPanel } from './requestPanel.js';
+import { navigateTo } from '../utils.js';
 
 export const renderFriendsPage = async (user) => {
     const app = document.getElementById('app');
+    
+    const translations = {
+        english: {
+            title: "Friends",
+            noFriends: "No Friends found",
+            invitBtn: "Invite friends",
+            requestsBtn: "Friends Requests",
+            nickFriend: "Friend nickname",
+            sendReq: "Send Request",
+            neededPlayer: "You need to create a Player",
+            sucessRequest: "Friend request sent successfully!",
+            failedRequest: "Failed to send friend request: '",
+        },
+        portuguese: {
+            title: "Amigos",
+            noFriends: "Nenhum amigo encontrado",
+            invitBtn: "Convidar amigos",
+            requestsBtn: "Solicitações de Amizade",
+            nickFriend: "Apelido do amigo",
+            sendReq: "Enviar Solicitação",
+            neededPlayer: "Tu precisas criar um jogador",
+            sucessRequest: "Solicitação de amizade enviada com sucesso!",
+            failedRequest: "Falha ao enviar solicitação de amizade: '",
+        },
+        french: {
+            title: "Amis",
+            noFriends: "Aucun ami trouvé",
+            invitBtn: "Inviter des amis",
+            requestsBtn: "Demandes d'amis",
+            nickFriend: "Surnom de l'ami",
+            sendReq: "Envoyer la demande",
+            neededPlayer: "Vous devez créer un joueur",
+            sucessRequest: "Demande d'ami envoyée avec succès !",
+            failedRequest: "Échec de l'envoi de la demande d'ami : '",
+        }
+    };
+    
+    let savedLanguage = localStorage.getItem('language');
+
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    } 
+  ;
 
     app.innerHTML = `
         <div class="friendship-management-panel background-form">
-            <h2>Friendship Management</h2>
-            <h3>Friends</h3>
+            <h2>${translations[savedLanguage].title}</h2>
             <ul id="friendsList"></ul> 
-            <button id="inviteBtn2" class="btn">Invite friends</button>
-            <button id="friendsBtn2" class="btn">Friend Requests</button>
+            <button id="inviteBtn2" class="btn">${translations[savedLanguage].invitBtn}</button>
+            <button id="friendsBtn2" class="btn">${translations[savedLanguage].requestsBtn}</button>
             <div id="inviteSection" style="display: none;">
                 <form id="inviteForm">
-                    <input type="text" id="friendId" placeholder="Friend nickname" class="form-control mb-2" required>
-                    <button type="submit" class="btn">Send Request</button>
+                    <input type="text" id="friendId" placeholder="${translations[savedLanguage].nickFriend}" class="form-control mb-2" required>
+                    <button type="submit" class="btn">${translations[savedLanguage].sendReq}</button>
                 </form>
             </div>
         </div>
@@ -34,15 +78,40 @@ export const renderFriendsPage = async (user) => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 if (data.friendship && data.friendship.length > 0) {
-                    data.friendship.forEach(friendId => {
-                        const listItem = document.createElement('li');
-                        listItem.textContent = `Friend ID: ${friendId}`;
-                        friendsList.appendChild(listItem);
-                    });
+                    for (let friendId of data.friendship) {
+                        try {
+                            const friendResponse = await fetch(`http://127.0.0.1:8000/api/player/${friendId}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+
+                            if (friendResponse.ok) {
+                                const friendData = await friendResponse.json();
+                                console.log(friendData);
+                                const listItem = document.createElement('li');
+                                const friendButton = document.createElement('button');
+                                friendButton.textContent = "•" + friendData.nickname;
+                                friendButton.className = 'friend-nickname-btn';
+
+                                friendButton.onclick = () => {
+                                    sessionStorage.setItem('playerProfile', JSON.stringify(friendData));
+                                    navigateTo('/player-profile');
+                                };
+                                listItem.appendChild(friendButton);
+                                friendsList.appendChild(listItem);
+                            } else {
+                                console.log(`Failed to load friend with ID: ${friendId}`);
+                            }
+                        } catch (friendError) {
+                            console.error('Error fetching friend data:', friendError);
+                        }
+                    }
                 } else {
-                    friendsList.innerHTML = `<li>No friends found</li>`;
+                    friendsList.innerHTML = `<li>${translations[savedLanguage].noFriends}</li>`;
                 }
             } else {
                 alert('Failed to load friends.');
@@ -52,9 +121,10 @@ export const renderFriendsPage = async (user) => {
             alert('An error occurred while loading friends.');
         }
     } else {
-        alert('You need to create a Plaayer');
+        alert(`${translations[savedLanguage].neededPlayer}`);
         navigateTo('/create-player');
     }
+
 
     document.getElementById('inviteBtn2').addEventListener('click', () => {
         const inviteSection = document.getElementById('inviteSection');
@@ -62,10 +132,8 @@ export const renderFriendsPage = async (user) => {
     });
 
     document.getElementById('friendsBtn2').addEventListener('click', () => {
-        renderRequestPanel(user);
+        navigateTo('/requestPanel');
     });
-
-   
 
     document.getElementById('inviteForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -82,10 +150,10 @@ export const renderFriendsPage = async (user) => {
             });
 
             if (response.ok) {
-                alert('Friend request sent successfully!');
+                alert(`${translations[savedLanguage].sucessRequest}`);
             } else {
                 const errorData = await response.json();
-                alert('Failed to send friend request: ' + JSON.stringify(errorData));
+                alert(`${translations[savedLanguage].failedRequest}` + JSON.stringify(errorData));
             }
         } catch (error) {
             console.error('Error:', error);

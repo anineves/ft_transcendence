@@ -2,20 +2,62 @@ import { navigateTo, checkLoginStatus  } from '../utils.js';
 
 export const renderRegister = () => {
     const app = document.getElementById('app');
+    const translations = {
+        english: {
+            register: "Register",
+            first: "First Name",
+            last: "Last Name",
+            user: "Username",
+            email: "Email", 
+            pass: "Password",
+            confirmPass: "Confirm Password",
+            submit: "Register",
+        },
+        portuguese: {
+            register: "Registar",
+            first: "Primeiro Nome",
+            last: "Último Nome",
+            user: "Nome de Utilizador",
+            email: "Email", 
+            pass: "Palavra-passe",
+            confirmPass: "Confirmar Palavra-passe",
+            submit: "Registar",
+        },
+        french: {
+            register: "S'inscrire",
+            first: "Prénom",
+            last: "Nom de famille",
+            user: "Nom d'utilisateur",
+            email: "Email", 
+            pass: "Mot de passe",
+            confirmPass: "Confirmer le mot de passe",
+            submit: "S'inscrire",
+        }
+    };
+    
+    // Obtenção do idioma salvo ou definição do padrão
+    let savedLanguage = localStorage.getItem('language');
+    
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    }
+    
     
     app.innerHTML = `
-        <div class="background-form" id="form-register">
-            <h2>Register</h2>
-            <form id="registerForm" enctype="multipart/form-data">
-                <input type="text" id="firstName" placeholder="First Name" required class="form-control mb-2">
-                <input type="text" id="lastName" placeholder="Last Name" required class="form-control mb-2">
-                <input type="text" id="username" placeholder="Username" required class="form-control mb-2">
-                <input type="text" id="email" placeholder="Email" required class="form-control mb-2">
-                <input type="password" id="password" placeholder="Password" required class="form-control mb-2">
-                <input type="password" id="password2" placeholder="Confirm Password" required class="form-control mb-2">
+        <div class="background-form" id="registerForm" class="form-log-reg">
+            <h2>${translations[savedLanguage].register}</h2>
+            <form  enctype="multipart/form-data">
+                <input type="text" id="firstName" placeholder="${translations[savedLanguage].first}" required class="form-control mb-2">
+                <input type="text" id="lastName" placeholder="${translations[savedLanguage].last}" required class="form-control mb-2">
+                <input type="text" id="username" placeholder="${translations[savedLanguage].user}" required class="form-control mb-2">
+                <input type="text" id="email" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
+                <input type="password" id="password" placeholder="${translations[savedLanguage].pass}" required class="form-control mb-2">
+                <div id="passwordError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
+                <input type="password" id="password2" placeholder="${translations[savedLanguage].confirmPass}" required class="form-control mb-2">
+                <div id="confirmPasswordError" class="error-message" style="color:red; font-size: 0.9em;"></div>
                 <input type="file" id="avatar" accept="image/*" class="form-control mb-2">
                 <div class="button-container">
-                    <button type="submit" class="btn">Submit</button>
+                    <button type="submit" class="btn">${translations[savedLanguage].submit}</button>
                     <button type="button" id="btn-register42" class="btn">
                         <img src="./assets/42.png" alt="Pong" class="button-image">
                     </button>
@@ -27,7 +69,7 @@ export const renderRegister = () => {
     document.getElementById('btn-register42').addEventListener('click', async (e) => {
         e.preventDefault();
         sessionStorage.setItem('register', '42');
-        window.location.href = 'http://localhost:8000/oauth/login'; 
+        window.location.href = 'https://localhost:8000/oauth/login'; 
     });
 
     // Adiciona um listener para o evento de submissão do formulário de registro
@@ -42,6 +84,28 @@ export const renderRegister = () => {
         const password = document.getElementById('password').value;
         const password2 = document.getElementById('password2').value;
         const avatar = document.getElementById('avatar').files[0]; // Obtém o arquivo de imagem de avatar
+
+        const passwordError = document.getElementById('passwordError');
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
+    
+        passwordError.textContent = '';
+        confirmPasswordError.textContent = '';
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        let valid = true;
+    
+        if (!passwordRegex.test(password)) {
+            passwordError.textContent = 'A senha deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula e um dígito.';
+            valid = false; 
+        }
+    
+  
+        if (password !== password2) {
+            confirmPasswordError.textContent = 'As senhas não coincidem!';
+            valid = false;
+        }
+    
+        if (!valid) return;
+
 
         // Cria um objeto FormData para enviar os dados do formulário, incluindo o arquivo de avatar
         const formData = new FormData();

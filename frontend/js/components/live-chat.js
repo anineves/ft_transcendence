@@ -1,6 +1,12 @@
 import { navigateTo, checkLoginStatus } from '../utils.js'; 
 
 export const liveChat = () => {
+    const player = sessionStorage.getItem('player');
+    if(!player){
+        alert("You need create a player");
+        navigateTo('/create-player');
+        return;
+    }
     const jwttoken = sessionStorage.getItem('jwtToken'); 
     const nickname2 = sessionStorage.getItem('nickname');
     const nickname = nickname2.replace(/^"|"$/g, '');
@@ -10,36 +16,96 @@ export const liveChat = () => {
     }
 
     const socket = new WebSocket('ws://localhost:8000/ws/global_chat/');
+    const translations = {
+        english: {
+            title: "Chat",
+            phMsg: "Type your message here...", 
+            duelBtn: "Duel",
+            phBlock: "Nickname to block...",
+            confirmBtn: "Confirm",
+            phUnblock: "Player to unblock...",
+            phDuel: "Player to duel...",
+            duelMsg: "has challenged you to a duel",
+            acceptBtn: "Accept",
+            lostInvMsg: "has challenged you to a duel",
+            fightMsg: " wants to fight!",
+            yourselfMsg: "You cannot challenge yourself to a duel.",
+            fillNickname: "Please enter a player nickname to duel.",
+        },
+        portuguese: {
+            title: "Chat",
+            phMsg: "Digite sua mensagem aqui...", 
+            duelBtn: "Duelo",
+            phBlock: "Apelido para bloquear...",
+            confirmBtn: "Confirmar",
+            phUnblock: "Jogador para desbloquear...",
+            phDuel: "Jogador para duelar...",
+            duelMsg: "desafiou você para um duelo",
+            acceptBtn: "Aceitar",
+            lostInvMsg: "desafiou você para um duelo",
+            fightMsg: " quer lutar!",
+            yourselfMsg: "Você não pode desafiar a si mesmo para um duelo.",
+            fillNickname: "Por favor, insira um apelido de jogador para duelar.",
+        },
+        french: {
+            title: "Chat",
+            phMsg: "Tapez votre message ici...", 
+            duelBtn: "Duel",
+            phBlock: "Surnom à bloquer...",
+            confirmBtn: "Confirmer",
+            phUnblock: "Joueur à débloquer...",
+            phDuel: "Joueur à défier...",
+            duelMsg: "vous a défié à un duel",
+            acceptBtn: "Accepter",
+            lostInvMsg: "vous a défié à un duel",
+            fightMsg: " veut se battre!",
+            yourselfMsg: "Vous ne pouvez pas vous défier vous-même à un duel.",
+            fillNickname: "Veuillez entrer un surnom de joueur à défier.",
+        }
+    };
+    
+    let savedLanguage = localStorage.getItem('language');
 
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    } 
+  ;
     const app = document.getElementById('app');
     app.innerHTML = `
-        <div class="user-panel">
+       
+            <div class="chat">
             <div class="chat-header">
-                <h2>CHAT</h2>
+                <h2>${translations[savedLanguage].title}</h2>
                 <button id="leave-button" title="Leave"><i class="fas fa-sign-out-alt"></i></button>
             </div>
             <div class="chat-panel">
                 <div id="chat-box" class="chat-box"></div>
                 <div class="message-input-container">
-                    <input id="message-input" type="text" placeholder="Type your message here...">
+                    <input id="message-input" type="text" placeholder="${translations[savedLanguage].phMsg}">
                     <div class="button-panel">
-                        <button id="send-button"><i class="fas fa-paper-plane"></i> Send</button>
-                        <button id="block-button"><i class="fas fa-ban"></i> Block</button>
-                        <button id="unblock-button"><i class="fas fa-unlock"></i> Unblock</button>
+                        <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+                        <button id="block-button"><i class="fas fa-ban"></i></button>
+                        <button id="unblock-button"><i class="fas fa-unlock"></i></button>
+                        <button id="duel-button"><i class="fas fa-crossed-swords"></i> ${translations[savedLanguage].duelBtn}</button>
                     </div>
                 </div>
                 <div id="block-input-container" style="display: none;">
-                    <input id="block-player-input" type="text" placeholder="Player to block...">
-                    <button id="confirm-block-button">Confirm Block</button>
+                    <input id="block-player-input" type="text" placeholder="${translations[savedLanguage].phBlock}...">
+                    <button id="confirm-block-button" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
                 </div>
                 <div id="unblock-input-container" style="display: none;">
-                    <input id="unblock-player-input" type="text" placeholder="Player to unblock...">
-                    <button id="confirm-unblock-button">Confirm Unblock</button>
+                    <input id="unblock-player-input" type="text" placeholder="${translations[savedLanguage].phUnblock}...">
+                    <button id="confirm-unblock-button" class="confirm-button" >${translations[savedLanguage].confirmBtn}</button>
+                </div>
+                <div id="duel-input-container" style="display: none;">
+                    <input id="duel-player-input" type="text" placeholder="${translations[savedLanguage].duelBtn}...">
+                    <button id="confirm-duel-button" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
                 </div>
             </div>
-        </div>
+            </div>
+  
     `;
-
     const chatBox = document.getElementById('chat-box');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
@@ -106,6 +172,9 @@ export const liveChat = () => {
         chatBox.scrollTop = chatBox.scrollHeight;
     };
 
+    const user = sessionStorage.getItem('user');
+    const user_json = JSON.parse(user);
+
     socket.onopen = function (event) {
         console.log("Connected to WebSocket");
         socket.send(JSON.stringify({
@@ -115,9 +184,49 @@ export const liveChat = () => {
   
     socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        const firstWord = data.message.split(' ')[0];
+        const message = data.message
+        
+        console.log('Dataaa: ', data)
+        console.log('Message: ', message)
+        const firstWord = message.content.split(' ')[0];
         const isOwnMessage = firstWord === nickname;
-        addMessage(data.message, isOwnMessage);
+        
+        addMessage(message.content, isOwnMessage);
+        if (data.action == "duel")
+        {
+            const groupName = message.group_name;
+            sessionStorage.setItem("groupName", groupName);
+            console.log("groupname ", groupName);
+            const chatBox = document.getElementById('chat-box'); 
+            const duelMessage = document.createElement('p');
+            duelMessage.innerHTML = 
+            `
+            ${translations[savedLanguage].duelMsg}
+            <a href="https://localhost:8080/wait-remote" id="accept-link">${translations[savedLanguage].acceptBtn}</a>
+            `;
+
+            chatBox.appendChild(duelMessage);
+            if (user_json.id == message.from_user) {
+                sessionStorage.setItem("Inviter", "True");
+                console.log("live Inviter:", sessionStorage.getItem("Inviter"))
+                navigateTo(`/wait-remote`, groupName);
+                socket.close();
+            }
+            
+            const timeout = setTimeout(() => {
+                duelMessage.innerHTML = `${translations[savedLanguage].duelBtn}`;
+            }, 50000); 
+            
+            if (user_json.id != message.from_user) {
+                sessionStorage.setItem("Inviter", "False");
+                sessionStorage.setItem('modality', 'remote');
+                const acceptLink = document.getElementById('accept-link');
+                acceptLink.addEventListener('click', () => {
+                    socket.close();
+                    clearTimeout(timeout); 
+                });
+            }
+        }
     };
 
     socket.onerror = function (error) {
@@ -159,7 +268,7 @@ export const liveChat = () => {
         }
     };
     
-    sendButton.onclick = function () {
+    sendButton.onclick = function privateMessage() {
         let privacy;
         const message = messageInput.value.trim();
         if (message) {
@@ -174,4 +283,46 @@ export const liveChat = () => {
             sendButton.click();
         }
     });
+    // Fechar a socket quando fechar a aba ou navegador.
+    window.addEventListener('beforeunload', function (event) {
+        socket.close();
+        return;
+    });
+
+    document.getElementById('duel-button').addEventListener('click', function() {
+        const duelContainer = document.getElementById('duel-input-container');
+        
+        // Toggle the visibility of the duel input container
+        if (duelContainer.style.display === 'none') {
+            duelContainer.style.display = 'block';
+        } else {
+            duelContainer.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('confirm-duel-button').addEventListener('click', function() {
+        const playerNickname = document.getElementById('duel-player-input').value;
+    
+        if (playerNickname) {
+            console.log("players", playerNickname, nickname);
+            if (playerNickname === nickname) {
+                alert(`${translations[savedLanguage].yourselfMsg}`);
+            }
+            else{
+                document.getElementById('duel-input-container').style.display = 'none'; // Hide after confirmation
+                document.getElementById('duel-player-input').value = ''; // Clear input field
+                
+                let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
+                
+                socket.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
+            }
+
+        } else {
+            alert('Please enter a player nickname to duel.');
+        }
+    });    
+    
+    socket.onclose = function () {
+        console.error("Chat socket was close"); //Debug
+    };
 };

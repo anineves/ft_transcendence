@@ -10,13 +10,10 @@ export const renderGameSelection = async () => {
     `;
 
     const register = sessionStorage.getItem('register');
-    console.log(register);
 
     if (register === "42") {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
-        console.log("code");
-        console.log(code);
 
         if (code) {
             try {
@@ -31,11 +28,11 @@ export const renderGameSelection = async () => {
                 const data = await response.json();
 
                 if (data.access_token) {
-                    console.log(data);
+                    //console.log(data);
                     sessionStorage.setItem('jwtToken', data.access_token);
                     sessionStorage.setItem('user', JSON.stringify(data.user));
                     const user = sessionStorage.getItem('user');
-                    console.log(user);
+                    //console.log(user);
                     checkLoginStatus();
                 } else {
                     console.error('OAuth login failed', data);
@@ -47,29 +44,27 @@ export const renderGameSelection = async () => {
         }
     }
 
-    // Após a autenticação, renderizar a interface de seleção de jogos
+   
     app.innerHTML = `
-        <div class="select-game">
-            <div class="game-selection-item">
-                <div id="pong-select">
-                    <button id="pongBtn" class="btn">
-                        <img src="./assets/pongneon2.png" alt="Pong" class="button-image-select">
-                        <h3>Pong</h3>
-                    </button>
-                </div>
-            </div>
-            <div class="game-selection-item">
-                <div id="4line-select">
-                    <button id="4LineBtn" class="btn">
-                        <img src="./assets/4lineneon.png" alt="4 in a Line" class="button-image-select">
-                        <h3>4 in a Line</h3>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
+    <div class="select-game">
+    
+    <div class="game-selection" id="pong-select">
+        <button id="pongBtn" class="btn-game">
+            <img src="./assets/pongneon2.png" alt="Pong" class="button-image-select">
+            <h3>Pong</h3>
+        </button>
+    </div>
+    <div class="game-selection" id="snake-select">
+        <button id="snakeBtn" class="btn-game">
+            <img src="./assets/snake3d.png" alt="Snake" class="button-image-select">
+            <h3>Snake</h3>
+        </button>
+    </div>
+</div>
 
-    // Adicionar eventos de clique aos botões
+`;
+
+
     document.getElementById('pongBtn').addEventListener('click', () => navigateTo('/select-playerOrAI'));
-    document.getElementById('4LineBtn').addEventListener('click', () => navigateTo('/4line'));
+    document.getElementById('snakeBtn').addEventListener('click', () => navigateTo('/snake-selector'));
 };
