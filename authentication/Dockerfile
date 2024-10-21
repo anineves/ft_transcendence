@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Create required directories
-RUN mkdir -p /auth /scripts /data/web/static /data/web/media
+RUN mkdir -p /auth /scripts /data/web/static /data/web/media /auth/logs
 
 # Copy the relevant directories into the container
 COPY ./auth /auth

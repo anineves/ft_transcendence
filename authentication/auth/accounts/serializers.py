@@ -5,6 +5,9 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import ValidationError
 from django.db.models import Q
+import logging
+
+logger = logging.getLogger('my_log')
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -38,7 +41,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
                 avatar=avatar
             )
         except Exception as e:
+            logger.error(f"Trying to register and existing user. {str(e)}")
             raise serializers.ValidationError({"error": str(e)})
+        logger.info(f"User success register as {user.username}, welcome to the game!")
         return user
 
 

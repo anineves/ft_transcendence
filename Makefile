@@ -10,13 +10,14 @@ up:
 	docker compose -p $(NAME) -f $(COMPOSE) up --build -d
 	@sudo chown $(whoami):$(whoami) ./elk
 	@sudo chown -R 1000:1000 ./elk/elastic/data
-	@sudo chmod -R 755 ./elk/elastic/data
+	@sudo chmod -R 777 ./elk/elastic/data ./authentication/auth/logs
 	@sudo chmod 755 ./elk
 	@sudo chmod -R 755 ./data/web
 	@echo "Waiting for kibana to be ready..."
-	sleep 30
 	@echo "Creating Data view..."
-	docker exec -it kibana sh -c "./script.sh"
+	@sleep 30
+	@docker exec -it kibana sh -c "./script.sh"
+	@echo "\nData view Created!"
 
 down:
 	docker compose -p $(NAME) down --volumes
@@ -35,7 +36,7 @@ clean: down rm-image
 fclean: clean
 	
 	@docker system prune -a
-	@sudo rm -rf ./logs
+	@sudo rm -rf ./logs ./authentication/auth/logs
 	@sudo rm -rf ./elk/elastic/data/*
 
 re: fclean up

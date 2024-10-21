@@ -19,5 +19,3 @@ curl -X POST "http://localhost:5601/api/data_views/data_view" \
             "timeFieldName": "@timestamp"
         }
     }'
-
-echo "Data view created!"

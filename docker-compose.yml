@@ -9,6 +9,7 @@ services:
       - ./authentication/scripts:/scripts
       - ./data/web/static:/data/web/static
       - ./data/web/media:/data/web/media
+      - ./authentication/auth/logs:/auth/logs
     env_file:
       - ./dotenv_files/.env
     ports:
