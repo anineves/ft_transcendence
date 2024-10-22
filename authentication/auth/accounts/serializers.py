@@ -40,10 +40,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
                 password=validated_data['password'],
                 avatar=avatar
             )
+            logger.info(f"User success register as {user.username}, welcome to the game!")
         except Exception as e:
-            logger.error(f"Trying to register and existing user. {str(e)}")
+            logger.error(f"Trying to register an existing user. {str(e)}")
             raise serializers.ValidationError({"error": str(e)})
-        logger.info(f"User success register as {user.username}, welcome to the game!")
         return user
 
 

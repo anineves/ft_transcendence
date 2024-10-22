@@ -36,7 +36,7 @@ clean: down rm-image
 fclean: clean
 	
 	@docker system prune -a
-	@sudo rm -rf ./logs ./authentication/auth/logs
+	@sudo rm -rf ./logs ./authentication/auth/logs/
 	@sudo rm -rf ./elk/elastic/data/*
 
 re: fclean up
