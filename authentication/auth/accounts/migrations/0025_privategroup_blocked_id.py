@@ -15,4 +15,9 @@ class Migration(migrations.Migration):
             name='blocked_id',
             field=models.IntegerField(default=None, null=True),
         ),
+        migrations.AddField(
+            model_name='player',
+            name='status',
+            field=models.CharField(choices=[('ON', 'Online'), ('OF', 'Offline')], default='ON', max_length=2),
+        ),
     ]

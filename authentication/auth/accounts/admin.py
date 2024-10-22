@@ -5,7 +5,8 @@ from .models import *
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'username', 'is_active', 'date_joined', 'otp', 'id')
+    list_display = ('email', 'username', 'is_active', \
+                    'date_joined', 'otp', 'otp_agreement', 'id')
 
 
 @admin.register(Player)

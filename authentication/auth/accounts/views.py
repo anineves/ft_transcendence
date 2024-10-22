@@ -46,6 +46,7 @@ class OneTimePasswordLogin(APIView):
 
         if user is not None:
             verification_token = generate_random_digits(len=6)
+            user.otp_agreement = True
             user.otp = verification_token
             user.otp_expiry_time = timezone.now() + timedelta(hours=1)
             user.save()
@@ -71,11 +72,13 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
+        
         try:
             serializer.is_valid(raise_exception=True)
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+
         user = serializer.user
         refresh = RefreshToken.for_user(user)
         response_data = {

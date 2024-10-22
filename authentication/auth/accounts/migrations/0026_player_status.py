@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='player',
             name='status',
             field=models.CharField(choices=[('ON', 'Online'), ('OF', 'Offline')], default='ON', max_length=2),

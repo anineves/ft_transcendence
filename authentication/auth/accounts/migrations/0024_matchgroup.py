@@ -20,4 +20,19 @@ class Migration(migrations.Migration):
                 ('player', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='player', to='accounts.player')),
             ],
         ),
+        migrations.AddField(
+            model_name='customuser',
+            name='otp',
+            field=models.CharField(blank=True, max_length=6),
+        ),
+        migrations.AddField(
+            model_name='customuser',
+            name='otp_expiry_time',
+            field=models.DateTimeField(blank=True, null=True),
+        ),
+        migrations.AddField(
+            model_name='customuser',
+            name='otp_agreement',
+            field=models.BooleanField(default=False),
+        ),
     ]

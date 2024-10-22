@@ -39,7 +39,7 @@ export const renderLogin = () => {
         <div class="background-form" id="loginForm" class="form-log-reg">
             <h2>${translations[savedLanguage].login}</h2>
             <form >
-                <input type="text" id="emailOrUsername" placeholder="${translations[savedLanguage].email}}" required class="form-control mb-2">
+                <input type="text" id="emailOrUsername" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
                 <button type="submit" id="btn-login"class="btn">${translations[savedLanguage].submit}</button>
             </form>
@@ -60,15 +60,17 @@ export const renderLogin = () => {
 
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/otp/', {
+            const response = await fetch('http://127.0.0.1:8000/api/token/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email: emailOrUsername, password })
+                body: JSON.stringify({ email: emailOrUsername, password, commonLogin: true })
             });
 
             if (response.ok) {
+                const data = await response.json();
+
                 sessionStorage.setItem('register', 'form');
                 // Armazena o token de acesso JWT.
                 sessionStorage.setItem('jwtToken', data.access); 
@@ -121,10 +123,10 @@ export const renderLogin = () => {
         }
     });
 
-    /*document.getElementById('loginForm2f').addEventListener('submit', async (e) => {
+    document.getElementById('loginForm2f').addEventListener('submit', async (e) => {
         e.preventDefault();
         const emailOrUsername = document.getElementById('emailOrUsername2').value;
-        const password = document.getElementById('password').value;
+        const password = document.getElementById('password2').value;
 
         try {
             const response = await fetch('http://127.0.0.1:8000/api/otp/', {
@@ -144,7 +146,7 @@ export const renderLogin = () => {
             console.error('Error:', error);
             alert('An error occurred during login');
         }
-    });*/
+    });
 
 };
 
