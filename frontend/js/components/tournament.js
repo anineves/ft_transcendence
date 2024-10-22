@@ -1,5 +1,6 @@
 import { navigateTo } from '../utils.js';
 import { resetGameState } from './pong/pong.js';
+import { initPongSocket } from './pong/pongSocket.js';
 
 const translations = {
     english: {
@@ -167,7 +168,7 @@ const shuffleArray = (array) => {
 
 export const initializeTournament = () => {
     let players = JSON.parse(sessionStorage.getItem('playerNames'));
-
+    let playersInfo = JSON.parse(sessionStorage.getItem('playerInfo'));
     
     players = shuffleArray(players);
 
@@ -188,25 +189,61 @@ const startMatch = () => {
     const nickname = sessionStorage.getItem('nickname');
     const currentRound = parseInt(sessionStorage.getItem('currentRound'), 10);
     resetGameState();
+    const modality = sessionStorage.getItem('modality');
+
+    const playersInfo = JSON.parse(sessionStorage.getItem('playersInfo')); // Parse do JSON
+
+    // Transformar playersInfo em um mapeamento
+    const playersMap = {};
+    playersInfo.forEach(player => {
+        playersMap[player.nickname] = player.id;
+    });
+    
     if (currentRound < rounds.length) {
         const [player1, player2] = rounds[currentRound];
-        if (player1 === nickname || player2 === nickname) {
+        if (player1 === nickname || player2 === nickname) 
+        {
             sessionStorage.setItem("nickTorn", "True"); // O jogador está jogando
         } else {
             sessionStorage.setItem("nickTorn", "False"); // O jogador não está jogando
         }
+        const player1Id = playersMap[player1]; // Use o mapeamento
+        const player2Id = playersMap[player2]; // Use o mapeamento
+
+        console.log("Player 1: ", player1, "ID: ", player1Id);
+        console.log("Player 2: ", player2, "ID: ", player2Id);
+        
         sessionStorage.setItem('currentMatch', JSON.stringify({ player1, player2 }));
         const match = document.getElementById('match-footer');
             match.innerHTML = `
             <div class="match-footer">
                 <p> The next game will be: ${player1} vs ${player2} </p>
             </div>`
+        if (modality === 'tourn-remote') {
 
-        setTimeout(() => {
-            resetGameState();
-            
+            console.log("Entrou na modalidade remota");
+            console.log("Player 1: ", player1, "ID: ", player1Id);
+            console.log("Player 2: ", player2, "ID: ", player2Id);
+            const groupName = `privateGroup${player1Id}${player2Id}`;
+            sessionStorage.setItem("groupName", groupName);
+            console.log("Group name", groupName);
+            //const url = `ws://localhost:8000/ws/pong_match/${groupName}/`;
+            let ws= null;
+            ws = new WebSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+            sessionStorage.setItem('playerID', player1Id);
+            sessionStorage.setItem('friendID', player2Id);
             navigateTo('/pong');
-        }, 2000); 
+
+        }
+        else{
+
+            setTimeout(() => {
+                resetGameState();
+                
+                navigateTo('/pong');
+            }, 2000); 
+        }
+
     } else {
         const winners = JSON.parse(sessionStorage.getItem('winners'));
         if (winners.length > 1) {

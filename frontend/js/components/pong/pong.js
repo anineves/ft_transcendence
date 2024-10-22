@@ -26,7 +26,7 @@ export const startPongGame = async () => {
     let opponent = 1;
     let friendId = sessionStorage.getItem('friendID');
     let nickTorn = sessionStorage.getItem("nickTorn");
-    if (modality2 == 'remote' && inviter == "True")
+    if (modality2 == 'remote' && inviter == "True" || modality2 == 'tourn-remote')
         opponent = friendId;
     const players = [player, opponent];
     sessionStorage.setItem('game', game);
@@ -72,8 +72,9 @@ export const startPongGame = async () => {
             }
         }
     }
-    if (modality2 == 'remote') {
+    if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         const groupName = sessionStorage.getItem("groupName");
+        console.log("groupNAMEEEE", groupName);
         ws = initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
         
         ws.onmessage = (event) => {
@@ -116,7 +117,7 @@ export function updateBall() {
 
     if (ballY + ballRadius > canvas.height || ballY - ballRadius < 0) {
         ballSpeedY = -ballSpeedY;
-        if (modality2 == 'remote') {
+        if (modality2 == 'remote' || modality2 == 'tourn-remote') {
             if (currentPlayer === playerID) {
                 ws.send(JSON.stringify({
                     'action': 'ball_track',
@@ -160,7 +161,7 @@ function initialize() {
         let groupName = sessionStorage.getItem('groupName');
         let modality = sessionStorage.getItem('modality');
 
-        if (modality === 'remote') {
+        if (modality === 'remote' || modality2 == 'tourn-remote') {
             if (ws) {
                
                 ws.send(JSON.stringify({
@@ -291,7 +292,7 @@ function initialize() {
                 }
 
                 ballOutOfBoundsLeft = true;
-                if (modality2 == 'remote') {
+                if (modality2 == 'remote' || modality2 == 'tourn-remote') {
                     if (currentPlayer === playerID) {
                         ws.send(JSON.stringify({
                             'action': 'score_track',
@@ -317,7 +318,7 @@ function initialize() {
                     gameOver = true;
                 }
                 ballOutOfBoundsRight = true;
-                if (modality2 == 'remote') {
+                if (modality2 == 'remote' || modality2 == 'tourn-remote') {
                     if (currentPlayer === playerID) {
                         ws.send(JSON.stringify({
                             'action': 'score_track',
@@ -340,7 +341,7 @@ function initialize() {
         if (ballX - ballRadius < paddleWidth && ballY > playerY && ballY < playerY + paddleHeight) {
             ballX = paddleWidth + ballRadius;
             ballSpeedX = -ballSpeedX;
-            if (modality2 == 'remote') {
+            if (modality2 == 'remote' || modality2 == 'tourn-remote') {
                 if (currentPlayer === playerID) {
                     ws.send(JSON.stringify({
                         'action': 'ball_track',
@@ -359,7 +360,7 @@ function initialize() {
         if (ballX + ballRadius > canvas.width - paddleWidth && ballY > opponentY && ballY < opponentY + paddleHeight) {
             ballX = canvas.width - paddleWidth - ballRadius;
             ballSpeedX = -ballSpeedX;
-            if (modality2 == 'remote') {
+            if (modality2 == 'remote' || modality2 == 'tourn-remote') {
                 if (currentPlayer === playerID) {
                     ws.send(JSON.stringify({
                         'action': 'ball_track',
@@ -385,7 +386,7 @@ function initialize() {
         const modality2 = sessionStorage.getItem('modality');
         let opponent = 1;
         let friendId = sessionStorage.getItem('friendID');
-        if (modality2 == 'remote' && inviter == "True")
+        if (modality2 == 'remote' && inviter == "True" || modality2 == 'tourn-remote')
             opponent = friendId;
         const players = [player, opponent];
         sessionStorage.setItem('game', game);
@@ -459,7 +460,7 @@ function initialize() {
         });
 
         document.addEventListener('keydown', function (event) {
-            if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai' && sessionStorage.getItem('modality') !== 'remote') {
+            if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai' && sessionStorage.getItem('modality') !== 'remote' && modality2 != 'tourn-remote') {
                 movePaddle(event);
             }
         });
@@ -471,12 +472,12 @@ function initialize() {
         });
 
         document.addEventListener('keyup', function (event) {
-            if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai' && sessionStorage.getItem('modality') !== 'remote') {
+            if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai' && sessionStorage.getItem('modality') !== 'remote' && modality2 != 'tourn-remote') {
                 stopPaddle(event);
             }
         });
     }
-    else if (modality2 == 'remote') {
+    else if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         //console.log("entreiiiiiiiii remore")
         const player_id = sessionStorage.getItem("player");
         document.addEventListener('keydown', function (event) {

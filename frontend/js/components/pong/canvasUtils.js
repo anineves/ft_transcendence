@@ -32,7 +32,7 @@ let paddleSpeed = 10;
 
 export function movePaddle(event) {
     const modality2 = sessionStorage.getItem('modality');
-    if(modality2 != 'remote')
+    if(modality2 != 'remote' && modality2 != 'tourn-remote')
     {
         if (event.key === 'ArrowUp') {
             clearInterval(playerPaddleInterval);
@@ -60,7 +60,7 @@ export function movePaddle(event) {
             }, 16);
         }
     }
-    else if(modality2 == 'remote')
+    else if(modality2 == 'remote' || modality2 == 'tourn-remote')
     {
         
         const playerID = sessionStorage.getItem('playerID');
@@ -99,14 +99,14 @@ export function movePaddle(event) {
 export function stopPaddle(event) {
     const modality2 = sessionStorage.getItem('modality');
     
-    if(modality2 !== 'remote') {
+    if(modality2 !== 'remote' && modality2 != 'tourn-remote') {
         if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
             clearInterval(playerPaddleInterval);
         } else if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
             clearInterval(opponentPaddleInterval);
         }
     }
-    else if(modality2 === 'remote') {
+    else if(modality2 === 'remote' || modality2 == 'tourn-remote') {
         const playerID = sessionStorage.getItem('playerID');
         const friendID = sessionStorage.getItem('friendID');
         let arrow_key = event.message.key

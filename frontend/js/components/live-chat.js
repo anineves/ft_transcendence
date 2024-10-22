@@ -168,8 +168,9 @@ export const liveChat = () => {
             console.log('Player names:', playerNames);
             sessionStorage.setItem('playerNames', JSON.stringify(playerNames));
             console.log('Tournament is full! Participants:', data.participants);
+            sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
             //CRIAR NOVA MODALIDADDEEEEEEEE
-            sessionStorage.setItem('modality', 'tournament');
+            sessionStorage.setItem('modality', 'tourn-remote');
             initializeTournament();
         }
     };
