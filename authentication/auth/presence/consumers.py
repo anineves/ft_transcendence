@@ -226,6 +226,10 @@ class PongConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None):
         data = json.loads(text_data)
+
+        print("Data:")
+        pprint.pp(data)
+
         if data.get('Authorization'):
             self.user = handle_authentication(self, data.get('Authorization'))
             if self.user:

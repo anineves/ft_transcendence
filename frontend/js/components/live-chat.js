@@ -162,6 +162,7 @@ export const liveChat = () => {
         }
     
         if (data.action === 'tournament_full') {
+            document.body.removeChild(participateButton)
             //console.log('Tournament is full! Participants:', data.participants);
             //alert('Tournament is full! Redirecting to matchmaking...');
             const playerNames = data.participants.map(participant => participant.nickname);
@@ -171,6 +172,8 @@ export const liveChat = () => {
             sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
             //CRIAR NOVA MODALIDADDEEEEEEEE
             sessionStorage.setItem('modality', 'tourn-remote');
+            sessionStorage.setItem('lastPlayer', playerNames[3]);
+            console.log("last Player",sessionStorage.getItem('lastPlayer'));
             initializeTournament();
         }
     };

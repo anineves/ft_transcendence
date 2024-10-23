@@ -168,15 +168,14 @@ const shuffleArray = (array) => {
 
 export const initializeTournament = () => {
     let players = JSON.parse(sessionStorage.getItem('playerNames'));
-    let playersInfo = JSON.parse(sessionStorage.getItem('playerInfo'));
-    
-    players = shuffleArray(players);
+    //let lastPlayer = JSON.parse(sessionStorage.getItem('lastPlayer'));
 
-   
-    const rounds = [];
-    for (let i = 0; i < players.length; i += 2) {
-        rounds.push([players[i], players[i + 1]]);
-    }
+    //players = shuffleArray(players);
+        const rounds = [];
+        for (let i = 0; i < players.length; i += 2) {
+            rounds.push([players[i], players[i + 1]]);
+        }
+    
 
     sessionStorage.setItem('rounds', JSON.stringify(rounds));
     sessionStorage.setItem('currentRound', '0');
@@ -201,14 +200,14 @@ const startMatch = () => {
     
     if (currentRound < rounds.length) {
         const [player1, player2] = rounds[currentRound];
-        if (player1 === nickname || player2 === nickname) 
+        if (modality == "remote" && (player1 === nickname || player2 === nickname)) 
         {
-            sessionStorage.setItem("nickTorn", "True"); // O jogador está jogando
+            sessionStorage.setItem("nickTorn", "True"); 
         } else {
-            sessionStorage.setItem("nickTorn", "False"); // O jogador não está jogando
+            sessionStorage.setItem("nickTorn", "False"); 
         }
-        const player1Id = playersMap[player1]; // Use o mapeamento
-        const player2Id = playersMap[player2]; // Use o mapeamento
+        const player1Id = playersMap[player1]; 
+        const player2Id = playersMap[player2]; 
 
         console.log("Player 1: ", player1, "ID: ", player1Id);
         console.log("Player 2: ", player2, "ID: ", player2Id);
@@ -221,19 +220,27 @@ const startMatch = () => {
             </div>`
         if (modality === 'tourn-remote') {
 
-            console.log("Entrou na modalidade remota");
-            console.log("Player 1: ", player1, "ID: ", player1Id);
-            console.log("Player 2: ", player2, "ID: ", player2Id);
+            setTimeout(() => {
             const groupName = `privateGroup${player1Id}${player2Id}`;
             sessionStorage.setItem("groupName", groupName);
             console.log("Group name", groupName);
-            //const url = `ws://localhost:8000/ws/pong_match/${groupName}/`;
             let ws= null;
             ws = new WebSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
             sessionStorage.setItem('playerID', player1Id);
             sessionStorage.setItem('friendID', player2Id);
-            navigateTo('/pong');
+            const player = sessionStorage.getItem('player');
+            console.log("-------", player, player1Id, player2Id)
+            if(player == player1Id)
+            {
+                sessionStorage.setItem("nickTorn", "True"); 
+            } else 
+            {
+                sessionStorage.setItem("nickTorn", "False"); 
+            }
 
+                console.log("Jogarrrrrr")
+                navigateTo('/pong');
+            }, 2000); 
         }
         else{
 

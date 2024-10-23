@@ -36,7 +36,7 @@ export const startPongGame = async () => {
     let match_type = "RM";
     if (modality2 == "ai") match_type = "AI";
     if (modality2 == "remote") match_type = "RM";
-    if (modality2 == "tournament"){
+    if (modality2 == "tournament" || modality2 == 'tourn-remote'){
         match_type = "TN"
         const match = document.getElementById('match-footer');
             match.innerHTML = `
@@ -46,8 +46,10 @@ export const startPongGame = async () => {
         
     if (modality2 == "player" || modality2 == "3D") match_type = "MP";
 
-
-    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))&& (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')))  {
+    
+    console.log("matchhhhhhh ", modality2, nickTorn )
+    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
+    (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
         if (player) {
             try {
                 const response = await fetch('http://localhost:8000/api/matches/', {
@@ -147,7 +149,7 @@ function initialize() {
     initializeBall();
     if (!canvas || !context) return;
 
-    const handleVisibilityChange = () => {
+    /*const handleVisibilityChange = () => {
         if (window.location.href !== "https://localhost:8080/pong") {
             cleanup();
             return; 
@@ -242,7 +244,7 @@ function initialize() {
 
     if (window.location.href !== "https://localhost:8080/pong") {
         cleanup();
-    }
+    }*/
     
     
     function draw() {
@@ -398,7 +400,8 @@ function initialize() {
         } else {
             const id = sessionStorage.getItem('id_match');
             let winner_id = opponent;
-            if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))&& (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
+            if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
+            (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
                 try {
                     if(modality2 == 'remote')
                         ws =  null;
@@ -429,6 +432,12 @@ function initialize() {
             if (sessionStorage.getItem('modality') == 'tournament') {
                 showNextMatchButton();
             }
+            if(sessionStorage.getItem('modality') == 'tourn-remote')
+            {
+                const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+                const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
+                endMatch(winner); 
+            }
             sessionStorage.removeItem("Inviter");
             sessionStorage.removeItem("groupName");
             sessionStorage.setItem('WS', 'clean');
@@ -451,8 +460,7 @@ function initialize() {
     }
 
     const modality2 = sessionStorage.getItem('modality');
-    if (modality2 != 'remote') {
-        //console.log("entreiiiiiiiii")
+    if (modality2 != 'remote'  &&  modality2 != 'tourn-remote') {
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
                 movePaddle(event);
@@ -478,7 +486,6 @@ function initialize() {
         });
     }
     else if (modality2 == 'remote' || modality2 == 'tourn-remote') {
-        //console.log("entreiiiiiiiii remore")
         const player_id = sessionStorage.getItem("player");
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
