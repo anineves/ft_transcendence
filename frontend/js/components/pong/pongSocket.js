@@ -56,10 +56,16 @@ export function initPongSocket(url) {
             console.log("Lobby is full");
             sessionStorage.setItem('playerID', data.message.player);
             sessionStorage.setItem('friendID', data.message.opponent);
-            navigateTo('/pong');
-        }
+            let duelGame = sessionStorage.getItem("duelGame");
+            if(duelGame == "duel-snake")
+            {
+                navigateTo('/snake');
+            }
+            else{
+                navigateTo('/pong');
+            }
     }
-
+    }
     ws.onclose = () => {
         console.log("WebSocket connection closed.");
         ws = null;

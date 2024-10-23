@@ -80,20 +80,44 @@ export const startSnakeGame = async () => {
                 alert('Error occurred while processing match.');
             }
         }
+        document.addEventListener('keydown', (event) => {
+            switch(event.key) {
+                case 'w': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: -1 }; break;
+                case 's': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: 1 }; break;
+                case 'a': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: -1, y: 0 }; break;
+                case 'd': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: 1, y: 0 }; break;
+                case 'ArrowUp': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: -1 }; break;
+                case 'ArrowDown': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: 1 }; break;
+                case 'ArrowLeft': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: -1, y: 0 }; break;
+                case 'ArrowRight': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: 1, y: 0 }; break;
+            }
+        });
     }
+    /*if (modality2 == 'remote') {
+        const groupName = sessionStorage.getItem("groupName");
+        console.log("groupNAMEEEE", groupName);
+        ws = initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+        
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.action === 'ball_track') {
+                ballX = data.message.ball_x;
+                ballY = data.message.ball_y;
+                ballSpeedY = data.message.ballSpeedY;
+                ballSpeedX = data.message.ballSpeedX;
+            }
+            if (data.action === 'move_paddle') movePaddle(data);
+            if (data.action === 'stop_paddle') stopPaddle(data);
+            if (data.action === 'score_track') {
+                playerScore = data.message.player_score;
+                opponentScore = data.message.opponent_score;
+                gameOver = data.message.game_over;
+            }
+        };
+    }*/
 
-    document.addEventListener('keydown', (event) => {
-        switch(event.key) {
-            case 'w': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: -1 }; break;
-            case 's': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: 1 }; break;
-            case 'a': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: -1, y: 0 }; break;
-            case 'd': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: 1, y: 0 }; break;
-            case 'ArrowUp': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: -1 }; break;
-            case 'ArrowDown': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: 1 }; break;
-            case 'ArrowLeft': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: -1, y: 0 }; break;
-            case 'ArrowRight': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: 1, y: 0 }; break;
-        }
-    });
+
+    
 }
 
 function resetGame() {
@@ -183,11 +207,13 @@ async function drawGame() {
     drawScore();
 
     if (gameOver) {
+        drawGameOver();
         const id = sessionStorage.getItem('id_match');
         const remote = sessionStorage.getItem('remote');
         const player = sessionStorage.getItem('player');
         let opponent =1;
         let winner_id = 1;
+      
         if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))) {
             try {
                 

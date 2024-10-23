@@ -140,6 +140,32 @@ class ChatConsumer(WebsocketConsumer):
                 }
             )
 
+        if data.get("action") == "duel-snake":
+            async_to_sync(self.channel_layer.group_send)(   
+                self.private_group.group_name,
+                    {                
+                        "type": "chat.message",
+                        "action": "duel-snake",
+                        "message": {
+                            'content': f"{self.user.player}: {message}",
+                            "from_user": self.user.id,
+                            "group_name": self.private_group.group_name
+                        }
+                    }
+            )
+        else:
+            async_to_sync(self.channel_layer.group_send)(   
+                self.private_group.group_name,
+                    {                
+                        "type": "chat.message",
+                        "message": {
+                            'content': f"{self.user.player}: {message}",
+                            "from_player": self.user.player.id
+                        }
+                }
+            )
+
+
     def get_or_create_new_room(self, to_player):
         from_player = self.user.player
         room_list = [from_player.id, to_player.id]
@@ -408,3 +434,127 @@ class TournamentConsumer(WebsocketConsumer):
             'message': message,
             'participants': TournamentConsumer.tournament_players  # Envie a lista de participantes para o cliente
         }))
+
+
+class SnakeConsumer(WebsocketConsumer):
+    
+    def connect(self):
+        self.group_name = self.scope["url_route"]["kwargs"]["pong_match"]
+        self.pong_match = f"pong_group_{self.group_name}"
+        self.user = self.scope["user"]       
+        self.accept()
+
+    def disconnect(self, close_code):
+        if close_code == 400:
+            self.send_self_channel_messages(
+                "Authentication failed. \
+                Ensure you must have a valid account and a player to access this feature."
+            )
+
+        async_to_sync(self.channel_layer.group_discard)(
+            self.match_group.group_name, self.channel_name
+        )
+        if close_code == 401:
+            self.match_group.delete()
+
+        self.close()
+        return super().disconnect(close_code)
+
+    def receive(self, text_data=None):
+        data = json.loads(text_data)
+
+        print("Data:")
+        pprint.pp(data)
+
+        if data.get('Authorization'):
+            self.user = handle_authentication(self, data.get('Authorization'))
+            if self.user:
+                self.get_or_create_new_room()
+            else:
+                return self.disconnect(400)
+
+        if data.get('action') == 'end_game':
+            return self.disconnect(401)
+
+        if data.get('action') == 'move_paddle' or data.get('action') == 'stop_paddle':
+            message = data.get('message')
+            async_to_sync(self.channel_layer.group_send)(
+                self.match_group.group_name, 
+                {
+                    "type": "pong.log",
+                    "action": data.get('action'),
+                    "message": message
+                }
+            )
+            
+
+        if data.get('action') == 'ball_track':
+            message = data.get('message')
+            async_to_sync(self.channel_layer.group_send)(
+                self.match_group.group_name, 
+                {
+                    "type": "pong.log",
+                    "action": data.get('action'),
+                    "message": message
+                }
+            )
+
+        if data.get('action') == 'score_track':
+            message = data.get('message')
+            game_over = message.get('game_over')
+            if game_over == True:
+                return self.disconnect(401)
+            async_to_sync(self.channel_layer.group_send)(
+                self.match_group.group_name, 
+                {
+                    "type": "pong.log",
+                    "action": data.get('action'),
+                    "message": message
+                }
+            )
+
+    def pong_log(self, event):
+        message = event["message"]
+        action = event.get("action")
+        
+        self.send(text_data=json.dumps({
+            "action": action if action else "Null",
+            "message": message
+        }))
+
+    def send_self_channel_messages(self, message):
+        async_to_sync(self.channel_layer.send)(self.channel_name, 
+            {
+                "type": "pong.log",
+                "message": message
+            })
+        
+    def get_or_create_new_room(self):
+        player = self.user.player
+        try:
+            self.match_group, created = MatchGroup.objects.get_or_create(
+                group_name=self.pong_match
+            )
+            if created:
+                self.match_group.player = player
+                async_to_sync(self.channel_layer.group_add)(
+                    self.match_group.group_name, self.channel_name)
+            else:
+                self.match_group.opponent = player
+                async_to_sync(self.channel_layer.group_add)(
+                    self.match_group.group_name, self.channel_name)
+                async_to_sync(self.channel_layer.group_send)(
+                    self.match_group.group_name, 
+                    {
+                        'type': 'pong.log',
+                        'action': 'full_lobby',
+                        'message': {
+                            'player': self.match_group.player.id,
+                            'opponent': self.match_group.opponent.id
+                        }
+                    }
+                )
+            self.match_group.save()
+        except Exception as e:
+            print(f"# Something went wrong with creating_new_room: \n{e}")
+        return

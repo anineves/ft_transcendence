@@ -89,6 +89,7 @@ export const liveChat = () => {
                         <button id="block-button"><i class="fas fa-ban"></i></button>
                         <button id="unblock-button"><i class="fas fa-unlock"></i></button>
                         <button id="duel-button"><i class="fas fa-crossed-swords"></i> ${translations[savedLanguage].duelBtn}</button>
+                        <button id="duel-button-snake"><i class="fas fa-crossed-swords"></i> ${translations[savedLanguage].duelBtn}Snake</button>
                     </div>
                 </div>
                 <div id="block-input-container" style="display: none;">
@@ -102,6 +103,10 @@ export const liveChat = () => {
                 <div id="duel-input-container" style="display: none;">
                     <input id="duel-player-input" type="text" placeholder="${translations[savedLanguage].duelBtn}...">
                     <button id="confirm-duel-button" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
+                </div>
+                <div id="duel-input-container-snake" style="display: none;">
+                    <input id="duel-player-input-snake" type="text" placeholder="${translations[savedLanguage].duelBtn}Snake...">
+                    <button id="confirm-duel-button-snake" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
                 </div>
                 <div id="create-tournament-container">
                     <button id="create-tournament-button" class="create-button">Create a Tournament</button>
@@ -146,8 +151,7 @@ export const liveChat = () => {
 
     socket2.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        console.log("Message from server:", data);
-        console.log("action:", data.action)
+
 
         let participateButton = document.getElementById('participate-tournament-button');
         if (!participateButton) 
@@ -162,18 +166,13 @@ export const liveChat = () => {
         }
     
         if (data.action === 'tournament_full') {
-            document.body.removeChild(participateButton)
-            //console.log('Tournament is full! Participants:', data.participants);
-            //alert('Tournament is full! Redirecting to matchmaking...');
+            document.body.removeChild(participateButton);
             const playerNames = data.participants.map(participant => participant.nickname);
-            console.log('Player names:', playerNames);
             sessionStorage.setItem('playerNames', JSON.stringify(playerNames));
-            console.log('Tournament is full! Participants:', data.participants);
             sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
-            //CRIAR NOVA MODALIDADDEEEEEEEE
             sessionStorage.setItem('modality', 'tourn-remote');
             sessionStorage.setItem('lastPlayer', playerNames[3]);
-            console.log("last Player",sessionStorage.getItem('lastPlayer'));
+
             initializeTournament();
         }
     };
@@ -261,7 +260,7 @@ export const liveChat = () => {
         
         addMessage(message.content, isOwnMessage);
         console.log()
-        if (data.action == "duel")
+        if (data.action == "duel" || data.action == "duel-snake")
         {
             const groupName = message.group_name;
             sessionStorage.setItem("groupName", groupName);
@@ -274,6 +273,8 @@ export const liveChat = () => {
             <a href="https://localhost:8080/wait-remote" id="accept-link">${translations[savedLanguage].acceptBtn}</a>
             `;
 
+            if(data.action == "duel-snake")
+                sessionStorage.setItem("duelGame", "duel-snake");
             chatBox.appendChild(duelMessage);
             if (user_json.id == message.from_user) {
                 sessionStorage.setItem("Inviter", "True");
@@ -368,6 +369,17 @@ export const liveChat = () => {
             duelContainer.style.display = 'none';
         }
     });
+
+    document.getElementById('duel-button-snake').addEventListener('click', function() {
+        const duelContainer = document.getElementById('duel-input-container-snake');
+        
+        // Toggle the visibility of the duel input container
+        if (duelContainer.style.display === 'none') {
+            duelContainer.style.display = 'block';
+        } else {
+            duelContainer.style.display = 'none';
+        }
+    });
     
     document.getElementById('confirm-duel-button').addEventListener('click', function() {
         const playerNickname = document.getElementById('duel-player-input').value;
@@ -394,4 +406,33 @@ export const liveChat = () => {
     socket.onclose = function () {
         console.error("Chat socket was close"); //Debug
     };
+    
+    document.getElementById('confirm-duel-button-snake').addEventListener('click', function() {
+        const playerNickname = document.getElementById('duel-player-input-snake').value;
+    
+        if (playerNickname) {
+            console.log("players", playerNickname, nickname);
+            if (playerNickname === nickname) {
+                alert(`${translations[savedLanguage].yourselfMsg}`);
+            }
+            else{
+                document.getElementById('duel-input-container-snake').style.display = 'none'; // Hide after confirmation
+                document.getElementById('duel-player-input-snake').value = ''; // Clear input field
+                
+                let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
+                
+                socket.send(JSON.stringify({ action: 'duel-snake', message: duel_message, is_private: true }));
+            }
+    
+        } else {
+            alert('Please enter a player nickname to duel.');
+        }
+    });    
+    
+    socket.onclose = function () {
+        console.error("Chat socket was close"); //Debug
+    };
 };
+
+
+
