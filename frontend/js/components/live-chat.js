@@ -275,6 +275,8 @@ export const liveChat = () => {
 
             if(data.action == "duel-snake")
                 sessionStorage.setItem("duelGame", "duel-snake");
+            if(data.action == "duel")
+                sessionStorage.setItem("duelGame", "duel-pong");
             chatBox.appendChild(duelMessage);
             if (user_json.id == message.from_user) {
                 sessionStorage.setItem("Inviter", "True");
