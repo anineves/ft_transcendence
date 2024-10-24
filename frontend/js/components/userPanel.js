@@ -80,6 +80,7 @@ export const renderPanel = async (user) => {
     const player = JSON.parse(sessionStorage.getItem('playerInfo'));
     const nickname = sessionStorage.getItem('nickname') || 'N/A';
 
+    console.log("ussseeer", user)
     // Função prevenir XSS
     const escapeHTML = (unsafe) => {
         
@@ -94,6 +95,7 @@ export const renderPanel = async (user) => {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     };
+
 
    
     app.innerHTML = `
@@ -110,7 +112,7 @@ export const renderPanel = async (user) => {
                         <p><strong>${escapeHTML(translations[savedLanguage].email)}:</strong> ${escapeHTML(user.email)}</p>
                         <p><strong>${escapeHTML(translations[savedLanguage].first)}:</strong> ${escapeHTML(user.first_name)}</p>
                         <p><strong>${escapeHTML(translations[savedLanguage].last)}:</strong> ${escapeHTML(user.last_name)}</p>
-                        <p><strong>Enable 2FA:</strong>${user.otp}</p>
+                        <p><strong>Enable 2FA:</strong><button id="btn-otp">${user.otp_agreement? 'true' : 'false'}</button></p>
                     </div>
                     <div class="progression" id="progression"></div>
                 </div>
@@ -136,6 +138,14 @@ export const renderPanel = async (user) => {
             </div>
         </div>
     `;
+
+
+    document.getElementById('btn-otp').addEventListener('click', () => {
+        handleUpdateOtp(user);
+    });
+
+
+    
 
   
     document.getElementById('updateProfileForm').addEventListener('submit', async (event) => {
@@ -250,6 +260,37 @@ const handleSendMessage = () => {
         navigateTo('/create-player');
     }
 };
+
+
+const handleUpdateOtp = async (user) => {
+    let otp_agreement = user.otp_agreement; // Verifica o estado atual de OTP
+    otp_agreement = !otp_agreement // Alterna entre verdadeiro e falso
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/user/${user.id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ otp_agreement }) // Envia o novo valor como booleano
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            sessionStorage.setItem('user', JSON.stringify(data));
+            checkLoginStatus();
+            navigateTo('/user-panel', data);
+        } else {
+            alert('Update failed: ' + JSON.stringify(data));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating the profile.');
+    }
+};
+
 
 const handleUpdateProfile = async (e, user) => {
     e.preventDefault();

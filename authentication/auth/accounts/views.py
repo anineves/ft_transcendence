@@ -91,7 +91,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'avatar': request.build_absolute_uri(user.avatar.url) if user.avatar else None,
-                'otp': user.otp_agreement
+                'otp_agreement': user.otp_agreement
             }
         }
         return Response(response_data, status=status.HTTP_200_OK)
