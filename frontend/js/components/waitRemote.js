@@ -16,7 +16,7 @@ export const waitRemote = () => {
         const groupName = sessionStorage.getItem("groupName"); 
         
         if (groupName)
-            initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+            initPongSocket(`ws://localhost:8000/ws/snake_match/${groupName}/`);
         else
             alert("Something went wrong with groupName")
     }

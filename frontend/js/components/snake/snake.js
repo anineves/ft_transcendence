@@ -1,9 +1,13 @@
+import { initPongSocket } from '../pong/pongSocket.js'
+
+
 let canvas, ctx;
 let numCells;
 const gridSize = 16;
 let gameOver = false; 
 let gameInterval;
 let speed = 200; 
+let ws;
 
 let snakePlayer = { 
     body: [{ x: 3, y: 3 }], 
@@ -21,10 +25,11 @@ let snakeOpponent = {
     hitWall: false
 };
 
-let foods = [{ 
-    x: Math.floor(Math.random() * 18) + 1, 
-    y: Math.floor(Math.random() * 18) + 1  
-}];
+let foods;
+//  = [{ 
+//     x: Math.floor(Math.random() * 18) + 1, 
+//     y: Math.floor(Math.random() * 18) + 1  
+// }];
 
 export const startSnakeGame = async () => {
     let modality2 = sessionStorage.getItem('modality');
@@ -40,10 +45,15 @@ export const startSnakeGame = async () => {
 
     resetGame();
     gameInterval = setInterval(gameLoop, speed);
+
     const player = sessionStorage.getItem('player');
+    const playerID = sessionStorage.getItem('playerID');
+    const friendID = sessionStorage.getItem('friendID');
+    const inviter = sessionStorage.getItem('Inviter');
     const game = 2;
     let opponent = 1;
     const players = [player, opponent];
+
     sessionStorage.setItem('game', game);
     sessionStorage.setItem('players', players);
     let match_type = "MP"
@@ -55,7 +65,52 @@ export const startSnakeGame = async () => {
     if (modality2 == "player" || modality2 == "3D")
         match_type = "MP"
 
-    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')))  {
+
+    if (modality2 == 'remote') {
+        const groupName = sessionStorage.getItem("groupName");
+        console.log("groupName", groupName);
+        ws = initPongSocket(`ws://localhost:8000/ws/snake_match/${groupName}/`);
+        
+        ws.onmessage = (event) => {
+            
+            // console.log("Event On Message: ", event);
+            const data = JSON.parse(event.data);
+            // console.log("SnakeSocket Data: ", data);    
+            
+            if (data.action == 'move_snake') {
+                
+                switch(data.message.key) {
+                    case 'ArrowUp': if (snakePlayer.direction.y === 0 && playerID == data.message.player) snakePlayer.direction = { x: 0, y: -1 };
+                                    else if (snakeOpponent.direction.y === 0 && friendID == data.message.player) snakeOpponent.direction = { x: 0, y: -1 }; break;
+                    case 'ArrowDown': if (snakePlayer.direction.y === 0 && playerID == data.message.player) snakePlayer.direction = { x: 0, y: 1 }; 
+                                    else if (snakeOpponent.direction.y === 0 && friendID == data.message.player) snakeOpponent.direction = { x: 0, y: 1 }; break;
+                    case 'ArrowLeft': if (snakePlayer.direction.x === 0 && playerID == data.message.player) snakePlayer.direction = { x: -1, y: 0 };
+                                    else if (snakeOpponent.direction.x === 0 && friendID == data.message.player) snakeOpponent.direction = { x: -1, y: 0 }; break;
+                    case 'ArrowRight': if (snakePlayer.direction.x === 0 && playerID == data.message.player) snakePlayer.direction = { x: 1, y: 0 }; 
+                                    else if (snakeOpponent.direction.x === 0 && friendID == data.message.player) snakeOpponent.direction = { x: 1, y: 0 }; break;
+                }
+            }
+            if (data.action == 'place_food') {
+                foods.push({ 
+                    x: data.message.x,
+                    y: data.message.y
+                });
+            }
+            if (data.action == 'update_snake') {
+                // console.log("update_snake:", data)
+                if (data.message.snake.color === 'blue')
+                    snakeOpponent = data.message.snake;
+                else
+                    snakePlayer = data.message.snake;
+            }
+            if (data.action == 'game_over') {
+                gameOver = true;
+            }
+        };
+    }
+
+
+    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter == 'True')))  {
         if (player) {
             try {
                 const response = await fetch('http://localhost:8000/api/matches/', {
@@ -80,44 +135,39 @@ export const startSnakeGame = async () => {
                 alert('Error occurred while processing match.');
             }
         }
-        document.addEventListener('keydown', (event) => {
-            switch(event.key) {
-                case 'w': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: -1 }; break;
-                case 's': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: 1 }; break;
-                case 'a': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: -1, y: 0 }; break;
-                case 'd': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: 1, y: 0 }; break;
-                case 'ArrowUp': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: -1 }; break;
-                case 'ArrowDown': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: 1 }; break;
-                case 'ArrowLeft': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: -1, y: 0 }; break;
-                case 'ArrowRight': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: 1, y: 0 }; break;
-            }
-        });
     }
-    /*if (modality2 == 'remote') {
-        const groupName = sessionStorage.getItem("groupName");
-        console.log("groupNAMEEEE", groupName);
-        ws = initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+    document.addEventListener('keydown', (event) => {
         
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.action === 'ball_track') {
-                ballX = data.message.ball_x;
-                ballY = data.message.ball_y;
-                ballSpeedY = data.message.ballSpeedY;
-                ballSpeedX = data.message.ballSpeedX;
-            }
-            if (data.action === 'move_paddle') movePaddle(data);
-            if (data.action === 'stop_paddle') stopPaddle(data);
-            if (data.action === 'score_track') {
-                playerScore = data.message.player_score;
-                opponentScore = data.message.opponent_score;
-                gameOver = data.message.game_over;
-            }
-        };
-    }*/
+        // console.log("KeySnakeEvents: ", event)
+        // console.log("PlayerInSnake: ", player)
 
+        ws.send(JSON.stringify({
+            'action': 'move_snake',
+            'message': {
+                'player': player,
+                'key': event.key
+            }
+        }));
+    });
 
-    
+            // switch(event.key) {
+            //     // case 'w': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: -1 }; break;
+            //     // case 's': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: 1 }; break;
+            //     // case 'a': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: -1, y: 0 }; break;
+            //     // case 'd': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: 1, y: 0 }; break;
+                
+            //     case 'ArrowUp': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: -1 }; 
+            //     ws.send(JSON.stringify({
+            //         'action': 'move_snake',
+            //         'message': {
+            //             'player': player,
+            //             'key': event.key
+            //         }
+            //     })); break;
+            //     case 'ArrowDown': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: 1 }; break;
+            //     case 'ArrowLeft': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: -1, y: 0 }; break;
+            //     case 'ArrowRight': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: 1, y: 0 }; break;
+            // }    
 }
 
 function resetGame() {
@@ -130,7 +180,7 @@ function resetGame() {
     snakeOpponent.direction = { x: 1, y: 0 };
     snakeOpponent.foodCount = 0; 
     snakeOpponent.hitWall = false;
-
+    //TODO: Precisa colocar primeira comida no mesmo lugar para ambos.
     foods = [{ 
         x: Math.floor(Math.random() * 18) + 1, 
         y: Math.floor(Math.random() * 18) + 1  
@@ -146,7 +196,12 @@ function gameLoop() {
     }
 }
 
+//TODO: Não sei se pode ficar aqui
+const player = sessionStorage.getItem('player');
+const playerID = sessionStorage.getItem('playerID');
+
 function updateSnake(snake) {
+
     const newHead = {
         x: snake.body[0].x + snake.direction.x,
         y: snake.body[0].y + snake.direction.y
@@ -163,13 +218,38 @@ function updateSnake(snake) {
         }
     }
     snake.body.pop();
+
+    if (modality2 == 'remote') {
+        if (player === playerID) {
+            ws.send(JSON.stringify({
+                'action': 'update_snake',
+                'message': {
+                    'player': player,
+                    'snake': snake,
+                }
+            }));
+        }
+    }
 }
 
 function placeFood() {
-    foods.push({ 
-        x: Math.floor(Math.random() * 18) + 1, 
-        y: Math.floor(Math.random() * 18) + 1 
-    });
+    // foods.push({ 
+    let x = Math.floor(Math.random() * 18) + 1;
+    let y = Math.floor(Math.random() * 18) + 1; 
+    // });
+
+    if (modality2 == 'remote') {
+        if (player === playerID) {
+            ws.send(JSON.stringify({
+                'action': 'place_food',
+                'message': {
+                    'player': player,
+                    'x': x,
+                    'y': y,
+                }
+            }));
+        }
+    }
 }
 
 function checkCollisions() {
@@ -195,8 +275,19 @@ function checkCollisions() {
 }
 
 function endGame() {
-    gameOver = true; 
+    gameOver = true;
+    ws.send(JSON.stringify({
+        'action': 'end_game',
+        'message': {
+            'player': player,
+            'end_game': true
+        }
+    }));
 }
+
+const inviter = sessionStorage.getItem('Inviter'); // Não sei se posso deixar isso aqui
+const user = sessionStorage.getItem('user');
+const modality2 = sessionStorage.getItem('modality');
 
 async function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -214,7 +305,7 @@ async function drawGame() {
         let opponent =1;
         let winner_id = 1;
       
-        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))) {
+        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter == 'True'))) {
             try {
                 
                 if (snakePlayer.foodCount > snakeOpponent.foodCount)

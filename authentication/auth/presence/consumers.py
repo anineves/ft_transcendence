@@ -253,8 +253,8 @@ class PongConsumer(WebsocketConsumer):
     def receive(self, text_data=None):
         data = json.loads(text_data)
 
-        print("Data:")
-        pprint.pp(data)
+        # print("Data:")
+        # pprint.pp(data)
 
         if data.get('Authorization'):
             self.user = handle_authentication(self, data.get('Authorization'))
@@ -439,8 +439,8 @@ class TournamentConsumer(WebsocketConsumer):
 class SnakeConsumer(WebsocketConsumer):
     
     def connect(self):
-        self.group_name = self.scope["url_route"]["kwargs"]["pong_match"]
-        self.pong_match = f"pong_group_{self.group_name}"
+        self.group_name = self.scope["url_route"]["kwargs"]["snake_match"]
+        self.snake_match = f"snake_group_{self.group_name}"
         self.user = self.scope["user"]       
         self.accept()
 
@@ -463,7 +463,7 @@ class SnakeConsumer(WebsocketConsumer):
     def receive(self, text_data=None):
         data = json.loads(text_data)
 
-        print("Data:")
+        print("Data SnakeConsumer:", end=" - ")
         pprint.pp(data)
 
         if data.get('Authorization'):
@@ -475,45 +475,19 @@ class SnakeConsumer(WebsocketConsumer):
 
         if data.get('action') == 'end_game':
             return self.disconnect(401)
-
-        if data.get('action') == 'move_paddle' or data.get('action') == 'stop_paddle':
+        elif data.get('action') != None:
             message = data.get('message')
+            print(f"Message In Snake Action: {message}")
             async_to_sync(self.channel_layer.group_send)(
                 self.match_group.group_name, 
                 {
-                    "type": "pong.log",
-                    "action": data.get('action'),
-                    "message": message
-                }
-            )
-            
-
-        if data.get('action') == 'ball_track':
-            message = data.get('message')
-            async_to_sync(self.channel_layer.group_send)(
-                self.match_group.group_name, 
-                {
-                    "type": "pong.log",
+                    "type": "snake.log",
                     "action": data.get('action'),
                     "message": message
                 }
             )
 
-        if data.get('action') == 'score_track':
-            message = data.get('message')
-            game_over = message.get('game_over')
-            if game_over == True:
-                return self.disconnect(401)
-            async_to_sync(self.channel_layer.group_send)(
-                self.match_group.group_name, 
-                {
-                    "type": "pong.log",
-                    "action": data.get('action'),
-                    "message": message
-                }
-            )
-
-    def pong_log(self, event):
+    def snake_log(self, event):
         message = event["message"]
         action = event.get("action")
         
@@ -525,7 +499,7 @@ class SnakeConsumer(WebsocketConsumer):
     def send_self_channel_messages(self, message):
         async_to_sync(self.channel_layer.send)(self.channel_name, 
             {
-                "type": "pong.log",
+                "type": "snake.log",
                 "message": message
             })
         
@@ -533,7 +507,7 @@ class SnakeConsumer(WebsocketConsumer):
         player = self.user.player
         try:
             self.match_group, created = MatchGroup.objects.get_or_create(
-                group_name=self.pong_match
+                group_name=self.snake_match
             )
             if created:
                 self.match_group.player = player
@@ -546,7 +520,7 @@ class SnakeConsumer(WebsocketConsumer):
                 async_to_sync(self.channel_layer.group_send)(
                     self.match_group.group_name, 
                     {
-                        'type': 'pong.log',
+                        'type': 'snake.log',
                         'action': 'full_lobby',
                         'message': {
                             'player': self.match_group.player.id,
