@@ -1,10 +1,12 @@
 import { startSnakeGame, stopGame, changeGameSpeed, addExtraFood } from './snake/snake.js';
 import { navigateTo } from '../utils.js';
-const user = sessionStorage.getItem('user');
-const modality2 = sessionStorage.getItem('modality');
-let inviter = sessionStorage.getItem("Inviter");
+import { resetGameSnake } from './snake/snake.js';
+
 
 export const renderSnake = () => {
+    const user = sessionStorage.getItem('user');
+    const modality2 = sessionStorage.getItem('modality');
+    let inviter = sessionStorage.getItem("Inviter");
     const app = document.getElementById('app');
     app.innerHTML = `
         <div class="arcade-container">
@@ -26,7 +28,8 @@ export const renderSnake = () => {
             </div>
         </div>
     `;
-
+   
+    resetGameSnake();
     startSnakeGame();
 
     const recordMatchResult = async () => {

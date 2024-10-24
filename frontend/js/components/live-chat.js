@@ -111,6 +111,9 @@ export const liveChat = () => {
                 <div id="create-tournament-container">
                     <button id="create-tournament-button" class="create-button">Create a Tournament</button>
                 </div>
+                <div id="create-tournament-container-snake">
+                    <button id="create-tournament-button-snake" class="create-button">Create a Tournament Snake </button>
+                </div>
 
             </div>
             </div>
@@ -131,7 +134,61 @@ export const liveChat = () => {
 
     const generateRandomTournamentId = () => {
         return Math.floor(Math.random() * 10000) + 1;
+
     };
+
+    const createTournamentButtonSnake = document.getElementById('create-tournament-button-snake');
+
+
+    const socket3 = new WebSocket(`ws://localhost:8000/ws/tournament-snake/`);
+    createTournamentButton.addEventListener('click', function () {
+     
+        socket2.send(JSON.stringify({ action: 'create_tournament' }));
+
+       
+    });
+    socket3.onopen = function (event) {
+        console.log("Connected to tournament WebSocket");
+  
+    
+    };
+
+    socket3.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+
+
+        let participateButton = document.getElementById('participate-tournament-button-snake');
+        if (!participateButton) 
+        { 
+            participateButton = document.createElement('button');
+            participateButton.innerText = 'Participate in Tournament Snake';
+            participateButton.id = 'participate-tournament-button';
+            document.body.appendChild(participateButton);
+            participateButton.addEventListener('click', function () {
+                socket2.send(JSON.stringify({ action: 'join_tournament', player: { nickname: nickname , id: player} }));
+            });
+        }
+    
+        if (data.action === 'tournament_full') {
+            document.body.removeChild(participateButton);
+            const playerNames = data.participants.map(participant => participant.nickname);
+            sessionStorage.setItem('playerNames', JSON.stringify(playerNames));
+            sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
+            sessionStorage.setItem('modality', 'tourn-remote');
+            sessionStorage.setItem('lastPlayer', playerNames[3]);
+
+            initializeTournament();
+        }
+    };
+
+    socket3.onerror = function (error) {
+        console.error("WebSocket Error:", error);
+    };
+
+    socket3.onclose = function () {
+        console.error("Tournament socket was closed");
+    };
+
 
     const createTournamentButton = document.getElementById('create-tournament-button');
 
@@ -184,6 +241,7 @@ export const liveChat = () => {
     socket2.onclose = function () {
         console.error("Tournament socket was closed");
     };
+    
 
 
     const addMessage = (message, isOwnMessage) => {

@@ -1,6 +1,7 @@
 import { navigateTo } from '../utils.js';
 import { resetGameState } from './pong/pong.js';
 import { initPongSocket } from './pong/pongSocket.js';
+import { resetGameSnake } from './snake/snake.js';
 
 const translations = {
     english: {
@@ -188,30 +189,29 @@ const startMatch = () => {
     const nickname = sessionStorage.getItem('nickname');
     const currentRound = parseInt(sessionStorage.getItem('currentRound'), 10);
     resetGameState();
+    resetGameSnake();
+
+
     const modality = sessionStorage.getItem('modality');
 
     const playersInfo = JSON.parse(sessionStorage.getItem('playersInfo')); // Parse do JSON
 
     // Transformar playersInfo em um mapeamento
-    const playersMap = {};
-    playersInfo.forEach(player => {
-        playersMap[player.nickname] = player.id;
-    });
+    if(modality == "remote")
+    {   
+        const playersMap = {};
+        playersInfo.forEach(player => {
+            playersMap[player.nickname] = player.id;
+        });
+    }
     
     if (currentRound < rounds.length) {
         const [player1, player2] = rounds[currentRound];
-        if (modality == "remote" && (player1 === nickname || player2 === nickname)) 
-        {
+        if (modality == "remote" && (player1 === nickname || player2 === nickname))
             sessionStorage.setItem("nickTorn", "True"); 
-        } else {
+        else 
             sessionStorage.setItem("nickTorn", "False"); 
-        }
-        const player1Id = playersMap[player1]; 
-        const player2Id = playersMap[player2]; 
-
-        console.log("Player 1: ", player1, "ID: ", player1Id);
-        console.log("Player 2: ", player2, "ID: ", player2Id);
-        
+     
         sessionStorage.setItem('currentMatch', JSON.stringify({ player1, player2 }));
         const match = document.getElementById('match-footer');
             match.innerHTML = `
@@ -219,6 +219,8 @@ const startMatch = () => {
                 <p> The next game will be: ${player1} vs ${player2} </p>
             </div>`
         if (modality === 'tourn-remote') {
+            const player1Id = playersMap[player1]; 
+            const player2Id = playersMap[player2]; 
 
             setTimeout(() => {
             const groupName = `privateGroup${player1Id}${player2Id}`;
@@ -246,8 +248,13 @@ const startMatch = () => {
 
             setTimeout(() => {
                 resetGameState();
-                
-                navigateTo('/pong');
+                resetGameSnake();
+    
+                let game = sessionStorage.getItem("game");
+                if(game == 'pong')
+                    navigateTo('/pong');
+                else(game == 'snake')
+                    navigateTo('/snake')
             }, 2000); 
         }
 

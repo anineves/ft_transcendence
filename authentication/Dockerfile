@@ -21,8 +21,8 @@ RUN python -m venv /venv && \
   /venv/bin/pip install -r /auth/requirements.txt && \
   adduser --disabled-password --no-create-home duser && \
   chown -R duser:duser /venv /auth /scripts /data && \
-  chmod -R 777 /data/web/static /data/web/media && \  
-  chmod -R 755 /scripts && \ 
+  chmod -R 777 /data/web/static /data/web/media && \ 
+  chmod -R 755 /scripts && \  
   chmod +x /scripts/commands.sh
 
 # Set environment PATH

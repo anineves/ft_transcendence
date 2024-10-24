@@ -1,9 +1,9 @@
 import { initPongSocket } from '../pong/pongSocket.js'
-
+import { showNextMatchButton } from '../pong/pong.js';
 
 let canvas, ctx;
 let numCells;
-const gridSize = 16;
+let gridSize = 16;
 let gameOver = false;
 let gameInterval;
 let speed = 200;
@@ -35,8 +35,14 @@ export const startSnakeGame = async () => {
 
     ctx = canvas.getContext('2d');
     numCells = canvas.width / gridSize;
+    gridSize = 16;
+    gameOver = false;
+    gameInterval;
+    speed = 200;
+    ws;
 
-    resetGame();
+
+    resetGameSnake();
     gameInterval = setInterval(gameLoop, speed);
 
     const user = sessionStorage.getItem('user');
@@ -169,7 +175,22 @@ export const startSnakeGame = async () => {
 
 }
 
-function resetGame() {
+export function resetGameSnake() {
+    let snakePlayer = {
+        body: [{ x: 3, y: 3 }],
+        direction: { x: 1, y: 0 },
+        color: 'purple',
+        foodCount: 0,
+        hitWall: false
+    };
+
+    let snakeOpponent = {
+        body: [{ x: 4, y: 4 }],
+        direction: { x: 1, y: 0 },
+        color: 'blue',
+        foodCount: 0,
+        hitWall: false
+    };
     snakePlayer.body = [{ x: 3, y: 3 }];
     snakePlayer.direction = { x: 1, y: 0 };
     snakePlayer.foodCount = 0;
@@ -179,11 +200,14 @@ function resetGame() {
     snakeOpponent.direction = { x: 1, y: 0 };
     snakeOpponent.foodCount = 0;
     snakeOpponent.hitWall = false;
-    //TODO: Precisa colocar primeira comida no mesmo lugar para ambos.
     foods = [{
         x: 15,
         y: 7
     }];
+    gameOver = false;
+    canvas = document.getElementById('snakeCanvas');
+    ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function gameLoop() {
@@ -232,10 +256,12 @@ function updateSnake(snake) {
 }
 
 function placeFood() {
-    // foods.push({ 
-    let x = Math.floor(Math.random() * 18) + 1;
-    let y = Math.floor(Math.random() * 18) + 1;
-    // });
+
+    foods.push({ 
+        x: Math.floor(Math.random() * 18) + 1, 
+        y: Math.floor(Math.random() * 18) + 1 
+    });
+    
 
     if (modality2 == 'remote') {
         if (player === playerID) {
@@ -275,13 +301,16 @@ function checkCollisions() {
 
 function endGame() {
     gameOver = true;
-    ws.send(JSON.stringify({
-        'action': 'end_game',
-        'message': {
-            'player': player,
-            'end_game': true
-        }
-    }));
+    if(modality2 ==  'remote')
+    {
+        ws.send(JSON.stringify({
+            'action': 'end_game',
+            'message': {
+                'player': player,
+                'end_game': true
+            }
+        }));
+    }
 }
 
 const inviter = sessionStorage.getItem('Inviter'); // Não sei se posso deixar isso aqui
@@ -345,6 +374,11 @@ async function drawGame() {
             }
         }
         drawGameOver();
+        console.log(sessionStorage.getItem('modality'));
+        if (sessionStorage.getItem('modality') == 'tournament') {
+            console.log("Entrei aquui")
+            showNextMatchButton();
+        }
     }
 }
 
@@ -399,10 +433,19 @@ function drawEye(x, y) {
 }
 
 function drawScore() {
+    
+    const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+    const modality = sessionStorage.getItem('modality');
+    let player1 = "Player"
+    let player2 = "Oponente";
+    if (modality == 'tournament' || modality == "tourn-remote") {
+        ({ player1, player2 } = currentMatch);
+    }
+
     ctx.fillStyle = 'yellow';
     ctx.font = '16px Arial';
-    ctx.fillText(`Player: ${snakePlayer.foodCount}`, 10, 20);
-    ctx.fillText(`Opponent: ${snakeOpponent.foodCount}`, canvas.width - 200, 20);
+    ctx.fillText(`${player1}: ${snakePlayer.foodCount}`, 10, 20);
+    ctx.fillText(`${player2} ${snakeOpponent.foodCount}`, canvas.width - 200, 20);
 }
 
 function drawGameOver() {
@@ -411,6 +454,7 @@ function drawGameOver() {
     ctx.fillText('Game Over!', canvas.width / 2 - 70, canvas.height / 2 - 20);
     const winner = snakePlayer.foodCount >= snakeOpponent.foodCount ? 'Player' : 'Opponent';
     ctx.fillText(`${winner} wins!`, canvas.width / 2 - 70, canvas.height / 2 + 20);
+    stopGame();
 }
 
 export function stopGame() {

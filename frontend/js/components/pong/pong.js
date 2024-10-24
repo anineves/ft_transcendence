@@ -144,7 +144,7 @@ export function resetBall() {
     }, 10);
 }
 
-function initialize() {
+export function initialize() {
     initializeCanvas();
     initializeBall();
     if (!canvas || !context) return;
@@ -445,19 +445,7 @@ function initialize() {
         }
     }
 
-    function showNextMatchButton() {
-        const app = document.getElementById('app');
-        const nextMatchButton = document.createElement('button');
-        nextMatchButton.innerText = 'Next Match';
-        nextMatchButton.className = 'btn';
-        nextMatchButton.style.margin = '20px auto';
-        nextMatchButton.addEventListener('click', () => {
-            const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
-            const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
-            endMatch(winner);
-        });
-        app.appendChild(nextMatchButton);
-    }
+
 
     const modality2 = sessionStorage.getItem('modality');
     if (modality2 != 'remote'  &&  modality2 != 'tourn-remote') {
@@ -530,4 +518,18 @@ export function resetGameState() {
     initializeCanvas();
     initializeBall();
     stopGame();
+}
+
+export function showNextMatchButton() {
+    const app = document.getElementById('app');
+    const nextMatchButton = document.createElement('button');
+    nextMatchButton.innerText = 'Next Match';
+    nextMatchButton.className = 'btn';
+    nextMatchButton.style.margin = '20px auto';
+    nextMatchButton.addEventListener('click', () => {
+        const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+        const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
+        endMatch(winner);
+    });
+    app.appendChild(nextMatchButton);
 }

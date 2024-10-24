@@ -65,6 +65,12 @@ export const renderGameSelection = async () => {
 `;
 
 
-    document.getElementById('pongBtn').addEventListener('click', () => navigateTo('/select-playerOrAI'));
-    document.getElementById('snakeBtn').addEventListener('click', () => navigateTo('/snake-selector'));
+    document.getElementById('pongBtn').addEventListener('click', () => {
+        sessionStorage.setItem('game', 'pong');
+        navigateTo('/select-playerOrAI')
+    });
+    document.getElementById('snakeBtn').addEventListener('click', () => {
+        sessionStorage.setItem('game', 'snake');
+        navigateTo('/snake-selector')
+    });
 };
