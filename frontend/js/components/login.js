@@ -36,9 +36,9 @@ export const renderLogin = () => {
     } 
   ;
     app.innerHTML = `
-        <div class="background-form" id="loginForm" class="form-log-reg">
+        <div class="background-form" class="form-log-reg">
             <h2>${translations[savedLanguage].login}</h2>
-            <form >
+            <form id="loginForm" >
                 <input type="text" id="emailOrUsername" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
                 <button type="submit" id="btn-login"class="btn">${translations[savedLanguage].submit}</button>
@@ -66,6 +66,116 @@ export const renderLogin = () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ email: emailOrUsername, password, commonLogin: true })
+            });
+
+            console.log("Response", response);
+            if (response.ok) {
+                const data = await response.json();
+
+                sessionStorage.setItem('register', 'form');
+                // Armazena o token de acesso JWT.
+                sessionStorage.setItem('jwtToken', data.access); 
+                // Armazena o token de atualização JWT.
+                sessionStorage.setItem('refreshToken', data.refresh); 
+                // Armazena as informações do usuário (por exemplo, nome, email).
+                sessionStorage.setItem('user', JSON.stringify(data.user)); 
+
+                //console.log(data);
+                const userId = data.user.id;
+                const token = data.access;
+                try {
+
+                    const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` 
+                        }
+                    });
+            
+                    if (playerResponse.ok) {
+                        const playerData = await playerResponse.json();
+                        const player = playerData.find(p => p.user === userId);
+                        
+                        if (player) {
+                            sessionStorage.setItem('player', JSON.stringify(player.id));
+                            sessionStorage.setItem('playerInfo', JSON.stringify(player));
+                            console.log("nickname", player.nickname)
+                            sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
+                            putPlayer("ON");
+                        } else {
+                            console.log("You need create a player");
+                        }
+                    } else {
+                        console.error("error loading players");
+                    }
+                } catch (error) {
+                    console.error('Error', error);
+                }
+            
+                checkLoginStatus(); 
+                navigateTo('/game-selection', data); 
+            } else {
+                alert('Failed to send verification code.2');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred during login');
+        }
+    });
+
+    document.getElementById('loginForm2f').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const emailOrUsername = document.getElementById('emailOrUsername2').value;
+        const password = document.getElementById('password2').value;
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/otp/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: emailOrUsername, password })
+            });
+
+            if (response.ok) {
+                showCodeForm(emailOrUsername, password);
+            } else {
+                alert('Failed to send verification code.1');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred during login');
+        }
+    });
+
+};
+
+const showCodeForm = (emailOrUsername, password) => {
+    const app = document.getElementById('app');
+
+    app.innerHTML = `
+        <div class="background-form" id="form-login">
+            <h2>Verification</h2>
+            <form id="codeForm">
+                <p>Verification code sent successfully.</p>
+                <input type="text" id="code" placeholder="Enter verification code" required class="form-control mb-2">
+                <button type="submit" id="btn-code" class="btn">Submit</button>
+            </form>
+        </div>
+    `;
+
+    document.getElementById('codeForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const otp = document.getElementById('code').value;
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/token/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: emailOrUsername, password, otp })
             });
 
             if (response.ok) {
@@ -115,83 +225,11 @@ export const renderLogin = () => {
                 checkLoginStatus(); 
                 navigateTo('/game-selection', data); 
             } else {
-                alert('Failed to send verification code.');
+                alert('Failed to send verification code.2');
             }
         } catch (error) {
             console.error('Error:', error);
             alert('An error occurred during login');
-        }
-    });
-
-    document.getElementById('loginForm2f').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const emailOrUsername = document.getElementById('emailOrUsername2').value;
-        const password = document.getElementById('password2').value;
-
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/otp/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email: emailOrUsername, password })
-            });
-
-            if (response.ok) {
-                showCodeForm(emailOrUsername, password);
-            } else {
-                alert('Failed to send verification code.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred during login');
-        }
-    });
-
-};
-
-const showCodeForm = (emailOrUsername, password) => {
-    const app = document.getElementById('app');
-
-    app.innerHTML = `
-        <div class="background-form" id="form-login">
-            <h2>Verification</h2>
-            <form id="codeForm">
-                <p>Verification code sent successfully.</p>
-                <input type="text" id="code" placeholder="Enter verification code" required class="form-control mb-2">
-                <button type="submit" id="btn-code" class="btn">Submit</button>
-            </form>
-        </div>
-    `;
-
-    document.getElementById('codeForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const otp = document.getElementById('code').value;
-
-        try {
-            const tokenResponse = await fetch('http://127.0.0.1:8000/api/token/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email: emailOrUsername, password, otp })
-            });
-
-            if (tokenResponse.ok) {
-                const data = await tokenResponse.json();
-                sessionStorage.setItem('jwtToken', data.access);
-                sessionStorage.setItem('refreshToken', data.refresh);
-                sessionStorage.setItem('user', JSON.stringify(data.user));
-                sessionStorage.setItem('userID', JSON.stringify(data.user.id));
-                handleSuccessfulLogin();
-                checkLoginStatus();
-            } else {
-                const errorData = await tokenResponse.json();
-                alert('Logiin failed: ' + JSON.stringify(errorData));
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred during code verification');
         }
     });
 };
@@ -202,7 +240,6 @@ const handleSuccessfulLogin = async () => {
     const jwtToken = sessionStorage.getItem('jwtToken');
     const user = sessionStorage.getItem('user');
     const userID = sessionStorage.getItem('userID');
-    alert("handle");
     try {
         const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
             method: 'GET',
@@ -212,6 +249,7 @@ const handleSuccessfulLogin = async () => {
             }
         });
 
+        console.log("Player Response", playerResponse);
         if (playerResponse.ok) {
             const playerData = await playerResponse.json();
 
@@ -246,7 +284,7 @@ export const putPlayer = async (status) => {
     const stat = status;
 
     try {
-        const player = await fetch(`http://127.0.0.1:8000/api/player/${playerId}`, {
+        const playerInfo = await fetch(`http://127.0.0.1:8000/api/player/${playerId}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -254,9 +292,10 @@ export const putPlayer = async (status) => {
             },
             body: JSON.stringify({ status : stat })
         });
-      
-        if (player.ok) {
-            const playerT = await player.json();
+        
+        console.log("Player", playerInfo);
+        if (playerInfo.ok) {
+            const playerT = await playerInfo.json();
             sessionStorage.setItem('playerStatus', playerT.status);
             checkLoginStatus();
             navigateTo('/game-selection');
