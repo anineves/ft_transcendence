@@ -110,6 +110,7 @@ export const renderPanel = async (user) => {
                         <p><strong>${escapeHTML(translations[savedLanguage].email)}:</strong> ${escapeHTML(user.email)}</p>
                         <p><strong>${escapeHTML(translations[savedLanguage].first)}:</strong> ${escapeHTML(user.first_name)}</p>
                         <p><strong>${escapeHTML(translations[savedLanguage].last)}:</strong> ${escapeHTML(user.last_name)}</p>
+                        <p><strong>Enable 2FA:</strong>${user.otp}</p>
                     </div>
                     <div class="progression" id="progression"></div>
                 </div>

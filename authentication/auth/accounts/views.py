@@ -91,6 +91,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'avatar': request.build_absolute_uri(user.avatar.url) if user.avatar else None,
+                'otp': user.otp_agreement
             }
         }
         return Response(response_data, status=status.HTTP_200_OK)
@@ -317,7 +318,6 @@ def oauth_callback(request):
         return Response(data='Authentication failed', status=status.HTTP_400_BAD_REQUEST)
 
 
-#Matches
 class MatchList(APIView):
 
     def get(self, request):
@@ -339,7 +339,8 @@ class MatchList(APIView):
             except ValidationError as e:
                 raise Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 class MatchDetail(APIView):
     
     def get(self, request, pk):
