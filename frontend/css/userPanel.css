@@ -251,52 +251,49 @@ p {
 }
 
 @media (max-width: 1000px) {
-
-    .btn-progress-bar{
-        display: block;
-    }
-    #statsBtn{
-    width: calc(50% - 20px);
-    text-align: center;
-    padding: 12px;
-    margin: 10px;
-    background: linear-gradient(145deg, #00FFFF, #cc00cc);
-    color: #fff;
-    border: 1px solid #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    box-shadow: 0 0 8px rgba(255, 0, 255, 0.6), 0 0 12px rgba(255, 0, 255, 0.3);
-    }
     .user-panel {
-        width: 80vw;
+        width: 98vw;
         font-size: 12px;
         padding: 10px;
-    }
-    .progress-bar {
-        display: none;
-    }
-
-    .btn-progress-bar{
-        display: block;
-    }
-    .avatar {
-        width: 80px;
-        height: 80px;
-    }
-
-    .btn {
-        font-size: 12px;
-        padding: 8px 16px;
+        align-items: flex-start; 
     }
 
     .profile-content {
         flex-direction: column;
+        align-items: flex-start; 
         gap: 10px;
+    }
+
+    .avatar {
+        width: 80px;
+        height: 80px;
+        align-self: flex-start; 
+    }
+    
+    .all-btn .btn {
+        align-self: flex-start; 
+        font-size: 12px; 
+        padding: 2px; 
+        margin: 2px; 
+        box-shadow: 0 0 6px rgba(255, 0, 255, 0.5), 0 0 10px rgba(255, 0, 255, 0.2);
+    }
+
+    .all-btn .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 12px rgba(255, 0, 255, 0.8), 0 0 18px rgba(255, 0, 255, 0.5);
     }
 
     #updateProfileSection {
         width: 100%;
+    }
+
+    
+    .btn-progress-bar {
+        display: block;
+    }
+
+    
+    .progress-bar {
+        display: none;
     }
 }

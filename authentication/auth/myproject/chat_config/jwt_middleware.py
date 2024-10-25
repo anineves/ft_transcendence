@@ -4,7 +4,7 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 
-from accounts.models import PlayerChannel
+from accounts.models import PlayerChannel 
 from asgiref.sync import async_to_sync
 
 

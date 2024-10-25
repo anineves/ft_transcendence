@@ -6,6 +6,7 @@ export function initPongSocket(url) {
     const jwttoken = sessionStorage.getItem('jwtToken'); 
     const inviter = sessionStorage.getItem('Inviter'); 
     let wsSession = sessionStorage.getItem('WS');
+    let modality2 = sessionStorage.getItem('modality');
 
     if (wsSession == "clean")
     {
@@ -24,7 +25,7 @@ export function initPongSocket(url) {
             Authorization: jwttoken,
         }));
         
-        if(inviter == "True")
+        if(inviter == "True" && modality2 == 'remote')
         {
             lobbyTimeout = setTimeout(() => {
                 console.log("The opponent did not accept the duel");
@@ -55,10 +56,16 @@ export function initPongSocket(url) {
             console.log("Lobby is full");
             sessionStorage.setItem('playerID', data.message.player);
             sessionStorage.setItem('friendID', data.message.opponent);
-            navigateTo('/pong');
-        }
+            let duelGame = sessionStorage.getItem("duelGame");
+            if(duelGame == "duel-snake")
+            {
+                navigateTo('/snake');
+            }
+            else{
+                navigateTo('/pong');
+            }
     }
-
+    }
     ws.onclose = () => {
         console.log("WebSocket connection closed.");
         ws = null;

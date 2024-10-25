@@ -1,61 +1,156 @@
+import { initPongSocket } from '../pong/pongSocket.js'
+import { showNextMatchButton } from '../pong/pong.js';
+import { endMatch } from '../tournament.js';
+
 let canvas, ctx;
 let numCells;
-const gridSize = 16;
-let gameOver = false; 
+let gridSize = 16;
+let gameOver = false;
 let gameInterval;
-let speed = 200; 
+let speed = 200;
+let ws;
 
-let snakePlayer = { 
-    body: [{ x: 3, y: 3 }], 
+let snakePlayer = {
+    body: [{ x: 3, y: 3 }],
     direction: { x: 1, y: 0 },
     color: 'purple',
     foodCount: 0,
-    hitWall: false 
+    hitWall: false
 };
 
-let snakeOpponent = { 
-    body: [{ x: 4, y: 4 }], 
+let snakeOpponent = {
+    body: [{ x: 4, y: 4 }],
     direction: { x: 1, y: 0 },
     color: 'blue',
     foodCount: 0,
     hitWall: false
 };
 
-let foods = [{ 
-    x: Math.floor(Math.random() * 18) + 1, 
-    y: Math.floor(Math.random() * 18) + 1  
-}];
-
+let foods;
 export const startSnakeGame = async () => {
     let modality2 = sessionStorage.getItem('modality');
     const user = sessionStorage.getItem('user');
+   
     canvas = document.getElementById('snakeCanvas');
     if (!canvas) {
         console.error("Canvas element with id 'snakeCanvas' not found.");
         return;
     }
-    
-    ctx = canvas.getContext('2d');
-    numCells = canvas.width / gridSize; 
 
-    resetGame();
+    ctx = canvas.getContext('2d');
+    numCells = canvas.width / gridSize;
+    gridSize = 16;
+    gameOver = false;
+    gameInterval;
+    speed = 200;
+    ws;
+
+
+    resetGameSnake();
     gameInterval = setInterval(gameLoop, speed);
+
+    let inviter = sessionStorage.getItem("Inviter");
     const player = sessionStorage.getItem('player');
-    const game = 2;
+    const game = 1;
+   
     let opponent = 1;
+    let friendID = sessionStorage.getItem('friendID');
+    let nickTorn = sessionStorage.getItem("nickTorn");
+    if (modality2 == 'remote' && inviter == "True" || modality2 == 'tourn-remote')
+        opponent = friendID;
     const players = [player, opponent];
+    let match_type = "RM";
+    if (modality2 == "ai") match_type = "AI";
+    if (modality2 == "remote") match_type = "RM";
+    if (modality2 == "tournament" || modality2 == 'tourn-remote') {
+        match_type = "TN"
+        const match = document.getElementById('match-footer');
+        match.innerHTML = `
+            <div class="match-footer">
+            </div>`
+    }
+    if (modality2 == "player" || modality2 == "3D") match_type = "MP";
     sessionStorage.setItem('game', game);
     sessionStorage.setItem('players', players);
-    let match_type = "MP"
-    console.log("modalily", modality2)
-    if (modality2 == "remote")
-        match_type = "RM"
-    if (modality2 == "tournament")
-        match_type = "TN"
-    if (modality2 == "player" || modality2 == "3D")
-        match_type = "MP"
 
-    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')))  {
+
+    if (modality2 == 'remote' || modality2 == 'tourn-remote') {
+        const groupName = sessionStorage.getItem("groupName");
+        console.log("groupName", groupName);
+        ws = initPongSocket(`ws://localhost:8000/ws/snake_match/${groupName}/`);
+
+        ws.onmessage = (event) => {
+
+            // console.log("Event On Message: ", event);
+            const data = JSON.parse(event.data);
+            // console.log("SnakeSocket Data: ", data);    
+
+            if (data.action == 'move_snake') {
+
+                switch (data.message.key) {
+                    case 'ArrowUp': if (snakePlayer.direction.y === 0 && playerID == data.message.player) snakePlayer.direction = { x: 0, y: -1 };
+                    else if (snakeOpponent.direction.y === 0 && friendID == data.message.player) snakeOpponent.direction = { x: 0, y: -1 }; break;
+                    case 'ArrowDown': if (snakePlayer.direction.y === 0 && playerID == data.message.player) snakePlayer.direction = { x: 0, y: 1 };
+                    else if (snakeOpponent.direction.y === 0 && friendID == data.message.player) snakeOpponent.direction = { x: 0, y: 1 }; break;
+                    case 'ArrowLeft': if (snakePlayer.direction.x === 0 && playerID == data.message.player) snakePlayer.direction = { x: -1, y: 0 };
+                    else if (snakeOpponent.direction.x === 0 && friendID == data.message.player) snakeOpponent.direction = { x: -1, y: 0 }; break;
+                    case 'ArrowRight': if (snakePlayer.direction.x === 0 && playerID == data.message.player) snakePlayer.direction = { x: 1, y: 0 };
+                    else if (snakeOpponent.direction.x === 0 && friendID == data.message.player) snakeOpponent.direction = { x: 1, y: 0 }; break;
+                }
+            }
+            if (data.action == 'place_food') {
+                foods.push({
+                    x: data.message.x,
+                    y: data.message.y
+                });
+            }
+            if (data.action == 'update_snake') {
+                // console.log("update_snake:", data)
+                if (data.message.snake.color === 'blue')
+                    snakeOpponent = data.message.snake;
+                else
+                    snakePlayer = data.message.snake;
+            }
+            if (data.action == 'game_over') {
+                gameOver = true;
+            }
+        };
+
+        document.addEventListener('keydown', (event) => {
+
+            // console.log("KeySnakeEvents: ", event)
+            // console.log("PlayerInSnake: ", player)
+
+            ws.send(JSON.stringify({
+                'action': 'move_snake',
+                'message': {
+                    'player': player,
+                    'key': event.key
+                }
+            }));
+        });
+
+    }
+    if (modality2 != 'remote') {
+
+        document.addEventListener('keydown', (event) => {
+            switch(event.key) {
+                case 'w': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: -1 }; break;
+                case 's': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: 1 }; break;
+                case 'a': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: -1, y: 0 }; break;
+                case 'd': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: 1, y: 0 }; break;
+                case 'ArrowUp': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: -1 }; break;
+                case 'ArrowDown': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: 1 }; break;
+                case 'ArrowLeft': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: -1, y: 0 }; break;
+                case 'ArrowRight': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: 1, y: 0 }; break;
+            }
+        });
+
+    }
+
+
+    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
+    (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
         if (player) {
             try {
                 const response = await fetch('http://localhost:8000/api/matches/', {
@@ -82,35 +177,25 @@ export const startSnakeGame = async () => {
         }
     }
 
-    document.addEventListener('keydown', (event) => {
-        switch(event.key) {
-            case 'w': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: -1 }; break;
-            case 's': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: 1 }; break;
-            case 'a': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: -1, y: 0 }; break;
-            case 'd': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: 1, y: 0 }; break;
-            case 'ArrowUp': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: -1 }; break;
-            case 'ArrowDown': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: 1 }; break;
-            case 'ArrowLeft': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: -1, y: 0 }; break;
-            case 'ArrowRight': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: 1, y: 0 }; break;
-        }
-    });
 }
 
-function resetGame() {
+export function resetGameSnake() {
+   
     snakePlayer.body = [{ x: 3, y: 3 }];
     snakePlayer.direction = { x: 1, y: 0 };
-    snakePlayer.foodCount = 0; 
+    snakePlayer.foodCount = 0;
     snakePlayer.hitWall = false;
 
-    snakeOpponent.body = [{ x: 4, y: 4 }]; 
+    snakeOpponent.body = [{ x: 4, y: 4 }];
     snakeOpponent.direction = { x: 1, y: 0 };
-    snakeOpponent.foodCount = 0; 
+    snakeOpponent.foodCount = 0;
     snakeOpponent.hitWall = false;
-
-    foods = [{ 
-        x: Math.floor(Math.random() * 18) + 1, 
-        y: Math.floor(Math.random() * 18) + 1  
+    foods = [{
+        x: 15,
+        y: 7
     }];
+    gameOver = false;
+  
 }
 
 function gameLoop() {
@@ -122,7 +207,12 @@ function gameLoop() {
     }
 }
 
+//TODO: Não sei se pode ficar aqui
+const player = sessionStorage.getItem('player');
+const playerID = sessionStorage.getItem('playerID');
+
 function updateSnake(snake) {
+
     const newHead = {
         x: snake.body[0].x + snake.direction.x,
         y: snake.body[0].y + snake.direction.y
@@ -133,19 +223,46 @@ function updateSnake(snake) {
     for (let i = 0; i < foods.length; i++) {
         if (newHead.x === foods[i].x && newHead.y === foods[i].y) {
             snake.foodCount++;
-            foods.splice(i, 1); 
-            placeFood(); 
+            foods.splice(i, 1);
+            placeFood();
             return;
         }
     }
     snake.body.pop();
+
+    if (modality2 == 'remote' || modality2 == 'tourn-remote') {
+        if (player === playerID) {
+            ws.send(JSON.stringify({
+                'action': 'update_snake',
+                'message': {
+                    'player': player,
+                    'snake': snake,
+                }
+            }));
+        }
+    }
 }
 
 function placeFood() {
+
     foods.push({ 
         x: Math.floor(Math.random() * 18) + 1, 
         y: Math.floor(Math.random() * 18) + 1 
     });
+    
+
+    if (modality2 == 'remote' || modality2 == 'tourn-remote') {
+        if (player === playerID) {
+            ws.send(JSON.stringify({
+                'action': 'place_food',
+                'message': {
+                    'player': player,
+                    'x': x,
+                    'y': y,
+                }
+            }));
+        }
+    }
 }
 
 function checkCollisions() {
@@ -153,7 +270,7 @@ function checkCollisions() {
 
     for (const snake of snakes) {
         const head = snake.body[0];
-        if (head.x < 0 || head.x >= (numCells-1) || head.y < 0 || head.y >= (canvas.height / gridSize -1)) {
+        if (head.x < 0 || head.x >= (numCells - 1) || head.y < 0 || head.y >= (canvas.height / gridSize - 1)) {
             snake.hitWall = true;
             endGame();
         }
@@ -171,8 +288,22 @@ function checkCollisions() {
 }
 
 function endGame() {
-    gameOver = true; 
+    gameOver = true;
+    if(modality2 ==  'remote')
+    {
+        ws.send(JSON.stringify({
+            'action': 'end_game',
+            'message': {
+                'player': player,
+                'end_game': true
+            }
+        }));
+    }
 }
+
+const inviter = sessionStorage.getItem('Inviter'); // Não sei se posso deixar isso aqui
+const user = sessionStorage.getItem('user');
+const modality2 = sessionStorage.getItem('modality');
 
 async function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -183,20 +314,35 @@ async function drawGame() {
     drawScore();
 
     if (gameOver) {
+        drawGameOver();
         const id = sessionStorage.getItem('id_match');
-        const remote = sessionStorage.getItem('remote');
+        const user = sessionStorage.getItem('user');
+        let inviter = sessionStorage.getItem("Inviter");
         const player = sessionStorage.getItem('player');
-        let opponent =1;
-        let winner_id = 1;
-        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))) {
+        const game = 1;
+        const modality2 = sessionStorage.getItem('modality');
+        let opponent = 1;
+        let friendId = sessionStorage.getItem('friendID');
+        if (modality2 == 'remote' && inviter == "True" || modality2 == 'tourn-remote')
+            opponent = friendId;
+        const players = [player, opponent];
+        sessionStorage.setItem('game', game);
+        sessionStorage.setItem('players', players);
+        let nickTorn = sessionStorage.getItem("nickTorn");
+        let winner_id = opponent;
+
+        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
+    (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
+        if (player) {
             try {
-                
+
                 if (snakePlayer.foodCount > snakeOpponent.foodCount)
                     winner_id = player;
                 const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
                 console.log("score", score);
                 const duration = "10";
-
+                if(modality2 == 'remote' || modality2 == 'tourn-remote')
+                    ws =  null;
                 const response = await fetch(`http://localhost:8000/api/match/${id}`, {
                     method: 'PUT',
                     headers: {
@@ -218,7 +364,23 @@ async function drawGame() {
                 alert('An error occurred while processing the match.');
             }
         }
+        }
         drawGameOver();
+        console.log(sessionStorage.getItem('modality'));
+        if (sessionStorage.getItem('modality') == 'tournament') {
+            console.log("Entrei aquui")
+            showNextMatchButton();
+        }
+        if(sessionStorage.getItem('modality') == 'tourn-remote')
+        {
+                const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+                const winner = snakePlayer.foodCount > snakeOpponent.foodCount ? currentMatch.player1 : currentMatch.player2;
+                endMatch(winner); 
+        }
+        sessionStorage.removeItem("Inviter");
+        sessionStorage.removeItem("groupName");
+        sessionStorage.setItem('WS', 'clean');
+        ws =  null;
     }
 }
 
@@ -238,10 +400,10 @@ function drawSnake(snake) {
         ctx.beginPath();
         ctx.arc(segment.x * gridSize + gridSize / 2, segment.y * gridSize + gridSize / 2, gridSize / 2, 0, Math.PI * 2);
         ctx.fill();
-        
+
         if (index === 0) {
             drawEyes(segment, snake.direction);
-            ctx.fillStyle = gameOver && snake.hitWall ? 'red' : snake.color; 
+            ctx.fillStyle = gameOver && snake.hitWall ? 'red' : snake.color;
         }
     });
 }
@@ -251,16 +413,16 @@ function drawEyes(head, direction) {
     const eyeSize = 2;
     const eyeOffset = gridSize / 4;
 
-    if (direction.x === 1) { 
+    if (direction.x === 1) {
         drawEye(head.x * gridSize + gridSize / 2 + eyeOffset, head.y * gridSize + gridSize / 2 - eyeOffset);
         drawEye(head.x * gridSize + gridSize / 2 + eyeOffset, head.y * gridSize + gridSize / 2 + eyeOffset);
-    } else if (direction.x === -1) { 
+    } else if (direction.x === -1) {
         drawEye(head.x * gridSize + gridSize / 2 - eyeOffset, head.y * gridSize + gridSize / 2 - eyeOffset);
         drawEye(head.x * gridSize + gridSize / 2 - eyeOffset, head.y * gridSize + gridSize / 2 + eyeOffset);
-    } else if (direction.y === -1) { 
+    } else if (direction.y === -1) {
         drawEye(head.x * gridSize + gridSize / 2 - eyeOffset, head.y * gridSize + gridSize / 2 - eyeOffset);
         drawEye(head.x * gridSize + gridSize / 2 + eyeOffset, head.y * gridSize + gridSize / 2 - eyeOffset);
-    } else if (direction.y === 1) { 
+    } else if (direction.y === 1) {
         drawEye(head.x * gridSize + gridSize / 2 - eyeOffset, head.y * gridSize + gridSize / 2 + eyeOffset);
         drawEye(head.x * gridSize + gridSize / 2 + eyeOffset, head.y * gridSize + gridSize / 2 + eyeOffset);
     }
@@ -273,10 +435,19 @@ function drawEye(x, y) {
 }
 
 function drawScore() {
+    
+    const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+    const modality = sessionStorage.getItem('modality');
+    let player1 = "Player"
+    let player2 = "Oponente";
+    if (modality == 'tournament' || modality == "tourn-remote") {
+        ({ player1, player2 } = currentMatch);
+    }
+
     ctx.fillStyle = 'yellow';
     ctx.font = '16px Arial';
-    ctx.fillText(`Player: ${snakePlayer.foodCount}`, 10, 20); 
-    ctx.fillText(`Opponent: ${snakeOpponent.foodCount}`, canvas.width - 200, 20); 
+    ctx.fillText(`${player1}: ${snakePlayer.foodCount}`, 10, 20);
+    ctx.fillText(`${player2} ${snakeOpponent.foodCount}`, canvas.width - 200, 20);
 }
 
 function drawGameOver() {
@@ -285,6 +456,7 @@ function drawGameOver() {
     ctx.fillText('Game Over!', canvas.width / 2 - 70, canvas.height / 2 - 20);
     const winner = snakePlayer.foodCount >= snakeOpponent.foodCount ? 'Player' : 'Opponent';
     ctx.fillText(`${winner} wins!`, canvas.width / 2 - 70, canvas.height / 2 + 20);
+    stopGame();
 }
 
 export function stopGame() {

@@ -1,11 +1,13 @@
 import { startSnakeGame, stopGame, changeGameSpeed, addExtraFood } from './snake/snake.js';
 import { navigateTo } from '../utils.js';
-const user = sessionStorage.getItem('user');
-const modality2 = sessionStorage.getItem('modality');
 let inviter = sessionStorage.getItem("Inviter");
 
 export const renderSnake = () => {
+    const user = sessionStorage.getItem('user');
+    const modality2 = sessionStorage.getItem('modality');
     const app = document.getElementById('app');
+    const showButtons = modality2 != 'remote' && modality2 != 'tournament';
+
     app.innerHTML = `
         <div class="arcade-container">
             <div class="arcade-screen">
@@ -17,12 +19,14 @@ export const renderSnake = () => {
                 <div class="arcade-button" style="background:red;" data-speed="100"></div>
                 <div id="extraFoodButton" class="arcade-button" style="background:green;"></div>
                 <div class="arcade-button" style="background:blue;" data-speed="200"></div>
-                <button id="exitBtn" class="btn">
-                    <h3>Give up</h3>
-                </button>
-                <button id="againBtn" class="btn">
-                    <h3>Again</h3>
-                </button>
+                ${showButtons ? `
+                    <button id="exitBtn" class="btn">
+                        <h3>Give up</h3>
+                    </button>
+                    <button id="againBtn" class="btn">
+                        <h3>Again</h3>
+                    </button>
+                ` : ''}
             </div>
         </div>
     `;
@@ -35,7 +39,9 @@ export const renderSnake = () => {
         const player = sessionStorage.getItem('player');
         let opponent =1;
         let winner_id = 1;
-        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True'))) {
+        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
+    (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
+        if (player) {
             try {
                 
               
@@ -65,6 +71,7 @@ export const renderSnake = () => {
                 alert('An error occurred while processing the match.');
             }
         }
+    }
     };
 
     const endGameWithScore = async () => {

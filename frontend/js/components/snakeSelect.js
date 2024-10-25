@@ -1,5 +1,5 @@
 import { navigateTo } from '../utils.js';
-import { startPongGame, resetGameState } from './pong/pong.js';
+
 
 export const snakeSelect= () => {
     sessionStorage.removeItem('modality');
@@ -12,7 +12,7 @@ export const snakeSelect= () => {
     sessionStorage.removeItem('rounds');
     sessionStorage.removeItem('game');
     sessionStorage.removeItem('remote');
-    //resetGameState();
+    
     const player = sessionStorage.getItem('player');
     const translations = {
         english: {

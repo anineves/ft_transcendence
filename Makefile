@@ -3,7 +3,7 @@ COMPOSE = ./docker-compose.yml
 
 all: up 
 
-up: permissions
+up: 
 	docker compose -p $(NAME) -f $(COMPOSE) up --build -d
 
 down:
@@ -25,5 +25,3 @@ fclean: clean
 
 re: fclean up
 
-permissions:
-	sudo chmod -R 777 ./data/web

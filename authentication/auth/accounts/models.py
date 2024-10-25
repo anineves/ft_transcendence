@@ -55,7 +55,7 @@ class Player(models.Model):
     nickname = models.CharField(max_length=15, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     friendship = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="friends")
-    status = models.CharField(max_length=2, choices=OnlineStatus, default=OnlineStatus.OFFLINE)
+    status = models.CharField(max_length=2, choices=OnlineStatus)
 
     def __str__(self):
         return self.nickname
@@ -133,3 +133,34 @@ class MatchGroup(models.Model):
 
     def __str__(self):
         return f"{self.group_name}"
+
+
+class Tournament(models.Model):
+    name = models.CharField(max_length=50)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    max_players = models.IntegerField(default=4) 
+    players = models.ManyToManyField(Player, related_name='tournament_players')
+    is_active = models.BooleanField(default=True)
+    winner = models.ForeignKey(Player, null=True, blank=True, on_delete=models.SET_NULL, related_name='tournament_winner')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def add_player(self, player):
+        if self.players.count() < self.max_players and player not in self.players.all():
+            self.players.add(player)
+            return True
+        return False
+
+    def start_tournament(self):
+        if self.players.count() == self.max_players:
+            self.is_active = False
+            return True
+        return False
+
+    def set_winner(self, player):
+        if player in self.players.all():
+            self.winner = player
+            self.is_active = False
+            self.save()
+
+    def __str__(self):
+        return f"Tournament: {self.name} - Game: {self.game} - Winner: {self.winner if self.winner else 'TBD'}"

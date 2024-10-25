@@ -1,5 +1,7 @@
 import { navigateTo } from '../utils.js';
 import { resetGameState } from './pong/pong.js';
+import { initPongSocket } from './pong/pongSocket.js';
+import { resetGameSnake } from './snake/snake.js';
 
 const translations = {
     english: {
@@ -165,18 +167,12 @@ const shuffleArray = (array) => {
     return array;
 };
 
-const initializeTournament = () => {
+export const initializeTournament = () => {
     let players = JSON.parse(sessionStorage.getItem('playerNames'));
-
-    
-    players = shuffleArray(players);
-
-   
-    const rounds = [];
-    for (let i = 0; i < players.length; i += 2) {
-        rounds.push([players[i], players[i + 1]]);
-    }
-
+        const rounds = [];
+        for (let i = 0; i < players.length; i += 2) {
+            rounds.push([players[i], players[i + 1]]);
+        }
     sessionStorage.setItem('rounds', JSON.stringify(rounds));
     sessionStorage.setItem('currentRound', '0');
     sessionStorage.setItem('winners', '[]');
@@ -188,18 +184,71 @@ const startMatch = () => {
     const nickname = sessionStorage.getItem('nickname');
     const currentRound = parseInt(sessionStorage.getItem('currentRound'), 10);
     resetGameState();
+    resetGameSnake();
+
+
+    const modality = sessionStorage.getItem('modality');
+
+    const playersInfo = JSON.parse(sessionStorage.getItem('playersInfo')); // Parse do JSON
+
+    const playersMap = {};
+    if(modality == "remote" || modality == 'tourn-remote')
+    {   
+        playersInfo.forEach(player => {
+            playersMap[player.nickname] = player.id;
+        });
+        console.log("player", playersMap)
+    }
+    
     if (currentRound < rounds.length) {
         const [player1, player2] = rounds[currentRound];
-        if (player1 === nickname || player2 === nickname) {
-            sessionStorage.setItem("nickTorn", "True"); // O jogador está jogando
-        } else {
-            sessionStorage.setItem("nickTorn", "False"); // O jogador não está jogando
-        }
+        if (modality == "remote" && (player1 === nickname || player2 === nickname))
+            sessionStorage.setItem("nickTorn", "True"); 
+        else 
+            sessionStorage.setItem("nickTorn", "False"); 
+     
         sessionStorage.setItem('currentMatch', JSON.stringify({ player1, player2 }));
-        setTimeout(() => {
-            resetGameState();
-            navigateTo('/pong');
-        }, 200); 
+        const match = document.getElementById('match-footer');
+            match.innerHTML = `
+            <div class="match-footer">
+                <p> The next game will be: ${player1} vs ${player2} </p>
+            </div>`
+        if (modality == 'tourn-remote') {
+            const player1Id = playersMap[player1]; 
+            const player2Id = playersMap[player2]; 
+
+            setTimeout(() => {
+            const groupName = `privateGroup${player1Id}${player2Id}`;
+            sessionStorage.setItem("groupName", groupName);
+            console.log("Group name", groupName);
+            let ws= null;
+            ws = new WebSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+            sessionStorage.setItem('playerID', player1Id);
+            sessionStorage.setItem('friendID', player2Id);
+            const player = sessionStorage.getItem('player');
+            if(player == player1Id)
+                sessionStorage.setItem("nickTorn", "True"); 
+            else 
+                sessionStorage.setItem("nickTorn", "False");
+            const game = sessionStorage.getItem('gameT')
+                if(game == "pong")
+                    navigateTo('/pong');
+                else if(game == "snake")
+                    navigateTo('/snake');
+            }, 2000); 
+        }
+        else{
+            setTimeout(() => {
+                resetGameState();
+                resetGameSnake();
+    
+                let game = sessionStorage.getItem("game");
+                if(game == 'pong')
+                    navigateTo('/pong');
+                else(game == 'snake')
+                    navigateTo('/snake')
+            }, 2000); 
+        }
     } else {
         const winners = JSON.parse(sessionStorage.getItem('winners'));
         if (winners.length > 1) {
