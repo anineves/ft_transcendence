@@ -78,8 +78,14 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
-
         user = serializer.user
+
+        if user.otp_agreement == True:
+            if request.data.get('otp', None) == None:
+                return Response({'otp_agreement': True, 'message': 'OTP required for login'}, status=status.HTTP_200_OK)
+            if request.data.get('otp', None) != user.otp:
+                return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+
         refresh = RefreshToken.for_user(user)
         response_data = {
             'refresh': str(refresh),

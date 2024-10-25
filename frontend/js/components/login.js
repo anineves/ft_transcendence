@@ -60,13 +60,14 @@ export const renderLogin = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email: emailOrUsername, password, commonLogin: true })
+                body: JSON.stringify({ email: emailOrUsername, password })
             });
 
             console.log("Response", response);
             if (response.ok) {
                 const data = await response.json();
-                if(data.user.otp_agreement)
+                console.log("Data", data);
+                if(data.otp_agreement)
                 {
                     showCodeForm();
                 }else{
@@ -141,7 +142,7 @@ const showCodeForm = async () => {
             });
 
             if (response.ok) {
-                showCodeForm(emailOrUsername, password);
+                // showCodeForm(emailOrUsername, password); #TODO: POST twice to OTP
             } else {
                 alert('Failed to send verification code.1');
             }
