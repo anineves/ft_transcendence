@@ -43,11 +43,6 @@ export const renderLogin = () => {
                 <input type="password" id="password" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
                 <button type="submit" id="btn-login"class="btn">${translations[savedLanguage].submit}</button>
             </form>
-            <form id="loginForm2f">
-               <input type="text" id="emailOrUsername2" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
-                <input type="password" id="password2" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
-                <button type="submit" id="btn-login2f"class="btn">${translations[savedLanguage].submit2}</button>
-            </form>
         </div>
     `;
 
@@ -71,7 +66,10 @@ export const renderLogin = () => {
             console.log("Response", response);
             if (response.ok) {
                 const data = await response.json();
-
+                if(data.user.otp_agreement)
+                {
+                    showCodeForm();
+                }else{
                 sessionStorage.setItem('register', 'form');
                 // Armazena o token de acesso JWT.
                 sessionStorage.setItem('jwtToken', data.access); 
@@ -115,6 +113,7 @@ export const renderLogin = () => {
             
                 checkLoginStatus(); 
                 navigateTo('/game-selection', data); 
+            }
             } else {
                 alert('Failed to send verification code.2');
             }
@@ -124,10 +123,13 @@ export const renderLogin = () => {
         }
     });
 
-    document.getElementById('loginForm2f').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const emailOrUsername = document.getElementById('emailOrUsername2').value;
-        const password = document.getElementById('password2').value;
+
+};
+
+const showCodeForm = async () => {
+    const app = document.getElementById('app');
+    const emailOrUsername = document.getElementById('emailOrUsername').value;
+        const password = document.getElementById('password').value;
 
         try {
             const response = await fetch('http://127.0.0.1:8000/api/otp/', {
@@ -147,12 +149,7 @@ export const renderLogin = () => {
             console.error('Error:', error);
             alert('An error occurred during login');
         }
-    });
-
-};
-
-const showCodeForm = (emailOrUsername, password) => {
-    const app = document.getElementById('app');
+    
 
     app.innerHTML = `
         <div class="background-form" id="form-login">

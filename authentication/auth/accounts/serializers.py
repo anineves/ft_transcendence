@@ -60,8 +60,8 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         if user is None:
             raise serializers.ValidationError('Invalid credentials', code='authorization')
-        if user.otp_agreement == True and user.otp != otp and common_login == None:
-            raise serializers.ValidationError('Invalid credentials or OTP', code='authorization')
+        #if user.otp_agreement == True and user.otp != otp and common_login == None:
+         #   raise serializers.ValidationError('Invalid credentials or OTP', code='authorization')
 
         data.update({
             'user': {
