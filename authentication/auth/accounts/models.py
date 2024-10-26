@@ -55,7 +55,7 @@ class Player(models.Model):
     nickname = models.CharField(max_length=15, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     friendship = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="friends")
-    status = models.CharField(max_length=2, choices=OnlineStatus)
+    status = models.CharField(max_length=2, choices=OnlineStatus, default=OnlineStatus.OFFLINE)
 
     def __str__(self):
         return self.nickname

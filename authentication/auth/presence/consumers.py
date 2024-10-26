@@ -463,8 +463,8 @@ class SnakeConsumer(WebsocketConsumer):
     def receive(self, text_data=None):
         data = json.loads(text_data)
 
-        print("Data SnakeConsumer:", end=" - ")
-        pprint.pp(data)
+        # print("Data SnakeConsumer:", end=" - ")
+        # pprint.pp(data)
 
         if data.get('Authorization'):
             self.user = handle_authentication(self, data.get('Authorization'))
@@ -477,7 +477,8 @@ class SnakeConsumer(WebsocketConsumer):
             return self.disconnect(401)
         elif data.get('action') != None:
             message = data.get('message')
-            print(f"Message In Snake Action: {message}")
+            if (data.get('action') == 'place_food'):
+                print(f"\nMessage In Snake Action: {message}\n")
             async_to_sync(self.channel_layer.group_send)(
                 self.match_group.group_name, 
                 {

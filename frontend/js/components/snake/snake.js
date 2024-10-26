@@ -26,7 +26,8 @@ let snakeOpponent = {
     hitWall: false
 };
 
-let foods;
+let foods = [{ x: null, y: null }];
+
 export const startSnakeGame = async () => {
     let modality2 = sessionStorage.getItem('modality');
     const user = sessionStorage.getItem('user');
@@ -81,9 +82,7 @@ export const startSnakeGame = async () => {
 
         ws.onmessage = (event) => {
 
-            // console.log("Event On Message: ", event);
             const data = JSON.parse(event.data);
-            // console.log("SnakeSocket Data: ", data);    
 
             if (data.action == 'move_snake') {
 
@@ -105,7 +104,6 @@ export const startSnakeGame = async () => {
                 });
             }
             if (data.action == 'update_snake') {
-                // console.log("update_snake:", data)
                 if (data.message.snake.color === 'blue')
                     snakeOpponent = data.message.snake;
                 else
@@ -245,24 +243,27 @@ function updateSnake(snake) {
 
 function placeFood() {
 
+    if (modality2 == 'remote' || modality2 == 'tourn-remote') {
+        if (player === playerID) {
+            
+            ws.send(JSON.stringify({
+                'action': 'place_food',
+                'message': {
+                    'player': player,
+                    'test': 'test',
+                    'x': Math.floor(Math.random() * 18) + 1, 
+                    'y': Math.floor(Math.random() * 18) + 1 
+                }
+            }));
+        }
+        return ;
+    }
+
     foods.push({ 
         x: Math.floor(Math.random() * 18) + 1, 
         y: Math.floor(Math.random() * 18) + 1 
     });
     
-
-    if (modality2 == 'remote' || modality2 == 'tourn-remote') {
-        if (player === playerID) {
-            ws.send(JSON.stringify({
-                'action': 'place_food',
-                'message': {
-                    'player': player,
-                    'x': x,
-                    'y': y,
-                }
-            }));
-        }
-    }
 }
 
 function checkCollisions() {
