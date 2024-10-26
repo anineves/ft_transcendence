@@ -7,7 +7,7 @@ export function drawScore(playerScore, opponentScore) {
     const modality = sessionStorage.getItem('modality');
     let player1 = "Player"
     let player2 = "Oponente";
-    if (modality == 'tournament') {
+    if (modality == 'tournament' || modality == "tourn-remote") {
         ({ player1, player2 } = currentMatch);
     }
 

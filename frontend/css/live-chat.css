@@ -71,7 +71,7 @@ body, html {
     transform: scale(1.1);
 }
 
-#duel-button {
+#duel-button,  #duel-button-snake{
     background-color: var(--bg-color);
     border: 2px solid var(--primary-color);
     color: var(--primary-color);
@@ -83,10 +83,11 @@ body, html {
     margin-left: 10px;
 }
 
-#duel-button:hover {
+#duel-button:hover, #duel-button-snake:hover {
     background-color: var(--primary-color);
     color: var(--button-bg-hover);
 }
+
 
 .chat-box {
     padding: 15px;
@@ -216,6 +217,18 @@ body, html {
     transition: background-color 0.3s ease, color 0.3s ease;
     margin-bottom: 5px; 
 }
+.duel-tournament-panel {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.duel-tournament-panel button {
+    flex: 1;
+    text-align: center;
+}
 
 .button-panel button:hover {
     background-color: var(--primary-color);
@@ -251,7 +264,7 @@ body, html {
     width: 100%;
 }
 
-#block-player-input, #unblock-player-input, #duel-player-input {
+#block-player-input, #unblock-player-input, #duel-player-input , #duel-player-input-snake{
     width: 30%; 
     padding: 10px;
     font-size: 14px;
@@ -264,11 +277,11 @@ body, html {
     margin-right: 5px; 
 }
 
-#block-player-input::placeholder, #unblock-player-input::placeholder, #duel-player-input::placeholder {
+#block-player-input::placeholder, #unblock-player-input::placeholder, #duel-player-input::placeholder, #duel-player-input-snake::placeholder {
     color: var(--secondary-color);
 }
 
-#block-player-input:focus, #unblock-player-input:focus, #duel-player-input:focus {
+#block-player-input:focus, #unblock-player-input:focus, #duel-player-input:focus, #duel-player-input-snake:focus {
     outline: none;
     border-color: var(--secondary-color);
     box-shadow: 0 0 10px var(--secondary-color), inset 0 0 10px var(--secondary-color);
@@ -297,6 +310,26 @@ body, html {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
+.create-button, .create-button-snake, #participate-tournament-button-snake, #participate-tournament-button  {
+    background-color: var(--bg-color);
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    font-size: var(--font-size);
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    width: auto;
+    margin-left: 10px;
+}
+
+.create-button:hover, .create-button-snake:hover, #participate-tournament-button-snake:hover, #participate-tournament-button:hover {
+    background-color: var(--primary-color);
+    color: var(--button-bg-hover);
+}
+
+
+
 @media (max-width: 768px) {
     .chat-box {
         height: 50vh;
@@ -312,6 +345,12 @@ body, html {
 
     .button-panel button {
         font-size: 14px;
+    }
+    .duel-tournament-panel button {
+        font-size: 12px;
+        padding: 6px;
+        margin: 0;
+        padding: 0;
     }
 }
 

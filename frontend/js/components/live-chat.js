@@ -1,4 +1,5 @@
 import { navigateTo, checkLoginStatus } from '../utils.js'; 
+import {  initializeTournament} from './tournament.js';
 
 export const liveChat = () => {
     const player = sessionStorage.getItem('player');
@@ -74,37 +75,57 @@ export const liveChat = () => {
     const app = document.getElementById('app');
     app.innerHTML = `
        
-            <div class="chat">
-            <div class="chat-header">
-                <h2>${translations[savedLanguage].title}</h2>
-                <button id="leave-button" title="Leave"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
-            <div class="chat-panel">
-                <div id="chat-box" class="chat-box"></div>
-                <div class="message-input-container">
-                    <input id="message-input" type="text" placeholder="${translations[savedLanguage].phMsg}">
-                    <div class="button-panel">
-                        <button id="send-button"><i class="fas fa-paper-plane"></i></button>
-                        <button id="block-button"><i class="fas fa-ban"></i></button>
-                        <button id="unblock-button"><i class="fas fa-unlock"></i></button>
-                        <button id="duel-button"><i class="fas fa-crossed-swords"></i> ${translations[savedLanguage].duelBtn}</button>
-                    </div>
-                </div>
-                <div id="block-input-container" style="display: none;">
-                    <input id="block-player-input" type="text" placeholder="${translations[savedLanguage].phBlock}...">
-                    <button id="confirm-block-button" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
-                </div>
-                <div id="unblock-input-container" style="display: none;">
-                    <input id="unblock-player-input" type="text" placeholder="${translations[savedLanguage].phUnblock}...">
-                    <button id="confirm-unblock-button" class="confirm-button" >${translations[savedLanguage].confirmBtn}</button>
-                </div>
-                <div id="duel-input-container" style="display: none;">
-                    <input id="duel-player-input" type="text" placeholder="${translations[savedLanguage].duelBtn}...">
-                    <button id="confirm-duel-button" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
+            <div id="app">
+    <div class="chat">
+        <div class="chat-header">
+            <h2>${translations[savedLanguage].title}</h2>
+            <button id="leave-button" title="Leave"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+        <div class="chat-panel">
+            <div id="chat-box" class="chat-box"></div>
+
+            <div class="message-input-container">
+                <input id="message-input" type="text" placeholder="${translations[savedLanguage].phMsg}">
+                
+                <!-- Painel de botões principais -->
+                <div class="button-panel">
+                    <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+                    <button id="block-button"><i class="fas fa-ban"></i></button>
+                    <button id="unblock-button"><i class="fas fa-unlock"></i></button>
                 </div>
             </div>
+
+            <!-- Painel de botões de duelo e torneio -->
+            <div class="duel-tournament-panel">
+                <button id="duel-button"><i class="fas fa-crossed-swords"></i> ${translations[savedLanguage].duelBtn}</button>
+                <button id="duel-button-snake"><i class="fas fa-crossed-swords"></i> ${translations[savedLanguage].duelBtn} Snake</button>
+                <button id="create-tournament-button" class="create-button">Create a Tournament Pong</button>
+                <button id="create-tournament-button-snake" class="create-button-snake">Create a Tournament Snake</button>
             </div>
-  
+
+            <!-- Inputs para bloqueio e desbloqueio de usuários -->
+            <div id="block-input-container" style="display: none;">
+                <input id="block-player-input" type="text" placeholder="${translations[savedLanguage].phBlock}...">
+                <button id="confirm-block-button" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
+            </div>
+
+            <div id="unblock-input-container" style="display: none;">
+                <input id="unblock-player-input" type="text" placeholder="${translations[savedLanguage].phUnblock}...">
+                <button id="confirm-unblock-button" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
+            </div>
+
+            <div id="duel-input-container" style="display: none;">
+                <input id="duel-player-input" type="text" placeholder="${translations[savedLanguage].duelBtn}...">
+                <button id="confirm-duel-button" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
+            </div>
+
+            <div id="duel-input-container-snake" style="display: none;">
+                <input id="duel-player-input-snake" type="text" placeholder="${translations[savedLanguage].duelBtn}Snake...">
+                <button id="confirm-duel-button-snake" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
+            </div>
+        </div>
+    </div>
+</div>
     `;
     const chatBox = document.getElementById('chat-box');
     const messageInput = document.getElementById('message-input');
@@ -118,6 +139,100 @@ export const liveChat = () => {
     const unblockInputContainer = document.getElementById('unblock-input-container');
     const unblockPlayerInput = document.getElementById('unblock-player-input');
     const confirmUnblockButton = document.getElementById('confirm-unblock-button');
+
+
+
+    const createTournamentButtonSnake = document.getElementById('create-tournament-button-snake');
+    const socket3 = new WebSocket(`ws://localhost:8000/ws/tournament_snake/`);
+    createTournamentButtonSnake.addEventListener('click', function () {
+        console.log("entrei snake");
+        socket3.send(JSON.stringify({ action: 'create_tournament_snake' }));       
+    });
+
+    socket3.onopen = function (event) {
+        console.log("Connected to tournament WebSocket");
+    };
+
+    socket3.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        let participateButtonSnake = document.getElementById('participate-tournament-button-snake');
+        if (!participateButtonSnake) 
+        { 
+            participateButtonSnake = document.createElement('button');
+            participateButtonSnake.innerText = 'Participate in Tournament Snake';
+            participateButtonSnake.id = 'participate-tournament-button-snake';
+            document.body.appendChild(participateButtonSnake);
+            participateButtonSnake.addEventListener('click', function () {
+                socket3.send(JSON.stringify({ action: 'join_tournament_snake', player: { nickname: nickname , id: player} }));
+            });
+        }
+    
+        if (data.action === 'tournament_full_snake') {
+            document.body.removeChild(participateButtonSnake);
+            const playerNames = data.participants.map(participant => participant.nickname);
+            sessionStorage.setItem('playerNames', JSON.stringify(playerNames));
+            sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
+            sessionStorage.setItem('modality', 'tourn-remote');
+            sessionStorage.setItem('lastPlayer', playerNames[3]);
+            sessionStorage.setItem('gameT', "snake");
+            initializeTournament();
+        }
+    };
+
+    socket3.onerror = function (error) {
+        console.error("WebSocket Error:", error);
+    };
+
+    socket3.onclose = function () {
+        console.error("Tournament socket was closed");
+    };
+
+
+    const createTournamentButton = document.getElementById('create-tournament-button');
+    const socket2 = new WebSocket(`ws://localhost:8000/ws/tournament/`);
+    createTournamentButton.addEventListener('click', function () {
+        socket2.send(JSON.stringify({ action: 'create_tournament' }));
+    });
+
+    socket2.onopen = function (event) {
+        console.log("Connected to tournament WebSocket");
+    };
+
+    socket2.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        let participateButton = document.getElementById('participate-tournament-button');
+        if (!participateButton) 
+        { 
+            participateButton = document.createElement('button');
+            participateButton.innerText = 'Participate in Tournament';
+            participateButton.id = 'participate-tournament-button';
+            document.body.appendChild(participateButton);
+            participateButton.addEventListener('click', function () {
+                socket2.send(JSON.stringify({ action: 'join_tournament', player: { nickname: nickname , id: player} }));
+            });
+        }
+    
+        if (data.action === 'tournament_full') {
+            document.body.removeChild(participateButton);
+            const playerNames = data.participants.map(participant => participant.nickname);
+            sessionStorage.setItem('playerNames', JSON.stringify(playerNames));
+            sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
+            sessionStorage.setItem('modality', 'tourn-remote');
+            sessionStorage.setItem('lastPlayer', playerNames[3]);
+            sessionStorage.setItem('gameT', "pong");
+            initializeTournament();
+        }
+    };
+
+    socket2.onerror = function (error) {
+        console.error("WebSocket Error:", error);
+    };
+
+    socket2.onclose = function () {
+        console.error("Tournament socket was closed");
+    };
+    
+
 
     const addMessage = (message, isOwnMessage) => {
         const messageElement = document.createElement('div');
@@ -185,14 +300,12 @@ export const liveChat = () => {
     socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         const message = data.message
-        
-        console.log('Dataaa: ', data)
-        console.log('Message: ', message)
         const firstWord = message.content.split(' ')[0];
         const isOwnMessage = firstWord === nickname;
         
         addMessage(message.content, isOwnMessage);
-        if (data.action == "duel")
+        console.log()
+        if (data.action == "duel" || data.action == "duel-snake")
         {
             const groupName = message.group_name;
             sessionStorage.setItem("groupName", groupName);
@@ -205,6 +318,10 @@ export const liveChat = () => {
             <a href="https://localhost:8080/wait-remote" id="accept-link">${translations[savedLanguage].acceptBtn}</a>
             `;
 
+            if(data.action == "duel-snake")
+                sessionStorage.setItem("duelGame", "duel-snake");
+            if(data.action == "duel")
+                sessionStorage.setItem("duelGame", "duel-pong");
             chatBox.appendChild(duelMessage);
             if (user_json.id == message.from_user) {
                 sessionStorage.setItem("Inviter", "True");
@@ -283,7 +400,7 @@ export const liveChat = () => {
             sendButton.click();
         }
     });
-    // Fechar a socket quando fechar a aba ou navegador.
+
     window.addEventListener('beforeunload', function (event) {
         socket.close();
         return;
@@ -291,13 +408,20 @@ export const liveChat = () => {
 
     document.getElementById('duel-button').addEventListener('click', function() {
         const duelContainer = document.getElementById('duel-input-container');
-        
-        // Toggle the visibility of the duel input container
-        if (duelContainer.style.display === 'none') {
+        if (duelContainer.style.display === 'none') 
             duelContainer.style.display = 'block';
-        } else {
+        else 
             duelContainer.style.display = 'none';
-        }
+    });
+
+    document.getElementById('duel-button-snake').addEventListener('click', function() {
+        const duelContainer = document.getElementById('duel-input-container-snake');
+        
+        
+        if (duelContainer.style.display === 'none') 
+            duelContainer.style.display = 'block';
+         else 
+            duelContainer.style.display = 'none';
     });
     
     document.getElementById('confirm-duel-button').addEventListener('click', function() {
@@ -309,20 +433,45 @@ export const liveChat = () => {
                 alert(`${translations[savedLanguage].yourselfMsg}`);
             }
             else{
-                document.getElementById('duel-input-container').style.display = 'none'; // Hide after confirmation
-                document.getElementById('duel-player-input').value = ''; // Clear input field
+                document.getElementById('duel-input-container').style.display = 'none'; 
+                document.getElementById('duel-player-input').value = ''; 
                 
                 let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
                 
                 socket.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
             }
-
         } else {
             alert('Please enter a player nickname to duel.');
         }
     });    
     
     socket.onclose = function () {
-        console.error("Chat socket was close"); //Debug
+        console.error("Chat socket was close"); 
+    };
+    
+    document.getElementById('confirm-duel-button-snake').addEventListener('click', function() {
+        const playerNickname = document.getElementById('duel-player-input-snake').value;
+    
+        if (playerNickname) {
+            console.log("players", playerNickname, nickname);
+            if (playerNickname === nickname) {
+                alert(`${translations[savedLanguage].yourselfMsg}`);
+            }
+            else{
+                document.getElementById('duel-input-container-snake').style.display = 'none'; 
+                document.getElementById('duel-player-input-snake').value = ''; 
+                
+                let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
+                
+                socket.send(JSON.stringify({ action: 'duel-snake', message: duel_message, is_private: true }));
+            }
+    
+        } else {
+            alert('Please enter a player nickname to duel.');
+        }
+    });    
+    
+    socket.onclose = function () {
+        console.error("Chat socket was close"); 
     };
 };

@@ -5,7 +5,7 @@ import pprint
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-from accounts.models import PlayerChannel, Player, PrivateGroup, MatchGroup
+from accounts.models import PlayerChannel, Player, PrivateGroup, MatchGroup, Tournament
 
 from myproject.chat_config.jwt_middleware import handle_authentication
 
@@ -140,6 +140,32 @@ class ChatConsumer(WebsocketConsumer):
                 }
             )
 
+        if data.get("action") == "duel-snake":
+            async_to_sync(self.channel_layer.group_send)(   
+                self.private_group.group_name,
+                    {                
+                        "type": "chat.message",
+                        "action": "duel-snake",
+                        "message": {
+                            'content': f"{self.user.player}: {message}",
+                            "from_user": self.user.id,
+                            "group_name": self.private_group.group_name
+                        }
+                    }
+            )
+        else:
+            async_to_sync(self.channel_layer.group_send)(   
+                self.private_group.group_name,
+                    {                
+                        "type": "chat.message",
+                        "message": {
+                            'content': f"{self.user.player}: {message}",
+                            "from_player": self.user.player.id
+                        }
+                }
+            )
+
+
     def get_or_create_new_room(self, to_player):
         from_player = self.user.player
         room_list = [from_player.id, to_player.id]
@@ -226,6 +252,10 @@ class PongConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None):
         data = json.loads(text_data)
+
+        # print("Data:")
+        # pprint.pp(data)
+
         if data.get('Authorization'):
             self.user = handle_authentication(self, data.get('Authorization'))
             if self.user:
@@ -318,3 +348,270 @@ class PongConsumer(WebsocketConsumer):
         except Exception as e:
             print(f"# Something went wrong with creating_new_room: \n{e}")
         return
+
+class TournamentConsumer(WebsocketConsumer):
+    tournament_players = []
+    max_players = 4
+
+
+    def connect(self):
+        self.tournament_group_name = "tournament_group"
+        async_to_sync(self.channel_layer.group_add)(
+            self.tournament_group_name, self.channel_name
+        )
+        self.accept()
+
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(self.tournament_group_name, self.channel_name)
+
+    def receive(self, text_data):
+        data = json.loads(text_data)
+
+        if data.get('action') == 'create_tournament':
+            self.create_tournament()
+        elif data.get('action') == 'join_tournament':
+            player = data.get('player')  
+            self.add_player_to_tournament(player) 
+
+    def create_tournament(self):
+        TournamentConsumer.tournament_players.clear()
+        async_to_sync(self.channel_layer.group_send)(
+            self.tournament_group_name,
+            {
+                'type': 'created_tournament',
+                'message': "Tournament created! Players can now join."
+            }
+        )
+
+    def add_player_to_tournament(self, player):
+        print("playe")
+        print(player)
+        if player not in TournamentConsumer.tournament_players:
+            TournamentConsumer.tournament_players.append(player)
+            async_to_sync(self.channel_layer.group_send)(
+                self.tournament_group_name,
+                {
+                    'type': 'tournament_message',
+                    'message': f"{player['nickname']} joined the tournament."
+                }
+            )
+
+        print()
+        if len(TournamentConsumer.tournament_players) >= TournamentConsumer.max_players:
+            self.start_tournament()
+
+    def start_tournament(self):
+        print("aa PArticipantes")
+        print(TournamentConsumer.tournament_players)
+        async_to_sync(self.channel_layer.group_send)(
+            self.tournament_group_name,
+            {
+                'type': 'tournament_full',
+                'message': "The tournament has started!",
+                'participants': TournamentConsumer.tournament_players  
+            }
+        )
+
+    def tournament_message(self, event):
+        message = event['message']
+        self.send(text_data=json.dumps({
+            'action': 'tournament_message',
+            'message': message
+        }))
+
+    def created_tournament(self, event):
+        message = event['message']
+        self.send(text_data=json.dumps({
+            'action': 'created_tournament',
+            'message': message
+        }))
+
+    def tournament_full(self, event):  
+        message = event['message']
+        participants = event['participants']  
+        self.send(text_data=json.dumps({
+            'action': 'tournament_full',
+            'message': message,
+            'participants': TournamentConsumer.tournament_players  
+        }))
+
+
+class SnakeConsumer(WebsocketConsumer):
+    
+    def connect(self):
+        self.group_name = self.scope["url_route"]["kwargs"]["snake_match"]
+        self.snake_match = f"snake_group_{self.group_name}"
+        self.user = self.scope["user"]       
+        self.accept()
+
+    def disconnect(self, close_code):
+        if close_code == 400:
+            self.send_self_channel_messages(
+                "Authentication failed. \
+                Ensure you must have a valid account and a player to access this feature."
+            )
+
+        async_to_sync(self.channel_layer.group_discard)(
+            self.match_group.group_name, self.channel_name
+        )
+        if close_code == 401:
+            self.match_group.delete()
+
+        self.close()
+        return super().disconnect(close_code)
+
+    def receive(self, text_data=None):
+        data = json.loads(text_data)
+
+        # print("Data SnakeConsumer:", end=" - ")
+        # pprint.pp(data)
+
+        if data.get('Authorization'):
+            self.user = handle_authentication(self, data.get('Authorization'))
+            if self.user:
+                self.get_or_create_new_room()
+            else:
+                return self.disconnect(400)
+
+        if data.get('action') == 'end_game':
+            return self.disconnect(401)
+        elif data.get('action') != None:
+            message = data.get('message')
+            if (data.get('action') == 'place_food'):
+                print(f"\nMessage In Snake Action: {message}\n")
+            async_to_sync(self.channel_layer.group_send)(
+                self.match_group.group_name, 
+                {
+                    "type": "snake.log",
+                    "action": data.get('action'),
+                    "message": message
+                }
+            )
+
+    def snake_log(self, event):
+        message = event["message"]
+        action = event.get("action")
+        
+        self.send(text_data=json.dumps({
+            "action": action if action else "Null",
+            "message": message
+        }))
+
+    def send_self_channel_messages(self, message):
+        async_to_sync(self.channel_layer.send)(self.channel_name, 
+            {
+                "type": "snake.log",
+                "message": message
+            })
+        
+    def get_or_create_new_room(self):
+        player = self.user.player
+        try:
+            self.match_group, created = MatchGroup.objects.get_or_create(
+                group_name=self.snake_match
+            )
+            if created:
+                self.match_group.player = player
+                async_to_sync(self.channel_layer.group_add)(
+                    self.match_group.group_name, self.channel_name)
+            else:
+                self.match_group.opponent = player
+                async_to_sync(self.channel_layer.group_add)(
+                    self.match_group.group_name, self.channel_name)
+                async_to_sync(self.channel_layer.group_send)(
+                    self.match_group.group_name, 
+                    {
+                        'type': 'snake.log',
+                        'action': 'full_lobby',
+                        'message': {
+                            'player': self.match_group.player.id,
+                            'opponent': self.match_group.opponent.id
+                        }
+                    }
+                )
+            self.match_group.save()
+        except Exception as e:
+            print(f"# Something went wrong with creating_new_room: \n{e}")
+        return
+
+class TournamentConsumerSnake(WebsocketConsumer):
+    tournament_players = []
+    max_players = 4
+
+    def connect(self):
+        self.tournament_group_name = "tournament_group_snake"
+        async_to_sync(self.channel_layer.group_add)(
+            self.tournament_group_name, self.channel_name
+        )
+        self.accept()
+
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.tournament_group_name, self.channel_name
+        )
+
+    def receive(self, text_data):
+        data = json.loads(text_data)
+
+        if data.get('action') == 'create_tournament_snake':
+            self.create_tournament()
+        elif data.get('action') == 'join_tournament_snake':
+            player = data.get('player')  
+            self.add_player_to_tournament_snake(player)
+
+    def create_tournament(self):
+        TournamentConsumerSnake.tournament_players.clear()
+        async_to_sync(self.channel_layer.group_send)(
+            self.tournament_group_name,
+            {
+                'type': 'created_tournament_snake', 
+                'message': "Tournament created! Players can now join."
+            }
+        )
+
+    def add_player_to_tournament_snake(self, player):
+        if player not in TournamentConsumerSnake.tournament_players:
+            TournamentConsumerSnake.tournament_players.append(player)
+            async_to_sync(self.channel_layer.group_send)(
+                self.tournament_group_name,
+                {
+                    'type': 'tournament_message_snake',
+                    'message': f"{player['nickname']} joined the tournament."
+                }
+            )
+
+        if len(TournamentConsumerSnake.tournament_players) >= TournamentConsumerSnake.max_players:
+            self.start_tournament_snake()
+
+    def start_tournament_snake(self):
+        async_to_sync(self.channel_layer.group_send)(
+            self.tournament_group_name,
+            {
+                'type': 'tournament_full_snake',
+                'message': "The tournament has started!",
+                'participants': TournamentConsumerSnake.tournament_players  
+            }
+        )
+
+    def tournament_message_snake(self, event):
+        message = event['message']
+        self.send(text_data=json.dumps({
+            'action': 'tournament_message_snake',
+            'message': message
+        }))
+
+    def created_tournament_snake(self, event): 
+        message = event['message']
+        self.send(text_data=json.dumps({
+            'action': 'created_tournament_snake',
+            'message': message
+        }))
+
+    def tournament_full_snake(self, event): 
+        message = event['message']
+        participants = event['participants']  
+        self.send(text_data=json.dumps({
+            'action': 'tournament_full_snake',
+            'message': message,
+            'participants': participants  
+        }))

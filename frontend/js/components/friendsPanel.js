@@ -57,8 +57,8 @@ export const renderPlayerProfile = async () => {
         },
         french: {
             title: "Profil d'Ami",
-            nickFriend: "Surnom :",
-            statusFriend: "Statut : ",
+            nickFriend: "Surnom ",
+            statusFriend: "Statut ",
             idFriend: "ID",
             ttWinsPong: "Total des Victoires en Pong :",
             ttLossesPong: "Total des Défaites en Pong :",
@@ -97,17 +97,17 @@ export const renderPlayerProfile = async () => {
         app.innerHTML = `
             <div class="user-panel">
                 <div id="profileSection">
-                    <h2>${translations[savedLanguage].title}/h2>
+                    <h2>${translations[savedLanguage].title}</h2>
                     <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="Player Avatar" class="avatar">
                     <p><strong>${translations[savedLanguage].nickFriend}:</strong> ${player.nickname}</p>
                     <p><strong>${translations[savedLanguage].statusFriend}:</strong> ${player.status}</p>
                     <p><strong>${translations[savedLanguage].idFriend}:</strong> ${player.id}</p>
-                    <p><strong>${translations[savedLanguage].ttWinsPong}</strong> <span id="totalWins">Loading...</span></p>
-                    <p><strong>${translations[savedLanguage].ttLossesPong}:</strong> <span id="totalLosses">Loading...</span></p>
-                    <p><strong>${translations[savedLanguage].ttMatchesPong}:</strong> <span id="totalMatches">Loading...</span></p>
-                    <p><strong>${translations[savedLanguage].ttWinsSnake}</strong> <span id="totalWins">Loading...</span></p>
-                    <p><strong>${translations[savedLanguage].ttLossesSnake}:</strong> <span id="totalLosses">Loading...</span></p>
-                    <p><strong>${translations[savedLanguage].ttMatchesSnake}:</strong> <span id="totalMatches">Loading...</span></p>
+                    <p><strong>${translations[savedLanguage].ttWinsPong}</strong> <span id="totalPongWins">Loading...</span></p>
+                    <p><strong>${translations[savedLanguage].ttLossesPong}:</strong> <span id="totalPongLosses">Loading...</span></p>
+                    <p><strong>${translations[savedLanguage].ttMatchesPong}:</strong> <span id="totalPongMatches">Loading...</span></p>
+                    <p><strong>${translations[savedLanguage].ttWinsSnake}</strong> <span id="totalSnakeWins">Loading...</span></p>
+                    <p><strong>${translations[savedLanguage].ttLossesSnake}:</strong> <span id="totalSnakeLosses">Loading...</span></p>
+                    <p><strong>${translations[savedLanguage].ttMatchesSnake}:</strong> <span id="totalSnakeMatches">Loading...</span></p>
                     <button id="backBtn" class="btn">${translations[savedLanguage].chatBtn}</button>
                     <button id="gameBtn" class="btn">${translations[savedLanguage].gameBtn}</button>
                     <button id="historyBtn" class="btn">${translations[savedLanguage].matchHistBnt}</button>
@@ -136,41 +136,75 @@ export const renderPlayerProfile = async () => {
         const response = await fetch('http://localhost:8000/api/matches/');
         const matches = await response.json();
 
-        let totalWins = 0;
-        let totalLosses = 0;
-        let totalMatches = 0;
+        let totalPongWins = 0;
+        let totalPongLosses = 0;
+        let totalPongMatches = 0;
+        let totalSnakeWins = 0;
+        let totalSnakeLosses = 0;
+        let totalSnakeMatches = 0;
         let matchHistoryHtml = '';
 
         matches.forEach(match => {
             if (match.players.includes(player.id)) {
-                totalMatches++;
-                if (match.winner_id === player.id) {
-                    totalWins++;
-                    matchHistoryHtml += `
-                        <tr>
-                            <td>${new Date(match.date).toLocaleDateString()}</td>
-                            <td>${match.players.find(p => p !== player.id)}</td>
-                            <td>Win</td>
-                            <td>${match.game}</td>
-                        </tr>
-                    `;
-                } else {
-                    totalLosses++;
-                    matchHistoryHtml += `
-                        <tr>
-                            <td>${new Date(match.date).toLocaleDateString()}</td>
-                            <td>${match.players.find(p => p !== player.id)}</td>
-                            <td>Loss</td>
-                            <td>${match.game}</td>
-                        </tr>
-                    `;
+                if(match.game == 1)
+                {
+                    totalPongMatches++;
+                    if (match.winner_id === player.id) {
+                        totalPongWins++;
+                        matchHistoryHtml += `
+                            <tr>
+                                <td>${new Date(match.date).toLocaleDateString()}</td>
+                                <td>${match.players.find(p => p !== player.id)}</td>
+                                <td>Win</td>
+                                <td>${match.game}</td>
+                            </tr>
+                        `;
+                    } else {
+                        totalPongLosses++;
+                        matchHistoryHtml += `
+                            <tr>
+                                <td>${new Date(match.date).toLocaleDateString()}</td>
+                                <td>${match.players.find(p => p !== player.id)}</td>
+                                <td>Loss</td>
+                                <td>${match.game}</td>
+                            </tr>
+                        `;
+                    }
                 }
+                if(match.game == 2)
+                    {
+                        totalSnakeMatches++;
+                        if (match.winner_id === player.id) {
+                            totalSnakeWins++;
+                            matchHistoryHtml += `
+                                <tr>
+                                    <td>${new Date(match.date).toLocaleDateString()}</td>
+                                    <td>${match.players.find(p => p !== player.id)}</td>
+                                    <td>Win</td>
+                                    <td>${match.game}</td>
+                                </tr>
+                            `;
+                        } else {
+                            totalSnakeLosses++;
+                            matchHistoryHtml += `
+                                <tr>
+                                    <td>${new Date(match.date).toLocaleDateString()}</td>
+                                    <td>${match.players.find(p => p !== player.id)}</td>
+                                    <td>Loss</td>
+                                    <td>${match.game}</td>
+                                </tr>
+                            `;
+                        }
+                    }
             }
         });
 
-        document.getElementById('totalWins').innerText = totalWins;
-        document.getElementById('totalLosses').innerText = totalLosses;
-        document.getElementById('totalMatches').innerText = totalMatches;
+        document.getElementById('totalPongWins').innerText = totalPongWins;
+        document.getElementById('totalPongLosses').innerText = totalPongLosses;
+        document.getElementById('totalPongMatches').innerText = totalPongMatches;
+        document.getElementById('totalSnakeWins').innerText = totalSnakeWins;
+        document.getElementById('totalSnakeLosses').innerText = totalSnakeLosses;
+        document.getElementById('totalSnakeMatches').innerText = totalSnakeMatches;
 
         // Update match history
         const historyBody = document.getElementById('historyBody');
