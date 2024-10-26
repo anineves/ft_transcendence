@@ -29,7 +29,6 @@ services:
     networks:
       - Transcendence
 
-
   frontend:
     container_name: frontend
     build:
@@ -87,7 +86,7 @@ services:
     volumes:
       - ./elk/kibana/config/script.sh:/script.sh
     environment:
-      - "xpack.security.encryptionKey"
+      #- "xpack.security.encryptionKey"
       - "xpack.encryptedSavedObjects.encryptionKey"
       - "xpack.security.enabled: true"
     depends_on:
