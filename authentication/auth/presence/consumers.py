@@ -477,8 +477,6 @@ class SnakeConsumer(WebsocketConsumer):
             return self.disconnect(401)
         elif data.get('action') != None:
             message = data.get('message')
-            if (data.get('action') == 'place_food'):
-                print(f"\nMessage In Snake Action: {message}\n")
             async_to_sync(self.channel_layer.group_send)(
                 self.match_group.group_name, 
                 {

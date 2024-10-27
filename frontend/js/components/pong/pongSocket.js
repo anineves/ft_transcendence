@@ -67,7 +67,7 @@ export function initPongSocket(url) {
     }
     }
     ws.onclose = () => {
-        console.log("WebSocket connection closed.");
+        console.error("WebSocket connection closed.");
         ws = null;
     };
 

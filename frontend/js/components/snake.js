@@ -82,8 +82,9 @@ export const renderSnake = () => {
         }, 200);
     };
 
-   
-    document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
+    //TODO: It doesn't work on remote games
+
+    /* document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
 
 
     document.getElementById('againBtn').addEventListener('click', () => {
@@ -103,5 +104,5 @@ export const renderSnake = () => {
     
     document.getElementById('extraFoodButton').addEventListener('click', () => {
         addExtraFood();
-    });
+    });*/
 };
