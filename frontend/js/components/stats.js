@@ -116,7 +116,7 @@ export const stats = async () => {
                         } else {
                             pongLosses++;
                         }
-                    } else if (match.game == '2') {
+                    } else if (match.game == 2) {
                         
                         snakeMatches++;
                         snakeMatchesPerDay[dayIndex]++;
