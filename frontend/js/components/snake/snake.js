@@ -88,7 +88,6 @@ export const startSnakeGame = async () => {
         ws = initPongSocket(`ws://localhost:8000/ws/snake_match/${groupName}/`);
 
         if (ws) {
-            console.log('WS IN SNAKE:', ws);
             document.addEventListener('keydown', handleKeyPress);
         }
 
@@ -101,39 +100,65 @@ export const startSnakeGame = async () => {
 
             if (data.action == 'move_snake') {
 
-                console.log('Message player: ', message.player)
-                console.log('Message key: ', message.key)
-                console.log('playerID: ', playerID)
-                console.log('friendID: ', friendID)
+                // console.log('Message player: ', message.player)
+                // console.log('Message key: ', message.key)
+                // console.log('playerID: ', playerID)
+                // console.log('friendID: ', friendID)
                 
                 switch (message.key) {
-                    case 'ArrowUp': if (snakePlayer.direction.y === 0 && playerID === message.player) {
-                        console.log('ArrowUp Player', message)
+                    case 'ArrowUp': 
+                        if (snakePlayer.direction.y === 0 && playerID === message.player) {
+                        // console.log('ArrowUp Player', message)
                         snakePlayer.direction = { x: 0, y: -1 };
-                    } else if (snakeOpponent.direction.y === 0 && friendID === message.player) {
-                        console.log('ArrowUp Opp', message)
-                        snakeOpponent.direction = { x: 0, y: -1 }; 
-                    } break;
-                    case 'ArrowDown': if (snakePlayer.direction.y === 0 && playerID === message.player)  {
-                        console.log('ArrowUp Player', message)
+                        snakePlayer.body = message.snake_player.body;
+                        snakePlayer.foodCount = message.snake_player.foodCount;
+                        snakePlayer.hitWall = message.snake_player.hitWall;
+                        } else if (snakeOpponent.direction.y === 0 && friendID === message.player) {
+                        // console.log('ArrowUp Opp', message)
+                        snakeOpponent.direction = { x: 0, y: -1 };
+                        snakeOpponent.body = message.snake_opponent.body;
+                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
+                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
+                        } break;
+                    case 'ArrowDown': 
+                        if (snakePlayer.direction.y === 0 && playerID === message.player)  {
+                        // console.log('ArrowUp Player', message)
                         snakePlayer.direction = { x: 0, y: 1 };
-                    } else if (snakeOpponent.direction.y === 0 && friendID === message.player) {
-                        console.log('ArrowUp Opp', message)
-                        snakeOpponent.direction = { x: 0, y: 1 }; 
-                    } break;
+                        snakePlayer.body = message.snake_player.body;
+                        snakePlayer.foodCount = message.snake_player.foodCount;
+                        snakePlayer.hitWall = message.snake_player.hitWall;
+                        } else if (snakeOpponent.direction.y === 0 && friendID === message.player) {
+                        // console.log('ArrowUp Opp', message)
+                        snakeOpponent.direction = { x: 0, y: 1 };
+                        snakeOpponent.body = message.snake_opponent.body;
+                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
+                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
+                        } break;
                     case 'ArrowLeft': if (snakePlayer.direction.x === 0 && playerID === message.player) {
-                        console.log('ArrowUp Player', message)
+                        // console.log('ArrowUp Player', message)
                         snakePlayer.direction = { x: -1, y: 0 };
+                        snakePlayer.body = message.snake_player.body;
+                        snakePlayer.foodCount = message.snake_player.foodCount;
+                        snakePlayer.hitWall = message.snake_player.hitWall;
                     } else if (snakeOpponent.direction.x === 0 && friendID === message.player) {
-                        console.log('ArrowUp Opp', message)
-                        snakeOpponent.direction = { x: -1, y: 0 }; 
+                        // console.log('ArrowUp Opp', message)
+                        snakeOpponent.direction = { x: -1, y: 0 };
+                        snakeOpponent.body = message.snake_opponent.body;
+                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
+                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
                     } break;
                     case 'ArrowRight': if (snakePlayer.direction.x === 0 && playerID === message.player) {
-                        console.log('ArrowUp Player', message)
+                        // console.log('ArrowUp Player', message)
                         snakePlayer.direction = { x: 1, y: 0 };
+                        snakePlayer.body = message.snake_player.body;
+                        snakePlayer.foodCount = message.snake_player.foodCount;
+                        snakePlayer.hitWall = message.snake_player.hitWall;
                     } else if (snakeOpponent.direction.x === 0 && friendID === message.player) {
-                        console.log('ArrowUp Opp', message)
-                        snakeOpponent.direction = { x: 1, y: 0 }; 
+                        // console.log('ArrowUp Opp', message)
+                        snakeOpponent.direction = { x: 1, y: 0 };
+                        snakeOpponent.body = message.snake_opponent.body;
+                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
+                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
                     } break;
                 }
             }
@@ -143,20 +168,20 @@ export const startSnakeGame = async () => {
                     y: message.y
                 });
             }
-            if (data.action == 'update_snake') {
+            // if (data.action == 'update_snake') {
                 
-                if (message.snake_color === 'purple') {
-                    snakePlayer.body = message.snake_body;
-                    snakePlayer.direction = message.snake_direction;
-                    snakePlayer.foodCount = message.snake_food_count;
-                    snakePlayer.snake_hit_wall = message.snake_hit_wall;
-                } else if (message.snake_color === 'blue') {
-                    snakeOpponent.body = message.snake_body;
-                    snakeOpponent.direction = message.snake_direction;
-                    snakeOpponent.foodCount = message.snake_food_count;
-                    snakeOpponent.snake_hit_wall = message.snake_hit_wall;
-                }
-            }
+            //     if (message.snake_color === 'purple') {
+            //         snakePlayer.body = message.snake_body;
+            //         snakePlayer.direction = message.snake_direction;
+            //         snakePlayer.foodCount = message.snake_food_count;
+            //         snakePlayer.snake_hit_wall = message.snake_hit_wall;
+            //     } else if (message.snake_color === 'blue') {
+            //         snakeOpponent.body = message.snake_body;
+            //         snakeOpponent.direction = message.snake_direction;
+            //         snakeOpponent.foodCount = message.snake_food_count;
+            //         snakeOpponent.snake_hit_wall = message.snake_hit_wall;
+            //     }
+            // }
             if (data.action == 'game_over') {
                 gameOver = true;
                 ws.close();
@@ -166,6 +191,11 @@ export const startSnakeGame = async () => {
         ws.onclose = () => {
             document.removeEventListener('keydown', handleKeyPress);
             ws = null;
+            sessionStorage.removeItem('friendID');
+            sessionStorage.removeItem('playerID');
+            sessionStorage.removeItem('duelGame');
+            sessionStorage.removeItem('modality');
+            sessionStorage.removeItem('players');
             console.error("Snake socket was closed");
         };
     }
@@ -218,14 +248,27 @@ export const startSnakeGame = async () => {
 
 function handleKeyPress(event) {
     const player = sessionStorage.getItem('player');
-
+    const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    
+    if (validKeys.includes(event.key)) {
         ws.send(JSON.stringify({
             'action': 'move_snake',
             'message': {
                 'player': player,
-                'key': event.key
+                'key': event.key,
+                'snake_player': {
+                    'body': snakePlayer.body,
+                    'foodCount': snakePlayer.foodCount,
+                    'hitWall': snakePlayer.hitWall,
+                },
+                'snake_opponent': {
+                    'body': snakeOpponent.body,
+                    'foodCount': snakeOpponent.foodCount,
+                    'hitWall': snakeOpponent.hitWall,
+                } 
             }
         }));
+    }
 }
 
 export function resetGameSnake() {
@@ -275,23 +318,23 @@ function updateSnake(snake) {
     }
     snake.body.pop();
 
-    if (modality2 == 'remote' || modality2 == 'tourn-remote') {
-        const player = sessionStorage.getItem('player');
-        const playerID = sessionStorage.getItem('playerID'); 
-        if (player === playerID) {
-            ws.send(JSON.stringify({
-                'action': 'update_snake',
-                'message': {
-                    'player': player,
-                    'snake_body': snake.body,
-                    'snake_color': snake.color,
-                    'snake_direction': snake.direction,
-                    'snake_food_count': snake.foodCount,
-                    'snake_hit_wall': snake.hitWall
-                }
-            }));
-        }
-    }
+    // if (modality2 == 'remote' || modality2 == 'tourn-remote') {
+    //     const player = sessionStorage.getItem('player');
+    //     const playerID = sessionStorage.getItem('playerID'); 
+    //     if (player === playerID) {
+    //         ws.send(JSON.stringify({
+    //             'action': 'update_snake',
+    //             'message': {
+    //                 'player': player,
+    //                 'snake_body': snake.body,
+    //                 'snake_color': snake.color,
+    //                 'snake_direction': snake.direction,
+    //                 'snake_food_count': snake.foodCount,
+    //                 'snake_hit_wall': snake.hitWall
+    //             }
+    //         }));
+    //     }
+    // }
 }
 
 function placeFood() {
@@ -299,8 +342,10 @@ function placeFood() {
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         const player = sessionStorage.getItem('player');
         const playerID = sessionStorage.getItem('playerID'); 
+        console.log('Place Food Called')
+        console.log('Player:', player)
+        console.log('PlayerID:', playerID)
         if (player === playerID) {
-            
             ws.send(JSON.stringify({
                 'action': 'place_food',
                 'message': {
