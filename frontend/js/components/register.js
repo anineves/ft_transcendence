@@ -1,4 +1,5 @@
 import { navigateTo, checkLoginStatus  } from '../utils.js';
+const apiUrl = window.config.API_URL;
 
 export const renderRegister = () => {
     const app = document.getElementById('app');
@@ -140,7 +141,9 @@ export const renderRegister = () => {
                 sessionStorage.setItem('userReg', JSON.stringify(data)); // Armazena os dados do usuário registrado no sessionStorage
 
                 // Após o registro, faça login automaticamente com as credenciais fornecidas
-                const loginResponse = await fetch('http://127.0.0.1:8000/api/token/', {
+                const apiUrl = window.config.API_URL;
+                const urlLogin = `${apiUrl}/api/token/`;
+                const loginResponse = await fetch(urlLogin,  {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

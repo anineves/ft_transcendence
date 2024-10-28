@@ -70,6 +70,7 @@ CORS_ALLOWED_ORIGINS =[
     'http://127.0.0.1:5500',
     'https://localhost:8080',
     'https://127.0.0.1:8080',
+    'https://10.12.1.6:8080',
 ]
 
 
@@ -207,3 +208,11 @@ EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'transcendence.school42@gmail.com'
 EMAIL_HOST_PASSWORD = 'lmln pyab glmg izrl'
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Defina para True se o site estiver em produção com HTTPS
+SECURE_SSL_REDIRECT = True
+
+# Certifique-se de que o middleware de CSRF funciona corretamente com WebSockets
+CSRF_TRUSTED_ORIGINS = ['https://10.12.1.6']  

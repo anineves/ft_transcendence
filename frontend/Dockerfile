@@ -11,7 +11,7 @@ RUN openssl req -x509 -nodes \
     -subj "/C=PT/ST=OPO/L=PT/O=42porto/$UNIT=42/CN=localhost/UID=localhost"
 
 COPY nginx.conf /etc/nginx/sites-available/default
-
+COPY nginx.conf /etc/nginx/nginx.conf
 
 COPY . /usr/share/nginx/html
 

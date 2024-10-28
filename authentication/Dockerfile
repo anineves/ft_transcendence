@@ -29,7 +29,7 @@ RUN python -m venv /venv && \
 ENV PATH="/scripts:/venv/bin:$PATH"
 
 # Switch to non-root user
-USER duser
+#USER duser
 
 # Specify the entrypoint
 CMD ["sh", "/scripts/commands.sh"]

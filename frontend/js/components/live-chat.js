@@ -309,10 +309,11 @@ export const liveChat = () => {
             console.log("groupname ", groupName);
             const chatBox = document.getElementById('chat-box'); 
             const duelMessage = document.createElement('p');
+            console.log("WAIIIITTTT");
             duelMessage.innerHTML = 
             `
             ${translations[savedLanguage].duelMsg}
-            <a href="https://localhost:8080/wait-remote" id="accept-link">${translations[savedLanguage].acceptBtn}</a>
+            <a href="https://10.12.1.6:8080/wait-remote" id="accept-link">${translations[savedLanguage].acceptBtn}</a>
             `;
 
             if(data.action == "duel-snake")

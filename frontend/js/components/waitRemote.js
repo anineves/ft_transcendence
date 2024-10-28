@@ -1,5 +1,8 @@
 import { initPongSocket } from './pong/pongSocket.js'
 
+const apiUrl = window.config.API_URL;
+const apiUri = window.config.API_URI;
+
 export const waitRemote = () => {
     let duelGame = sessionStorage.getItem("duelGame");
     if(duelGame == "duel-snake")
@@ -17,9 +20,8 @@ export const waitRemote = () => {
         
         if (groupName)
         {
-            //let initws = `wss://${apiUri}/ws/snake_match/${groupName}/`
-            //initPongSocket(`${initws}`);
-            initPongSocket(`ws://localhost:8000/ws/snake_match/${groupName}/`);
+            const wssocket1= `wss://${apiUri}/ws/snake_match/${groupName}/`
+            initPongSocket(wssocket1);
         }
         else
             alert("Something went wrong with groupName")
@@ -38,9 +40,8 @@ export const waitRemote = () => {
         
         if (groupName)
         {
-            //let initws = `wss://${apiUri}/ws/pong_match/${groupName}/`
-        //ws = initPongSocket(`${initws}`);
-            initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+            const wssocket= `wss://${apiUri}/ws/pong_match/${groupName}/`
+            initPongSocket(wssocket);
         }
         else
             alert("Something went wrong with groupName")

@@ -222,7 +222,7 @@ const startMatch = () => {
             sessionStorage.setItem("groupName", groupName);
             console.log("Group name", groupName);
             let ws= null;
-            ws = new WebSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+            ws = new WebSocket(`ws://${apiUri}/ws/pong_match/${groupName}/`);
             sessionStorage.setItem('playerID', player1Id);
             sessionStorage.setItem('friendID', player2Id);
             const player = sessionStorage.getItem('player');

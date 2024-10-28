@@ -2,6 +2,8 @@ import { initPongSocket } from '../pong/pongSocket.js'
 import { showNextMatchButton } from '../pong/pong.js';
 import { endMatch } from '../tournament.js';
 import { navigateTo } from '../../utils.js';
+const apiUrl = window.config.API_URL;
+const apiUri = window.config.API_URI;
 
 let canvas, ctx;
 let numCells;
@@ -86,7 +88,8 @@ export const startSnakeGame = async () => {
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         const groupName = sessionStorage.getItem("groupName");
         console.log("groupName", groupName);
-        ws = initPongSocket(`ws://localhost:8000/ws/snake_match/${groupName}/`);
+        const wssocket1= `wss://${apiUri}/ws/snake_match/${groupName}/`
+        ws =    initPongSocket(wssocket1);
 
         if (ws) {
             document.addEventListener('keydown', handleKeyPress);
@@ -193,8 +196,9 @@ export const startSnakeGame = async () => {
     if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
     (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
         if (player) {
+            const urlMatches = `${apiUrl}/api/matches`;
             try {
-                const response = await fetch('http://localhost:8000/api/matches/', {
+                const response = await fetch(urlMatches, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
@@ -464,7 +468,8 @@ async function drawGame() {
                 const duration = "10";
                 if(modality2 == 'remote' || modality2 == 'tourn-remote')
                     ws =  null;
-                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                const urlMatches = `${apiUrl}/api/matches`;
+                const response = await fetch(urlMatches, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
