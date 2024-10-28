@@ -196,7 +196,7 @@ export const startSnakeGame = async () => {
     if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
     (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
         if (player) {
-            const urlMatches = `${apiUrl}/api/matches`;
+            const urlMatches = `${apiUrl}/api/matches/`;
             try {
                 const response = await fetch(urlMatches, {
                     method: 'POST',
@@ -468,8 +468,8 @@ async function drawGame() {
                 const duration = "10";
                 if(modality2 == 'remote' || modality2 == 'tourn-remote')
                     ws =  null;
-                const urlMatches = `${apiUrl}/api/matches`;
-                const response = await fetch(urlMatches, {
+                const urlMatchesID = `${apiUrl}/api/match/${id}`;
+                const response = await fetch(urlMatchesID, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
