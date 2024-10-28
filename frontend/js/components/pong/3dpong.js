@@ -5,11 +5,10 @@ const user_json = JSON.parse(user);
 
 const player_id = sessionStorage.getItem("player");
 let nickname = sessionStorage.getItem('nickname'); 
-console.log(nickname);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1f1f2f); 
 
-let redNickname = nickname;
+let redNickname = "Player";
 let blueNickname = "Opponent"
 let match_type = "3D"
 const game = 1;
@@ -17,62 +16,84 @@ let opponent = 1;
 const players = [player_id, opponent];
 
 async function createMatch() {
-    try {
-        const response = await fetch('http://localhost:8000/api/matches/', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ game, players, match_type })
-        });
+    const modality2 = sessionStorage.getItem('modality');
+    const user = sessionStorage.getItem('user');
+    const player_id = sessionStorage.getItem("player");
+    let nickname = sessionStorage.getItem('nickname');
+    if (player_id)
+        redNickname = nickname
+    
 
-        const data = await response.json();
+    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
+        (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+        if (player_id) {
 
-        if (data) {
-            console.log('Data:', data);
-            sessionStorage.setItem('id_match', data.id);
-        } else {
-            console.error('Match error', data);
+            try {
+                const response = await fetch('http://localhost:8000/api/matches/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ game, players, match_type })
+                });
+
+                const data = await response.json();
+
+                if (data) {
+                    sessionStorage.setItem('id_match', data.id);
+                } else {
+                    console.error('Match error', data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error occurred while processing match.');
+            }
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error occurred while processing match.');
     }
 }
+
 
 if(user)
     createMatch();
 
-async function updateMatch()
-{
+async function updateMatch() {
     const id = sessionStorage.getItem('id_match');
-    try {
-        let winner_id = 6;
-        if (redScore > blueScore)
-            winner_id = player_id;
-        const score = `${redScore}-${blueScore}`;
-        const duration = "10";
+    const modality2 = sessionStorage.getItem('modality');
+    const user = sessionStorage.getItem('user');
+    const player_id = sessionStorage.getItem("player");
 
-        const response = await fetch(`http://localhost:8000/api/match/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ winner_id, score, duration })
-        });
+    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
+        (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+        if (player_id) {
+            try {
+                let winner_id = 1;
+                if (redScore > blueScore)
+                    winner_id = player_id;
+                const score = `${redScore}-${blueScore}`;
+                const duration = "10";
 
-        const data = await response.json();
+                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ winner_id, score, duration })
+                });
 
-        if (response.ok) {
-            console.log('Match updated successfully:', data);
-        } else {
-            console.error('Error updating match:', data);
+                const data = await response.json();
+
+                if (response.ok) {
+                    console.log('Match updated successfully:', data);
+                } else {
+                    console.error('Error updating match:', data);
+                }
+            } catch (error) {
+                console.error('Error processing match:', error);
+                alert('An error occurred while processing the match.');
+            }
         }
-    } catch (error) {
-        console.error('Error processing match:', error);
-        alert('An error occurred while processing the match.');
     }
 }
 
@@ -243,6 +264,7 @@ let PlayerVictoryGeometry = 0;
 let PlayerVictoryMesh = 0;
 
 function showGameOver(PlayerVictoryMaterial) {
+    
     if(user)
         updateMatch();
     const gameOverGeometry = new THREE.TextGeometry("GAME OVER!" , {
@@ -420,7 +442,6 @@ document.addEventListener('keyup', onDocumentKeyUp);
 
 function animate() {
     window.focus();
-    console.log("Animate");
     renderer.render(scene, activatedCam);
     requestAnimationFrame(animate);
     if (gameOver) {

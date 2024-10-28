@@ -1,33 +1,36 @@
 import { navigateTo, checkLoginStatus } from '../utils.js';
 
+const translations = {
+    english: {
+        login: "Login",
+        email: "Email or Username",
+        password: "Password",
+        submit: "Login",
+        submit2: "Login using 2FA",
+        errorLogin: "There is no user created with this data"
+    },
+    portuguese: {
+        login: "Entrar",
+        email: "Email ou Nome de Usuário",
+        password: "Palavra passe",
+        submit: "Entrar",
+        submit2: "Entrar com 2FA",
+        guest: "Jogar como Convidado",
+        errorLogin: "Nao ha utilizador criado com esses dados"
+    },
+    french: {
+        login: "Se connecter",
+        email: "Email ou Nom d'utilisateur",
+        password: "Mot de passe",
+        submit: "Entrer",
+        submit2: "Entrer avec 2FA",
+        guest: "Jouer en tant qu'invité",
+        errorLogin: "Aucun utilisateur n'a été créé avec ces données"
+    }
+    
+
+};
 export const renderLogin = () => {
-  
-    const translations = {
-        english: {
-            login: "Login",
-            email: "Email or Username",
-            password: "Password",
-            submit: "Login",
-            submit2: "Login using 2FA",
-        },
-        portuguese: {
-            login: "Entrar",
-            email: "Email ou Nome de Usuário",
-            password: "Palavra passe",
-            submit: "Entrar",
-            submit2: "Entrar com 2FA",
-            guest: "Jogar como Convidado",
-        },
-        french: {
-            login: "Se connecter",
-            email: "Email ou Nom d'utilisateur",
-            password: "Mot de passe",
-            submit: "Entrer",
-            submit2: "Entrer avec 2FA",
-            guest: "Jouer en tant qu'invité",
-        }
-        
-    };
     let savedLanguage = localStorage.getItem('language');
 
 
@@ -41,6 +44,7 @@ export const renderLogin = () => {
             <form id="loginForm" >
                 <input type="text" id="emailOrUsername" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
+                <div id="passwordError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
                 <button type="submit" id="btn-login"class="btn">${translations[savedLanguage].submit}</button>
             </form>
         </div>
@@ -52,6 +56,8 @@ export const renderLogin = () => {
         e.preventDefault(); 
         const emailOrUsername = document.getElementById('emailOrUsername').value; 
         const password = document.getElementById('password').value; 
+        const passwordError = document.getElementById('passwordError');
+        passwordError.textContent = '';
 
 
         try {
@@ -62,11 +68,8 @@ export const renderLogin = () => {
                 },
                 body: JSON.stringify({ email: emailOrUsername, password })
             });
-
-            console.log("Response", response);
             if (response.ok) {
                 const data = await response.json();
-                console.log("Data", data);
                 if(data.otp_agreement)
                 {
                     showCodeForm();
@@ -116,7 +119,9 @@ export const renderLogin = () => {
                 navigateTo('/game-selection', data); 
             }
             } else {
-                alert('Failed to send verification code.2');
+                
+                passwordError.textContent = `${translations[savedLanguage].errorLogin}`
+
             }
         } catch (error) {
             console.error('Error:', error);

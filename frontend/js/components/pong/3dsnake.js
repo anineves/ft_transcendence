@@ -7,11 +7,10 @@ const user = sessionStorage.getItem('user');
 const user_json = JSON.parse(user);
 
 const player_id = sessionStorage.getItem("player");
-let nickname = sessionStorage.getItem('nickname'); 
+let nickname = sessionStorage.getItem('nickname');
 console.log(nickname);
 
-
-let redNickname = nickname;
+let redNickname = "Player";
 let blueNickname = "Opponent"
 let match_type = "3D"
 const game = 2;
@@ -20,62 +19,84 @@ const players = [player_id, opponent];
 
 
 async function createMatch() {
-    try {
-        const response = await fetch('http://localhost:8000/api/matches/', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ game, players, match_type })
-        });
+    const modality2 = sessionStorage.getItem('modality');
+    const user = sessionStorage.getItem('user');
+    const player_id = sessionStorage.getItem("player");
+    let nickname = sessionStorage.getItem('nickname');
+    if (player_id)
+        redNickname = nickname;
+    
 
-        const data = await response.json();
+    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
+        (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+        if (player_id) {
 
-        if (data) {
-            console.log('Data:', data);
-            sessionStorage.setItem('id_match', data.id);
-        } else {
-            console.error('Match error', data);
+            try {
+                const response = await fetch('http://localhost:8000/api/matches/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ game, players, match_type })
+                });
+
+                const data = await response.json();
+
+                if (data) {
+                    console.log('Data:', data);
+                    sessionStorage.setItem('id_match', data.id);
+                } else {
+                    console.error('Match error', data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error occurred while processing match.');
+            }
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error occurred while processing match.');
     }
 }
 
-if(user)
+if (user)
     createMatch();
 
-async function updateMatch()
-{
+async function updateMatch() {
     const id = sessionStorage.getItem('id_match');
-    try {
-        let winner_id = 6;
-        if (redScore > blueScore)
-            winner_id = player_id;
-        const score = `${redScore}-${blueScore}`;
-        const duration = "10";
+    const modality2 = sessionStorage.getItem('modality');
+    const user = sessionStorage.getItem('user');
+    const player_id = sessionStorage.getItem("player");
 
-        const response = await fetch(`http://localhost:8000/api/match/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ winner_id, score, duration })
-        });
+    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
+        (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+        if (player_id) {
+            try {
+                let winner_id = 1;
+                if (redScore > blueScore)
+                    winner_id = player_id;
+                const score = `${redScore}-${blueScore}`;
+                const duration = "10";
 
-        const data = await response.json();
+                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ winner_id, score, duration })
+                });
 
-        if (response.ok) {
-            console.log('Match updated successfully:', data);
-        } else {
-            console.error('Error updating match:', data);
+                const data = await response.json();
+
+                if (response.ok) {
+                    console.log('Match updated successfully:', data);
+                } else {
+                    console.error('Error updating match:', data);
+                }
+            } catch (error) {
+                console.error('Error processing match:', error);
+                alert('An error occurred while processing the match.');
+            }
         }
-    } catch (error) {
-        console.error('Error processing match:', error);
-        alert('An error occurred while processing the match.');
     }
 }
 
@@ -91,7 +112,7 @@ camera.rotation.z = 0;
 const cameraTopView = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 500);
 cameraTopView.position.set(0, 9, 0);
 cameraTopView.lookAt(0, 0, 0);
-cameraTopView.rotation.set(-Math.PI/2, 0, 0);
+cameraTopView.rotation.set(-Math.PI / 2, 0, 0);
 
 let activatedCam = cameraTopView;
 
@@ -148,12 +169,12 @@ const table = new THREE.Mesh(tableGeometry, tableMaterial);
 //
 scene.add(table);
 table.position.set(0, -0.9, 0);
-table.rotation.y = -Math.PI/2;
+table.rotation.y = -Math.PI / 2;
 
 // Barras
 const tableTopBotBarsGeometry = new THREE.BoxGeometry(1, 1, 20);
 const tableBarTopBotLeftRightMaterial = new THREE.BoxGeometry(1, 1, 10);
-const tableBarMaterial = new THREE.MeshStandardMaterial({color: 0x9ffff0});
+const tableBarMaterial = new THREE.MeshStandardMaterial({ color: 0x9ffff0 });
 
 const topBar = new THREE.Mesh(tableTopBotBarsGeometry, tableBarMaterial);
 topBar.rotation.set(0, -Math.PI / 2, 0);
@@ -188,7 +209,7 @@ let blueSnakeLen = 6;
 
 function createSphere(x, y, z, color) {
     const sphereGeometry = new THREE.SphereGeometry(0.2, 32, 32);
-    const sphereMaterial = new THREE.MeshStandardMaterial({color: color});
+    const sphereMaterial = new THREE.MeshStandardMaterial({ color: color });
     const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     sphere.position.set(x, y, z);
     scene.add(sphere);
@@ -216,19 +237,19 @@ const tableLimits = {
 // funcao que verifica a colisao com as paredes
 function checkCollisionWall(snake) {
     const head = snake[0];
-    
+
     if (head.position.x < tableLimits.minX || head.position.x > tableLimits.maxX ||
         head.position.z < tableLimits.minZ || head.position.z > tableLimits.maxZ) {
-            return true;
-        }
-        return null;
+        return true;
+    }
+    return null;
 }
-    
+
 function checkHeadCollision(snakeA, snakeB) {
     const headA = snakeA[0];
     const headB = snakeB[0];
-    
-    if(headA.position.distanceTo(headB.position) < 0.35) {
+
+    if (headA.position.distanceTo(headB.position) < 0.35) {
         // Colisao de cabecas das cobras
         if (snakeA.length > snakeB.length) {
             return 1;
@@ -242,11 +263,11 @@ function checkHeadCollision(snakeA, snakeB) {
     }
     return 0;
 }
-    
+
 // Colisao entre as cobras
 function checkCollisionSnakes(snakeA, snakeB) {
     const headA = snakeA[0];
-    
+
     for (let i = 1; i < snakeB.length; i++) {
         if (headA.position.distanceTo(snakeB[i].position) < 0.35) {
             return true;
@@ -296,7 +317,7 @@ function scoreBoard() {
 
 function updateSnake(snake, direction, snakeColor) {
     snake[0].position.add(direction.clone().multiplyScalar(0.1));
-    
+
     for (let i = snake.length - 1; i > 0; i--) {
         const nextPosition = snake[i - 1].position.clone();
         snake[i].position.lerp(nextPosition, 0.5);
@@ -315,15 +336,15 @@ function updateSnake(snake, direction, snakeColor) {
         }
     }
 }
-    
-    // FUNCAO PARA PROIBIR A INVERSAO DE MARCHA DIRETAMENTE
-function isOppositeDir(currentDir, newDir) {    
+
+// FUNCAO PARA PROIBIR A INVERSAO DE MARCHA DIRETAMENTE
+function isOppositeDir(currentDir, newDir) {
     return currentDir.equals(newDir.clone().negate());
 }
 
 // Teclas
 document.addEventListener('keydown', (event) => {
-    switch(event.key) {
+    switch (event.key) {
         case 'w':
             if (!isOppositeDir(redSnakeDir, new THREE.Vector3(0, 0, -1))) {
                 redSnakeDir.set(0, 0, -1);
@@ -365,33 +386,33 @@ document.addEventListener('keydown', (event) => {
             }
             break;
     }
-});              
-                                    
+});
+
 // FUNCAO DE CRIAR A COMIDA E COLOCAR NUMA POSICAO ALEATORIA
 function createFood() {
     const foodGeo = new THREE.SphereGeometry(0.2, 32, 32);
-    const foodMaterial = new THREE.MeshStandardMaterial({color: 0xffffff});
+    const foodMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
     const food = new THREE.Mesh(foodGeo, foodMaterial);
-    
+
     let validPosition = false
     while (!validPosition) {
-        
-        food.position.set (
-            THREE.MathUtils.randFloat(tableLimits.minX + 0.5, tableLimits.maxX - 0.5), 
+
+        food.position.set(
+            THREE.MathUtils.randFloat(tableLimits.minX + 0.5, tableLimits.maxX - 0.5),
             0.2,
             THREE.MathUtils.randFloat(tableLimits.minZ + 0.5, tableLimits.maxZ - 0.5)
         );
-        
+
         validPosition = true;
         for (let snake of [redSnake, blueSnake]) {
             for (let segment of snake) {
                 if (food.position.distanceTo(segment.position) < 0.4) {
                     validPosition = false;
-                    break ;
+                    break;
                 }
             }
             if (!validPosition) {
-                break ;
+                break;
             }
         }
     }
@@ -406,13 +427,13 @@ function checkCollisionFood(snake) {
     }
     return false;
 }
-    
+
 // UPDATE AO TAMANHO APOS COMER
 function growSnake(snake) {
     const tail = snake[snake.length - 1];
     const newSphere = createSphere(
-        tail.position.x, 
-        tail.position.y, 
+        tail.position.x,
+        tail.position.y,
         tail.position.z,
         tail.material.color.getHex()
     );
@@ -430,58 +451,11 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', 
     loadedFont = font;
 });
 
-/* function blueScoreText() {
-    const blueScoreText_g = new THREE.TextGeometry(`${blueScore}`, {
-        font: loadedFont,
-        size: 0.8,
-        height: 0.2,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.02,
-        bevelOffset: 0,
-        bevelSegments: 5
-    });
-    const blueScoreText_m = new THREE.MeshStandardMaterial({color: 0x0000ff});
-    const blueScoreTextM = new THREE.Mesh(blueScoreText_g, blueScoreText_m);
-    blueScoreTextM.position.set(2, 0, -8);
-    if (activatedCam === camera) {
-        blueScoreTextM.position.set(1, 0, -8);
-        blueScoreTextM.rotation.set(0, 0, 0);
-    } else if (activatedCam === cameraTopView) {
-        blueScoreTextM.position.set(1, -2, -7);
-        blueScoreTextM.rotation.set(-Math.PI / 2, 0, 0);
-    }
-    scene.add(blueScoreTextM);
-} */
 
-/* function redScoreText() {
-    const redScoreText_g = new THREE.TextGeometry(`${redScore}`, {
-        font: loadedFont,
-        size: 0.8,
-        height: 0.2,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.02,
-        bevelOffset: 0,
-        bevelSegments: 5
-    });
-    const redScoreText_m = new THREE.MeshStandardMaterial({color: 0xff0000});
-    const redScoreTextM = new THREE.Mesh(redScoreText_g, redScoreText_m);
-    if (activatedCam === camera) {
-        redScoreTextM.position.set(-1, 0, -8);
-        redScoreTextM.rotation.set(0, 0, 0);
-    } else if (activatedCam === cameraTopView) {
-        redScoreTextM.position.set(-1, -2, -7);
-        redScoreTextM.rotation.set(-Math.PI / 2, 0, 0);
-    }
-    scene.add(redScoreTextM);
-} */
 
 function showGameOver(result) {
-    const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff});
-    
+    const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+
     // gameover text
     updateMatch();
     const gameOverGeometry = new THREE.TextGeometry("GAME OVER!", {
@@ -501,7 +475,7 @@ function showGameOver(result) {
     gameOverMesh.position.set(-(gameOverBB.max.x - gameOverBB.min.x) / 2, 0, -1.7);
     gameOverMesh.rotation.set(-Math.PI / 2, 0, 0);
     scene.add(gameOverMesh);
-    
+
     // WINS! TEXT
     if (result === 'win') {
         const winTextGeometry = new THREE.TextGeometry("WINS!", {
@@ -567,12 +541,12 @@ function redVictory() {
         bevelOffset: 0,
         bevelSegments: 5
     });
-    const redVictory_m = new THREE.MeshStandardMaterial({color: 0xff0000});
+    const redVictory_m = new THREE.MeshStandardMaterial({ color: 0xff0000 });
     const redVictoryM = new THREE.Mesh(redVictory_g, redVictory_m);
     redVictory_g.computeBoundingBox();
     const redBB = redVictory_g.boundingBox;
     redVictoryM.rotation.set(-Math.PI / 2, 0, 0);
-    redVictoryM.position.set(-(redBB.max.x - redBB.min.x) / 2, 0 , 0);
+    redVictoryM.position.set(-(redBB.max.x - redBB.min.x) / 2, 0, 0);
     scene.add(redVictoryM);
 }
 
@@ -594,7 +568,7 @@ function blueVictory() {
         bevelOffset: 0,
         bevelSegments: 5
     });
-    const blueVictory_m = new THREE.MeshStandardMaterial({color: 0x0000ff});
+    const blueVictory_m = new THREE.MeshStandardMaterial({ color: 0x0000ff });
     const blueVictoryM = new THREE.Mesh(blueVictory_g, blueVictory_m);
     blueVictory_g.computeBoundingBox();
     const blueBB = blueVictory_g.boundingBox;
@@ -615,38 +589,7 @@ let lastTime = 0;
 let food = createFood();
 let gameOver = false;
 
-/* function PlayerNicknames() {
-    if (!loadedFont) {
-        return ;
-    }
-    const bNickname_g = new THREE.TextGeometry(`${blueNickname}`, {
-            font: loadedFont,
-            size: 0.8,
-            height: 0.2,
-            curveSegments: 12,
-            bevelEnabled: true,
-            bevelThickness: 0.03,
-            bevelSize: 0.02,
-            bevelOffset: 0,
-            bevelSegments: 5
-    });
-    const rNickname_g = new THREE.TextGeometry(`${redNickname}`, {
-        font: loadedFont,
-            size: 0.8,
-            height: 0.2,
-            curveSegments: 12,
-            bevelEnabled: true,
-            bevelThickness: 0.03,
-            bevelSize: 0.02,
-            bevelOffset: 0,
-            bevelSegments: 5
-    });
-    const bNickname_m = new THREE.MeshStandardMaterial({color: 0x0000ff});
-    const rNickname_m = new THREE.MeshStandardMaterial({color: 0xff0000});
-    const bNicknameM = new THREE.Mesh(bNickname_g, bNickname_m);
-    const rNicknameM = new THREE.Mesh(rNickname_g, rNickname_m);
-    scene.add(bNicknameM, rNicknameM);
-} */
+
 
 scoreBoard();
 function animate(time) {
@@ -661,7 +604,7 @@ function animate(time) {
     const deltaTime = (time - lastTime) / 1000;
     lastTime = time;
     elapsedTime += deltaTime
-    
+
     if (elapsedTime > interval) {
         //PlayerNicknames();
         //animacao de movimentacao das cobras
@@ -674,12 +617,12 @@ function animate(time) {
         const redTouchBlue = checkCollisionSnakes(redSnake, blueSnake);
         const blueTouchRed = checkCollisionSnakes(blueSnake, redSnake);
         if (redTouchBlue) {
-          
+
             blueVictory();
             gameOver = true;
         }
         if (blueTouchRed) {
-         
+
             redVictory();
             gameOver = true;
         }
@@ -715,17 +658,17 @@ function animate(time) {
             gameOver = true;
         }
         else if ((redHeadTouch === 1 || blueHeadTouch === 2 || redScore === 8) && !gameOver) {
-            
+
             redVictory();
             gameOver = true;
         }
         else if ((redHeadTouch === 2 || blueHeadTouch === 1 || blueScore === 8) && !gameOver) {
-           
+
             blueVictory();
             gameOver = true;
         }
     }
-   
+
     requestAnimationFrame(animate);
 }
 

@@ -48,7 +48,7 @@ export const startSnakeGame = async () => {
     gridSize = 16;
     gameOver = false;
     gameInterval;
-    speed = 400;
+    speed = 200;
     ws;
 
 
@@ -97,7 +97,6 @@ export const startSnakeGame = async () => {
             const data = JSON.parse(event.data);
             let message = data.message
 
-            // console.log('Message in WS: ', data);
             if (data.action === 'move_snake') {
                 const updateSnakeState = (snake, direction, message) => {
                     snake.direction = direction;
@@ -148,114 +147,12 @@ export const startSnakeGame = async () => {
                         break;
                 }
             }
-            /*if (data.action == 'move_snake') {
-
-                // console.log('Message player: ', message.player)
-                // console.log('Message key: ', message.key)
-                // console.log('playerID: ', playerID)
-                // console.log('friendID: ', friendID)
-                
-                switch (message.key) {
-                    case 'ArrowUp': 
-                        if (snakePlayer.direction.y === 0 && playerID === message.player) {
-                        // console.log('ArrowUp Player', message)
-                        snakePlayer.direction = { x: 0, y: -1 };
-                        snakePlayer.body = message.snake_player.body;
-                        snakePlayer.foodCount = message.snake_player.foodCount;
-                        snakePlayer.hitWall = message.snake_player.hitWall;
-                        snakeOpponent.body = message.snake_opponent.body;
-                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
-                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
-                        } else if (snakeOpponent.direction.y === 0 && friendID === message.player) {
-                        // console.log('ArrowUp Opp', message)
-                        snakeOpponent.direction = { x: 0, y: -1 };
-                        snakePlayer.body = message.snake_player.body;
-                        snakePlayer.foodCount = message.snake_player.foodCount;
-                        snakePlayer.hitWall = message.snake_player.hitWall;
-                        snakeOpponent.body = message.snake_opponent.body;
-                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
-                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
-                        } break;
-                    case 'ArrowDown': 
-                        if (snakePlayer.direction.y === 0 && playerID === message.player)  {
-                        // console.log('ArrowUp Player', message)
-                        snakePlayer.direction = { x: 0, y: 1 };
-                        snakePlayer.body = message.snake_player.body;
-                        snakePlayer.foodCount = message.snake_player.foodCount;
-                        snakePlayer.hitWall = message.snake_player.hitWall;
-                        snakeOpponent.body = message.snake_opponent.body;
-                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
-                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
-                        } else if (snakeOpponent.direction.y === 0 && friendID === message.player) {
-                        // console.log('ArrowUp Opp', message)
-                        snakeOpponent.direction = { x: 0, y: 1 };
-                        snakePlayer.body = message.snake_player.body;
-                        snakePlayer.foodCount = message.snake_player.foodCount;
-                        snakePlayer.hitWall = message.snake_player.hitWall;
-                        snakeOpponent.body = message.snake_opponent.body;
-                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
-                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
-                        } break;
-                    case 'ArrowLeft': if (snakePlayer.direction.x === 0 && playerID === message.player) {
-                        // console.log('ArrowUp Player', message)
-                        snakePlayer.direction = { x: -1, y: 0 };
-                        snakePlayer.body = message.snake_player.body;
-                        snakePlayer.foodCount = message.snake_player.foodCount;
-                        snakePlayer.hitWall = message.snake_player.hitWall;
-                        snakeOpponent.body = message.snake_opponent.body;
-                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
-                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
-                    } else if (snakeOpponent.direction.x === 0 && friendID === message.player) {
-                        // console.log('ArrowUp Opp', message)
-                        snakeOpponent.direction = { x: -1, y: 0 };
-                        snakePlayer.body = message.snake_player.body;
-                        snakePlayer.foodCount = message.snake_player.foodCount;
-                        snakePlayer.hitWall = message.snake_player.hitWall;
-                        snakeOpponent.body = message.snake_opponent.body;
-                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
-                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
-                    } break;
-                    case 'ArrowRight': if (snakePlayer.direction.x === 0 && playerID === message.player) {
-                        // console.log('ArrowUp Player', message)
-                        snakePlayer.direction = { x: 1, y: 0 };
-                        snakePlayer.body = message.snake_player.body;
-                        snakePlayer.foodCount = message.snake_player.foodCount;
-                        snakePlayer.hitWall = message.snake_player.hitWall;
-                        snakeOpponent.body = message.snake_opponent.body;
-                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
-                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
-                    } else if (snakeOpponent.direction.x === 0 && friendID === message.player) {
-                        // console.log('ArrowUp Opp', message)
-                        snakeOpponent.direction = { x: 1, y: 0 };
-                        snakePlayer.body = message.snake_player.body;
-                        snakePlayer.foodCount = message.snake_player.foodCount;
-                        snakePlayer.hitWall = message.snake_player.hitWall;
-                        snakeOpponent.body = message.snake_opponent.body;
-                        snakeOpponent.foodCount = message.snake_opponent.foodCount;
-                        snakeOpponent.hitWall = message.snake_opponent.hitWall;
-                    } break;
-                }
-            }*/
             if (data.action == 'place_food') {
                 foods.push({
                     x: message.x,
                     y: message.y
                 });
             }
-            // if (data.action == 'update_snake') {
-                
-            //     if (message.snake_color === 'purple') {
-            //         snakePlayer.body = message.snake_body;
-            //         snakePlayer.direction = message.snake_direction;
-            //         snakePlayer.foodCount = message.snake_food_count;
-            //         snakePlayer.snake_hit_wall = message.snake_hit_wall;
-            //     } else if (message.snake_color === 'blue') {
-            //         snakeOpponent.body = message.snake_body;
-            //         snakeOpponent.direction = message.snake_direction;
-            //         snakeOpponent.foodCount = message.snake_food_count;
-            //         snakeOpponent.snake_hit_wall = message.snake_hit_wall;
-            //     }
-            // }
             if (data.action == 'game_over') {
                 gameOver = true;
                 ws.close();
@@ -416,9 +313,9 @@ function updateSnake(snake) {
 
 function placeFood() {
     const modality2 = sessionStorage.getItem('modality');
-
-
+    
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
+        console.log("entrei comidaaaaaaaaaa remote");
         const player = sessionStorage.getItem('player');
         const playerID = sessionStorage.getItem('playerID'); 
         console.log('Place Food Called')
@@ -436,12 +333,15 @@ function placeFood() {
             }));
         }
         return ;
+    }else{
+        console.log("entrei comidaaaaaaaaaa local");
+        foods.push({ 
+            x: Math.floor(Math.random() * 18) + 1, 
+            y: Math.floor(Math.random() * 18) + 1 
+        });
     }
 
-    foods.push({ 
-        x: Math.floor(Math.random() * 18) + 1, 
-        y: Math.floor(Math.random() * 18) + 1 
-    });
+
     
 }
 
