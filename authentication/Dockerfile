@@ -21,14 +21,12 @@ RUN python -m venv /venv && \
   /venv/bin/pip install -r /auth/requirements.txt && \
   adduser --disabled-password --no-create-home duser && \
   chown -R duser:duser /venv /auth /scripts /data && \
-  chmod -R 755 /data /scripts && \
+  chmod -R 777 /data/web/static /data/web/media /auth/logs && \
+  chmod -R 755 /scripts && \
   chmod +x /scripts/commands.sh
 
 # Set environment PATH
 ENV PATH="/scripts:/venv/bin:$PATH"
-
-# Switch to non-root user
-USER duser
 
 # Specify the entrypoint
 CMD ["sh", "/scripts/commands.sh"]

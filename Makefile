@@ -8,11 +8,11 @@ all: up
 
 up:
 	docker compose -p $(NAME) -f $(COMPOSE) up --build -d
-	@sudo chown -R $(whoami):$(whoami) ./elk ./authentication/auth/logs
-	@sudo chown -R 1000:1000 ./elk/elastic/data
-	@sudo chmod -R 777 ./elk/elastic/data ./authentication/auth/logs
-	@sudo chmod 755 ./elk
-	@sudo chmod -R 755 ./data/web
+#	@chown -R $(whoami):$(whoami) ./elk ./authentication/auth/logs
+#	@chown -R 1000:1000 ./elk/elastic/data
+#	@chmod -R 777 ./elk/elastic/data ./authentication/auth/logs
+#	@chmod 755 ./elk
+#	@chmod -R 755 ./data/web
 #	@echo "Waiting for kibana to be ready..."
 	@echo "Creating Dashboard && Data view..."
 	@sleep 30
@@ -36,7 +36,7 @@ clean: down rm-image
 fclean: clean
 	
 	@docker system prune -a
-	@sudo rm -rf ./logs ./authentication/auth/logs/
-	@sudo rm -rf ./elk/elastic/data/*
+	@rm -rf ./logs ./authentication/auth/logs/
+	@rm -rf ./elk/elastic/data/*
 
 re: fclean up
