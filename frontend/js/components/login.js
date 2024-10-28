@@ -1,5 +1,5 @@
 import { navigateTo, checkLoginStatus } from '../utils.js';
-
+const apiUrl = window.config.API_URL;
 const translations = {
     english: {
         login: "Login",
@@ -60,8 +60,10 @@ export const renderLogin = () => {
         passwordError.textContent = '';
 
 
+        const apiUrl = window.config.API_URL;
+        const urlLogin = `${apiUrl}/api/token/`;
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/token/', {
+            const response = await fetch(urlLogin, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -85,9 +87,10 @@ export const renderLogin = () => {
                 //console.log(data);
                 const userId = data.user.id;
                 const token = data.access;
+                const urlPlayers = `${apiUrl}/api/players/`;
                 try {
 
-                    const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
+                    const playerResponse = await fetch(urlPlayers, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -136,9 +139,10 @@ const showCodeForm = async () => {
     const app = document.getElementById('app');
     const emailOrUsername = document.getElementById('emailOrUsername').value;
         const password = document.getElementById('password').value;
-
+        const urlOtp = `${apiUrl}/api/otp/`;
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/otp/', {
+
+            const playerResponse = await fetch(urlOtp, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -171,9 +175,11 @@ const showCodeForm = async () => {
     document.getElementById('codeForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const otp = document.getElementById('code').value;
+        const apiUrl = window.config.API_URL;
+        const urlLogin = `${apiUrl}/api/token/`;
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/token/', {
+            const tokenResponse = await fetch(urlLogin, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -195,9 +201,9 @@ const showCodeForm = async () => {
                 //console.log(data);
                 const userId = data.user.id;
                 const token = data.access;
+                const urlPlayers = `${apiUrl}/api/players/`;
                 try {
-
-                    const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
+                const playerResponse = await fetch(urlPlayers, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -244,7 +250,7 @@ const handleSuccessfulLogin = async () => {
     const user = sessionStorage.getItem('user');
     const userID = sessionStorage.getItem('userID');
     try {
-        const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
+        const playerResponse = await fetch(urlPlayers, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -286,8 +292,10 @@ export const putPlayer = async (status) => {
     const playerId = sessionStorage.getItem('player');
     const stat = status;
 
+    const apiUrl = window.config.API_URL;
+    const urlPlayer = `${apiUrl}/api/player/${playerId}`;
     try {
-        const playerInfo = await fetch(`http://127.0.0.1:8000/api/player/${playerId}`, {
+        const player = await fetch(urlPlayer, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,

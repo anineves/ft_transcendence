@@ -2,7 +2,7 @@ import { navigateTo } from '../utils.js';
 import { resetGameState } from './pong/pong.js';
 import { initPongSocket } from './pong/pongSocket.js';
 import { resetGameSnake } from './snake/snake.js';
-
+const apiUrl = window.config.API_URL;
 const translations = {
     english: {
         numberPlayers: "Select Number of Players",

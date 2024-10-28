@@ -1,6 +1,6 @@
 import { startPongGame, resetGameState, stopGame } from './pong/pong.js';
 import { navigateTo } from '../utils.js';
-
+const apiUrl = window.config.API_URL;
 export const renderPong = () => {
     const user = sessionStorage.getItem('user');
     const app = document.getElementById('app');
@@ -42,7 +42,9 @@ export const renderPong = () => {
                 const score = `${0}-${5}}`;
                 const duration = "10";
 
-                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                const apiUrl = window.config.API_URL;
+                const urlmatchID = `${apiUrl}/api/match/${id}`;
+                const response = await fetch(urlmatchID, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,

@@ -1,6 +1,6 @@
 import { navigateTo } from '../utils.js';
 import { startPongGame, resetGameState } from './pong/pong.js';
-
+const apiUrl = window.config.API_URL;
 export const selectPlayerorAI = () => {
     sessionStorage.removeItem('modality');
     sessionStorage.removeItem('playerNames');

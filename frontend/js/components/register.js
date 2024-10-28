@@ -69,8 +69,10 @@ export const renderRegister = () => {
     document.getElementById('btn-register42').addEventListener('click', async (e) => {
         e.preventDefault();
         sessionStorage.setItem('register', '42');
-        window.location.href = 'https://localhost:8000/oauth/login'; 
+        const apiUrl = window.config.API_URL;
+        window.location.href = `${apiUrl}/oauth/login`; 
     });
+  
 
     // Adiciona um listener para o evento de submissão do formulário de registro
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
@@ -121,10 +123,15 @@ export const renderRegister = () => {
 
         try {
             // Faz uma requisição POST para a API de registro com os dados do formulário
-            const response = await fetch('http://127.0.0.1:8000/api/register/', {
+            console.log("API", window.config.API_URL)
+            const apiUrl = window.config.API_URL;
+            const urlRegister = `${apiUrl}/api/register/`;
+
+            const response = await fetch(urlRegister, {
                 method: 'POST',
                 body: formData 
             });
+
 
             const data = await response.json(); // Converte a resposta para JSON
 

@@ -13,6 +13,8 @@ let ballSpeedY = 2;
 let isAIActive = false;
 let ws;
 let animationFrameId;
+const apiUrl = window.config.API_URL;
+const apiUri = window.config.API_URI;
 
 export let ballX, ballY;
 export const ballRadius = 10;
@@ -51,7 +53,8 @@ export const startPongGame = async () => {
     (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
         if (player) {
             try {
-                const response = await fetch('http://localhost:8000/api/matches/', {
+                const urlMatches = `${apiUrl}/api/matches/`;
+                const response = await fetch( urlMatches, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
@@ -76,7 +79,8 @@ export const startPongGame = async () => {
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         const groupName = sessionStorage.getItem("groupName");
         console.log("groupNAMEEEE", groupName);
-        ws = initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+        let initws = `wss://${apiUri}/ws/pong_match/${groupName}/`
+        ws = initPongSocket(`${initws}`);
         
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
@@ -407,7 +411,8 @@ export function initialize() {
                     const score = `${playerScore}-${opponentScore}`;
                     const duration = "10";
 
-                    const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                    const urlMatchesID = `${apiUrl}/api/match/${id}`;
+                    const response = await fetch(urlMatchesID, {
                         method: 'PUT',
                         headers: {
                             'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,

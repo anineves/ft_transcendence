@@ -1,5 +1,5 @@
 import { navigateTo } from '../utils.js';
-
+const apiUrl = window.config.API_URL;
 export const renderPlayerProfile = async () => {
     const playerJson = sessionStorage.getItem('playerProfile');
 
@@ -133,7 +133,9 @@ export const renderPlayerProfile = async () => {
             </div>
         `;
 
-        const response = await fetch('http://localhost:8000/api/matches/');
+        const apiUrl = window.config.API_URL;
+        const urlMatches= `${apiUrl}/api/matches/`;
+        const response = await fetch(urlMatches);
         const matches = await response.json();
 
         let totalPongWins = 0;

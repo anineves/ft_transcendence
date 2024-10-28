@@ -16,7 +16,11 @@ export const waitRemote = () => {
         const groupName = sessionStorage.getItem("groupName"); 
         
         if (groupName)
+        {
+            //let initws = `wss://${apiUri}/ws/snake_match/${groupName}/`
+            //initPongSocket(`${initws}`);
             initPongSocket(`ws://localhost:8000/ws/snake_match/${groupName}/`);
+        }
         else
             alert("Something went wrong with groupName")
     }
@@ -33,7 +37,11 @@ export const waitRemote = () => {
         const groupName = sessionStorage.getItem("groupName"); 
         
         if (groupName)
+        {
+            //let initws = `wss://${apiUri}/ws/pong_match/${groupName}/`
+        //ws = initPongSocket(`${initws}`);
             initPongSocket(`ws://localhost:8000/ws/pong_match/${groupName}/`);
+        }
         else
             alert("Something went wrong with groupName")
 }

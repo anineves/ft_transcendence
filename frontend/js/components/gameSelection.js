@@ -1,5 +1,5 @@
 import { checkLoginStatus, navigateTo } from '../utils.js';
-
+const apiUrl = window.config.API_URL;
 export const renderGameSelection = async () => {
     // opcional
     const app = document.getElementById('app');
@@ -17,7 +17,9 @@ export const renderGameSelection = async () => {
 
         if (code) {
             try {
-                const response = await fetch('http://localhost:8000/oauth/callback/', {
+                const apiUrl = window.config.API_URL;
+                const urlOauth = `${apiUrl}/oauth/callback/`;
+                const response = await fetch(urlOauth, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

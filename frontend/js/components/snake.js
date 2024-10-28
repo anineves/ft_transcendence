@@ -1,7 +1,7 @@
 import { startSnakeGame, stopGame, changeGameSpeed, addExtraFood } from './snake/snake.js';
 import { navigateTo } from '../utils.js';
 let inviter = sessionStorage.getItem("Inviter");
-
+const apiUrl = window.config.API_URL;
 export const renderSnake = () => {
     const user = sessionStorage.getItem('user');
     const modality2 = sessionStorage.getItem('modality');
@@ -50,7 +50,9 @@ export const renderSnake = () => {
                 console.log("score", score);
                 const duration = "10";
 
-                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                const apiUrl = window.config.API_URL;
+                const urlMatchesID = `${apiUrl}/api/match/${id}`;
+                const response = await fetch(urlMatchesID, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,

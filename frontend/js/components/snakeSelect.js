@@ -1,5 +1,5 @@
 import { navigateTo } from '../utils.js';
-
+const apiUrl = window.config.API_URL;
 
 export const snakeSelect= () => {
     sessionStorage.removeItem('modality');

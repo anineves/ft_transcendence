@@ -14,6 +14,7 @@ let match_type = "3D"
 const game = 1;
 let opponent = 1;
 const players = [player_id, opponent];
+const apiUrl = window.config.API_URL;
 
 async function createMatch() {
     const modality2 = sessionStorage.getItem('modality');
@@ -28,8 +29,9 @@ async function createMatch() {
         (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
         if (player_id) {
 
+            const urlMatches = `${apiUrl}/api/matches`;
             try {
-                const response = await fetch('http://localhost:8000/api/matches/', {
+                const response = await fetch(urlMatches, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
@@ -73,7 +75,8 @@ async function updateMatch() {
                 const score = `${redScore}-${blueScore}`;
                 const duration = "10";
 
-                const response = await fetch(`http://localhost:8000/api/match/${id}`, {
+                const urlMatchesID = `${apiUrl}/api/match/${id}`;
+                const response = await fetch(urlMatchesID, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,

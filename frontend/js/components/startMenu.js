@@ -1,6 +1,6 @@
 import { navigateTo } from '../utils.js';
 //import { translations } from '../app.js';
-
+const apiUrl = window.config.API_URL;
 
 export const startMenu = () => {
   const translations = {

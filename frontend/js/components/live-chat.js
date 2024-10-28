@@ -1,6 +1,7 @@
 import { navigateTo, checkLoginStatus } from '../utils.js'; 
 import {  initializeTournament} from './tournament.js';
-
+const apiUrl = window.config.API_URL;
+const apiUri = window.config.API_URI;
 export const liveChat = () => {
     const player = sessionStorage.getItem('player');
     if(!player){
@@ -16,7 +17,8 @@ export const liveChat = () => {
         return;
     }
 
-    const socket = new WebSocket('ws://localhost:8000/ws/global_chat/');
+    const wssocket= `wss://${apiUri}/ws/global_chat/`
+    const socket = new WebSocket(wssocket);
     const translations = {
         english: {
             title: "Chat",
@@ -86,24 +88,18 @@ export const liveChat = () => {
 
             <div class="message-input-container">
                 <input id="message-input" type="text" placeholder="${translations[savedLanguage].phMsg}">
-                
-                <!-- Painel de botões principais -->
                 <div class="button-panel">
                     <button id="send-button"><i class="fas fa-paper-plane"></i></button>
                     <button id="block-button"><i class="fas fa-ban"></i></button>
                     <button id="unblock-button"><i class="fas fa-unlock"></i></button>
                 </div>
             </div>
-
-            <!-- Painel de botões de duelo e torneio -->
             <div class="duel-tournament-panel">
                 <button id="duel-button"><i class="fas fa-crossed-swords"></i> ${translations[savedLanguage].duelBtn}</button>
                 <button id="duel-button-snake"><i class="fas fa-crossed-swords"></i> ${translations[savedLanguage].duelBtn} Snake</button>
                 <button id="create-tournament-button" class="create-button">Create a Tournament Pong</button>
                 <button id="create-tournament-button-snake" class="create-button-snake">Create a Tournament Snake</button>
             </div>
-
-            <!-- Inputs para bloqueio e desbloqueio de usuários -->
             <div id="block-input-container" style="display: none;">
                 <input id="block-player-input" type="text" placeholder="${translations[savedLanguage].phBlock}...">
                 <button id="confirm-block-button" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
@@ -143,7 +139,8 @@ export const liveChat = () => {
 
 
     const createTournamentButtonSnake = document.getElementById('create-tournament-button-snake');
-    const socket3 = new WebSocket(`ws://localhost:8000/ws/tournament_snake/`);
+    const wssocket3= `wss://${apiUri}/ws/tournament_snake/`
+    const socket3 = new WebSocket(wssocket3);
     createTournamentButtonSnake.addEventListener('click', function () {
         console.log("entrei snake");
         socket3.send(JSON.stringify({ action: 'create_tournament_snake' }));       
@@ -189,7 +186,8 @@ export const liveChat = () => {
 
 
     const createTournamentButton = document.getElementById('create-tournament-button');
-    const socket2 = new WebSocket(`ws://localhost:8000/ws/tournament/`);
+    const wssocket2= `wss://${apiUri}/ws/tournament/`
+    const socket2 = new WebSocket(wssocket2);
     createTournamentButton.addEventListener('click', function () {
         socket2.send(JSON.stringify({ action: 'create_tournament' }));
     });
@@ -242,8 +240,6 @@ export const liveChat = () => {
 
         const firstWord = firstWord2.replace(':', '');
         const isFromSelf = firstWord == nickname;
-        console.log("first", firstWord);
-        console.log("Nick ", nickname);
 
         messageElement.className = isFromSelf ? 'message own-message' : 'message other-message';
 
@@ -251,8 +247,9 @@ export const liveChat = () => {
         firstWordButton.className = 'highlighted-player-button';
         firstWordButton.textContent = firstWord;
         firstWordButton.onclick = async () => {
+            const urlPlayers = `${apiUrl}/api/players/`;
             try {
-                const playerResponse = await fetch('http://127.0.0.1:8000/api/players/', {
+                const playerResponse = await fetch(urlPlayers, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

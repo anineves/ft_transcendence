@@ -1,5 +1,5 @@
 import { navigateTo } from '../utils.js';
-
+const apiUrl = window.config.API_URL;
 export const renderRequestPanel = () => {
     const app = document.getElementById('app');
     const user = JSON.parse(sessionStorage.getItem('user'));
@@ -65,8 +65,10 @@ export const renderRequestPanel = () => {
     
     document.getElementById('backFriendsBtn').addEventListener('click', () => navigateTo('/friendPage', user));
     const displayRequests = async () => {
+        const apiUrl = window.config.API_URL;
+        const urlRequest = `${apiUrl}/api/player/requests/`;
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/player/requests/', {
+            const response = await fetch(urlRequest, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
@@ -114,7 +116,9 @@ export const renderRequestPanel = () => {
 
     const handleFriendRequest = async (requestId, accepted) => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/player/respond_friend_request/${requestId}/`, {
+            const apiUrl = window.config.API_URL;
+            const urlRespondRequest = `${apiUrl}/api/player/respond_friend_request/${requestId}/`;
+            const response = await fetch(urlRespondRequest, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,

@@ -1,6 +1,6 @@
 import { navigateTo, checkLoginStatus, logout } from '../utils.js';
 import { renderFriendsPage } from './friendsPage.js';
-
+const apiUrl = window.config.API_URL;
 const translations = {
     english: {
         title: "User Profile",
@@ -80,8 +80,7 @@ export const renderPanel = async (user) => {
     const player = JSON.parse(sessionStorage.getItem('playerInfo'));
     const nickname = sessionStorage.getItem('nickname') || 'N/A';
 
-    console.log("ussseeer", user)
-    // Função prevenir XSS
+   
     const escapeHTML = (unsafe) => {
         
         if (typeof unsafe !== 'string') {
@@ -160,7 +159,9 @@ export const renderPanel = async (user) => {
 
     if (player) {
         try {
-            const response = await fetch('http://localhost:8000/api/matches/');
+            const apiUrl = window.config.API_URL;
+            const urlMatches = `${apiUrl}/api/matches/`;
+            const response = await fetch(urlMatches);
             const matches = await response.json();
 
             let pongWins = 0;
@@ -267,7 +268,9 @@ const handleUpdateOtp = async (user) => {
     otp_agreement = !otp_agreement // Alterna entre verdadeiro e falso
 
     try {
-        const response = await fetch(`http://127.0.0.1:8000/api/user/${user.id}`, {
+        const apiUrl = window.config.API_URL;
+        const urluserID = `${apiUrl}/api/user/${user.id}`;
+        const response = await fetch(urluserID, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
@@ -319,7 +322,9 @@ const handleUpdateProfile = async (e, user) => {
     }
 
     try {
-        const response = await fetch(`http://127.0.0.1:8000/api/user/${user.id}`, {
+        const apiUrl = window.config.API_URL;
+        const urluserID = `${apiUrl}/api/user/${user.id}`;
+        const response = await fetch(urluserID, { 
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`

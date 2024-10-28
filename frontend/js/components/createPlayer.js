@@ -1,5 +1,5 @@
 import { navigateTo, checkLoginStatus } from '../utils.js';
-
+const apiUrl = window.config.API_URL;
 export const createPlayer = () => {
     const app = document.getElementById('app');
     const Player = sessionStorage.getItem("playerInfo");
@@ -66,7 +66,8 @@ export const createPlayer = () => {
         const token = sessionStorage.getItem('jwtToken');
         
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/players/', {
+            const urlPlayeres = `${apiUrl}/api/players/`;
+                const response = await fetch(urlPlayeres, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

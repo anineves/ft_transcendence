@@ -1,3 +1,7 @@
+const host = window.location.hostname;
+const protocol = window.location.protocol; 
+
 window.config = {
-    API_URL: 'https://192.168.50.24:8080', // Alterado para HTTPS
+    API_URL: `${protocol}//${host}:8080`, 
+    API_URI: `${host}:8080`,
 };
