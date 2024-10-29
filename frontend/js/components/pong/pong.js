@@ -280,7 +280,7 @@ export function initialize() {
         context.closePath();
         drawScore(playerScore, opponentScore);
 
-        if (gameOver) drawGameOver(playerScore, opponentScore);
+       
     }
 
     function update() {
@@ -416,6 +416,8 @@ export function initialize() {
         if (!gameOver) {
             animationFrameId = requestAnimationFrame(gameLoop);
         } else {
+            drawGameOver(playerScore, opponentScore);
+            stopGame();
             const id = sessionStorage.getItem('id_match');
             let winner_id = opponent;
             if (player && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
@@ -470,9 +472,8 @@ export function initialize() {
     const modality2 = sessionStorage.getItem('modality');
     if (modality2 != 'remote'  &&  modality2 != 'tourn-remote') {
         document.addEventListener('keydown', function (event) {
-            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+            if (['ArrowUp', 'ArrowDown'].includes(event.key)) 
                 movePaddle(event);
-            }
         });
 
         document.addEventListener('keydown', function (event) {

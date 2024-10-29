@@ -31,9 +31,6 @@ let snakeOpponent = {
 
 let foods = [{ x: null, y: null }];
 
-// const friendID = sessionStorage.getItem('friendID');
-// const playerID = sessionStorage.getItem('playerID');
-// const player = sessionStorage.getItem('player');
 
 export const startSnakeGame = async () => {
     let modality2 = sessionStorage.getItem('modality');
@@ -99,6 +96,20 @@ export const startSnakeGame = async () => {
 
             const data = JSON.parse(event.data);
             let message = data.message
+            if(data.action == 'player_disconnect')
+                {
+    
+                    ws = null;
+                    sessionStorage.removeItem("Inviter");
+                    sessionStorage.removeItem("groupName");
+                    sessionStorage.setItem('WS', 'clean');
+                    ws = null;
+                    console.log("entrei aquissss");
+                    drawGameOver();
+                        //navigateTo('/'); 
+                    
+                }
+
 
             if (data.action === 'move_snake') {
                 const updateSnakeState = (snake, direction, message) => {
@@ -221,6 +232,103 @@ export const startSnakeGame = async () => {
             }
         }
     }
+    const handleVisibilityChange = () => {
+        if (window.location.href !== "https://10.0.2.15:8080/snake") {
+            cleanup();
+            return; 
+        }
+        
+        const user = sessionStorage.getItem('user');
+        const user_json = JSON.parse(user);
+        let friendID = sessionStorage.getItem('friendID');
+        let playerID = sessionStorage.getItem('player');
+        let inviter = sessionStorage.getItem("Inviter");
+        let groupName = sessionStorage.getItem('groupName');
+        let modality = sessionStorage.getItem('modality');
+
+        if (modality == 'remote' || modality2 == 'tourn-remote') {
+            if (ws) {
+                ws.send(JSON.stringify({
+                    'action': 'player_disconnect',
+                    'message': {
+                        'player_id': playerID,
+                        'friend_id': friendID,
+                        'inviter': inviter,
+                        'group_name': groupName,
+                    }
+                }));
+                ws.close();
+                ws = null;
+            }
+            drawGameOver();
+            //navigateTo('/'); 
+        }
+    };
+
+    const handleOffline = () => {
+        if (ws) {
+            ws.send(JSON.stringify({
+                'action': 'end_game'
+            }));
+            ws.close();
+            ws = null
+        }
+        stopGame();
+    };
+
+ 
+    window.addEventListener('offline', handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    //window.addEventListener('popstate', handleVisibilityChange);
+
+  
+    const originalPushState = history.pushState;
+    history.pushState = function(...args) {
+        originalPushState.apply(this, args);
+        handleVisibilityChange(); 
+    };
+
+    const originalReplaceState = history.replaceState;
+    history.replaceState = function(...args) {
+        originalReplaceState.apply(this, args);
+        handleVisibilityChange(); 
+    };
+
+    const cleanup = () => {
+        const user = sessionStorage.getItem('user');
+
+        let friendID = sessionStorage.getItem('friendID');
+        let playerID = sessionStorage.getItem('player');
+        let inviter = sessionStorage.getItem("Inviter");
+        let groupName = sessionStorage.getItem('groupName');
+
+        if (ws) {
+            ws.send(JSON.stringify({
+                'action': 'player_disconnect',
+                'message': {
+                    'player_id': playerID,
+                    'friend_id': friendID,
+                    'inviter': inviter,
+                    'group_name': groupName,
+                }
+            }));
+            ws.close(); 
+            ws = null;
+            drawGameOver();
+            //stopGame();
+            //navigateTo('/'); 
+        }
+        window.removeEventListener('offline', handleOffline);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('popstate', handleVisibilityChange);
+        history.pushState = originalPushState; 
+        history.replaceState = originalReplaceState; 
+    };
+
+    if (window.location.href !== "https://10.0.2.15:8080/snake") {
+        cleanup();
+    }
+    
 
 }
 
@@ -296,23 +404,7 @@ function updateSnake(snake) {
     }
     snake.body.pop();
 
-    // if (modality2 == 'remote' || modality2 == 'tourn-remote') {
-    //     const player = sessionStorage.getItem('player');
-    //     const playerID = sessionStorage.getItem('playerID'); 
-    //     if (player === playerID) {
-    //         ws.send(JSON.stringify({
-    //             'action': 'update_snake',
-    //             'message': {
-    //                 'player': player,
-    //                 'snake_body': snake.body,
-    //                 'snake_color': snake.color,
-    //                 'snake_direction': snake.direction,
-    //                 'snake_food_count': snake.foodCount,
-    //                 'snake_hit_wall': snake.hitWall
-    //             }
-    //         }));
-    //     }
-    // }
+
 }
 
 function placeFood() {
@@ -580,7 +672,7 @@ function drawScore() {
     ctx.fillText(`${player2}: ${snakeOpponent.foodCount}`, canvas.width - 200, 20);
 }
 
-function drawGameOver() {
+export function drawGameOver() {
     let nameWinner = sessionStorage.getItem('losingSnake');
     ctx.fillStyle = 'yellow';
     ctx.font = '30px Arial';

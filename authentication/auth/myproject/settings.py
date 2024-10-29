@@ -209,10 +209,10 @@ EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'transcendence.school42@gmail.com'
 EMAIL_HOST_PASSWORD = 'lmln pyab glmg izrl'
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Defina para True se o site estiver em produção com HTTPS
-SECURE_SSL_REDIRECT = True
+#SECURE_SSL_REDIRECT = True
 
 # Certifique-se de que o middleware de CSRF funciona corretamente com WebSockets
 CSRF_TRUSTED_ORIGINS = ['https://10.0.2.15']  
