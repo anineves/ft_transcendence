@@ -93,11 +93,11 @@ export const renderRegister = () => {
     
         passwordError.textContent = '';
         confirmPasswordError.textContent = '';
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-_@])[a-zA-Z\d-_@]{8,}$/;
         let valid = true;
     
         if (!passwordRegex.test(password)) {
-            passwordError.textContent = 'A senha deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula e um dígito.';
+            passwordError.textContent = 'A senha deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula e um dígito, e um caracter especial _, - ou @ , outros caracteres especiais nao serao aceites';
             valid = false; 
         }
     

@@ -76,7 +76,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         try:
             serializer.is_valid(raise_exception=True)
         except Exception as e:
-            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': str(e)}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
         
         user = serializer.user
 
@@ -285,7 +285,7 @@ class RespondFriendRequest(APIView):
 # Tem que sair daqui
 def oauth_login(request):
     authorization_url = 'https://api.intra.42.fr/oauth/authorize'
-    redirect_uri = 'http://localhost:8080/game-selection' 
+    redirect_uri = 'https://192.168.0.12:8080/game-selection' 
     client_id = os.getenv('CLIENT_ID')
     
     return redirect(f'{authorization_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code')

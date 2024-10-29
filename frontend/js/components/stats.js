@@ -73,7 +73,8 @@ export const stats = async () => {
 
     try {
         const apiUrl = window.config.API_URL;
-        const urlMatches = `${apiUrl}/api/matches/`;
+        let urlMatches = `${apiUrl}/api/matches/`;
+        const response = await fetch(urlMatches);
         const matches = await response.json();
 
 

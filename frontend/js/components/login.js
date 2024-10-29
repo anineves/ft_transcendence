@@ -2,7 +2,7 @@ import { navigateTo, checkLoginStatus } from '../utils.js';
 const apiUrl = window.config.API_URL;
 const translations = {
     english: {
-        login: "Login",
+        login: "Logiin",
         email: "Email or Username",
         password: "Password",
         submit: "Login",
@@ -10,7 +10,7 @@ const translations = {
         errorLogin: "There is no user created with this data"
     },
     portuguese: {
-        login: "Entrar",
+        login: "Entrssar",
         email: "Email ou Nome de Usuário",
         password: "Palavra passe",
         submit: "Entrar",
@@ -38,29 +38,52 @@ export const renderLogin = () => {
         savedLanguage = 'english'; 
     } 
   ;
-    app.innerHTML = `
-        <div class="background-form" class="form-log-reg">
-            <h2>${translations[savedLanguage].login}</h2>
-            <form id="loginForm" >
-                <input type="text" id="emailOrUsername" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
-                <input type="password" id="password" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
-                <div id="passwordError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
-                <button type="submit" id="btn-login"class="btn">${translations[savedLanguage].submit}</button>
-            </form>
-        </div>
-    `;
-
+  app.innerHTML = `
+  <div class="background-form" class="form-log-reg">
+      <h2>${translations[savedLanguage].login}</h2>
+      <form id="loginForm">
+          <input type="text" id="emailOrUsername" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
+          <div id="emailError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
+          <input type="password" id="password" placeholder="${translations[savedLanguage].password}" required class="form-control mb-2">
+          <div id="passwordError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
+          <button type="submit" id="btn-login" class="btn">${translations[savedLanguage].submit}</button>
+      </form>
+  </div>
+`;
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         // Previne o comportamento padrão do formulário de recarregar a página.
         e.preventDefault(); 
         const emailOrUsername = document.getElementById('emailOrUsername').value; 
         const password = document.getElementById('password').value; 
+        const emailError = document.getElementById('emailError');
         const passwordError = document.getElementById('passwordError');
+        
+        // Resetar mensagens de erro
+        emailError.textContent = '';
         passwordError.textContent = '';
 
 
         const apiUrl = window.config.API_URL;
+       
+        try {
+            const userCheckResponse = await fetch(`${apiUrl}/api/users/`);
+            if (!userCheckResponse.ok) {
+                throw new Error("Erro ao buscar usuários.");
+            }
+
+            const users = await userCheckResponse.json();
+            const userExists = users.some(user => user.email === emailOrUsername || user.username === emailOrUsername);
+
+            if (!userExists) {
+                emailError.textContent = `${translations[savedLanguage].errorLogin}`;
+                return;
+            }
+        } catch (error) {
+            console.error("Erro ao verificar usuário:", error);
+            return;
+        }
+
         const urlLogin = `${apiUrl}/api/token/`;
         try {
             const response = await fetch(urlLogin, {
@@ -70,65 +93,63 @@ export const renderLogin = () => {
                 },
                 body: JSON.stringify({ email: emailOrUsername, password })
             });
+        
+
+            if(response.status == 203)
+            {
+                passwordError.textContent = `${translations[savedLanguage].errorlo}`;
+                return; 
+            }
+
             if (response.ok) {
                 const data = await response.json();
-                if(data.otp_agreement)
-                {
+                if(data.otp_agreement) {
                     showCodeForm();
-                }else{
-                sessionStorage.setItem('register', 'form');
-                // Armazena o token de acesso JWT.
-                sessionStorage.setItem('jwtToken', data.access); 
-                // Armazena o token de atualização JWT.
-                sessionStorage.setItem('refreshToken', data.refresh); 
-                // Armazena as informações do usuário (por exemplo, nome, email).
-                sessionStorage.setItem('user', JSON.stringify(data.user)); 
-
-                //console.log(data);
-                const userId = data.user.id;
-                const token = data.access;
-                const urlPlayers = `${apiUrl}/api/players/`;
-                try {
-
-                    const playerResponse = await fetch(urlPlayers, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}` 
-                        }
-                    });
-            
-                    if (playerResponse.ok) {
-                        const playerData = await playerResponse.json();
-                        const player = playerData.find(p => p.user === userId);
-                        
-                        if (player) {
-                            sessionStorage.setItem('player', JSON.stringify(player.id));
-                            sessionStorage.setItem('playerInfo', JSON.stringify(player));
-                            console.log("nickname", player.nickname)
-                            sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
-                            putPlayer("ON");
+                } else {
+                    sessionStorage.setItem('register', 'form');
+                    sessionStorage.setItem('jwtToken', data.access); 
+                    sessionStorage.setItem('refreshToken', data.refresh); 
+                    sessionStorage.setItem('user', JSON.stringify(data.user)); 
+        
+                    const userId = data.user.id;
+                    const token = data.access;
+                    const urlPlayers = `${apiUrl}/api/players/`;
+                    try {
+                        const playerResponse = await fetch(urlPlayers, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}` 
+                            }
+                        });
+        
+                        if (playerResponse.ok) {
+                            const playerData = await playerResponse.json();
+                            const player = playerData.find(p => p.user === userId);
+                            
+                            if (player) {
+                                sessionStorage.setItem('player', JSON.stringify(player.id));
+                                sessionStorage.setItem('playerInfo', JSON.stringify(player));
+                                sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
+                                putPlayer("ON");
+                            } else {
+                                console.log("You need create a player");
+                            }
                         } else {
-                            console.log("You need create a player");
+                            console.error("error loading players");
                         }
-                    } else {
-                        console.error("error loading players");
+                    } catch (error) {
+                        console.error('Error', error);
                     }
-                } catch (error) {
-                    console.error('Error', error);
+                    
+                    checkLoginStatus(); 
+                    navigateTo('/game-selection', data); 
                 }
-            
-                checkLoginStatus(); 
-                navigateTo('/game-selection', data); 
-            }
             } else {
-                
-                passwordError.textContent = `${translations[savedLanguage].errorLogin}`
-
+                passwordError.textContent = `${translations[savedLanguage].errorLogin}`;
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred during login');
         }
     });
 
@@ -142,7 +163,7 @@ const showCodeForm = async () => {
         const urlOtp = `${apiUrl}/api/otp/`;
         try {
 
-            const playerResponse = await fetch(urlOtp, {
+            const response = await fetch(urlOtp, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -156,6 +177,7 @@ const showCodeForm = async () => {
                 alert('Failed to send verification code.1');
             }
         } catch (error) {
+
             console.error('Error:', error);
             alert('An error occurred during login');
         }
@@ -179,7 +201,7 @@ const showCodeForm = async () => {
         const urlLogin = `${apiUrl}/api/token/`;
 
         try {
-            const tokenResponse = await fetch(urlLogin, {
+            const response = await fetch(urlLogin, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -294,28 +316,31 @@ export const putPlayer = async (status) => {
 
     const apiUrl = window.config.API_URL;
     const urlPlayer = `${apiUrl}/api/player/${playerId}`;
-    try {
-        const player = await fetch(urlPlayer, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${jwtToken}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ status : stat })
-        });
-        
-        console.log("Player", playerInfo);
-        if (playerInfo.ok) {
-            const playerT = await playerInfo.json();
-            sessionStorage.setItem('playerStatus', playerT.status);
-            checkLoginStatus();
-            navigateTo('/game-selection');
-
-        } else if (user) {
-            alert("Player not found");
-            console.log("Error player not found");
+    if(playerId)
+    {
+        try {
+            const playerInfo = await fetch(urlPlayer, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status : stat })
+            });
+            
+            console.log("Player", playerInfo);
+            if (playerInfo.ok) {
+                const playerT = await playerInfo.json();
+                sessionStorage.setItem('playerStatus', playerT.status);
+                checkLoginStatus();
+                navigateTo('/game-selection');
+    
+            } else if (user) {
+                alert("Player not found");
+                console.log("Error player not found");
+            }
+        } catch (error) {
+            console.error('Error:', error);
         }
-    } catch (error) {
-        console.error('Error:', error);
     }
 };
