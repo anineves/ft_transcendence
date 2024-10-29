@@ -1,1 +1,7 @@
 network.host: 0.0.0.0
+http.port: 9200
+discovery.type: single-node
+
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.certificate: /usr/share/elasticsearch/config/certs/elasticsearch.crt
+xpack.security.http.ssl.key: /usr/share/elasticsearch/config/certs/elasticsearch.key

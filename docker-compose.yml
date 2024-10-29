@@ -49,6 +49,8 @@ services:
       context: ./elk/elastic
       dockerfile: Dockerfile
     environment:
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=elastic
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms521m -Xmx521m"
 #      - "xpack.security.enabled=false"
@@ -87,6 +89,7 @@ services:
       context: ./elk/kibana
       dockerfile: Dockerfile
     volumes:
+#      - ./elk/kibana/myssl:/myssl
       - ./elk/kibana/config/script.sh:/script.sh
     environment:
       #- "xpack.security.encryptionKey"
