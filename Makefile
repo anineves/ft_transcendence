@@ -8,14 +8,8 @@ all: up
 
 up:
 	docker compose -p $(NAME) -f $(COMPOSE) up --build -d
-#	@chown -R $(whoami):$(whoami) ./elk ./authentication/auth/logs
-#	@chown -R 1000:1000 ./elk/elastic/data
-#	@chmod -R 777 ./elk/elastic/data ./authentication/auth/logs
-#	@chmod 755 ./elk
-#	@chmod -R 755 ./data/web
-#	@echo "Waiting for kibana to be ready..."
 	@echo "Creating Dashboard && Data view..."
-	@sleep 30
+	@sleep 15
 	@docker exec -it kibana sh -c "./script.sh" 
 	@echo "\nData view Created!"
 

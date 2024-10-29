@@ -52,11 +52,11 @@ services:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms521m -Xmx521m"
 #      - "xpack.security.enabled=false"
-      - network.host=0.0.0.0
+#      - network.host=0.0.0.0
     volumes:
       - ./elk/elastic/myssl:/myssl
-      - ./elk/elastic/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - ./elk/elastic/data:/usr/share/elasticsearch/data
+#      - ./elk/elastic/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+#      - ./elk/elastic/data:/usr/share/elasticsearch/data
     restart: on-failure
     ports:
       - "9200:9200"
@@ -90,6 +90,8 @@ services:
       - ./elk/kibana/config/script.sh:/script.sh
     environment:
       #- "xpack.security.encryptionKey"
+      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+      - NODE_OPTIONS=--openssl-legacy-provider
       - "xpack.encryptedSavedObjects.encryptionKey"
       - "xpack.security.enabled: true"
     depends_on:

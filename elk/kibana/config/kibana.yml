@@ -1,7 +1,11 @@
 server.name: kibana
 server.host: "0.0.0.0"
 server.port: 5601
-elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+elasticsearch.username: "alexfern"
+elasticsearch.password: "42Porto"
+elasticsearch.hosts: [ "https://elasticsearch:9200" ]
 elasticsearch.requestTimeout: 60000
 monitoring.ui.container.elasticsearch.enabled: true
-#xpack.security.enabled: true
+#xpack.security.enrollment.enabled: false
+#xpack.security.enabled: false
+#NODE_OPTIONS: "--openssl-legacy-provider"

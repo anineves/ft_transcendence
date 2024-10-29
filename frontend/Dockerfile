@@ -14,6 +14,7 @@ RUN openssl req -x509 -nodes \
 RUN mkdir -p ../logs
 
 RUN chmod -R 777 ../logs
+RUN chown -R root:root ../logs
 
 COPY . /usr/share/nginx/html
 
