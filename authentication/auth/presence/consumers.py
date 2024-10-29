@@ -266,6 +266,17 @@ class PongConsumer(WebsocketConsumer):
         if data.get('action') == 'end_game':
             return self.disconnect(401)
 
+        if data.get('action') == 'player_disconnect':
+            message = data.get('message')
+            async_to_sync(self.channel_layer.group_send)(
+                self.match_group.group_name, 
+                {
+                    "type": "pong.log",
+                    "action": data.get('action'),
+                    "message": message
+                }
+            )
+
         if data.get('action') == 'move_paddle' or data.get('action') == 'stop_paddle':
             message = data.get('message')
             async_to_sync(self.channel_layer.group_send)(

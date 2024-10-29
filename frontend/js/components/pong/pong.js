@@ -84,6 +84,15 @@ export const startPongGame = async () => {
         
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
+            console.log("data pong", data.action)
+            if(data.action === 'player_disconnect')
+            {
+                ws.close();
+                ws = null;
+            
+                stopGame();
+                navigateTo('/'); 
+            }
             if (data.action === 'ball_track') {
                 ballX = data.message.ball_x;
                 ballY = data.message.ball_y;
@@ -152,8 +161,8 @@ export function initialize() {
     initializeBall();
     if (!canvas || !context) return;
 
-    /*const handleVisibilityChange = () => {
-        if (window.location.href !== "https://localhost:8080/pong") {
+    const handleVisibilityChange = () => {
+        if (window.location.href !== "https://192.168.0.12:8080/pong") {
             cleanup();
             return; 
         }
@@ -170,7 +179,7 @@ export function initialize() {
             if (ws) {
                
                 ws.send(JSON.stringify({
-                    'action': 'player_disconnected',
+                    'action': 'player_disconnect',
                     'message': {
                         'player_id': playerID,
                         'friend_id': friendID,
@@ -189,7 +198,7 @@ export function initialize() {
     const handleOffline = () => {
         if (ws) {
             ws.send(JSON.stringify({
-                'action': 'player_disconnected'
+                'action': 'end_game'
             }));
             ws.close();
             ws = null
@@ -200,7 +209,7 @@ export function initialize() {
  
     window.addEventListener('offline', handleOffline);
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('popstate', handleVisibilityChange);
+    //window.addEventListener('popstate', handleVisibilityChange);
 
   
     const originalPushState = history.pushState;
@@ -225,7 +234,7 @@ export function initialize() {
 
         if (ws) {
             ws.send(JSON.stringify({
-                'action': 'player_disconnected',
+                'action': 'player_disconnect',
                 'message': {
                     'player_id': playerID,
                     'friend_id': friendID,
@@ -245,9 +254,9 @@ export function initialize() {
         history.replaceState = originalReplaceState; 
     };
 
-    if (window.location.href !== "https://localhost:8080/pong") {
+    if (window.location.href !== "https://192.168.0.12:8080/pong") {
         cleanup();
-    }*/
+    }
     
     
     function draw() {
