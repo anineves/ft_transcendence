@@ -76,18 +76,22 @@ export const selectPlayerorAI = () => {
   
     document.getElementById('vsPlayerBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', 'player');
+        sessionStorage.setItem('game', 'pong');
         navigateTo('/pong');
     });
     document.getElementById('vsAIBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', 'ai');
+        sessionStorage.setItem('game', 'pong');
         navigateTo('/pong');
     });
     document.getElementById('3DBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', '3D');
+        sessionStorage.setItem('game', 'pong');
         navigateTo('/3d-pong');
     });
     document.getElementById('tournBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', 'tournament');
+        sessionStorage.setItem('game', 'pong');
         navigateTo('/tournament');
     });
 };

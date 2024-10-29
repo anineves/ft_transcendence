@@ -66,16 +66,19 @@ export const snakeSelect= () => {
 
     
     document.getElementById('vsPlayerBtn').addEventListener('click', () => {
+        sessionStorage.setItem('game', 'snake');
         sessionStorage.setItem('modality', 'player');
         navigateTo('/snake');
     });
     
     document.getElementById('3DBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', '3D');
+        sessionStorage.setItem('game', 'snake');
         navigateTo('/3d-snake');
     });
     document.getElementById('tournBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', 'tournament');
+        sessionStorage.setItem('game', 'snake');
         navigateTo('/tournament');
     });
 };

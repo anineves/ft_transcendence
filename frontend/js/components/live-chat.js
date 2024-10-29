@@ -5,7 +5,6 @@ const apiUri = window.config.API_URI;
 export const liveChat = () => {
     const player = sessionStorage.getItem('player');
     if(!player){
-        alert("You need create a player");
         navigateTo('/create-player');
         return;
     }

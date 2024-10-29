@@ -2,21 +2,27 @@ import { navigateTo, checkLoginStatus } from '../utils.js';
 const apiUrl = window.config.API_URL;
 const translations = {
     english: {
-        login: "Logiin",
+        login: "Login",
         email: "Email or Username",
         password: "Password",
         submit: "Login",
         submit2: "Login using 2FA",
-        errorLogin: "There is no user created with this data"
+        errorLogin: "There is no user created with this data",
+        errorUsername: "There is no user created with this data,Username must contain only letters, numbers, and the '-' symbol.", 
+        errorPassword: "Password must be at least 8 characters long, including at least one uppercase letter, one lowercase letter, one digit, and a special character _, - or @; other special characters will not be accepted.",
+        errorWrongPassword: "Wrong password."
     },
     portuguese: {
-        login: "Entrssar",
+        login: "Entrar",
         email: "Email ou Nome de Usuário",
         password: "Palavra passe",
         submit: "Entrar",
         submit2: "Entrar com 2FA",
         guest: "Jogar como Convidado",
-        errorLogin: "Nao ha utilizador criado com esses dados"
+        errorLogin: "Nao ha utilizador criado com esses dados",
+        errorUsername: "Nao ha utilizador criado com esses dados, O username deve conter apenas letras, números e o símbolo '-'.",
+        errorPassword: "A palavra-passe deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um dígito e um caracter especial _, - ou @, outros caracteres especiais não serão aceites.",
+        errorWrongPassword: "Palavra-passe errada."
     },
     french: {
         login: "Se connecter",
@@ -25,7 +31,10 @@ const translations = {
         submit: "Entrer",
         submit2: "Entrer avec 2FA",
         guest: "Jouer en tant qu'invité",
-        errorLogin: "Aucun utilisateur n'a été créé avec ces données"
+        errorLogin: "Aucun utilisateur n'a été créé avec ces données",
+        errorUsername: "Aucun utilisateur n'a été créé avec ces données,Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
+        errorPassword: "Le mot de passe doit contenir au moins 8 caractères, y compris au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial _, - ou @, d'autres caractères spéciaux ne seront pas acceptés.",
+        errorWrongPassword: "Mot de passe incorrect."
     }
     
 
@@ -54,16 +63,45 @@ export const renderLogin = () => {
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         // Previne o comportamento padrão do formulário de recarregar a página.
         e.preventDefault(); 
-        const emailOrUsername = document.getElementById('emailOrUsername').value; 
+        const emailOrUsername = document.getElementById('emailOrUsername').value;
+        let email;
+        let username; // Declara a variável email
+
         const password = document.getElementById('password').value; 
         const emailError = document.getElementById('emailError');
+
         const passwordError = document.getElementById('passwordError');
-        
-        // Resetar mensagens de erro
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-_@])[a-zA-Z\d-_@]{8,}$/;
+        const nameRegex = /^[a-zA-Z0-9-]+$/; 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        let valid = true;
         emailError.textContent = '';
         passwordError.textContent = '';
+        if (emailOrUsername.includes('@')) {
+            email = emailOrUsername; 
+            if (!emailRegex.test(email)) {
+                passwordError.textContent += `${translations[savedLanguage].errorUsername}`;
+                valid = false;
+            }
+        }
+        else
+        {
+            username = emailOrUsername;
+            if (!nameRegex.test(username)) {
+                passwordError.textContent += `${translations[savedLanguage].errorUsername}`;
+                valid = false;
+            }
+        }
 
 
+        if (!passwordRegex.test(password)) {
+            passwordError.textContent = `${translations[savedLanguage].errorWrongPassword}`
+            passwordError.textContent += `${translations[savedLanguage].errorPassword}`
+            valid = false; 
+        }
+       
+
+        if (!valid) return;
         const apiUrl = window.config.API_URL;
        
         try {
@@ -97,7 +135,7 @@ export const renderLogin = () => {
 
             if(response.status == 203)
             {
-                passwordError.textContent = `${translations[savedLanguage].errorlo}`;
+                passwordError.textContent = `${translations[savedLanguage].errorWrongPassword}`;
                 return; 
             }
 
@@ -133,7 +171,10 @@ export const renderLogin = () => {
                                 sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
                                 putPlayer("ON");
                             } else {
-                                console.log("You need create a player");
+                                console.log("You need createddddd a player");
+                                checkLoginStatus(); 
+                                navigateTo('/create-player');
+                                return;
                             }
                         } else {
                             console.error("error loading players");
@@ -266,47 +307,6 @@ const showCodeForm = async () => {
 };
 
 
-const handleSuccessfulLogin = async () => {
-
-    const jwtToken = sessionStorage.getItem('jwtToken');
-    const user = sessionStorage.getItem('user');
-    const userID = sessionStorage.getItem('userID');
-    try {
-        const playerResponse = await fetch(urlPlayers, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwtToken}`
-            }
-        });
-
-        console.log("Player Response", playerResponse);
-        if (playerResponse.ok) {
-            const playerData = await playerResponse.json();
-
-            let player = null;
-
-            for (const p of playerData) {            
-                if (p.user == userID) {
-                    player = p;
-                }
-            }
-
-            if (player) {
-                checkLoginStatus();
-                putPlayer("ON");
-            } else {
-                console.log("You need to create a player");
-                navigateTo('/game-selection');
-            }
-        } else {
-            console.log("Error loading players");
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-};
-
 
 export const putPlayer = async (status) => {
     const jwtToken = sessionStorage.getItem('jwtToken');
@@ -336,7 +336,6 @@ export const putPlayer = async (status) => {
                 navigateTo('/game-selection');
     
             } else if (user) {
-                alert("Player not found");
                 console.log("Error player not found");
             }
         } catch (error) {

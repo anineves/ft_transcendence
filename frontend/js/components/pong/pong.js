@@ -78,20 +78,26 @@ export const startPongGame = async () => {
     }
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         const groupName = sessionStorage.getItem("groupName");
-        console.log("groupNAMEEEE", groupName);
+
         let initws = `wss://${apiUri}/ws/pong_match/${groupName}/`
         ws = initPongSocket(`${initws}`);
         
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             console.log("data pong", data.action)
-            if(data.action === 'player_disconnect')
+            if(data.action == 'player_disconnect')
             {
-                ws.close();
+
                 ws = null;
-            
-                stopGame();
-                navigateTo('/'); 
+                sessionStorage.removeItem("Inviter");
+                sessionStorage.removeItem("groupName");
+                sessionStorage.setItem('WS', 'clean');
+                ws = null;
+                console.log("entrei aquissss");
+                    stopGame();
+                    drawGameOver(playerScore, opponentScore);
+                    //navigateTo('/'); 
+                
             }
             if (data.action === 'ball_track') {
                 ballX = data.message.ball_x;
@@ -162,7 +168,7 @@ export function initialize() {
     if (!canvas || !context) return;
 
     const handleVisibilityChange = () => {
-        if (window.location.href !== "https://192.168.0.12:8080/pong") {
+        if (window.location.href !== "https://10.0.2.15:8080/pong") {
             cleanup();
             return; 
         }
@@ -175,9 +181,8 @@ export function initialize() {
         let groupName = sessionStorage.getItem('groupName');
         let modality = sessionStorage.getItem('modality');
 
-        if (modality === 'remote' || modality2 == 'tourn-remote') {
+        if (modality == 'remote' || modality2 == 'tourn-remote') {
             if (ws) {
-               
                 ws.send(JSON.stringify({
                     'action': 'player_disconnect',
                     'message': {
@@ -191,7 +196,10 @@ export function initialize() {
                 ws = null;
             }
             stopGame();
-            navigateTo('/'); 
+            playerScore = 0;
+            opponentScore = 5;
+            drawGameOver(playerScore, opponentScore)
+            //navigateTo('/'); 
         }
     };
 
@@ -244,8 +252,8 @@ export function initialize() {
             }));
             ws.close(); 
             ws = null;
-            stopGame();
-            navigateTo('/'); 
+            //stopGame();
+            //navigateTo('/'); 
         }
         window.removeEventListener('offline', handleOffline);
         document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -254,7 +262,7 @@ export function initialize() {
         history.replaceState = originalReplaceState; 
     };
 
-    if (window.location.href !== "https://192.168.0.12:8080/pong") {
+    if (window.location.href !== "https://10.0.2.15:8080/pong") {
         cleanup();
     }
     
@@ -272,7 +280,7 @@ export function initialize() {
         context.closePath();
         drawScore(playerScore, opponentScore);
 
-        if (gameOver) drawGameOver(playerScore);
+        if (gameOver) drawGameOver(playerScore, opponentScore);
     }
 
     function update() {
@@ -441,6 +449,7 @@ export function initialize() {
                 }
             }
             if (sessionStorage.getItem('modality') == 'tournament') {
+                sessionStorage.setItem('game', 'pong');
                 showNextMatchButton();
             }
             if(sessionStorage.getItem('modality') == 'tourn-remote')
@@ -538,6 +547,7 @@ export function showNextMatchButton() {
     nextMatchButton.className = 'btn';
     nextMatchButton.style.margin = '20px auto';
     nextMatchButton.addEventListener('click', () => {
+        
         const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
         const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
         endMatch(winner);

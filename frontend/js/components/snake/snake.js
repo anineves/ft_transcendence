@@ -494,7 +494,7 @@ async function drawGame() {
         drawGameOver();
         console.log(sessionStorage.getItem('modality'));
         if (sessionStorage.getItem('modality') == 'tournament') {
-            console.log("Entrei aquui")
+            sessionStorage.setItem('game', 'snake');
             showNextMatchButton();
         }
         if(sessionStorage.getItem('modality') == 'tourn-remote')
@@ -591,10 +591,19 @@ function drawGameOver() {
 }
 
 export function stopGame() {
+    const modality = sessionStorage.getItem('modality');
     clearInterval(gameInterval);
-    setTimeout(() => {
-        navigateTo('/live-chat');
-    }, 2000);
+    if (modality == 'remote') {
+        setTimeout(() => {
+            navigateTo('/live-chat');
+        }, 2000);
+    }
+    else if(modality != 'tournament'){
+        setTimeout(() => {
+            navigateTo('/snake-selector');
+        }, 2000);
+
+    }
 }
 
 export function changeGameSpeed(newSpeed) {

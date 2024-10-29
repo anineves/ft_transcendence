@@ -1,5 +1,6 @@
 import { context, canvas } from './canvasUtils.js';
 import { resetGameState } from './pong.js';
+import { navigateTo } from '../../utils.js';
 
 
 export function drawScore(playerScore, opponentScore) {
@@ -17,10 +18,25 @@ export function drawScore(playerScore, opponentScore) {
     context.fillText(`${player1}: ${playerScore}`, 20, 20);
     context.fillText(`${player2}: ${opponentScore}`, canvas.width - 220, 20);
 }
-export function drawGameOver(playerScore) {
+export function drawGameOver(playerScore, opponentScore) {
     context.font = "32px 'Press Start 2P', cursive";
     context.fillStyle = "#ffcc00";
    
+    console.log("Entrei Game over")
     context.fillText("Game Over", canvas.width / 2 - 150, canvas.height / 2);
-    context.fillText("Player Score: " + playerScore, canvas.width / 2 - 150, canvas.height / 2 + 50);
+    context.font = "12px 'Press Start 2P', cursive";
+    context.fillText(`Player Score: ${playerScore} Opponente Score: ${opponentScore}`, canvas.width / 2 - 150, canvas.height / 2 + 50);
+
+    const modality = sessionStorage.getItem('modality');
+    if (modality == 'remote') {
+        setTimeout(() => {
+            navigateTo('/live-chat');
+        }, 5000);
+    }
+    else if(modality != 'tournament'){
+        setTimeout(() => {
+            navigateTo('/select-playerOrAI');
+        }, 5000);
+
+    }
 }

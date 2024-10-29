@@ -3,6 +3,7 @@ import { resetGameState } from './pong/pong.js';
 import { initPongSocket } from './pong/pongSocket.js';
 import { resetGameSnake } from './snake/snake.js';
 const apiUrl = window.config.API_URL;
+const apiUri = window.config.API_URI;
 const translations = {
     english: {
         numberPlayers: "Select Number of Players",
@@ -230,7 +231,7 @@ const startMatch = () => {
                 sessionStorage.setItem("nickTorn", "True"); 
             else 
                 sessionStorage.setItem("nickTorn", "False");
-            const game = sessionStorage.getItem('gameT')
+            const game = sessionStorage.getItem('game')
                 if(game == "pong")
                     navigateTo('/pong');
                 else if(game == "snake")
@@ -243,9 +244,10 @@ const startMatch = () => {
                 resetGameSnake();
     
                 let game = sessionStorage.getItem("game");
+                console.log("gameehuheeee", game);
                 if(game == 'pong')
                     navigateTo('/pong');
-                else(game == 'snake')
+                else if(game == 'snake')
                     navigateTo('/snake')
             }, 2000); 
         }

@@ -13,6 +13,12 @@ export const renderRegister = () => {
             pass: "Password",
             confirmPass: "Confirm Password",
             submit: "Register",
+            errorFirstName: "First name must contain only letters, numbers, and the '-' symbol.", 
+            errorLastName: "Last name must contain only letters, numbers, and the '-' symbol.", 
+            errorUsername: "Username must contain only letters, numbers, and the '-' symbol.", 
+            errorEmail: "Email must be valid.",
+            errorPassword: "Password must be at least 8 characters long, including at least one uppercase letter, one lowercase letter, one digit, and a special character _, - or @; other special characters will not be accepted.",
+            errorRepeatPassword: "Passwords do not match."
         },
         portuguese: {
             register: "Registar",
@@ -23,6 +29,12 @@ export const renderRegister = () => {
             pass: "Palavra-passe",
             confirmPass: "Confirmar Palavra-passe",
             submit: "Registar",
+            errorFirstName: "O primeiro nome deve conter apenas letras, números e o símbolo '-'.", 
+            errorLastName: "Sobrenome deve conter apenas letras, números e o símbolo '-'.", 
+            errorUsername: "O username deve conter apenas letras, números e o símbolo '-'.", 
+            errorEmail: "O e-mail deve ser válido.",
+            errorPassword: "A palavra-passe deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um dígito e um caracter especial _, - ou @, outros caracteres especiais não serão aceites.",
+            errorRepeatPassword: "As palavras-passe não coincidem."
         },
         french: {
             register: "S'inscrire",
@@ -33,16 +45,19 @@ export const renderRegister = () => {
             pass: "Mot de passe",
             confirmPass: "Confirmer le mot de passe",
             submit: "S'inscrire",
+            errorFirstName: "Le prénom doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
+            errorLastName: "Le nom de famille doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
+            errorUsername: "Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
+            errorEmail: "L'e-mail doit être valide.",
+            errorPassword: "Le mot de passe doit contenir au moins 8 caractères, y compris au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial _, - ou @, d'autres caractères spéciaux ne seront pas acceptés.",
+            errorRepeatPassword: "Les mots de passe ne correspondent pas."
         }
     };
     
     // Obtenção do idioma salvo ou definição do padrão
     let savedLanguage = localStorage.getItem('language');
-    
-    if (!savedLanguage || !translations[savedLanguage]) {
-        savedLanguage = 'english'; 
-    }
-    
+    if (!savedLanguage || !translations[savedLanguage])
+        savedLanguage = 'english';
     
     app.innerHTML = `
         <div class="background-form" id="registerForm" class="form-log-reg">
@@ -53,15 +68,15 @@ export const renderRegister = () => {
                 <input type="text" id="username" placeholder="${translations[savedLanguage].user}" required class="form-control mb-2">
                 <input type="text" id="email" placeholder="${translations[savedLanguage].email}" required class="form-control mb-2">
                 <input type="password" id="password" placeholder="${translations[savedLanguage].pass}" required class="form-control mb-2">
-                <div id="passwordError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
                 <input type="password" id="password2" placeholder="${translations[savedLanguage].confirmPass}" required class="form-control mb-2">
-                <div id="confirmPasswordError" class="error-message" style="color:red; font-size: 0.9em;"></div>
                 <input type="file" id="avatar" accept="image/*" class="form-control mb-2">
+                <div id="passwordError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
+                <div id="confirmPasswordError" class="error-message" style="color:red; font-size: 0.9em;"></div>
                 <div class="button-container">
-                    <button type="submit" class="btn">${translations[savedLanguage].submit}</button>
-                    <button type="button" id="btn-register42" class="btn">
-                        <img src="./assets/42.png" alt="Pong" class="button-image">
-                    </button>
+                <button type="submit" class="btn">${translations[savedLanguage].submit}</button>
+                <button type="button" id="btn-register42" class="btn">
+                <img src="./assets/42.png" alt="Pong" class="button-image">
+                </button>
                 </div>
             </form>
         </div>
@@ -86,27 +101,50 @@ export const renderRegister = () => {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const password2 = document.getElementById('password2').value;
-        const avatar = document.getElementById('avatar').files[0]; // Obtém o arquivo de imagem de avatar
-
+        const avatar = document.getElementById('avatar').files[0]; 
         const passwordError = document.getElementById('passwordError');
         const confirmPasswordError = document.getElementById('confirmPasswordError');
     
         passwordError.textContent = '';
         confirmPasswordError.textContent = '';
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-_@])[a-zA-Z\d-_@]{8,}$/;
+        const nameRegex = /^[a-zA-Z0-9-]+$/; 
         let valid = true;
     
         if (!passwordRegex.test(password)) {
-            passwordError.textContent = 'A senha deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula e um dígito, e um caracter especial _, - ou @ , outros caracteres especiais nao serao aceites';
+            passwordError.textContent = `${translations[savedLanguage].errorPassword}`
             valid = false; 
         }
     
   
         if (password !== password2) {
-            confirmPasswordError.textContent = 'As senhas não coincidem!';
+            confirmPasswordError.textContent = `${translations[savedLanguage].errorRepeatPassword}`
             valid = false;
         }
     
+        if (!valid) return;
+        if (!nameRegex.test(firstName)) {
+            passwordError.textContent += `${translations[savedLanguage].errorFirstName}`;
+            valid = false;
+        }
+   
+        if (!nameRegex.test(lastName)) {
+            passwordError.textContent += `${translations[savedLanguage].errorLastName}`;
+            valid = false;
+        }
+    
+
+        if (!nameRegex.test(username)) {
+            passwordError.textContent += `${translations[savedLanguage].errorUsername}`;
+            valid = false;
+        }
+    
+   
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            passwordError.textContent += `${translations[savedLanguage].errorEmail}`;
+            valid = false;
+        }
         if (!valid) return;
 
 
@@ -124,7 +162,7 @@ export const renderRegister = () => {
 
         try {
             // Faz uma requisição POST para a API de registro com os dados do formulário
-            console.log("API", window.config.API_URL)
+
             const apiUrl = window.config.API_URL;
             const urlRegister = `${apiUrl}/api/register/`;
 
@@ -137,7 +175,7 @@ export const renderRegister = () => {
             const data = await response.json(); // Converte a resposta para JSON
 
             if (response.status === 201) {
-                alert('User registered success!');
+    
                 sessionStorage.setItem('userReg', JSON.stringify(data)); // Armazena os dados do usuário registrado no sessionStorage
 
                 // Após o registro, faça login automaticamente com as credenciais fornecidas
@@ -160,17 +198,16 @@ export const renderRegister = () => {
                     sessionStorage.setItem('refreshToken', loginData.refresh); 
                     sessionStorage.setItem('user', JSON.stringify(loginData.user)); 
                     checkLoginStatus(); 
-                    navigateTo('/game-selection', data);  // Redireciona para a próxima página após login
+                    navigateTo('/create-player', data);  // Redireciona para a próxima página após login
                 } else {
-                    alert('Login after registration failed: ' + JSON.stringify(loginData));
+                    console.log('Login after registration failed: ' + JSON.stringify(loginData));
                 }
             } else {
                 // Se o registro falhar, alerta o usuário com a mensagem de erro
-                alert('Registration failed: ' + JSON.stringify(data));
+                console.log('Registration failed: ' + JSON.stringify(data));
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred during registration');
         }
     });
 };

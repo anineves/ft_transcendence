@@ -16,6 +16,7 @@ let match_type = "3D"
 const game = 2;
 let opponent = 1;
 const players = [player_id, opponent];
+const apiUrl = window.config.API_URL;
 
 
 async function createMatch() {
@@ -31,7 +32,7 @@ async function createMatch() {
         (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
         if (player_id) {
 
-            const urlMatches = `${apiUrl}/api/matches`;
+            const urlMatches = `${apiUrl}/api/matches/`;
             try {
                 const response = await fetch(urlMatches, {
                     method: 'POST',

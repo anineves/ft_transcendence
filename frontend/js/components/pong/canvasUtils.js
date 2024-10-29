@@ -2,8 +2,11 @@
 export let canvas, context, paddleHeight, paddleWidth, ballRadius, playerY, opponentY, ballY, ballX;
 
 
+
 export function initializeCanvas() {
+    console.log("aquiiii")
     canvas = document.getElementById('pongCanvas');
+    //console.log(canvas)
     if (canvas) {
         context = canvas.getContext('2d');
         paddleHeight = 100;

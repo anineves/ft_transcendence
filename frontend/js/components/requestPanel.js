@@ -87,7 +87,6 @@ export const renderRequestPanel = () => {
                 data.forEach(request => {
                     const listItem = document.createElement('li');
                     listItem.textContent = `${request.sender} ${translations[savedLanguage].recvMsg}`;
-                    console.log("user", user);
                     if (request.invited === user.username) {
                         const acceptButton = document.createElement('button');
                         acceptButton.textContent = `${translations[savedLanguage].acceptBtn}`;
