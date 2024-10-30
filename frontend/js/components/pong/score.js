@@ -22,19 +22,22 @@ export function drawGameOver(playerScore, opponentScore) {
     context.font = "32px 'Press Start 2P', cursive";
     context.fillStyle = "#ffcc00";
    
-    console.log("Entrei Game over")
+    const giveUp = sessionStorage.getItem('giveUP');
+    if(giveUp == "true")
+        context.fillText('Someone GiveUp!',canvas.width / 2 - 90, canvas.height / 2 - 100);
     context.fillText("Game Over", canvas.width / 2 - 150, canvas.height / 2);
     context.font = "12px 'Press Start 2P', cursive";
     context.fillText(`Player Score: ${playerScore} Opponente Score: ${opponentScore}`, canvas.width / 2 - 150, canvas.height / 2 + 50);
 
     const modality = sessionStorage.getItem('modality');
     console.log("modality score", modality)
-    if (modality == 'remote') {
+    if (modality == 'remote' || giveUp == 'true') {
+        sessionStorage.setItem('giveUP', 'false');
         setTimeout(() => {
             navigateTo('/live-chat');
         }, 5000);
     }
-    else if(modality != 'tournament'){
+    else if(modality != 'tournament' && modality != 'tourn-remote'){
         setTimeout(() => {
             navigateTo('/select-playerOrAI');
         }, 5000);

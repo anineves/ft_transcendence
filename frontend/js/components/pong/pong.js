@@ -31,7 +31,7 @@ export const startPongGame = async () => {
     if (modality2 == 'remote' && inviter == "True" || modality2 == 'tourn-remote')
         opponent = friendId;
     const players = [player, opponent];
-    sessionStorage.setItem('game', game);
+    sessionStorage.setItem('game', 'pong');
     sessionStorage.setItem('players', players);
 
     resetGameState();
@@ -93,7 +93,7 @@ export const startPongGame = async () => {
                 sessionStorage.removeItem("groupName");
                 sessionStorage.setItem('WS', 'clean');
                 wsPong = null;
-                console.log("entrei aquissss");
+                sessionStorage.setItem("giveUP", 'true');  
                     stopGame();
                     drawGameOver(playerScore, opponentScore);
                     //navigateTo('/'); 
@@ -199,6 +199,7 @@ export function initialize() {
             playerScore = 0;
             opponentScore = 5;
             drawGameOver(playerScore, opponentScore)
+            sessionStorage.setItem("giveUP", 'true');  
             //navigateTo('/'); 
         }
     };
@@ -252,6 +253,7 @@ export function initialize() {
             }));
             wsPong.close(); 
             wsPong = null;
+            sessionStorage.setItem("giveUP", 'true');  
             //stopGame();
             //navigateTo('/'); 
         }
@@ -409,7 +411,7 @@ export function initialize() {
         if (modality2 == 'remote' && inviter == "True" || modality2 == 'tourn-remote')
             opponent = friendId;
         const players = [player, opponent];
-        sessionStorage.setItem('game', game);
+        sessionStorage.setItem('game', 'pong');
         sessionStorage.setItem('players', players);
         let nickTorn = sessionStorage.getItem("nickTorn");
 

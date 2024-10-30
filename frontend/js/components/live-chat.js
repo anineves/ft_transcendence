@@ -187,7 +187,7 @@ export const liveChat = () => {
             sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
             sessionStorage.setItem('modality', 'tourn-remote');
             sessionStorage.setItem('lastPlayer', playerNames[3]);
-            sessionStorage.setItem('gameT', "snake");
+            sessionStorage.setItem('game', "snake");
             initializeTournament();
         }
     };
@@ -233,7 +233,7 @@ export const liveChat = () => {
             sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
             sessionStorage.setItem('modality', 'tourn-remote');
             sessionStorage.setItem('lastPlayer', playerNames[3]);
-            sessionStorage.setItem('gameT', "pong");
+            sessionStorage.setItem('game', "pong");
             initializeTournament();
         }
     };

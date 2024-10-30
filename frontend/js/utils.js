@@ -84,7 +84,7 @@ const isGroupAvailable = () => {
 
 const isRemote = () => {
     const modality = sessionStorage.getItem('modality');
-    if(modality == 'remote')
+    if(modality == 'remote' || modality == 'tourn-remote')
         return modality !== null;
 };
 

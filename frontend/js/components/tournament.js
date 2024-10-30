@@ -213,6 +213,7 @@ const startMatch = () => {
             <div class="match-footer">
                 <p> The next game will be: ${player1} vs ${player2} </p>
             </div>`
+        console.log("MODALITYYYYYY", modality);
         if (modality == 'tourn-remote') {
             const player1Id = playersMap[player1]; 
             const player2Id = playersMap[player2]; 
@@ -221,8 +222,6 @@ const startMatch = () => {
             const groupName = `privateGroup${player1Id}${player2Id}`;
             sessionStorage.setItem("groupName", groupName);
             console.log("Group name", groupName);
-            let ws= null;
-            ws = new WebSocket(`ws://${apiUri}/ws/pong_match/${groupName}/`);
             sessionStorage.setItem('playerID', player1Id);
             sessionStorage.setItem('friendID', player2Id);
             const player = sessionStorage.getItem('player');
@@ -231,10 +230,11 @@ const startMatch = () => {
             else 
                 sessionStorage.setItem("nickTorn", "False");
             const game = sessionStorage.getItem('game')
-                if(game == "pong")
-                    navigateTo('/pong');
-                else if(game == "snake")
-                    navigateTo('/snake');
+            console.log("gameeee",game );
+            if(game == "pong")
+                navigateTo('/pong');
+            else if(game == "snake")
+                navigateTo('/snake');
             }, 2000); 
         }
         else{

@@ -78,7 +78,7 @@ export const startSnakeGame = async () => {
             </div>`
     }
     if (modality2 == "player" || modality2 == "3D") match_type = "MP";
-    sessionStorage.setItem('game', game);
+    sessionStorage.setItem('game', 'snake');
     sessionStorage.setItem('players', players);
 
 
@@ -97,18 +97,15 @@ export const startSnakeGame = async () => {
             const data = JSON.parse(event.data);
             let message = data.message
             if(data.action == 'player_disconnect')
-                {
+            {
     
                     ws = null;
                     sessionStorage.removeItem("Inviter");
                     sessionStorage.removeItem("groupName");
                     sessionStorage.setItem('WS', 'clean');
-                    ws = null;
-                    console.log("entrei aquissss");
                     drawGameOver();
-                        //navigateTo('/'); 
-                    
-                }
+                    sessionStorage.setItem("giveUP", 'true');                 
+            }
 
 
             if (data.action === 'move_snake') {
@@ -233,7 +230,7 @@ export const startSnakeGame = async () => {
         }
     }
     const handleVisibilityChange = () => {
-        if (window.location.href !== "https://192.168.0.12:8080/snake") {
+        if (window.location.href !== `${apiUrl}/snake`) {
             cleanup();
             return; 
         }
@@ -260,6 +257,7 @@ export const startSnakeGame = async () => {
                 ws.close();
                 ws = null;
             }
+            sessionStorage.setItem("giveUP", 'true');
             drawGameOver();
             //navigateTo('/'); 
         }
@@ -314,6 +312,7 @@ export const startSnakeGame = async () => {
             }));
             ws.close(); 
             ws = null;
+            sessionStorage.setItem("giveUP", 'true');
             drawGameOver();
             //stopGame();
             //navigateTo('/'); 
@@ -325,7 +324,7 @@ export const startSnakeGame = async () => {
         history.replaceState = originalReplaceState; 
     };
 
-    if (window.location.href !== "https://192.168.0.12:8080/snake") {
+    if (window.location.href !== `${apiUrl}/snake`) {
         cleanup();
     }
     
@@ -542,7 +541,7 @@ async function drawGame() {
         if (modality2 == 'remote' && inviter == "True" || modality2 == 'tourn-remote')
             opponent = friendId;
         const players = [player, opponent];
-        sessionStorage.setItem('game', game);
+        sessionStorage.setItem('game', 'snake');
         sessionStorage.setItem('players', players);
         let nickTorn = sessionStorage.getItem("nickTorn");
         let winner_id = opponent;
@@ -675,6 +674,9 @@ export function drawGameOver() {
     let nameWinner = sessionStorage.getItem('losingSnake');
     ctx.fillStyle = 'yellow';
     ctx.font = '30px Arial';
+    const giveUp = sessionStorage.getItem('giveUP');
+    if(giveUp == "true")
+        ctx.fillText('Someone GiveUp!',canvas.width / 2 - 90, canvas.height / 2 - 100);
     ctx.fillText('Game Over!', canvas.width / 2 - 70, canvas.height / 2 - 20);
     const winner = nameWinner;
     ctx.fillText(`${winner} wins!`, canvas.width / 2 - 70, canvas.height / 2 + 20);
@@ -684,12 +686,14 @@ export function drawGameOver() {
 export function stopGame() {
     const modality = sessionStorage.getItem('modality');
     clearInterval(gameInterval);
-    if (modality == 'remote') {
+    const giveUp = sessionStorage.getItem('giveUP');
+    if (modality == 'remote'  || giveUp == 'true') {
+        sessionStorage.setItem('giveUp', 'false')
         setTimeout(() => {
             navigateTo('/live-chat');
         }, 2000);
     }
-    else if(modality != 'tournament'){
+    else if(modality != 'tournament' &&  modality != 'tourn-remote'){
         setTimeout(() => {
             navigateTo('/snake-selector');
         }, 2000);
