@@ -19,6 +19,7 @@ export function initPongSocket(url) {
     }
     
     let lobbyTimeout = null;
+    console.log("WS", ws);
     ws.onopen = function (event) {
         console.log("Connected to Pong WebSocket", event);
         ws.send(JSON.stringify({
@@ -67,6 +68,7 @@ export function initPongSocket(url) {
     }
     }
     ws.onclose = () => {
+        console.log("WS error", ws);
         console.error("WebSocket connection closed.");
         ws = null;
     };

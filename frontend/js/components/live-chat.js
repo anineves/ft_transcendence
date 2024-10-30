@@ -2,6 +2,8 @@ import { navigateTo, checkLoginStatus } from '../utils.js';
 import {  initializeTournament} from './tournament.js';
 const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
+let socket;
+
 export const liveChat = () => {
     const player = sessionStorage.getItem('player');
     if(!player){
@@ -17,7 +19,13 @@ export const liveChat = () => {
     }
 
     const wssocket= `wss://${apiUri}/ws/global_chat/`
-    const socket = new WebSocket(wssocket);
+    let firstChat = sessionStorage.getItem('firtChat');
+    console.log("first", firstChat, "socket",socket);
+    if(firstChat == 'true')
+    {
+        socket = new WebSocket(wssocket);
+        sessionStorage.setItem('firtChat', 'false');
+    }
     const translations = {
         english: {
             title: "Chat",
@@ -120,7 +128,7 @@ export const liveChat = () => {
             </div>
         </div>
     </div>
-</div>
+ </div>
     `;
     const chatBox = document.getElementById('chat-box');
     const messageInput = document.getElementById('message-input');
@@ -309,12 +317,15 @@ export const liveChat = () => {
             const chatBox = document.getElementById('chat-box'); 
             const duelMessage = document.createElement('p');
             console.log("WAIIIITTTT");
-            const aceptURL =  `${apiUrl}/wait-remote`
-            duelMessage.innerHTML = 
-            `
-            ${translations[savedLanguage].duelMsg}
-            <a href="${aceptURL}" id="accept-link">${translations[savedLanguage].acceptBtn}</a>
-            `;
+            const acceptButton = document.createElement('button');
+        acceptButton.id = 'accept-link';
+        acceptButton.innerText = translations[savedLanguage].acceptBtn;
+        
+        // Adiciona o botão ao conteúdo da mensagem
+        duelMessage.innerHTML = `${translations[savedLanguage].duelMsg} `;
+        duelMessage.appendChild(acceptButton);
+        
+        chatBox.appendChild(duelMessage);
 
             if(data.action == "duel-snake")
                 sessionStorage.setItem("duelGame", "duel-snake");
@@ -325,7 +336,7 @@ export const liveChat = () => {
                 sessionStorage.setItem("Inviter", "True");
                 console.log("live Inviter:", sessionStorage.getItem("Inviter"))
                 navigateTo(`/wait-remote`, groupName);
-                socket.close();
+              
             }
             
             const timeout = setTimeout(() => {
@@ -335,10 +346,9 @@ export const liveChat = () => {
             if (user_json.id != message.from_user) {
                 sessionStorage.setItem("Inviter", "False");
                 sessionStorage.setItem('modality', 'remote');
-                const acceptLink = document.getElementById('accept-link');
-                acceptLink.addEventListener('click', () => {
-                    socket.close();
-                    clearTimeout(timeout); 
+                acceptButton.addEventListener('click', () => {
+                    clearTimeout(timeout); // Cancela o timeout
+                    navigateTo(`/wait-remote`, sessionStorage.getItem("groupName"));
                 });
             }
         }
@@ -348,8 +358,11 @@ export const liveChat = () => {
         console.error("WebSocket Error:", error);
     };
 
+    socket.onclose = function () {
+        console.error("Chat socket was close"); 
+    };
+
     leaveButton.onclick = function () {
-        socket.close();
         navigateTo('/game-selection');
     };
 
@@ -399,10 +412,10 @@ export const liveChat = () => {
         }
     });
 
-    window.addEventListener('beforeunload', function (event) {
+    /*window.addEventListener('beforeunload', function (event) {
         socket.close();
         return;
-    });
+    });*/
 
     document.getElementById('duel-button').addEventListener('click', function() {
         const duelContainer = document.getElementById('duel-input-container');
@@ -442,10 +455,7 @@ export const liveChat = () => {
             alert('Please enter a player nickname to duel.');
         }
     });    
-    
-    socket.onclose = function () {
-        console.error("Chat socket was close"); 
-    };
+
     
     document.getElementById('confirm-duel-button-snake').addEventListener('click', function() {
         const playerNickname = document.getElementById('duel-player-input-snake').value;
@@ -469,7 +479,9 @@ export const liveChat = () => {
         }
     });    
     
-    socket.onclose = function () {
-        console.error("Chat socket was close"); 
-    };
+    
 };
+
+export const closeSocket = () => {
+    socket.close();
+}

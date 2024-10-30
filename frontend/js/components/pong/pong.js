@@ -11,7 +11,7 @@ let gameOver = false;
 let ballSpeedX = 2;
 let ballSpeedY = 2;
 let isAIActive = false;
-let ws;
+let wsPong;
 let animationFrameId;
 const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
@@ -80,19 +80,19 @@ export const startPongGame = async () => {
         const groupName = sessionStorage.getItem("groupName");
 
         let initws = `wss://${apiUri}/ws/pong_match/${groupName}/`
-        ws = initPongSocket(`${initws}`);
+        wsPong = initPongSocket(`${initws}`);
         
-        ws.onmessage = (event) => {
+        wsPong.onmessage = (event) => {
             const data = JSON.parse(event.data);
             console.log("data pong", data.action)
             if(data.action == 'player_disconnect')
             {
 
-                ws = null;
+                wsPong = null;
                 sessionStorage.removeItem("Inviter");
                 sessionStorage.removeItem("groupName");
                 sessionStorage.setItem('WS', 'clean');
-                ws = null;
+                wsPong = null;
                 console.log("entrei aquissss");
                     stopGame();
                     drawGameOver(playerScore, opponentScore);
@@ -139,7 +139,7 @@ export function updateBall() {
         ballSpeedY = -ballSpeedY;
         if (modality2 == 'remote' || modality2 == 'tourn-remote') {
             if (currentPlayer === playerID) {
-                ws.send(JSON.stringify({
+                wsPong.send(JSON.stringify({
                     'action': 'ball_track',
                     'message': {
                         'user': user_json,
@@ -168,7 +168,7 @@ export function initialize() {
     if (!canvas || !context) return;
 
     const handleVisibilityChange = () => {
-        if (window.location.href !== "https://10.0.2.15:8080/pong") {
+        if (window.location.href !== "https://192.168.0.12:8080/pong") {
             cleanup();
             return; 
         }
@@ -182,8 +182,8 @@ export function initialize() {
         let modality = sessionStorage.getItem('modality');
 
         if (modality == 'remote' || modality2 == 'tourn-remote') {
-            if (ws) {
-                ws.send(JSON.stringify({
+            if (wsPong) {
+                wsPong.send(JSON.stringify({
                     'action': 'player_disconnect',
                     'message': {
                         'player_id': playerID,
@@ -192,8 +192,8 @@ export function initialize() {
                         'group_name': groupName,
                     }
                 }));
-                ws.close();
-                ws = null;
+                wsPong.close();
+                wsPong = null;
             }
             stopGame();
             playerScore = 0;
@@ -204,12 +204,12 @@ export function initialize() {
     };
 
     const handleOffline = () => {
-        if (ws) {
-            ws.send(JSON.stringify({
+        if (wsPong) {
+            wsPong.send(JSON.stringify({
                 'action': 'end_game'
             }));
-            ws.close();
-            ws = null
+            wsPong.close();
+            wsPong = null
         }
         stopGame();
     };
@@ -240,8 +240,8 @@ export function initialize() {
         let inviter = sessionStorage.getItem("Inviter");
         let groupName = sessionStorage.getItem('groupName');
 
-        if (ws) {
-            ws.send(JSON.stringify({
+        if (wsPong) {
+            wsPong.send(JSON.stringify({
                 'action': 'player_disconnect',
                 'message': {
                     'player_id': playerID,
@@ -250,8 +250,8 @@ export function initialize() {
                     'group_name': groupName,
                 }
             }));
-            ws.close(); 
-            ws = null;
+            wsPong.close(); 
+            wsPong = null;
             //stopGame();
             //navigateTo('/'); 
         }
@@ -262,7 +262,7 @@ export function initialize() {
         history.replaceState = originalReplaceState; 
     };
 
-    if (window.location.href !== "https://10.0.2.15:8080/pong") {
+    if (window.location.href !== "https://192.168.0.12:8080/pong") {
         cleanup();
     }
     
@@ -315,7 +315,7 @@ export function initialize() {
                 ballOutOfBoundsLeft = true;
                 if (modality2 == 'remote' || modality2 == 'tourn-remote') {
                     if (currentPlayer === playerID) {
-                        ws.send(JSON.stringify({
+                        wsPong.send(JSON.stringify({
                             'action': 'score_track',
                             'message': {
                                 'user': user_json,
@@ -340,7 +340,7 @@ export function initialize() {
                 ballOutOfBoundsRight = true;
                 if (modality2 == 'remote' || modality2 == 'tourn-remote') {
                     if (currentPlayer === playerID) {
-                        ws.send(JSON.stringify({
+                        wsPong.send(JSON.stringify({
                             'action': 'score_track',
                             'message': {
                                 'user': user_json,
@@ -363,7 +363,7 @@ export function initialize() {
             ballSpeedX = -ballSpeedX;
             if (modality2 == 'remote' || modality2 == 'tourn-remote') {
                 if (currentPlayer === playerID) {
-                    ws.send(JSON.stringify({
+                    wsPong.send(JSON.stringify({
                         'action': 'ball_track',
                         'message': {
                             'user': user_json,
@@ -382,7 +382,7 @@ export function initialize() {
             ballSpeedX = -ballSpeedX;
             if (modality2 == 'remote' || modality2 == 'tourn-remote') {
                 if (currentPlayer === playerID) {
-                    ws.send(JSON.stringify({
+                    wsPong.send(JSON.stringify({
                         'action': 'ball_track',
                         'message': {
                             'user': user_json,
@@ -424,7 +424,7 @@ export function initialize() {
             (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
                 try {
                     if(modality2 == 'remote')
-                        ws =  null;
+                        wsPong =  null;
                     if (playerScore > opponentScore)
                         winner_id = player;
                     const score = `${playerScore}-${opponentScore}`;
@@ -463,7 +463,7 @@ export function initialize() {
             sessionStorage.removeItem("Inviter");
             sessionStorage.removeItem("groupName");
             sessionStorage.setItem('WS', 'clean');
-            ws =  null;
+            wsPong =  null;
         }
     }
 
@@ -498,7 +498,7 @@ export function initialize() {
         const player_id = sessionStorage.getItem("player");
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                ws.send(JSON.stringify({
+                wsPong.send(JSON.stringify({
                     'action': 'move_paddle',
                     'message': {
                         'user': player_id,
@@ -509,7 +509,7 @@ export function initialize() {
         });
         document.addEventListener('keyup', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                ws.send(JSON.stringify({
+                wsPong.send(JSON.stringify({
                     'action': 'stop_paddle',
                     'message': {
                         'user': player_id,

@@ -40,8 +40,8 @@ export const waitRemote = () => {
         
         if (groupName)
         {
-            const wssocket= `wss://${apiUri}/ws/pong_match/${groupName}/`
-            initPongSocket(wssocket);
+            const wssocket2= `wss://${apiUri}/ws/pong_match/${groupName}/`
+            initPongSocket(wssocket2);
         }
         else
             alert("Something went wrong with groupName")

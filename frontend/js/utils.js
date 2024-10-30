@@ -20,6 +20,7 @@ import { stats } from './components/stats.js';
 import { putPlayer } from './components/login.js';
 import { renderSnake } from './components/snake.js';
 import { snakeSelect } from './components/snakeSelect.js';
+import { closeSocket } from './components/live-chat.js';
 
 
 
@@ -131,6 +132,7 @@ export const checkLoginStatus = () => {
 
 
 export const logout = () => {
+    closeSocket();
     
     putPlayer('OF');
     sessionStorage.removeItem('user'); 

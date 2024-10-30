@@ -233,7 +233,7 @@ export const startSnakeGame = async () => {
         }
     }
     const handleVisibilityChange = () => {
-        if (window.location.href !== "https://10.0.2.15:8080/snake") {
+        if (window.location.href !== "https://192.168.0.12:8080/snake") {
             cleanup();
             return; 
         }
@@ -325,7 +325,7 @@ export const startSnakeGame = async () => {
         history.replaceState = originalReplaceState; 
     };
 
-    if (window.location.href !== "https://10.0.2.15:8080/snake") {
+    if (window.location.href !== "https://192.168.0.12:8080/snake") {
         cleanup();
     }
     

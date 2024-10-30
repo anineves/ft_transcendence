@@ -173,6 +173,7 @@ export const renderLogin = () => {
                             } else {
                                 console.log("You need createddddd a player");
                                 checkLoginStatus(); 
+                                sessionStorage.setItem('firtChat', 'true');
                                 navigateTo('/create-player');
                                 return;
                             }
@@ -184,6 +185,7 @@ export const renderLogin = () => {
                     }
                     
                     checkLoginStatus(); 
+                    sessionStorage.setItem('firtChat', 'true');
                     navigateTo('/game-selection', data); 
                 }
             } else {
@@ -295,6 +297,7 @@ const showCodeForm = async () => {
                 }
             
                 checkLoginStatus(); 
+                sessionStorage.setItem('firtChat', 'true');
                 navigateTo('/game-selection', data); 
             } else {
                 alert('Failed to send verification code.2');
@@ -332,6 +335,7 @@ export const putPlayer = async (status) => {
             if (playerInfo.ok) {
                 const playerT = await playerInfo.json();
                 sessionStorage.setItem('playerStatus', playerT.status);
+                
                 checkLoginStatus();
                 navigateTo('/game-selection');
     
