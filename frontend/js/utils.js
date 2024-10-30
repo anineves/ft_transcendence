@@ -77,6 +77,17 @@ const isAuthenticated = () => {
     return jwtToken !== null;
 };
 
+const isGroupAvailable = () => {
+    const groupName = sessionStorage.getItem('groupName');
+    return groupName !== null;
+};
+
+const isRemote = () => {
+    const modality = sessionStorage.getItem('modality');
+    if(modality == 'remote')
+        return modality !== null;
+};
+
 // Altera a URL do navegador e atualizar a exibição da página
 export const navigateTo = (path, user = null) => {
     window.history.pushState({ user }, path, window.location.origin + path); // Atualiza o histórico com o novo estado
@@ -91,6 +102,10 @@ export const render = () => {
     updateFooterTranslation();
 
     if (protectedRoutes.includes(path) && !isAuthenticated()) {
+        navigateTo('/'); 
+        return;
+    }
+    if (path === '/wait-remote' && !isGroupAvailable()) {
         navigateTo('/'); 
         return;
     }
@@ -144,4 +159,12 @@ export const logout = () => {
 
 //sada para ouvir e lidar com eventos de navegação no navegador, como o uso dos botões "voltar" e "avançar" no histórico do navegador.
 
-window.addEventListener('popstate', render);
+window.addEventListener('popstate', () => {
+    // Verifica se a rota é /pong ou /snake com modalidade "remote" apenas quando o usuário usa "voltar" ou "avançar"
+    const path = window.location.pathname;
+    if ((path === '/pong' && isRemote()) || (path === '/snake' && isRemote())) {
+        navigateTo('/');
+        return;
+    }
+    render();
+});

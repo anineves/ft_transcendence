@@ -35,7 +35,7 @@ export const waitRemote = () => {
         </div>
         `;
         sessionStorage.setItem('modality', 'remote');
-
+   
         const groupName = sessionStorage.getItem("groupName"); 
         
         if (groupName)

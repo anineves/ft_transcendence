@@ -584,7 +584,6 @@ async function drawGame() {
         }
         }
         drawGameOver();
-        console.log(sessionStorage.getItem('modality'));
         if (sessionStorage.getItem('modality') == 'tournament') {
             sessionStorage.setItem('game', 'snake');
             showNextMatchButton();

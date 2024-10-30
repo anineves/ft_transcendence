@@ -26,6 +26,11 @@ export const liveChat = () => {
         socket = new WebSocket(wssocket);
         sessionStorage.setItem('firtChat', 'false');
     }
+    else {
+        if (!socket) {
+         socket = new WebSocket(wssocket);
+        }
+    }
     const translations = {
         english: {
             title: "Chat",
@@ -41,6 +46,7 @@ export const liveChat = () => {
             fightMsg: " wants to fight!",
             yourselfMsg: "You cannot challenge yourself to a duel.",
             fillNickname: "Please enter a player nickname to duel.",
+
         },
         portuguese: {
             title: "Chat",
@@ -127,6 +133,7 @@ export const liveChat = () => {
                 <button id="confirm-duel-button-snake" class="confirm-button">${translations[savedLanguage].confirmBtn}</button>
             </div>
         </div>
+        <div id="errorChat" class="error-message" style="color:red; font-size: 0.9em;"></div> 
     </div>
  </div>
     `;
@@ -142,6 +149,8 @@ export const liveChat = () => {
     const unblockInputContainer = document.getElementById('unblock-input-container');
     const unblockPlayerInput = document.getElementById('unblock-player-input');
     const confirmUnblockButton = document.getElementById('confirm-unblock-button');
+    const errorliveChat = document.getElementById('errorChat');
+    errorliveChat.textContent = ''; 
 
 
 
@@ -318,15 +327,11 @@ export const liveChat = () => {
             const duelMessage = document.createElement('p');
             console.log("WAIIIITTTT");
             const acceptButton = document.createElement('button');
-        acceptButton.id = 'accept-link';
-        acceptButton.innerText = translations[savedLanguage].acceptBtn;
-        
-        // Adiciona o botão ao conteúdo da mensagem
-        duelMessage.innerHTML = `${translations[savedLanguage].duelMsg} `;
-        duelMessage.appendChild(acceptButton);
-        
-        chatBox.appendChild(duelMessage);
-
+            acceptButton.id = 'accept-link';
+            acceptButton.innerText = translations[savedLanguage].acceptBtn;
+            duelMessage.innerHTML = `${translations[savedLanguage].duelMsg} `;
+            duelMessage.appendChild(acceptButton);
+            chatBox.appendChild(duelMessage);
             if(data.action == "duel-snake")
                 sessionStorage.setItem("duelGame", "duel-snake");
             if(data.action == "duel")
@@ -338,7 +343,6 @@ export const liveChat = () => {
                 navigateTo(`/wait-remote`, groupName);
               
             }
-            
             const timeout = setTimeout(() => {
                 duelMessage.innerHTML = `${translations[savedLanguage].duelBtn}`;
             }, 50000); 
@@ -441,7 +445,7 @@ export const liveChat = () => {
         if (playerNickname) {
             console.log("players", playerNickname, nickname);
             if (playerNickname === nickname) {
-                alert(`${translations[savedLanguage].yourselfMsg}`);
+                errorliveChat.textContent = `${translations[savedLanguage].yourselfMsg}`;
             }
             else{
                 document.getElementById('duel-input-container').style.display = 'none'; 
@@ -452,7 +456,7 @@ export const liveChat = () => {
                 socket.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
             }
         } else {
-            alert('Please enter a player nickname to duel.');
+            errorliveChat.textContent= `${translations[savedLanguage].fillNickname}`
         }
     });    
 
@@ -475,7 +479,7 @@ export const liveChat = () => {
             }
     
         } else {
-            alert('Please enter a player nickname to duel.');
+            errorliveChat.textContent= `${translations[savedLanguage].fillNickname}`
         }
     });    
     
