@@ -290,9 +290,6 @@ export const liveChat = () => {
                 console.error('Error fetching player data:', error);
             }
         };
-        
-        
-        
         messageElement.appendChild(firstWordButton);
         messageElement.appendChild(document.createTextNode(' ' + restOfMessage));
 
@@ -320,18 +317,23 @@ export const liveChat = () => {
         console.log()
         if (data.action == "duel" || data.action == "duel-snake")
         {
-            const groupName = message.group_name;
+            let groupName = message.group_name;
             sessionStorage.setItem("groupName", groupName);
-            console.log("groupname ", groupName);
             const chatBox = document.getElementById('chat-box'); 
+            const existingDuelMessage = document.getElementById('duel-message');
+            if (existingDuelMessage) {
+                chatBox.removeChild(existingDuelMessage);
+            }
+            
             const duelMessage = document.createElement('p');
-            console.log("WAIIIITTTT");
+            duelMessage.id = 'duel-message';
             const acceptButton = document.createElement('button');
             acceptButton.id = 'accept-link';
             acceptButton.innerText = translations[savedLanguage].acceptBtn;
             duelMessage.innerHTML = `${translations[savedLanguage].duelMsg} `;
             duelMessage.appendChild(acceptButton);
             chatBox.appendChild(duelMessage);
+            chatBox.scrollTop = chatBox.scrollHeight; 
             if(data.action == "duel-snake")
                 sessionStorage.setItem("duelGame", "duel-snake");
             if(data.action == "duel")
@@ -340,7 +342,7 @@ export const liveChat = () => {
             if (user_json.id == message.from_user) {
                 sessionStorage.setItem("Inviter", "True");
                 console.log("live Inviter:", sessionStorage.getItem("Inviter"))
-                navigateTo(`/wait-remote`, groupName);
+                navigateTo(`/wait-remote`, sessionStorage.getItem("groupName"));
               
             }
             const timeout = setTimeout(() => {
@@ -441,6 +443,7 @@ export const liveChat = () => {
     
     document.getElementById('confirm-duel-button').addEventListener('click', function() {
         const playerNickname = document.getElementById('duel-player-input').value;
+        sessionStorage.setItem("duelGame", "duel-pong");
     
         if (playerNickname) {
             console.log("players", playerNickname, nickname);
@@ -463,6 +466,7 @@ export const liveChat = () => {
     
     document.getElementById('confirm-duel-button-snake').addEventListener('click', function() {
         const playerNickname = document.getElementById('duel-player-input-snake').value;
+        sessionStorage.setItem("duelGame", "duel-snake");
     
         if (playerNickname) {
             console.log("players", playerNickname, nickname);

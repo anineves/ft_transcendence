@@ -98,13 +98,13 @@ export const startSnakeGame = async () => {
             let message = data.message
             if(data.action == 'player_disconnect')
             {
-    
-                    ws = null;
-                    sessionStorage.removeItem("Inviter");
-                    sessionStorage.removeItem("groupName");
-                    sessionStorage.setItem('WS', 'clean');
-                    drawGameOver();
-                    sessionStorage.setItem("giveUP", 'true');                 
+                ws =  null;
+                drawGameOver();
+                sessionStorage.removeItem("Inviter");
+                sessionStorage.removeItem("groupName");
+                sessionStorage.setItem('WS', 'clean');
+                sessionStorage.removeItem("losingSnake");
+                ws =  null;         
             }
 
 
@@ -257,7 +257,11 @@ export const startSnakeGame = async () => {
                 ws.close();
                 ws = null;
             }
-            sessionStorage.setItem("giveUP", 'true');
+            sessionStorage.removeItem("Inviter");
+                sessionStorage.removeItem("groupName");
+                sessionStorage.setItem('WS', 'clean');
+                sessionStorage.removeItem("losingSnake");
+                ws =  null;         
             drawGameOver();
             //navigateTo('/'); 
         }
@@ -271,6 +275,11 @@ export const startSnakeGame = async () => {
             ws.close();
             ws = null
         }
+        sessionStorage.removeItem("Inviter");
+                sessionStorage.removeItem("groupName");
+                sessionStorage.setItem('WS', 'clean');
+                sessionStorage.removeItem("losingSnake");
+                ws =  null;         
         stopGame();
     };
 
@@ -312,6 +321,11 @@ export const startSnakeGame = async () => {
             }));
             ws.close(); 
             ws = null;
+            sessionStorage.removeItem("Inviter");
+                sessionStorage.removeItem("groupName");
+                sessionStorage.setItem('WS', 'clean');
+                sessionStorage.removeItem("losingSnake");
+                ws =  null;         
             sessionStorage.setItem("giveUP", 'true');
             drawGameOver();
             //stopGame();
@@ -555,7 +569,6 @@ async function drawGame() {
                 if (nameWinner == 'player')
                     winner_id = player;
                 const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
-                console.log("score", score);
                 const duration = "10";
                 if(modality2 == 'remote' || modality2 == 'tourn-remote')
                     ws =  null;
@@ -597,6 +610,7 @@ async function drawGame() {
         sessionStorage.removeItem("groupName");
         sessionStorage.setItem('WS', 'clean');
         sessionStorage.removeItem("losingSnake");
+        
         ws =  null;
     }
 }
@@ -688,7 +702,7 @@ export function stopGame() {
     clearInterval(gameInterval);
     const giveUp = sessionStorage.getItem('giveUP');
     if (modality == 'remote'  || giveUp == 'true') {
-        sessionStorage.setItem('giveUp', 'false')
+        sessionStorage.setItem('giveUP', 'false')
         setTimeout(() => {
             navigateTo('/live-chat');
         }, 2000);

@@ -1,5 +1,6 @@
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1f1f2f);
+import { navigateTo } from '../../utils.js';
 
 // NOME DOS PLAYERS
 const modality2 = sessionStorage.getItem('modality');
@@ -517,6 +518,9 @@ function showGameOver(result) {
         tieTextM.position.set(-(tieTextBB.max.x) / 2, 0, 2.3);
         scene.add(tieTextM);
     }
+    setTimeout(() => {
+        navigateTo('/snake-selector'); 
+    }, 2000);
 }
 
 // TIE FUNCTION

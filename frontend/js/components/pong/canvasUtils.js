@@ -4,7 +4,6 @@ export let canvas, context, paddleHeight, paddleWidth, ballRadius, playerY, oppo
 
 
 export function initializeCanvas() {
-    console.log("aquiiii")
     canvas = document.getElementById('pongCanvas');
     //console.log(canvas)
     if (canvas) {
@@ -15,7 +14,7 @@ export function initializeCanvas() {
         playerY = (canvas.height - paddleHeight) / 2;
         opponentY = (canvas.height - paddleHeight) / 2;
     } else {
-        console.error('Canvas element not found');
+        //console.error('Canvas element not found');
     }
 }
 

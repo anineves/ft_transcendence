@@ -1,4 +1,5 @@
 // Criar a cena
+import { navigateTo } from '../../utils.js';
 const modality2 = sessionStorage.getItem('modality');
 const user = sessionStorage.getItem('user');
 const user_json = JSON.parse(user);
@@ -344,6 +345,9 @@ function showGameOver(PlayerVictoryMaterial) {
     scene.add(PlayerVictoryMesh);
     scene.add(winTextMesh);
     scene.add(gameOverMesh);
+    setTimeout(() => {
+        navigateTo('/select-playerOrAI'); 
+    }, 2000);
 }
 
 let winblue = false;

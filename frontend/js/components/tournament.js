@@ -168,11 +168,14 @@ const shuffleArray = (array) => {
 };
 
 export const initializeTournament = () => {
+    const modality = sessionStorage.getItem('modality');
     let players = JSON.parse(sessionStorage.getItem('playerNames'));
-        const rounds = [];
-        for (let i = 0; i < players.length; i += 2) {
-            rounds.push([players[i], players[i + 1]]);
-        }
+    if(modality != 'tourn-remote')
+        shuffleArray(players)
+    const rounds = [];
+    for (let i = 0; i < players.length; i += 2) {
+        rounds.push([players[i], players[i + 1]]);
+    }
     sessionStorage.setItem('rounds', JSON.stringify(rounds));
     sessionStorage.setItem('currentRound', '0');
     sessionStorage.setItem('winners', '[]');
@@ -189,7 +192,7 @@ const startMatch = () => {
 
     const modality = sessionStorage.getItem('modality');
 
-    const playersInfo = JSON.parse(sessionStorage.getItem('playersInfo')); // Parse do JSON
+    const playersInfo = JSON.parse(sessionStorage.getItem('playersInfo')); 
 
     const playersMap = {};
     if(modality == "remote" || modality == 'tourn-remote')
@@ -197,7 +200,6 @@ const startMatch = () => {
         playersInfo.forEach(player => {
             playersMap[player.nickname] = player.id;
         });
-        console.log("player", playersMap)
     }
     
     if (currentRound < rounds.length) {
@@ -213,15 +215,14 @@ const startMatch = () => {
             <div class="match-footer">
                 <p> The next game will be: ${player1} vs ${player2} </p>
             </div>`
-        console.log("MODALITYYYYYY", modality);
         if (modality == 'tourn-remote') {
             const player1Id = playersMap[player1]; 
             const player2Id = playersMap[player2]; 
 
-            setTimeout(() => {
+            
             const groupName = `privateGroup${player1Id}${player2Id}`;
             sessionStorage.setItem("groupName", groupName);
-            console.log("Group name", groupName);
+
             sessionStorage.setItem('playerID', player1Id);
             sessionStorage.setItem('friendID', player2Id);
             const player = sessionStorage.getItem('player');
@@ -229,8 +230,8 @@ const startMatch = () => {
                 sessionStorage.setItem("nickTorn", "True"); 
             else 
                 sessionStorage.setItem("nickTorn", "False");
+            setTimeout(() => {
             const game = sessionStorage.getItem('game')
-            console.log("gameeee",game );
             if(game == "pong")
                 navigateTo('/pong');
             else if(game == "snake")
@@ -238,12 +239,10 @@ const startMatch = () => {
             }, 2000); 
         }
         else{
+            resetGameState();
+            resetGameSnake();
             setTimeout(() => {
-                resetGameState();
-                resetGameSnake();
-    
                 let game = sessionStorage.getItem("game");
-                console.log("gameehuheeee", game);
                 if(game == 'pong')
                     navigateTo('/pong');
                 else if(game == 'snake')
@@ -266,8 +265,14 @@ const startMatch = () => {
             }, 200);  
         } else {
             sessionStorage.setItem("nickTorn", "False");
-            alert(`${translations[savedLanguage].winner} ${winners[0][0]}!`);
-            navigateTo('/select-playerOrAI'); 
+            const app = document.getElementById('app');
+           app.innerHTML += `<div id="winnerTorn"> 
+               <h2>${translations[savedLanguage].winner} ${winners[0][0]} </h2?
+           </div>`;
+            setTimeout(() => {
+                navigateTo('/select-playerOrAI'); 
+            },2000);
+        
         }
     }
 };

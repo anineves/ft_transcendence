@@ -105,10 +105,10 @@ export const render = () => {
         navigateTo('/'); 
         return;
     }
-    if (path === '/wait-remote' && !isGroupAvailable()) {
+    /*if (path === '/wait-remote' && !isGroupAvailable()) {
         navigateTo('/'); 
         return;
-    }
+    }*/
 
     if (path === '/user-panel' && state?.user) { // Se tiver na rota do user.pna e o estado contem um user
         route(state.user); // Renderiza o painel do usuário com os dados do usuário

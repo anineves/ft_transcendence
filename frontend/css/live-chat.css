@@ -197,6 +197,36 @@ body, html {
     border-color: var(--secondary-color);
     box-shadow: 0 0 10px var(--secondary-color), inset 0 0 10px var(--secondary-color);
 }
+#duel-message {
+    float: left;
+    text-align: left;
+    border-top-left-radius: 0;
+    background-color: transparent;
+    color: #1105be;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#accept-link {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#accept-link:hover {
+    background-color: #218838;
+}
 
 .button-panel {
     display: flex;
