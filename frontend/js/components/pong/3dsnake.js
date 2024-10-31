@@ -1,16 +1,8 @@
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x1f1f2f);
-import { navigateTo } from '../../utils.js';
+//scene.background = new THREE.Color(0x1f1f2f);
 
-// NOME DOS PLAYERS
-const modality2 = sessionStorage.getItem('modality');
 const user = sessionStorage.getItem('user');
-const user_json = JSON.parse(user);
-
 const player_id = sessionStorage.getItem("player");
-let nickname = sessionStorage.getItem('nickname');
-console.log(nickname);
-
 let redNickname = "Player";
 let blueNickname = "Opponent"
 let match_type = "3D"
@@ -62,7 +54,6 @@ async function createMatch() {
 
 if (user)
     createMatch();
-
 async function updateMatch() {
     const id = sessionStorage.getItem('id_match');
     const modality2 = sessionStorage.getItem('modality');
@@ -121,22 +112,18 @@ cameraTopView.rotation.set(-Math.PI / 2, 0, 0);
 let activatedCam = cameraTopView;
 
 function switchCamera() {
-    if (activatedCam === camera) {
+    if (activatedCam === camera) 
         activatedCam = cameraTopView;
-    } else {
+     else 
         activatedCam = camera;
-    }
 }
 
 document.addEventListener('keydown', (event) => {
-    if (event.key.toLowerCase() === 'v') {
+    if (event.key.toLowerCase() === 'v') 
         switchCamera();
-    }
 });
 
 const keyState = {};
-
-
 // Luzes
 const light = new THREE.DirectionalLight(0xff5555, 0.5);
 light.position.set(10, 10, 10);
@@ -198,7 +185,7 @@ const rightBar = new THREE.Mesh(tableBarTopBotLeftRightMaterial, tableBarMateria
 rightBar.position.set(9.5, 0, 0);
 scene.add(rightBar);
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer(({ alpha: true }));
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -222,7 +209,7 @@ function createSphere(x, y, z, color) {
 
 // Snake Vermelha
 for (let i = 3; i < redSnakeLen; i++) {
-    redSnake.push(createSphere(i * 0.3, 0.2, -3, 0xff0000));
+    redSnake.push(createSphere(i * 0.3, 0.2, -3, 0x800080));
 }
 
 // Snake Azul
@@ -255,15 +242,12 @@ function checkHeadCollision(snakeA, snakeB) {
 
     if (headA.position.distanceTo(headB.position) < 0.35) {
         // Colisao de cabecas das cobras
-        if (snakeA.length > snakeB.length) {
+        if (snakeA.length > snakeB.length) 
             return 1;
-        }
-        else if (snakeA.length < snakeB.length) {
+        else if (snakeA.length < snakeB.length) 
             return 2;
-        }
-        else if (snakeA.length === snakeB.length) {
+        else if (snakeA.length === snakeB.length)
             return 3;
-        }
     }
     return 0;
 }
@@ -273,9 +257,8 @@ function checkCollisionSnakes(snakeA, snakeB) {
     const headA = snakeA[0];
 
     for (let i = 1; i < snakeB.length; i++) {
-        if (headA.position.distanceTo(snakeB[i].position) < 0.35) {
+        if (headA.position.distanceTo(snakeB[i].position) < 0.35) 
             return true;
-        }
     }
     return false;
 }
@@ -296,7 +279,7 @@ function scoreBoard() {
 
     const redScoreText = document.createElement('span');
     redScoreText.id = 'red-score';
-    redScoreText.style.color = 'red';
+    redScoreText.style.color = 'purple';
     redScoreText.style.textShadow = '1px 1px 2px white, -1px -1px 2px white'; // Adiciona contorno
     redScoreText.textContent = redNickname + ' ' + redScore;
 
@@ -331,7 +314,7 @@ function updateSnake(snake, direction, snakeColor) {
         growSnake(snake)
         scene.remove(food);
         food = createFood();
-        if (snakeColor === 'red') {
+        if (snakeColor === 'purple') {
             redScore++;
             document.getElementById('red-score').textContent = redNickname + ' ' + redScore;
         } else if (snakeColor === 'blue') {
@@ -395,7 +378,7 @@ document.addEventListener('keydown', (event) => {
 // FUNCAO DE CRIAR A COMIDA E COLOCAR NUMA POSICAO ALEATORIA
 function createFood() {
     const foodGeo = new THREE.SphereGeometry(0.2, 32, 32);
-    const foodMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const foodMaterial = new THREE.MeshStandardMaterial({ color: 0xffffee });
     const food = new THREE.Mesh(foodGeo, foodMaterial);
 
     let validPosition = false
@@ -518,9 +501,7 @@ function showGameOver(result) {
         tieTextM.position.set(-(tieTextBB.max.x) / 2, 0, 2.3);
         scene.add(tieTextM);
     }
-    setTimeout(() => {
-        navigateTo('/snake-selector'); 
-    }, 2000);
+  
 }
 
 // TIE FUNCTION
@@ -548,7 +529,7 @@ function redVictory() {
         bevelOffset: 0,
         bevelSegments: 5
     });
-    const redVictory_m = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+    const redVictory_m = new THREE.MeshStandardMaterial({ color: 0x800080});
     const redVictoryM = new THREE.Mesh(redVictory_g, redVictory_m);
     redVictory_g.computeBoundingBox();
     const redBB = redVictory_g.boundingBox;
@@ -624,12 +605,10 @@ function animate(time) {
         const redTouchBlue = checkCollisionSnakes(redSnake, blueSnake);
         const blueTouchRed = checkCollisionSnakes(blueSnake, redSnake);
         if (redTouchBlue) {
-
             blueVictory();
             gameOver = true;
         }
         if (blueTouchRed) {
-
             redVictory();
             gameOver = true;
         }

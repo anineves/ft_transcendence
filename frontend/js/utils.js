@@ -27,8 +27,11 @@ import { closeSocket } from './components/live-chat.js';
 // Função para atualizar o texto do rodapé baseado no idioma
 const updateFooterTranslation = () => {
     const footerText = document.getElementById('text-footer');
-    const savedLanguage = localStorage.getItem('language') || 'portuguese';
-    footerText.innerText = translations[savedLanguage];
+
+    if (footerText) {
+        const savedLanguage = localStorage.getItem('language') || 'portuguese';
+        footerText.innerText = translations[savedLanguage];
+    }
 };
 
 const translations = {
@@ -98,8 +101,9 @@ export const navigateTo = (path, user = null) => {
 export const render = () => {
     const path = window.location.pathname; // Obtém o caminho atual da URL
     const route = routes[path] || renderMenu;
-    const state = window.history.state; // Obtém o estado atual do histórico
-    updateFooterTranslation();
+    const state = window.history.state;
+  // Obtém o estado atual do histórico
+        updateFooterTranslation();
 
     if (protectedRoutes.includes(path) && !isAuthenticated()) {
         navigateTo('/'); 
@@ -147,8 +151,9 @@ export const checkLoginStatus = () => {
 
 
 export const logout = () => {
-    closeSocket();
-    
+    let firstChat = sessionStorage.getItem('firtChat');
+    if(firstChat == 'false')
+        closeSocket();
     putPlayer('OF');
     sessionStorage.removeItem('user'); 
     sessionStorage.clear();

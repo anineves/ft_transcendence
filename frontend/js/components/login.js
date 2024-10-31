@@ -171,7 +171,6 @@ export const renderLogin = () => {
                                 sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
                                 putPlayer("ON");
                             } else {
-                                console.log("You need createddddd a player");
                                 checkLoginStatus(); 
                                 sessionStorage.setItem('firtChat', 'true');
                                 navigateTo('/create-player');
@@ -187,6 +186,7 @@ export const renderLogin = () => {
                     checkLoginStatus(); 
                     sessionStorage.setItem('firtChat', 'true');
                     navigateTo('/game-selection', data); 
+                    return;
                 }
             } else {
                 passwordError.textContent = `${translations[savedLanguage].errorLogin}`;
@@ -217,12 +217,10 @@ const showCodeForm = async () => {
             if (response.ok) {
                 // showCodeForm(emailOrUsername, password); #TODO: POST twice to OTP
             } else {
-                alert('Failed to send verification code.1');
+                console.log('Failed to send verification code.1');
             }
         } catch (error) {
-
             console.error('Error:', error);
-            alert('An error occurred during login');
         }
     
 
@@ -262,8 +260,6 @@ const showCodeForm = async () => {
                 sessionStorage.setItem('refreshToken', data.refresh); 
                 // Armazena as informações do usuário (por exemplo, nome, email).
                 sessionStorage.setItem('user', JSON.stringify(data.user)); 
-
-                //console.log(data);
                 const userId = data.user.id;
                 const token = data.access;
                 const urlPlayers = `${apiUrl}/api/players/`;
@@ -283,11 +279,13 @@ const showCodeForm = async () => {
                         if (player) {
                             sessionStorage.setItem('player', JSON.stringify(player.id));
                             sessionStorage.setItem('playerInfo', JSON.stringify(player));
-                            console.log("nickname", player.nickname)
                             sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
                             putPlayer("ON");
                         } else {
-                            console.log("You need create a player");
+                            checkLoginStatus(); 
+                            sessionStorage.setItem('firtChat', 'true');
+                            navigateTo('/create-player');
+                            return;
                         }
                     } else {
                         console.error("error loading players");
@@ -330,8 +328,7 @@ export const putPlayer = async (status) => {
                 },
                 body: JSON.stringify({ status : stat })
             });
-            
-            console.log("Player", playerInfo);
+        
             if (playerInfo.ok) {
                 const playerT = await playerInfo.json();
                 sessionStorage.setItem('playerStatus', playerT.status);

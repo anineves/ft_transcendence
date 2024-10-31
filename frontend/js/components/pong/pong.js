@@ -4,6 +4,7 @@ import { canvas, context, paddleWidth, paddleHeight, playerY, opponentY, movePad
 import { endMatch } from '../tournament.js';
 import { initPongSocket } from './pongSocket.js'
 import { navigateTo } from '../../utils.js';
+import { closePongSocket } from './pongSocket.js';
 
 let playerScore = 0;
 let opponentScore = 0;
@@ -15,7 +16,7 @@ let wsPong;
 let animationFrameId;
 const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
-
+let  visiblity;
 export let ballX, ballY;
 export const ballRadius = 10;
 
@@ -33,7 +34,7 @@ export const startPongGame = async () => {
     const players = [player, opponent];
     sessionStorage.setItem('game', 'pong');
     sessionStorage.setItem('players', players);
-
+    visiblity = "true";
     resetGameState();
     let match_type = "RM";
     if (modality2 == "ai") match_type = "AI";
@@ -47,8 +48,6 @@ export const startPongGame = async () => {
     } 
         
     if (modality2 == "player" || modality2 == "3D") match_type = "MP";
-
-    
     if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
     (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
         if (player) {
@@ -82,22 +81,70 @@ export const startPongGame = async () => {
         let initws = `wss://${apiUri}/ws/pong_match/${groupName}/`
         wsPong = initPongSocket(`${initws}`);
         
-        wsPong.onmessage = (event) => {
+        wsPong.onmessage = async (event) => {
             const data = JSON.parse(event.data);
-            console.log("data pong", data.action)
             if(data.action == 'player_disconnect')
             {
+                if (wsPong) {
+                    wsPong.send(JSON.stringify({
+                        'action': 'end_game',
+                        'message': {
+                            'group_name': groupName,
+                        }
+                    }));
+                }
 
-                wsPong = null;
-                sessionStorage.removeItem("Inviter");
-                sessionStorage.removeItem("groupName");
-                sessionStorage.setItem('WS', 'clean');
-                wsPong = null;
-                sessionStorage.setItem("giveUP", 'true');  
-                    stopGame();
-                    drawGameOver(playerScore, opponentScore);
-                    //navigateTo('/'); 
-                
+            console.log("entrei disconct")
+            drawGameOver(playerScore, opponentScore);
+            stopGame();
+            const id = sessionStorage.getItem('id_match');
+            let winner_id = opponent;
+            if (id)  {
+                console.log("id", id)
+                try {
+                    console.log("close", wsPong);
+                    closePongSocket(wsPong);
+                    wsPong = null;
+                    if (playerScore > opponentScore)
+                        winner_id = player;
+                    const score = `${playerScore}-${opponentScore}`;
+                    const duration = "10";
+
+                    const urlMatchesID = `${apiUrl}/api/match/${id}`;
+                    const response = await fetch(urlMatchesID, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ winner_id, score, duration })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        console.log('Match updated successfully:', data);
+                    } else {
+                        console.error('Error updating match:', data);
+                    }
+                } catch (error) {
+                    console.error('Error processing match:', error);
+                    alert('An error occurred while processing the match.');
+                }
+            }
+            if (sessionStorage.getItem('modality') == 'tournament') {
+                sessionStorage.setItem('game', 'pong');
+                showNextMatchButton();
+            }
+            if(sessionStorage.getItem('modality') == 'tourn-remote')
+            {
+                const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+                const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
+                endMatch(winner); 
+            }
+            sessionStorage.removeItem("Inviter");
+            sessionStorage.removeItem("groupName");
+            sessionStorage.removeItem("id_match");
+            sessionStorage.setItem('WS', 'clean');
+            wsPong =  null;
             }
             if (data.action === 'ball_track') {
                 ballX = data.message.ball_x;
@@ -113,6 +160,7 @@ export const startPongGame = async () => {
                 gameOver = data.message.game_over;
             }
         };
+       
     }
 
     initialize();
@@ -167,41 +215,39 @@ export function initialize() {
     initializeBall();
     if (!canvas || !context) return;
 
-    const handleVisibilityChange = () => {
-        if (window.location.href !== "https://192.168.0.12:8080/pong") {
+    const handleVisibilityChange = async () => {
+        if (window.location.href !== "https://10.0.2.15:8080/pong") {
             cleanup();
             return; 
         }
-        
-        const user = sessionStorage.getItem('user');
-        const user_json = JSON.parse(user);
-        let friendID = sessionStorage.getItem('friendID');
-        let playerID = sessionStorage.getItem('player');
-        let inviter = sessionStorage.getItem("Inviter");
-        let groupName = sessionStorage.getItem('groupName');
-        let modality = sessionStorage.getItem('modality');
+        if (visiblity == "true")
+        {
+            visiblity = "false";
+            console.log("Entrei Handle")
+            
+            const user = sessionStorage.getItem('user');
+            const user_json = JSON.parse(user);
+            let friendID = sessionStorage.getItem('friendID');
+            let playerID = sessionStorage.getItem('player');
+            let inviter = sessionStorage.getItem("Inviter");
+            let groupName = sessionStorage.getItem('groupName');
+            let modality = sessionStorage.getItem('modality');
 
-        if (modality == 'remote' || modality2 == 'tourn-remote') {
-            if (wsPong) {
-                wsPong.send(JSON.stringify({
-                    'action': 'player_disconnect',
-                    'message': {
-                        'player_id': playerID,
-                        'friend_id': friendID,
-                        'inviter': inviter,
-                        'group_name': groupName,
-                    }
-                }));
-                wsPong.close();
-                wsPong = null;
+            if (modality == 'remote' || modality2 == 'tourn-remote') {
+                if (wsPong) {
+                    wsPong.send(JSON.stringify({
+                        'action': 'player_disconnect',
+                        'message': {
+                            'player_id': playerID,
+                            'friend_id': friendID,
+                            'inviter': inviter,
+                            'group_name': groupName,
+                        }
+                    }));
+                }
+                
             }
-            stopGame();
-            playerScore = 0;
-            opponentScore = 5;
-            drawGameOver(playerScore, opponentScore)
-            sessionStorage.setItem("giveUP", 'true');  
-            //navigateTo('/'); 
-        }
+    }
     };
 
     const handleOffline = () => {
@@ -209,8 +255,6 @@ export function initialize() {
             wsPong.send(JSON.stringify({
                 'action': 'end_game'
             }));
-            wsPong.close();
-            wsPong = null
         }
         stopGame();
     };
@@ -234,29 +278,6 @@ export function initialize() {
     };
 
     const cleanup = () => {
-        const user = sessionStorage.getItem('user');
-
-        let friendID = sessionStorage.getItem('friendID');
-        let playerID = sessionStorage.getItem('player');
-        let inviter = sessionStorage.getItem("Inviter");
-        let groupName = sessionStorage.getItem('groupName');
-
-        if (wsPong) {
-            wsPong.send(JSON.stringify({
-                'action': 'player_disconnect',
-                'message': {
-                    'player_id': playerID,
-                    'friend_id': friendID,
-                    'inviter': inviter,
-                    'group_name': groupName,
-                }
-            }));
-            wsPong.close(); 
-            wsPong = null;
-            sessionStorage.setItem("giveUP", 'true');  
-            //stopGame();
-            //navigateTo('/'); 
-        }
         window.removeEventListener('offline', handleOffline);
         document.removeEventListener('visibilitychange', handleVisibilityChange);
         window.removeEventListener('popstate', handleVisibilityChange);
@@ -264,7 +285,7 @@ export function initialize() {
         history.replaceState = originalReplaceState; 
     };
 
-    if (window.location.href !== "https://192.168.0.12:8080/pong") {
+    if (window.location.href !== "https://10.0.2.15:8080/pong") {
         cleanup();
     }
     
@@ -280,9 +301,7 @@ export function initialize() {
         context.fillStyle = '#00AA00';
         context.fill();
         context.closePath();
-        drawScore(playerScore, opponentScore);
-
-       
+        drawScore(playerScore, opponentScore);  
     }
 
     function update() {
@@ -464,6 +483,7 @@ export function initialize() {
             }
             sessionStorage.removeItem("Inviter");
             sessionStorage.removeItem("groupName");
+            sessionStorage.removeItem("id_match");
             sessionStorage.setItem('WS', 'clean');
             wsPong =  null;
         }

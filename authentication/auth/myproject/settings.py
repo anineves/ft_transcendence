@@ -70,7 +70,7 @@ CORS_ALLOWED_ORIGINS =[
     'http://127.0.0.1:5500',
     'https://localhost:8080',
     'https://127.0.0.1:8080',
-    'https://192.168.0.12:8080',
+    'https://10.0.2.15:8080',
 ]
 
 
@@ -215,4 +215,4 @@ EMAIL_HOST_PASSWORD = 'lmln pyab glmg izrl'
 #SECURE_SSL_REDIRECT = True
 
 # Certifique-se de que o middleware de CSRF funciona corretamente com WebSockets
-CSRF_TRUSTED_ORIGINS = ['https://192.168.0.12']  
+CSRF_TRUSTED_ORIGINS = ['https://10.0.2.15']  

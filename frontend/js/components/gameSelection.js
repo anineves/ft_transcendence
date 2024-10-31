@@ -30,11 +30,9 @@ export const renderGameSelection = async () => {
                 const data = await response.json();
 
                 if (data.access_token) {
-                    //console.log(data);
                     sessionStorage.setItem('jwtToken', data.access_token);
                     sessionStorage.setItem('user', JSON.stringify(data.user));
                     const user = sessionStorage.getItem('user');
-                    //console.log(user);
                     checkLoginStatus();
                 } else {
                     console.error('OAuth login failed', data);

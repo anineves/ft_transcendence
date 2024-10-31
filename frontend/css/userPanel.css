@@ -4,7 +4,7 @@
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
     width: 70vw;
-    height: 80vh;
+    height: 85vh;
     max-height: 80vh;
     margin: auto;
     color: #fff;
@@ -13,7 +13,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
     overflow: hidden;
 }
@@ -83,7 +82,7 @@
 
 .profile-content {
     display: flex;
-    justify-content: center;
+    
     gap: 60px;
     width: 100%;
     margin-bottom: 20px;
@@ -94,14 +93,19 @@
 
     display: none;
 }
+.info{
+    justify-content: left;
+}
+
 .info, .progression {
     width: 40%;
     height: 40%;
-    text-align: center;
+    margin-right: 10%;
+
 }
 
 .progression .progress-bar {
-    
+    justify-content: right;
     border: 1px solid #aa00ff;
     border-radius: 8px;
     padding: 2%;
@@ -119,7 +123,7 @@
 
 .info {
     width: 40%;
-    padding: 3%;
+    padding: 1%;
     text-align: left;
     color: #fff;
     position: relative;
@@ -250,7 +254,7 @@ p {
     box-shadow: 0 0 15px rgba(255, 0, 255, 0.9), 0 0 25px rgba(255, 0, 255, 0.6);
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1300px) {
     .user-panel {
         width: 98vw;
         font-size: 12px;

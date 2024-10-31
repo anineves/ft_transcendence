@@ -139,7 +139,6 @@ export const stats = async () => {
                     <td>${match.game == '1' ? 'Pong' : 'Snake'}</td>
                     <td>${match.match_type}</td>
                     <td>${result}</td>
-                    <td>${match.duration}</td>
                 </tr>
             `;
             }
@@ -158,7 +157,6 @@ export const stats = async () => {
                         <p><strong>${translations[savedLanguage].pWin}:</strong> <span id="pongWins">${pongWins}</span></p>
                         <p><strong>${translations[savedLanguage].pLosses}:</strong> <span id="pongLosses">${pongLosses}</span></p>
                         <p><strong>${translations[savedLanguage].pMatches}:</strong> <span id="pongMatches">${pongMatches}</span></p>
-                        <p><strong>${translations[savedLanguage].gameTime}:</strong> <span id="pongGamingTime">${totalPongTime}</span></p>
                         <p><strong>${translations[savedLanguage].cleanSheet}:</strong> <span id="cleanSheetPong">${cleanSheetPong}</span></p>
                     </div>
                     <div class="snake-stats">
@@ -166,7 +164,6 @@ export const stats = async () => {
                         <p><strong>${translations[savedLanguage].sWin}:</strong> <span id="snakeWins">${snakeWins}</span></p>
                         <p><strong>${translations[savedLanguage].sLosses}:</strong> <span id="snakeLosses">${snakeLosses}</span></p>
                         <p><strong>${translations[savedLanguage].sMatches}:</strong> <span id="snakeMatches">${snakeMatches}</span></p>
-                        <p><strong>${translations[savedLanguage].gameTime}:</strong> <span id="snakeGamingTime">${totalSnakeTime}</span></p>
                         <p><strong>${translations[savedLanguage].cleanSheet}:</strong> <span id="cleanSheetSnake">${cleanSheetSnake}</span></p>
                     </div>
                     <button id="toggleMatchHistory">${translations[savedLanguage].showBtn}</button>
@@ -181,7 +178,6 @@ export const stats = async () => {
                                         <th>${translations[savedLanguage].gameInfo}</th>
                                         <th>${translations[savedLanguage].typeInfo}</th>
                                         <th>${translations[savedLanguage].resultInfo}</th>
-                                        <th>${translations[savedLanguage].durationInfo}</th>
                                     </tr>
                                 </thead>
                                 <tbody>

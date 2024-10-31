@@ -3,6 +3,7 @@ import { navigateTo } from '../../utils.js';
 
 let ws = null;
 export function initPongSocket(url) {
+    
     const jwttoken = sessionStorage.getItem('jwtToken'); 
     const inviter = sessionStorage.getItem('Inviter'); 
     let wsSession = sessionStorage.getItem('WS');
@@ -19,9 +20,8 @@ export function initPongSocket(url) {
     }
     
     let lobbyTimeout = null;
-    console.log("WS", ws);
+
     ws.onopen = function (event) {
-        console.log("Connected to Pong WebSocket", event);
         ws.send(JSON.stringify({
             Authorization: jwttoken,
         }));
@@ -33,7 +33,6 @@ export function initPongSocket(url) {
                 ws.send(JSON.stringify({
                     action: 'end_game'
                 }));
-                alert("The opponent did not accept the duel");
                 ws.close();
                 navigateTo('/live-chat'); 
             }, 10000);
@@ -44,8 +43,6 @@ export function initPongSocket(url) {
     
         let data = JSON.parse(event.data)
         
-        console.log("On message Data: ", data)
-
         if (data.action === 'match_created') {
             console.log(`Match created with ID: ${data.match_id}`);
         }
@@ -67,11 +64,25 @@ export function initPongSocket(url) {
             }
     }
     }
+    console.log("Enteiiiiiiiiii");
     ws.onclose = () => {
-        console.log("WS error", ws);
+        console.log("onclose 1 ",ws);
+        console.log("CHEGUEIIII");
         console.error("WebSocket connection closed.");
         ws = null;
     };
-
     return ws;
+}
+
+export function closePongSocket(ws) {
+    console.log("Tentando fechar WebSocket:", ws);
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close();  // Fechando explicitamente o WebSocket
+    }
+    ws.onclose = () => {
+        console.log("onclose 2 ",ws);
+        console.log("WebSocket fechado com sucesso.");
+        console.error("WebSocket connection closed.");
+        ws = null;
+    };
 }

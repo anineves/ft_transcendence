@@ -3,7 +3,6 @@ const apiUrl = window.config.API_URL;
 export const renderRequestPanel = () => {
     const app = document.getElementById('app');
     const user = JSON.parse(sessionStorage.getItem('user'));
-    console.log(user)
     const translations = {
         english: {
             title: "Friend Requests",

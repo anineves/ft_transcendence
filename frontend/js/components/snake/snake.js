@@ -84,7 +84,6 @@ export const startSnakeGame = async () => {
 
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         const groupName = sessionStorage.getItem("groupName");
-        console.log("groupName", groupName);
         const wssocket1= `wss://${apiUri}/ws/snake_match/${groupName}/`
         ws =    initPongSocket(wssocket1);
 
@@ -218,7 +217,6 @@ export const startSnakeGame = async () => {
                 const data = await response.json();
 
                 if (data) {
-                    console.log('Data:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
                     console.error('Match error', data);
@@ -424,12 +422,9 @@ function placeFood() {
     const modality2 = sessionStorage.getItem('modality');
     
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
-        console.log("entrei comidaaaaaaaaaa remote");
+        
         const player = sessionStorage.getItem('player');
         const playerID = sessionStorage.getItem('playerID'); 
-        console.log('Place Food Called')
-        console.log('Player:', player)
-        console.log('PlayerID:', playerID)
         if (player === playerID) {
             ws.send(JSON.stringify({
                 'action': 'place_food',

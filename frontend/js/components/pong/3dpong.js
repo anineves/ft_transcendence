@@ -7,7 +7,8 @@ const user_json = JSON.parse(user);
 const player_id = sessionStorage.getItem("player");
 let nickname = sessionStorage.getItem('nickname'); 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x1f1f2f); 
+
+
 
 let redNickname = "Player";
 let blueNickname = "Opponent"
@@ -142,7 +143,7 @@ pointLight_middle.position.set(0, 2, 10);
 scene.add(pointLight_middle);
 
 // Criar o renderizador
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer(({ alpha: true }));
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -345,9 +346,7 @@ function showGameOver(PlayerVictoryMaterial) {
     scene.add(PlayerVictoryMesh);
     scene.add(winTextMesh);
     scene.add(gameOverMesh);
-    setTimeout(() => {
-        navigateTo('/select-playerOrAI'); 
-    }, 2000);
+    
 }
 
 let winblue = false;

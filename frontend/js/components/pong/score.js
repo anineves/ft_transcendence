@@ -30,7 +30,6 @@ export function drawGameOver(playerScore, opponentScore) {
     context.fillText(`Player Score: ${playerScore} Opponente Score: ${opponentScore}`, canvas.width / 2 - 150, canvas.height / 2 + 50);
 
     const modality = sessionStorage.getItem('modality');
-    console.log("modality score", modality)
     if (modality == 'remote' || giveUp == 'true') {
         sessionStorage.setItem('giveUP', 'false');
         setTimeout(() => {

@@ -6,7 +6,7 @@ export const renderSnake = () => {
     const user = sessionStorage.getItem('user');
     const modality2 = sessionStorage.getItem('modality');
     const app = document.getElementById('app');
-    const showButtons = modality2 != 'remote' && modality2 != 'tournament';
+    const showButtons = modality2 != 'remote' && modality2 != 'tournament' && modality2 != 'tourn-remote';
 
     app.innerHTML = `
         <div class="arcade-container">
@@ -22,9 +22,6 @@ export const renderSnake = () => {
                 ${showButtons ? `
                     <button id="exitBtn" class="btn">
                         <h3>Give up</h3>
-                    </button>
-                    <button id="againBtn" class="btn">
-                        <h3>Again</h3>
                     </button>
                 ` : ''}
             </div>
@@ -47,7 +44,6 @@ export const renderSnake = () => {
               
                 winner_id = opponent;
                 const score = `${0}-${5}}`;
-                console.log("score", score);
                 const duration = "10";
 
                 const apiUrl = window.config.API_URL;
@@ -87,12 +83,6 @@ export const renderSnake = () => {
     
 
     document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
-
-
-    document.getElementById('againBtn').addEventListener('click', () => {
-        stopGame();
-        navigateTo('/snake');
-    });
 
     
     const speedButtons = document.querySelectorAll('.arcade-button[data-speed]');

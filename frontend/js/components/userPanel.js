@@ -21,6 +21,10 @@ const translations = {
         updateBtn: "Update",
         backBtn: "Back to Profile",
         statsBtn: "Stats",
+        errorFirstName: "First name must contain only letters, numbers, and the '-' symbol.", 
+        errorLastName: "Last name must contain only letters, numbers, and the '-' symbol.", 
+        errorUsername: "Username must contain only letters, numbers, and the '-' symbol.", 
+         errorEmail: "Email must be valid.",
     },
     portuguese: {
         title: "Perfil do Usuário",
@@ -40,7 +44,12 @@ const translations = {
         update: "Atualizar Perfil",
         updateBtn: "Atualizar",
         backBtn: "Voltar ao Perfil",
-        statsBtn: "Estatistica"
+        statsBtn: "Estatistica",
+        errorFirstName: "O primeiro nome deve conter apenas letras, números e o símbolo '-'.", 
+        errorLastName: "Sobrenome deve conter apenas letras, números e o símbolo '-'.", 
+        errorUsername: "O username deve conter apenas letras, números e o símbolo '-'.", 
+        errorEmail: "O e-mail deve ser válido.",
+        
     },
     french: {
         title: "Profil de l'utilisateur",
@@ -61,6 +70,10 @@ const translations = {
         updateBtn: "Mettre à jour",
         backBtn: "Retour au profil",
         statsBtn: "Stats",
+        errorFirstName: "Le prénom doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
+        errorLastName: "Le nom de famille doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
+        errorUsername: "Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
+        errorEmail: "L'e-mail doit être valide.",
     }
 };
 
@@ -79,61 +92,44 @@ export const renderPanel = async (user) => {
     const avatarUrl = user.avatar || defaultAvatar;
     const player = JSON.parse(sessionStorage.getItem('playerInfo'));
     const nickname = sessionStorage.getItem('nickname') || 'N/A';
-
-   
-    const escapeHTML = (unsafe) => {
-        
-        if (typeof unsafe !== 'string') {
-            return ''; 
-        }
-        
-        return unsafe
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    };
-
-
    
     app.innerHTML = `
         <div class="user-panel">
             <div id="profileSection">
-            <h2>${escapeHTML(translations[savedLanguage].title)}</h2>
+            <h2>${translations[savedLanguage].title}</h2>
             <div class="profile-content">
-                <button id="closeBtn" class="close-btn"><i class="fa-solid fa-times"></i></button>
                 <div class="info">
-                <img id="avatarImg" src="${escapeHTML(avatarUrl)}?${new Date().getTime()}" alt="user-avatar" class="avatar">
+                <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="user-avatar" class="avatar">
                         <h2 id="editBtn2">                        <i class="fas fa-pencil-alt"></i></h2>
-                        <p><strong>${escapeHTML(translations[savedLanguage].user)}:</strong> ${escapeHTML(user.username)}</p>
-                        <p><strong>${escapeHTML(translations[savedLanguage].nick)}:</strong> ${escapeHTML(nickname)}</p>
-                        <p><strong>${escapeHTML(translations[savedLanguage].email)}:</strong> ${escapeHTML(user.email)}</p>
-                        <p><strong>${escapeHTML(translations[savedLanguage].first)}:</strong> ${escapeHTML(user.first_name)}</p>
-                        <p><strong>${escapeHTML(translations[savedLanguage].last)}:</strong> ${escapeHTML(user.last_name)}</p>
+                        <p><strong>${translations[savedLanguage].user}:</strong> ${user.username}</p>
+                        <p><strong>${translations[savedLanguage].nick}:</strong> ${nickname}</p>
+                        <p><strong>${translations[savedLanguage].email}:</strong> ${user.email}</p>
+                        <p><strong>${translations[savedLanguage].first}:</strong> ${user.first_name}</p>
+                        <p><strong>${translations[savedLanguage].last}:</strong> ${user.last_name}</p>
                         <p><strong>Enable 2FA:</strong><button id="btn-otp">${user.otp_agreement? 'true' : 'false'}</button></p>
                     </div>
                     <div class="progression" id="progression"></div>
                 </div>
                 <div class="all-btn">
-                    <button id="logoutBtn" class="btn">${escapeHTML(translations[savedLanguage].logoutBtn)} <i class="fa-solid fa-right-from-bracket"></i></button>
-                    <button id="friendBtn" class="btn">${escapeHTML(translations[savedLanguage].friendBtn)}<i class="fas fa-user-group"></i></button>
-                    <button id="createBtn" class="btn">${escapeHTML(translations[savedLanguage].creationBtn)}</button>
-                    <button id="playBtn" class="btn">${escapeHTML(translations[savedLanguage].playBtn)}</button>
-                    <button id="sendMessageBtn" class="btn">${escapeHTML(translations[savedLanguage].chatBtn)} <i class="fa-solid fa-message"></i></button>
+                    <button id="logoutBtn" class="btn">${translations[savedLanguage].logoutBtn} <i class="fa-solid fa-right-from-bracket"></i></button>
+                    <button id="friendBtn" class="btn">${translations[savedLanguage].friendBtn}<i class="fas fa-user-group"></i></button>
+                    <button id="createBtn" class="btn">${translations[savedLanguage].creationBtn}</button>
+                    <button id="playBtn" class="btn">${translations[savedLanguage].playBtn}</button>
+                    <button id="sendMessageBtn" class="btn">${translations[savedLanguage].chatBtn} <i class="fa-solid fa-message"></i></button>
                 </div>
             </div>
             <div id="updateProfileSection" style="display: none;">
-                <h2>${escapeHTML(translations[savedLanguage].update)}</h2>
+                <h2>${translations[savedLanguage].update}</h2>
                 <form id="updateProfileForm">
                     <input type="file" id="updateAvatar" class="form-control mb-2">
-                    <input type="text" id="updateFirstName" placeholder="${escapeHTML(translations[savedLanguage].first)}" class="form-control mb-2">
-                    <input type="text" id="updateLastName" placeholder="${escapeHTML(translations[savedLanguage].last)}" class="form-control mb-2">
-                    <input type="text" id="updateUsername" placeholder="${escapeHTML(translations[savedLanguage].user)}" class="form-control mb-2">
-                    <input type="email" id="updateEmail" placeholder="${escapeHTML(translations[savedLanguage].email)}" class="form-control mb-2">
-                    <button type="submit" class="btn">${escapeHTML(translations[savedLanguage].updateBtn)}</button>
+                    <input type="text" id="updateFirstName" placeholder="${translations[savedLanguage].first}" class="form-control mb-2">
+                    <input type="text" id="updateLastName" placeholder="${translations[savedLanguage].last}" class="form-control mb-2">
+                    <input type="text" id="updateUsername" placeholder="${translations[savedLanguage].user}" class="form-control mb-2">
+                    <input type="email" id="updateEmail" placeholder="${translations[savedLanguage].email}" class="form-control mb-2">
+                    <div id="updateError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
+                    <button type="submit" class="btn">${translations[savedLanguage].updateBtn}</button>
                 </form>
-                <button id="backProfileBtn" class="btn">${escapeHTML(translations[savedLanguage].backBtn)}</button>
+                <button id="backProfileBtn" class="btn">${translations[savedLanguage].backBtn}</button>
             </div>
         </div>
     `;
@@ -143,19 +139,6 @@ export const renderPanel = async (user) => {
         handleUpdateOtp(user);
     });
 
-
-    
-
-  
-    document.getElementById('updateProfileForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const firstName = document.getElementById('updateFirstName').value.trim();
-        const lastName = document.getElementById('updateLastName').value.trim();
-        const username = document.getElementById('updateUsername').value.trim();
-        const email = document.getElementById('updateEmail').value.trim();
-        
-    });
 
     if (player) {
         try {
@@ -198,18 +181,18 @@ export const renderPanel = async (user) => {
             prog.innerHTML = `
                 <div class="progress-bar" id="progressBar" style="cursor: pointer;">
                     <div class="progress-bar" id="pongProgressBar">
-                        <p><strong>${escapeHTML(translations[savedLanguage].level)} Pong:</strong> ${pongLevel}</p>
+                        <p><strong>${translations[savedLanguage].level} Pong:</strong> ${pongLevel}</p>
                         <span class="progress-label">${pongProgressBar}</span>
-                        <p id="txtpong">${pongWinsInCurrentLevel}/5 ${escapeHTML(translations[savedLanguage].levelMsg)}</p>
+                        <p id="txtpong">${pongWinsInCurrentLevel}/5 ${translations[savedLanguage].levelMsg}</p>
                     </div>
                     <div class="progress-bar" id="snakeProgressBar">
-                        <p><strong>${escapeHTML(translations[savedLanguage].level)} Snake:</strong> ${snakeLevel}</p>
+                        <p><strong>${translations[savedLanguage].level} Snake:</strong> ${snakeLevel}</p>
                         <span class="progress-label">${snakeProgressBar}</span>
-                        <p id="txtsnake">${snakeWinsInCurrentLevel}/5 ${escapeHTML(translations[savedLanguage].levelMsg)}</p>
+                        <p id="txtsnake">${snakeWinsInCurrentLevel}/5 ${translations[savedLanguage].levelMsg}</p>
                     </div>
                     </div>
                     <div class="btn-progress-bar">
-                    <button id="statsBtn" class="btn">${escapeHTML(translations[savedLanguage].statsBtn)}</button>
+                    <button id="statsBtn" class="btn">${translations[savedLanguage].statsBtn}</button>
                     </div>
             `;
 
@@ -230,7 +213,6 @@ export const renderPanel = async (user) => {
     document.getElementById('playBtn').addEventListener('click', () => {
         navigateTo('/game-selection');
     });
-
     document.getElementById('logoutBtn').addEventListener('click', logout);
     document.getElementById('editBtn2').addEventListener('click', toggleEditProfile);
     document.getElementById('friendBtn').addEventListener('click', () => navigateTo('/friendPage', user));
@@ -238,7 +220,6 @@ export const renderPanel = async (user) => {
     document.getElementById('sendMessageBtn').addEventListener('click', handleSendMessage);
     document.getElementById('updateProfileForm').addEventListener('submit', (e) => handleUpdateProfile(e, user));
     document.getElementById('backProfileBtn').addEventListener('click', () => navigateTo('/user-panel', user));
-    document.getElementById('closeBtn').addEventListener('click', () => navigateTo('/'));
 
 };
 
@@ -254,12 +235,10 @@ const toggleEditProfile = () => {
 
 const handleSendMessage = () => {
     const nickname = sessionStorage.getItem('nickname');
-    if (nickname !== 'N/A') {
+    if (nickname !== 'N/A') 
         navigateTo('/live-chat');
-    } else {
-        alert("You need to create a player!");
+    else 
         navigateTo('/create-player');
-    }
 };
 
 
@@ -286,11 +265,10 @@ const handleUpdateOtp = async (user) => {
             checkLoginStatus();
             navigateTo('/user-panel', data);
         } else {
-            alert('Update failed: ' + JSON.stringify(data));
+            console.log('Update failed: ' + JSON.stringify(data));
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while updating the profile.');
     }
 };
 
@@ -304,22 +282,38 @@ const handleUpdateProfile = async (e, user) => {
     const lastName = document.getElementById('updateLastName').value.trim();
     const username = document.getElementById('updateUsername').value.trim();
     const email = document.getElementById('updateEmail').value.trim();
+    const nameRegex = /^[a-zA-Z0-9-]+$/;
+    let valid = true;
+    if (firstName && !nameRegex.test(firstName)) {
+        updateError.textContent += `${translations[savedLanguage].errorFirstName}`;
+        valid = false;
+    }
+    if (lastName && !nameRegex.test(lastName)) {
+        updateError.textContent += `${translations[savedLanguage].errorLastName}`;
+        valid = false;
+    }
+    if ( username && !nameRegex.test(username)) {
+        updateError.textContent += `${translations[savedLanguage].errorUsername}`;
+        valid = false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+        updateError.textContent += `${translations[savedLanguage].errorEmail}`;
+        valid = false;
+    }
+    if (!valid)
+        return;
 
-    if (avatarFile) {
+    if (avatarFile) 
         formData.append('avatar', avatarFile);
-    }
-    if (firstName) {
+    if (firstName) 
         formData.append('first_name', firstName);
-    }
-    if (lastName) {
+    if (lastName) 
         formData.append('last_name', lastName);
-    }
-    if (username) {
+    if (username) 
         formData.append('username', username);
-    }
-    if (email) {
+    if (email) 
         formData.append('email', email);
-    }
 
     try {
         const apiUrl = window.config.API_URL;
@@ -339,10 +333,9 @@ const handleUpdateProfile = async (e, user) => {
             checkLoginStatus();
             navigateTo('/user-panel', data);
         } else {
-            alert('Update failed: ' + JSON.stringify(data));
+            console.log('Update failed: ' + JSON.stringify(data));
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while updating the profile.');
     }
 };

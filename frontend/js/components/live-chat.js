@@ -20,7 +20,6 @@ export const liveChat = () => {
 
     const wssocket= `wss://${apiUri}/ws/global_chat/`
     let firstChat = sessionStorage.getItem('firtChat');
-    console.log("first", firstChat, "socket",socket);
     if(firstChat == 'true')
     {
         socket = new WebSocket(wssocket);
@@ -158,12 +157,11 @@ export const liveChat = () => {
     const wssocket3= `wss://${apiUri}/ws/tournament_snake/`
     const socket3 = new WebSocket(wssocket3);
     createTournamentButtonSnake.addEventListener('click', function () {
-        console.log("entrei snake");
         socket3.send(JSON.stringify({ action: 'create_tournament_snake' }));       
     });
 
     socket3.onopen = function (event) {
-        console.log("Connected to tournament WebSocket");
+        //console.log("Connected to tournament WebSocket");
     };
 
     socket3.onmessage = function (event) {
@@ -209,7 +207,7 @@ export const liveChat = () => {
     });
 
     socket2.onopen = function (event) {
-        console.log("Connected to tournament WebSocket");
+        //console.log("Connected to tournament WebSocket");
     };
 
     socket2.onmessage = function (event) {
@@ -277,11 +275,10 @@ export const liveChat = () => {
                     const playerData = await playerResponse.json();
                     const player = playerData.find(p => p.nickname === firstWord);
                     if (player) {
-                        console.log("Player found:", player);
                         sessionStorage.setItem('playerProfile', JSON.stringify(player));
                         navigateTo('/player-profile');
                     } else {
-                        console.log("Player not found");
+                        //console.log("Player not found");
                     }
                 } else {
                     console.log("Error loading players");
@@ -301,7 +298,6 @@ export const liveChat = () => {
     const user_json = JSON.parse(user);
 
     socket.onopen = function (event) {
-        console.log("Connected to WebSocket");
         socket.send(JSON.stringify({
             Authorization: jwttoken,
         }));
@@ -314,7 +310,6 @@ export const liveChat = () => {
         const isOwnMessage = firstWord === nickname;
         
         addMessage(message.content, isOwnMessage);
-        console.log()
         if (data.action == "duel" || data.action == "duel-snake")
         {
             let groupName = message.group_name;
@@ -341,7 +336,6 @@ export const liveChat = () => {
             chatBox.appendChild(duelMessage);
             if (user_json.id == message.from_user) {
                 sessionStorage.setItem("Inviter", "True");
-                console.log("live Inviter:", sessionStorage.getItem("Inviter"))
                 navigateTo(`/wait-remote`, sessionStorage.getItem("groupName"));
               
             }
@@ -373,7 +367,6 @@ export const liveChat = () => {
     };
 
     blockButton.onclick = function () {
-        console.log("Block button clicked");
         blockInputContainer.style.display = 'block';
         unblockInputContainer.style.display = 'none'; 
     };
@@ -388,7 +381,6 @@ export const liveChat = () => {
     };
 
     unblockButton.onclick = function () {
-        console.log("Unblock button clicked");
         unblockInputContainer.style.display = 'block';
         blockInputContainer.style.display = 'none';
     };
@@ -446,7 +438,6 @@ export const liveChat = () => {
         sessionStorage.setItem("duelGame", "duel-pong");
     
         if (playerNickname) {
-            console.log("players", playerNickname, nickname);
             if (playerNickname === nickname) {
                 errorliveChat.textContent = `${translations[savedLanguage].yourselfMsg}`;
             }
@@ -469,7 +460,6 @@ export const liveChat = () => {
         sessionStorage.setItem("duelGame", "duel-snake");
     
         if (playerNickname) {
-            console.log("players", playerNickname, nickname);
             if (playerNickname === nickname) {
                 alert(`${translations[savedLanguage].yourselfMsg}`);
             }

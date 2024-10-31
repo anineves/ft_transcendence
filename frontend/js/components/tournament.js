@@ -15,6 +15,7 @@ const translations = {
         winner: "Winner of the tournament is ",
         repeatName: "Please enter different names for each player.",
         missingNames: "Please fill in all player names before continuing.",
+        errorUsername: "The name must contain only letters, numbers, and the '-' symbol.", 
     },
     portuguese: {
         numberPlayers: "Selecionar Número de Jogadores",
@@ -27,6 +28,8 @@ const translations = {
         winner: "O vencedor do torneio é ",
         repeatName: "Por favor, insira nomes diferentes para cada jogador.",
         missingNames: "Por favor, preencha todos os nomes dos jogadores antes de continuar.",
+        errorUsername: "O nome  deve conter apenas letras, números e o símbolo '-'.",
+        
     },
     french: {
         numberPlayers: "Sélectionnez le Nombre de Joueurs",
@@ -39,6 +42,7 @@ const translations = {
         winner: "Le vainqueur du tournoi est ",
         repeatName: "Veuillez entrer des noms différents pour chaque joueur.",
         missingNames: "Veuillez remplir tous les noms des joueurs avant de continuer.",
+        errorUsername: "Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
     }
 };
 
@@ -116,6 +120,8 @@ export const setupTournament = () => {
     document.getElementById('tournamentForm').addEventListener('submit', (event) => {
         event.preventDefault();
 
+        const nameRegex = /^[a-zA-Z0-9-]+$/; 
+
         const playerNames = [];
         let allNamesFilled = true;
         const nameSet = new Set();
@@ -141,6 +147,11 @@ export const setupTournament = () => {
             if (nameSet.has(playerName)) {
                
                 errorMessageElement.textContent = `${translations[savedLanguage].repeatName}`;
+                return;
+            }
+            if(!nameRegex.test(playerName))
+            {
+                errorMessageElement.textContent = `${translations[savedLanguage].errorUsername}`;
                 return;
             }
 

@@ -92,7 +92,6 @@ export const renderFriendsPage = async (user) => {
 
                             if (friendResponse.ok) {
                                 const friendData = await friendResponse.json();
-                                console.log(friendData);
                                 const listItem = document.createElement('li');
                                 const friendButton = document.createElement('button');
                                 friendButton.textContent = "•" + friendData.nickname;

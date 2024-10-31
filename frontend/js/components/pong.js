@@ -3,7 +3,10 @@ import { navigateTo } from '../utils.js';
 const apiUrl = window.config.API_URL;
 export const renderPong = () => {
     const user = sessionStorage.getItem('user');
+    const modality2 = sessionStorage.getItem('modality');
     const app = document.getElementById('app');
+    const showButtons = modality2 != 'remote' && modality2 != 'tournament' && modality2 != 'tourn-remote';
+
     app.innerHTML = `
         <div class="arcade-container">
             <div class="arcade-screen">
@@ -15,12 +18,12 @@ export const renderPong = () => {
                 <div class="arcade-button" style="background:red;"></div>
                 <div class="arcade-button" style="background:green;"></div>
                 <div class="arcade-button" style="background:blue;"></div>
-                 <button id="exitBtn" class="btn">
-                        <h3>Give up </h3>
-                </button>
-                <button id="againBtn" class="btn">
-                        <h3>Again</h3>
-                </button>
+                ${showButtons ? `
+                    <button id="exitBtn" class="btn">
+                        <h3>Give up</h3>
+                    </button>
+                ` : ''}
+            </div>
             </div>
         </div>
     `;
@@ -75,11 +78,8 @@ export const renderPong = () => {
         }, 200);
     };
 
+    if(showButtons)
+        document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
 
-    document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
-
-    document.getElementById('againBtn').addEventListener('click', () => {
-        stopGame();   
-        navigateTo('/pong');
-    });
+ 
 };

@@ -5,7 +5,6 @@ export let canvas, context, paddleHeight, paddleWidth, ballRadius, playerY, oppo
 
 export function initializeCanvas() {
     canvas = document.getElementById('pongCanvas');
-    //console.log(canvas)
     if (canvas) {
         context = canvas.getContext('2d');
         paddleHeight = 100;
@@ -148,7 +147,6 @@ function simulateKeyPress(direction) {
 
 export function moveOpponentPaddleAI(ballY) {
     const currentTime = Date.now(); 
-    //console.log("cc", currentTime, lastAITime, aiUpdateRate)
     if (currentTime - lastAITime >= aiUpdateRate) {
         aiTargetY = ballY - paddleHeight / 2; 
         lastAITime = currentTime;  
