@@ -21,6 +21,7 @@ import { putPlayer } from './components/login.js';
 import { renderSnake } from './components/snake.js';
 import { snakeSelect } from './components/snakeSelect.js';
 import { closeSocket } from './components/live-chat.js';
+import { endGameWithScore } from './components/pong.js';
 
 
 
@@ -166,10 +167,13 @@ export const logout = () => {
 
 window.addEventListener('popstate', () => {
     // Verifica se a rota é /pong ou /snake com modalidade "remote" apenas quando o usuário usa "voltar" ou "avançar"
+    const pong = sessionStorage.getItem("pongGame");
+    console.log("entrieieieie")
     const path = window.location.pathname;
     if ((path === '/pong' && isRemote()) || (path === '/snake' && isRemote())) {
         navigateTo('/');
         return;
     }
+   
     render();
 });

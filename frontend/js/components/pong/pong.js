@@ -135,6 +135,7 @@ export const startPongGame = async () => {
             sessionStorage.removeItem("id_match");
             sessionStorage.setItem('WS', 'clean');
             sessionStorage.removeItem("duelGame");
+            sessionStorage.setItem("pongGame", "false");
             wsPong =  null;
             }
             if (data.action === 'ball_track') {

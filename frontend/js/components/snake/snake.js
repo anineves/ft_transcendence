@@ -468,33 +468,44 @@ function updateSnake(snake) {
 
 function placeFood() {
     const modality2 = sessionStorage.getItem('modality');
-    
+    let x = Math.floor(Math.random() * 18) + 1
+    let y = Math.floor(Math.random() * 18) + 1
+    const snakes = [
+        { snake: snakePlayer, name: "player" },
+        { snake: snakeOpponent, name: "opponent" }
+    ];
+
+    for (const { snake, name } of snakes) {
+        if (snake.body.x == x)
+            x = Math.floor(Math.random() * 18) + 1
+        if (snake.body.y == y)
+            y = Math.floor(Math.random() * 18) + 1
+    }
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
-        
         const player = sessionStorage.getItem('player');
-        const playerID = sessionStorage.getItem('playerID'); 
+        const playerID = sessionStorage.getItem('playerID');
         if (player === playerID) {
             ws.send(JSON.stringify({
                 'action': 'place_food',
                 'message': {
                     'player': player,
                     'test': 'test',
-                    'x': Math.floor(Math.random() * 18) + 1, 
-                    'y': Math.floor(Math.random() * 18) + 1 
+                    'x': x,
+                    'y': y
                 }
             }));
         }
         return ;
     }else{
         console.log("entrei comidaaaaaaaaaa local");
-        foods.push({ 
-            x: Math.floor(Math.random() * 18) + 1, 
-            y: Math.floor(Math.random() * 18) + 1 
+        foods.push({
+            x: x,
+            y: y
         });
     }
 
 
-    
+
 }
 
 
