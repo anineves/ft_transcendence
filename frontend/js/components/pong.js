@@ -1,12 +1,28 @@
 import { startPongGame, resetGameState, stopGame } from './pong/pong.js';
 import { navigateTo } from '../utils.js';
 const apiUrl = window.config.API_URL;
+
+const translations = {
+    english: {
+        giveUp: "Give up"
+    }, 
+    portuguese: {
+        giveUp: "Desistir"
+    },
+    french: {
+        giveUp: "Abandonner"
+    }
+};
+
 export const renderPong = () => {
     const user = sessionStorage.getItem('user');
     const modality2 = sessionStorage.getItem('modality');
     const app = document.getElementById('app');
     const showButtons = modality2 != 'remote' && modality2 != 'tournament' && modality2 != 'tourn-remote';
-
+    let savedLanguage = localStorage.getItem('language');
+    if (!savedLanguage || !translations[savedLanguage]) 
+        savedLanguage = 'english'; 
+     
     app.innerHTML = `
         <div class="arcade-container">
             <div class="arcade-screen">
@@ -20,7 +36,7 @@ export const renderPong = () => {
                 <div class="arcade-button" style="background:blue;"></div>
                 ${showButtons ? `
                     <button id="exitBtn" class="btn">
-                        <h3>Give up</h3>
+                        <h3>${translations[savedLanguage].giveUp}</h3>
                     </button>
                 ` : ''}
             </div>
@@ -65,7 +81,6 @@ export const renderPong = () => {
                 }
             } catch (error) {
                 console.error('Error processing match:', error);
-                alert('An error occurred while processing the match.');
             }
         }
     };

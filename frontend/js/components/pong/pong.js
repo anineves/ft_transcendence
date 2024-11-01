@@ -71,7 +71,6 @@ export const startPongGame = async () => {
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error occurred while processing match.');
             }
         }
     }
@@ -83,8 +82,11 @@ export const startPongGame = async () => {
         
         wsPong.onmessage = async (event) => {
             const data = JSON.parse(event.data);
+            console.log("entreiiiei", data.action)
             if(data.action == 'player_disconnect')
             {
+                if(modality2 == "tourn-remote")
+                    sessionStorage.setItem("trGiveUp", "true")
                 if (wsPong) {
                     wsPong.send(JSON.stringify({
                         'action': 'end_game',
@@ -125,7 +127,6 @@ export const startPongGame = async () => {
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
-                    alert('An error occurred while processing the match.');
                 }
             }
             sessionStorage.removeItem("Inviter");
@@ -210,6 +211,7 @@ export function initialize() {
             cleanup();
             return; 
         }
+        console.log("fuiii chamada");
         if (visiblity == "true")
         {
             visiblity = "false";
@@ -458,7 +460,6 @@ export function initialize() {
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
-                    alert('An error occurred while processing the match.');
                 }
             }
             if (sessionStorage.getItem('modality') == 'tournament') {

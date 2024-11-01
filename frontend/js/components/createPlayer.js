@@ -79,18 +79,16 @@ export const createPlayer = () => {
             const data = await response.json();
 
             if (response.ok) {
-                alert('Player created successfully!');
                 sessionStorage.setItem('player', JSON.stringify(data.id));
                 sessionStorage.setItem('playerInfo', JSON.stringify(data));
                 sessionStorage.setItem('playerID', JSON.stringify(data.id));
                 sessionStorage.setItem('nickname', JSON.stringify(data.nickname));
                 navigateTo('/game-selection'); 
             } else {
-                alert('Player creation failed: ' + JSON.stringify(data));
+                console.log('Player creation failed: ' + JSON.stringify(data));
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred while creating the player.');
         }
     });
     }

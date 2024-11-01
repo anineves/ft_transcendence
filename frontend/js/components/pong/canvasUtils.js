@@ -36,25 +36,25 @@ export function movePaddle(event) {
     const modality2 = sessionStorage.getItem('modality');
     if(modality2 != 'remote' && modality2 != 'tourn-remote')
     {
-        if (event.key === 'ArrowUp') {
+        if  (event.key === 'w' || event.key === 'W'){
             clearInterval(playerPaddleInterval);
             playerPaddleInterval = setInterval(() => {
                 playerY -= paddleSpeed;
                 if (playerY < 0) playerY = 0;
             }, 16);
-        } else if (event.key === 'ArrowDown') {
+        } else if (event.key === 's' || event.key === 'S')  {
             clearInterval(playerPaddleInterval);
             playerPaddleInterval = setInterval(() => {
                 playerY += paddleSpeed;
                 if (playerY + paddleHeight > canvas.height) playerY = canvas.height - paddleHeight;
             }, 16);
-        } else if (event.key === 'w' || event.key === 'W') {
+        } else if (event.key === 'ArrowUp') {
             clearInterval(opponentPaddleInterval);
             opponentPaddleInterval = setInterval(() => {
                 opponentY -= paddleSpeed;
                 if (opponentY < 0) opponentY = 0;
             }, 16);
-        } else if (event.key === 's' || event.key === 'S') {
+        } else if(event.key === 'ArrowDown')  {
             clearInterval(opponentPaddleInterval);
             opponentPaddleInterval = setInterval(() => {
                 opponentY += paddleSpeed;
@@ -102,9 +102,9 @@ export function stopPaddle(event) {
     const modality2 = sessionStorage.getItem('modality');
     
     if(modality2 !== 'remote' && modality2 != 'tourn-remote') {
-        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S')   {
             clearInterval(playerPaddleInterval);
-        } else if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
+        } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown'){
             clearInterval(opponentPaddleInterval);
         }
     }
@@ -117,8 +117,8 @@ export function stopPaddle(event) {
         if (arrow_key === 'ArrowUp' || arrow_key === 'ArrowDown' && current_player == playerID) {
             clearInterval(playerPaddleInterval);
         } else if (arrow_key === 'ArrowUp' || arrow_key === 'ArrowDown' && current_player == friendID) {
-                clearInterval(opponentPaddleInterval);
-            }
+            clearInterval(opponentPaddleInterval);
+        }
         }
 }
 

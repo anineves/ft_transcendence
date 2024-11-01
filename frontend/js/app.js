@@ -68,8 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedFlag = document.querySelector(`[data-language="${savedLanguage}"]`).getAttribute('data-flag');
         flagIcon.src = selectedFlag;
     } else {
-        flagIcon.src = './assets/portugal.png';
-        localStorage.setItem('language', 'portuguese');
+        flagIcon.src = './assets/english.png';
+        localStorage.setItem('language', 'english');
     }
 
     selectedLanguageBtn.addEventListener('click', (event) => {

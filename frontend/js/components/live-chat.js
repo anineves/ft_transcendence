@@ -4,7 +4,9 @@ const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
 let socket;
 
+
 export const liveChat = () => {
+    sessionStorage.setItem('giveUPtr', 'false')
     const player = sessionStorage.getItem('player');
     if(!player){
         navigateTo('/create-player');
@@ -461,7 +463,7 @@ export const liveChat = () => {
     
         if (playerNickname) {
             if (playerNickname === nickname) {
-                alert(`${translations[savedLanguage].yourselfMsg}`);
+                errorliveChat.textContent = `${translations[savedLanguage].yourselfMsg}`;
             }
             else{
                 document.getElementById('duel-input-container-snake').style.display = 'none'; 

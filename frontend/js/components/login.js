@@ -298,11 +298,10 @@ const showCodeForm = async () => {
                 sessionStorage.setItem('firtChat', 'true');
                 navigateTo('/game-selection', data); 
             } else {
-                alert('Failed to send verification code.2');
+                console.log('Failed to send verification code.2');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred during login');
         }
     });
 };

@@ -29,7 +29,7 @@ const updateFooterTranslation = () => {
     const footerText = document.getElementById('text-footer');
 
     if (footerText) {
-        const savedLanguage = localStorage.getItem('language') || 'portuguese';
+        const savedLanguage = localStorage.getItem('language') || 'english';
         footerText.innerText = translations[savedLanguage];
     }
 };
@@ -109,10 +109,10 @@ export const render = () => {
         navigateTo('/'); 
         return;
     }
-    /*if (path === '/wait-remote' && !isGroupAvailable()) {
+    if (path === '/wait-remote' && !isGroupAvailable()) {
         navigateTo('/'); 
         return;
-    }*/
+    }
 
     if (path === '/user-panel' && state?.user) { // Se tiver na rota do user.pna e o estado contem um user
         route(state.user); // Renderiza o painel do usuário com os dados do usuário

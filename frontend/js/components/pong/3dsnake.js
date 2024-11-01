@@ -46,7 +46,6 @@ async function createMatch() {
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error occurred while processing match.');
             }
         }
     }
@@ -89,7 +88,6 @@ async function updateMatch() {
                 }
             } catch (error) {
                 console.error('Error processing match:', error);
-                alert('An error occurred while processing the match.');
             }
         }
     }

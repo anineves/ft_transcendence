@@ -97,6 +97,8 @@ export const startSnakeGame = async () => {
             let message = data.message
             if(data.action == 'player_disconnect')
             {
+                if(modality2 == "tourn-remote")
+                    sessionStorage.setItem("trGiveUp", "true")
                 if (ws) {
                     ws.send(JSON.stringify({
                         'action': 'end_game',
@@ -139,7 +141,6 @@ export const startSnakeGame = async () => {
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
-                    alert('An error occurred while processing the match.');
                 }
             }
                 sessionStorage.removeItem("Inviter");
@@ -268,7 +269,6 @@ export const startSnakeGame = async () => {
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error occurred while processing match.');
             }
         }
     }
@@ -633,7 +633,6 @@ async function drawGame() {
                 }
             } catch (error) {
                 console.error('Error processing match:', error);
-                alert('An error occurred while processing the match.');
             }
         }
         }
@@ -745,8 +744,9 @@ export function stopGame() {
     const modality = sessionStorage.getItem('modality');
     clearInterval(gameInterval);
     const giveUp = sessionStorage.getItem('giveUP');
+    const giveUptr= sessionStorage.getItem('trGiveUp');
     console.log("modality Stop game", modality)
-    if (modality == 'remote'  || giveUp == 'true') {
+    if (modality == 'remote'  || giveUp == 'true' || giveUptr == 'true') {
         sessionStorage.setItem('giveUP', 'false')
         setTimeout(() => {
             navigateTo('/live-chat');

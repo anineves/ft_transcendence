@@ -15,6 +15,7 @@ export const renderFriendsPage = async (user) => {
             neededPlayer: "You need to create a Player",
             sucessRequest: "Friend request sent successfully!",
             failedRequest: "Failed to send friend request: '",
+            errorFriend: "There is no player created with this data, please enter a valid name",
         },
         portuguese: {
             title: "Amigos",
@@ -26,6 +27,7 @@ export const renderFriendsPage = async (user) => {
             neededPlayer: "Tu precisas criar um jogador",
             sucessRequest: "Solicitação de amizade enviada com sucesso!",
             failedRequest: "Falha ao enviar solicitação de amizade: '",
+            errorFriend: "Nao ha jogador criado com esses dados, por favor insira um nome valido",
         },
         french: {
             title: "Amis",
@@ -37,6 +39,7 @@ export const renderFriendsPage = async (user) => {
             neededPlayer: "Vous devez créer un joueur",
             sucessRequest: "Demande d'ami envoyée avec succès !",
             failedRequest: "Échec de l'envoi de la demande d'ami : '",
+            errorFriend: "Aucun joueur n'a été créé avec ces données, veuillez entrer un nom valide",
         }
     };
     
@@ -57,6 +60,7 @@ export const renderFriendsPage = async (user) => {
             <div id="inviteSection" style="display: none;">
                 <form id="inviteForm">
                     <input type="text" id="friendId" placeholder="${translations[savedLanguage].nickFriend}" class="form-control mb-2" required>
+                    <div id="invitefriendError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
                     <button type="submit" class="btn">${translations[savedLanguage].sendReq}</button>
                 </form>
             </div>
@@ -67,7 +71,7 @@ export const renderFriendsPage = async (user) => {
     const player = sessionStorage.getItem('player');
 
     if (player) {
-        const urlPlayer = `${apiUrl}/api/player/${player}`;;
+        const urlPlayer = `${apiUrl}/api/player/${player}`;
         try {
             const response = await fetch(urlPlayer, {
                 method: 'GET',
@@ -81,8 +85,9 @@ export const renderFriendsPage = async (user) => {
                 const data = await response.json();
                 if (data.friendship && data.friendship.length > 0) {
                     for (let friendId of data.friendship) {
+                        const urlfriendID = `${apiUrl}/api/player/${friendId}`;
                         try {
-                            const friendResponse = await fetch(`http://127.0.0.1:8000/api/player/${friendId}`, {
+                            const friendResponse = await fetch(urlfriendID, {
                                 method: 'GET',
                                 headers: {
                                     'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
@@ -114,14 +119,13 @@ export const renderFriendsPage = async (user) => {
                     friendsList.innerHTML = `<li>${translations[savedLanguage].noFriends}</li>`;
                 }
             } else {
-                alert('Failed to load friends.');
+                console.log('Failed to load friends.');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred while loading friends.');
         }
     } else {
-        alert(`${translations[savedLanguage].neededPlayer}`);
+        console.log(`${translations[savedLanguage].neededPlayer}`);
         navigateTo('/create-player');
     }
 
@@ -139,6 +143,33 @@ export const renderFriendsPage = async (user) => {
         e.preventDefault();
 
         const friendId = document.getElementById('friendId').value;
+        const nameRegex = /^[a-zA-Z0-9-]+$/; 
+        let valid = true;
+        const invitefriendError = document.getElementById('invitefriendError');
+        invitefriendError.textContent = '';
+        if (!nameRegex.test(friendId)) {
+            invitefriendError.textContent += `${translations[savedLanguage].errorFriend}`;
+            valid = false;
+        }
+        if(!valid) return;
+        
+        const urlPlayers = `${apiUrl}/api/players`;
+        let playerFriend;
+        try {
+            const response = await fetch(urlPlayers, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            playerFriend = data.find(p => p.nickname == friendId);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        if(playerFriend)
+        {
 
         try {
             const apiUrl = window.config.API_URL;
@@ -153,14 +184,19 @@ export const renderFriendsPage = async (user) => {
             });
 
             if (response.ok) {
-                alert(`${translations[savedLanguage].sucessRequest}`);
+                console.log(`${translations[savedLanguage].sucessRequest}`);
             } else {
                 const errorData = await response.json();
-                alert(`${translations[savedLanguage].failedRequest}` + JSON.stringify(errorData));
+                console.log(`${translations[savedLanguage].failedRequest}` + JSON.stringify(errorData));
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred while sending the friend request.');
         }
+    }else
+    {
+        invitefriendError.textContent += `${translations[savedLanguage].errorFriend}`;
+            valid = false;
+    }
     });
+
 };

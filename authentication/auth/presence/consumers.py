@@ -556,7 +556,7 @@ class SnakeConsumer(WebsocketConsumer):
 
 class TournamentConsumerSnake(WebsocketConsumer):
     tournament_players = []
-    max_players = 4
+    max_players = 2
 
     def connect(self):
         self.tournament_group_name = "tournament_group_snake"

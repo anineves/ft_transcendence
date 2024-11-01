@@ -39,7 +39,6 @@ export const renderGameSelection = async () => {
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error occurred while processing OAuth login.');
             }
         }
     }

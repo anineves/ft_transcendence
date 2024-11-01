@@ -262,6 +262,9 @@ const startMatch = () => {
         }
     } else {
         const winners = JSON.parse(sessionStorage.getItem('winners'));
+        const giveUptr= sessionStorage.getItem('trGiveUp')
+        if(giveUptr == "true")
+            return;
         if (winners.length > 1) {
             const nextRound = [];
             for (let i = 0; i < winners.length; i += 2) {
