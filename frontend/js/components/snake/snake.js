@@ -10,7 +10,7 @@ let numCells;
 let gridSize = 16;
 let gameOver = false;
 let gameInterval;
-let speed = 200;
+let speed;
 let ws = null;
 
 let snakePlayer = {
@@ -48,6 +48,7 @@ export const startSnakeGame = async () => {
     gameOver = false;
     gameInterval;
     speed = 200;
+    console.log("speed", speed);
     ws;
 
 

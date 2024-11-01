@@ -212,7 +212,7 @@ for (let i = 3; i < redSnakeLen; i++) {
 
 // Snake Azul
 for (let i = 3; i < blueSnakeLen; i++) {
-    blueSnake.push(createSphere(i * 0.3, 0.2, 3, 0x0000ff));
+    blueSnake.push(createSphere(i * 0.3, 0.2, 3, 0x0066cc));
 }
 
 //variaveis para a colisao da mesa
@@ -287,7 +287,7 @@ function scoreBoard() {
 
     const blueScoreText = document.createElement('span');
     blueScoreText.id = 'blue-score';
-    blueScoreText.style.color = 'blue';
+    blueScoreText.style.color = '#0066cc';
     blueScoreText.style.textShadow = '1px 1px 2px white, -1px -1px 2px white'; // Adiciona contorno
     blueScoreText.textContent = blueScore + ' ' + blueNickname;
 
@@ -554,7 +554,7 @@ function blueVictory() {
         bevelOffset: 0,
         bevelSegments: 5
     });
-    const blueVictory_m = new THREE.MeshStandardMaterial({ color: 0x0000ff });
+    const blueVictory_m = new THREE.MeshStandardMaterial({ color: 0x0066cc });
     const blueVictoryM = new THREE.Mesh(blueVictory_g, blueVictory_m);
     blueVictory_g.computeBoundingBox();
     const blueBB = blueVictory_g.boundingBox;
@@ -594,7 +594,7 @@ function animate(time) {
     if (elapsedTime > interval) {
         //PlayerNicknames();
         //animacao de movimentacao das cobras
-        updateSnake(redSnake, redSnakeDir, 'red');
+        updateSnake(redSnake, redSnakeDir, 'purple');
         updateSnake(blueSnake, blueSnakeDir, 'blue');
 
 

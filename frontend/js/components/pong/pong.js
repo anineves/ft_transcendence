@@ -21,6 +21,7 @@ export let ballX, ballY;
 export const ballRadius = 10;
 
 export const startPongGame = async () => {
+    sessionStorage.setItem("pongGame", "true");
     const user = sessionStorage.getItem('user');
     let inviter = sessionStorage.getItem("Inviter");
     const player = sessionStorage.getItem('player');
@@ -478,6 +479,7 @@ export function initialize() {
             sessionStorage.removeItem("duelGame");
             sessionStorage.setItem('WS', 'clean');
             wsPong =  null;
+            sessionStorage.setItem("pongGame", "false");
         }
     }
 
@@ -509,13 +511,14 @@ export function initialize() {
         });
     }
     else if (modality2 == 'remote' || modality2 == 'tourn-remote') {
-        const player_id = sessionStorage.getItem("player");
+        const playerID = sessionStorage.getItem('player');
+        const friendID = sessionStorage.getItem('friendID');
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
                 wsPong.send(JSON.stringify({
                     'action': 'move_paddle',
                     'message': {
-                        'user': player_id,
+                        'user': playerID,
                         'key': event.key
                     }
                 }));
@@ -526,7 +529,7 @@ export function initialize() {
                 wsPong.send(JSON.stringify({
                     'action': 'stop_paddle',
                     'message': {
-                        'user': player_id,
+                        'user': playerID,
                         'key': event.key
                     }
                 }));

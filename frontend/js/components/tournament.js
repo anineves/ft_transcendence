@@ -83,7 +83,8 @@ export const selectTournamentPlayers = () => {
 export const setupTournament = () => {
     const app = document.getElementById('app');
     const playersCount = sessionStorage.getItem('playersCount');
-    const nickname = sessionStorage.getItem('nickname');
+    const nickname2 = sessionStorage.getItem('nickname');
+    const nickname = nickname2.replace(/^"|"$/g, '');
     let playersForm = '<div class="player-inputs-container">';
 
     for (let i = 1; i <= playersCount; i++) {
@@ -195,7 +196,8 @@ export const initializeTournament = () => {
 
 const startMatch = () => {
     const rounds = JSON.parse(sessionStorage.getItem('rounds'));
-    const nickname = sessionStorage.getItem('nickname');
+    const nickname2 = sessionStorage.getItem('nickname');
+    const nickname = nickname2.replace(/^"|"$/g, '');
     const currentRound = parseInt(sessionStorage.getItem('currentRound'), 10);
     resetGameState();
     resetGameSnake();

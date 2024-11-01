@@ -45,56 +45,53 @@ export const renderPong = () => {
     `;
     resetGameState(); 
     startPongGame();
-
-    const recordMatchResult = async () => {
-        const id = sessionStorage.getItem('id_match');
-        const modality2 = sessionStorage.getItem('modality');
-        let inviter = sessionStorage.getItem("Inviter");
-        let nickTorn = sessionStorage.getItem("nickTorn");
-        let opponent =1;
-        let winner_id = 1;
-        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
-            try {
-                
-              
-                winner_id = opponent;
-                const score = `${0}-${5}}`;
-                const duration = "10";
-
-                const apiUrl = window.config.API_URL;
-                const urlmatchID = `${apiUrl}/api/match/${id}`;
-                const response = await fetch(urlmatchID, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ winner_id, score, duration })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    console.log('Match updated successfully:', data);
-                } else {
-                    console.error('Error updating match:', data);
-                }
-            } catch (error) {
-                console.error('Error processing match:', error);
-            }
-        }
-    };
-
-    const endGameWithScore = async () => {
-        await recordMatchResult();
-        stopGame();
-        setTimeout(() => {
-            navigateTo('/selector-playerOrAi');
-        }, 200);
-    };
-
     if(showButtons)
         document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
 
  
+};
+
+export const recordMatchResult = async () => {
+    const id = sessionStorage.getItem('id_match');
+    const modality2 = sessionStorage.getItem('modality');
+    let inviter = sessionStorage.getItem("Inviter");
+    let nickTorn = sessionStorage.getItem("nickTorn");
+    let opponent =1;
+    let winner_id = 1;
+    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
+        try {
+        
+            winner_id = opponent;
+            const score = `${0}-${5}}`;
+            const duration = "10";
+            const apiUrl = window.config.API_URL;
+            const urlmatchID = `${apiUrl}/api/match/${id}`;
+            const response = await fetch(urlmatchID, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ winner_id, score, duration })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log('Match updated successfully:', data);
+            } else {
+                console.error('Error updating match:', data);
+            }
+        } catch (error) {
+            console.error('Error processing match:', error);
+        }
+    }
+};
+
+export const endGameWithScore = async () => {
+    await recordMatchResult();
+    stopGame();
+    setTimeout(() => {
+        navigateTo('/selector-playerOrAi');
+    }, 200);
 };
