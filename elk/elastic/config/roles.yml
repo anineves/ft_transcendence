@@ -1,0 +1,3 @@
+kibana_monitor:
+  cluster:
+    - monitor 

@@ -4,14 +4,12 @@ server.port: 5601
 server.ssl.enabled: true
 server.ssl.certificate: /usr/share/kibana/config/certs/kibana.crt
 server.ssl.key: /usr/share/kibana/config/certs/kibana.key
-elasticsearch.username: "kibana"
-elasticsearch.password: "kibanapw"
-elasticsearch.hosts: [ "https://elasticsearch:9200" ]
+elasticsearch.ssl.certificateAuthorities: ["/usr/share/kibana/config/certs/ca.crt"]
+#elasticsearch.username: "myuser"
+#elasticsearch.password: "LLLvFuc4q1V6bzi9mU1P"
+#elasticsearch.hosts: [ "https://elasticsearch:9200" ]
 elasticsearch.ssl.verificationMode: "none"
 elasticsearch.requestTimeout: 60000
 monitoring.ui.container.elasticsearch.enabled: true
-xpack.encryptedSavedObjects.encryptionKey: "encryptkeypleaseineedtohave32ire"
-xpack.reporting.encryptionKey: "encryptKeyRep"
-#xpack.security.enrollment.enabled: false
-#xpack.security.enabled: false
-#NODE_OPTIONS: "--openssl-legacy-provider"
+xpack.encryptedSavedObjects.encryptionKey: "afb7fe8a0b615a7fe3e114149ce62871"
+xpack.security.encryptionKey: "afb7fe8a0b615a7fe3e114149ce62871"

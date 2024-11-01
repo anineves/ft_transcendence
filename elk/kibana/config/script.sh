@@ -6,7 +6,7 @@ echo "Waiting Kibana to initialize..."
 echo "Creating Nginx Logs Dashboard..."
 
 # Create the Dashboard for Nginx
-DASHBOARD_NGINX=$(curl -X POST "https://localhost:5601/api/saved_objects/dashboard" \
+DASHBOARD_NGINX=$(curl -X POST "http://localhost:5601/api/saved_objects/dashboard" \
     -H "Content-Type: application/json" \
     -H "kbn-xsrf: true" \
     -d '{
@@ -26,7 +26,7 @@ echo "Dashboard ID: $DASHBOARD_NGINX_ID"
 # Creating data-view for logstash
 echo "Creating Data View for logstash-*..."
 
-DATA_VIEW_NGINX=$(curl -X POST "https://localhost:5601/api/data_views/data_view" \
+DATA_VIEW_NGINX=$(curl -X POST "http://localhost:5601/api/data_views/data_view" \
     -H "Content-Type: application/json" \
     -H "kbn-xsrf: true" \
     -d '{
@@ -46,7 +46,7 @@ echo "Dashboard and Data View created successfully!"
 # Create the visualization for Nginx
 echo "Creating Nginx Visualization..."
 
-VISUALIZATION_NGINX=$(curl -X POST "https://localhost:5601/api/saved_objects/visualization" \
+VISUALIZATION_NGINX=$(curl -X POST "http://localhost:5601/api/saved_objects/visualization" \
     -H "Content-Type: application/json" \
     -H "kbn-xsrf: true" \
     -d '{

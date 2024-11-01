@@ -49,16 +49,12 @@ services:
       context: ./elk/elastic
       dockerfile: Dockerfile
     environment:
-      - ELASTIC_USERNAME=elastic
-      - ELASTIC_PASSWORD=elastic
+      - "ELASTIC_USERNAME=elastic"
+      - "ELASTIC_PASSWORD=elastic"
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms521m -Xmx521m"
-#      - "xpack.security.enabled=false"
-#      - network.host=0.0.0.0
     volumes:
-      - ./elk/elastic/myssl:/myssl
-#      - ./elk/elastic/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-#      - ./elk/elastic/data:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/ca_cert/
     restart: on-failure
     ports:
       - "9200:9200"
@@ -75,6 +71,7 @@ services:
       - ./elk/logstash/pipeline/my_pipeline.conf:/etc/logstash/conf.d/logstash.conf
       - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
       - ./logs:/var/log/nginx
+      - ./certs:/usr/share/kibana/config/certs
     depends_on:
       - elasticsearch
     restart: on-failure
@@ -89,13 +86,11 @@ services:
       context: ./elk/kibana
       dockerfile: Dockerfile
     volumes:
-#      - ./elk/kibana/myssl:/myssl
       - ./elk/kibana/config/script.sh:/script.sh
     environment:
-      #- "xpack.security.encryptionKey"
-      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
-      - NODE_OPTIONS=--openssl-legacy-provider
-      - "xpack.encryptedSavedObjects.encryptionKey"
+      - "ELASTICSEARCH_HOSTS=https://elasticsearch:9200"
+      - "ELASTICSEARCH_USERNAME=myuser"
+      - "ELASTICSEARCH_PASSWORD=LLLvFuc4q1V6bzi9mU1P"
       - "xpack.security.enabled: true"
     depends_on:
       - elasticsearch
