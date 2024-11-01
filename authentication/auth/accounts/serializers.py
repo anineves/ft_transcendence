@@ -96,7 +96,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     total_winner = serializers.IntegerField(read_only=True) 
     pong_winner = serializers.IntegerField(read_only=True)
     linha_winner = serializers.IntegerField(read_only=True)
-    status = serializers.SerializerMethodField()
+    # status = serializers.SerializerMethodField()
 
     class Meta:
         model = Player
@@ -115,16 +115,8 @@ class PlayerSerializer(serializers.ModelSerializer):
         instance.save()
         return(instance)
     
-    def get_status(self, obj):
-        return obj.get_status_display()
-
-    def update(self, instance, validated_data):
-        instance.status=validated_data.get('status', instance.status)
-        instance.save()
-        return(instance)
-    
-    def get_status(self, obj):
-        return obj.get_status_display()
+    # def get_status(self, obj):
+    #     return obj.get_status_display()
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
