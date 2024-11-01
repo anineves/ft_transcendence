@@ -94,16 +94,14 @@ export const startPongGame = async () => {
                     }));
                 }
 
-            console.log("entrei disconct")
             drawGameOver(playerScore, opponentScore);
             stopGame();
             const id = sessionStorage.getItem('id_match');
             let winner_id = opponent;
             if (id)  {
-                console.log("id", id)
                 try {
                     console.log("close", wsPong);
-                    closePongSocket(wsPong);
+
                     wsPong = null;
                     if (playerScore > opponentScore)
                         winner_id = player;
@@ -130,20 +128,11 @@ export const startPongGame = async () => {
                     alert('An error occurred while processing the match.');
                 }
             }
-            if (sessionStorage.getItem('modality') == 'tournament') {
-                sessionStorage.setItem('game', 'pong');
-                showNextMatchButton();
-            }
-            if(sessionStorage.getItem('modality') == 'tourn-remote')
-            {
-                const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
-                const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
-                endMatch(winner); 
-            }
             sessionStorage.removeItem("Inviter");
             sessionStorage.removeItem("groupName");
             sessionStorage.removeItem("id_match");
             sessionStorage.setItem('WS', 'clean');
+            sessionStorage.removeItem("duelGame");
             wsPong =  null;
             }
             if (data.action === 'ball_track') {
@@ -163,6 +152,7 @@ export const startPongGame = async () => {
        
     }
 
+    //window.addEventListener('popstate
     initialize();
 };
 
@@ -484,6 +474,7 @@ export function initialize() {
             sessionStorage.removeItem("Inviter");
             sessionStorage.removeItem("groupName");
             sessionStorage.removeItem("id_match");
+            sessionStorage.removeItem("duelGame");
             sessionStorage.setItem('WS', 'clean');
             wsPong =  null;
         }

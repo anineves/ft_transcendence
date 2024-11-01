@@ -82,7 +82,9 @@ export const renderSnake = () => {
 
     
 
-    document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
+    if(showButtons)
+        document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
+
 
     
     const speedButtons = document.querySelectorAll('.arcade-button[data-speed]');

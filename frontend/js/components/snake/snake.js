@@ -91,18 +91,63 @@ export const startSnakeGame = async () => {
             document.addEventListener('keydown', handleKeyPress);
         }
 
-        ws.onmessage = (event) => {
+        ws.onmessage = async (event) => {
 
             const data = JSON.parse(event.data);
             let message = data.message
             if(data.action == 'player_disconnect')
             {
-                ws =  null;
+                if (ws) {
+                    ws.send(JSON.stringify({
+                        'action': 'end_game',
+                        'message': {
+                            'group_name': groupName,
+                        }
+                    }));
+                }
+               
                 drawGameOver();
+            const id = sessionStorage.getItem('id_match');
+            console.log("IDDDD:", id);
+            let winner_id = opponent;
+            if (id)  {
+                try {
+                    ws = null   
+                    let nameWinner = sessionStorage.getItem('losingSnake');
+                    if (nameWinner == 'player')
+                        winner_id = player;
+                    const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
+                    const duration = "10";
+                    if(modality2 == 'remote' || modality2 == 'tourn-remote')
+                        ws =  null;
+                    const urlMatchesID = `${apiUrl}/api/match/${id}`;
+                    const response = await fetch(urlMatchesID, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ winner_id, score, duration })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        console.log('Match updated successfully:', data);
+                    } else {
+                        console.error('Error updating match:', data);
+                    }
+                } catch (error) {
+                    console.error('Error processing match:', error);
+                    alert('An error occurred while processing the match.');
+                }
+            }
                 sessionStorage.removeItem("Inviter");
                 sessionStorage.removeItem("groupName");
+                sessionStorage.removeItem("id_match");
                 sessionStorage.setItem('WS', 'clean');
                 sessionStorage.removeItem("losingSnake");
+                sessionStorage.removeItem("duelGame");
                 ws =  null;         
             }
 
@@ -175,7 +220,6 @@ export const startSnakeGame = async () => {
             sessionStorage.removeItem('friendID');
             sessionStorage.removeItem('playerID');
             sessionStorage.removeItem('duelGame');
-            sessionStorage.removeItem('modality');
             sessionStorage.removeItem('players');
             sessionStorage.removeItem("Inviter");
             sessionStorage.removeItem("groupName");
@@ -217,6 +261,7 @@ export const startSnakeGame = async () => {
                 const data = await response.json();
 
                 if (data) {
+                    console.log('Match created successfully:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
                     console.error('Match error', data);
@@ -256,9 +301,10 @@ export const startSnakeGame = async () => {
                 ws = null;
             }
             sessionStorage.removeItem("Inviter");
-                sessionStorage.removeItem("groupName");
-                sessionStorage.setItem('WS', 'clean');
-                sessionStorage.removeItem("losingSnake");
+            sessionStorage.removeItem("groupName");
+            sessionStorage.removeItem("id_match");
+            sessionStorage.setItem('WS', 'clean');
+            sessionStorage.removeItem("duelGame");
                 ws =  null;         
             drawGameOver();
             //navigateTo('/'); 
@@ -274,9 +320,10 @@ export const startSnakeGame = async () => {
             ws = null
         }
         sessionStorage.removeItem("Inviter");
-                sessionStorage.removeItem("groupName");
-                sessionStorage.setItem('WS', 'clean');
-                sessionStorage.removeItem("losingSnake");
+        sessionStorage.removeItem("groupName");
+        sessionStorage.removeItem("id_match");
+        sessionStorage.setItem('WS', 'clean');
+        sessionStorage.removeItem("duelGame");
                 ws =  null;         
         stopGame();
     };
@@ -602,8 +649,10 @@ async function drawGame() {
                 endMatch(winner); 
         }
         sessionStorage.removeItem("Inviter");
-        sessionStorage.removeItem("groupName");
-        sessionStorage.setItem('WS', 'clean');
+            sessionStorage.removeItem("groupName");
+            sessionStorage.removeItem("id_match");
+            sessionStorage.setItem('WS', 'clean');
+            sessionStorage.removeItem("duelGame");
         sessionStorage.removeItem("losingSnake");
         
         ws =  null;
@@ -696,6 +745,7 @@ export function stopGame() {
     const modality = sessionStorage.getItem('modality');
     clearInterval(gameInterval);
     const giveUp = sessionStorage.getItem('giveUP');
+    console.log("modality Stop game", modality)
     if (modality == 'remote'  || giveUp == 'true') {
         sessionStorage.setItem('giveUP', 'false')
         setTimeout(() => {
