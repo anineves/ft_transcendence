@@ -54,7 +54,8 @@ services:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms521m -Xmx521m"
     volumes:
-      - ./certs:/usr/share/elasticsearch/config/ca_cert/
+      - certsvol:/usr/share/elasticsearch/config/ca_cert/
+      - certsvol:/usr/share/elasticsearch/config/certs/
     restart: on-failure
     ports:
       - "9200:9200"
@@ -71,7 +72,6 @@ services:
       - ./elk/logstash/pipeline/my_pipeline.conf:/etc/logstash/conf.d/logstash.conf
       - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
       - ./logs:/var/log/nginx
-      - ./certs:/usr/share/kibana/config/certs
     depends_on:
       - elasticsearch
     restart: on-failure
@@ -87,6 +87,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./elk/kibana/config/script.sh:/script.sh
+      - certsvol:/usr/share/kibana/config/certs/
     environment:
       - "ELASTICSEARCH_HOSTS=https://elasticsearch:9200"
       - "ELASTICSEARCH_USERNAME=myuser"
@@ -102,6 +103,7 @@ services:
 
 volumes:
   postgres_data:
+  certsvol:
 
 networks:
   Transcendence:
