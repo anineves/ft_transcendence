@@ -1,5 +1,6 @@
 import { startSnakeGame, stopGame, changeGameSpeed, addExtraFood } from './snake/snake.js';
 import { navigateTo } from '../utils.js';
+import { endGameWithScore } from './pong.js';
 export const renderSnake = () => {
     let inviter = sessionStorage.getItem("Inviter");
     const apiUrl = window.config.API_URL;
@@ -29,63 +30,9 @@ export const renderSnake = () => {
     `;
 
     startSnakeGame();
-
-    const recordMatchResult = async () => {
-        const id = sessionStorage.getItem('id_match');
-        const remote = sessionStorage.getItem('remote');
-        const player = sessionStorage.getItem('player');
-        let opponent =1;
-        let winner_id = 1;
-        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
-    (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
-        if (player) {
-            try {
-                
-              
-                winner_id = opponent;
-                const score = `${0}-${5}}`;
-                const duration = "10";
-
-                const apiUrl = window.config.API_URL;
-                const urlMatchesID = `${apiUrl}/api/match/${id}`;
-                const response = await fetch(urlMatchesID, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ winner_id, score, duration })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    console.log('Match updated successfully:', data);
-                } else {
-                    console.error('Error updating match:', data);
-                }
-            } catch (error) {
-                console.error('Error processing match:', error);
-            }
-        }
-    }
-    };
-
-    const endGameWithScore = async () => {
-        await recordMatchResult();
-        stopGame();
-        setTimeout(() => {
-            navigateTo('/snake-selector');
-        }, 200);
-    };
-
-    
-
     if(showButtons)
         document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
 
-
-    
     const speedButtons = document.querySelectorAll('.arcade-button[data-speed]');
     speedButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -93,9 +40,18 @@ export const renderSnake = () => {
             changeGameSpeed(speed);
         });
     });
-
+    
     
     document.getElementById('extraFoodButton').addEventListener('click', () => {
         addExtraFood();
     });
 };
+
+   
+    
+
+   
+    
+
+
+

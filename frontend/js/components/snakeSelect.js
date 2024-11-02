@@ -64,7 +64,7 @@ export const snakeSelect= () => {
         </div>
     `;
 
-    
+    sessionStorage.setItem("snakeGame", "false");
     document.getElementById('vsPlayerBtn').addEventListener('click', () => {
         sessionStorage.setItem('game', 'snake');
         sessionStorage.setItem('modality', 'player');

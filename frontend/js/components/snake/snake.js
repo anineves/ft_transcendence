@@ -2,6 +2,7 @@ import { initPongSocket } from '../pong/pongSocket.js'
 import { showNextMatchButton } from '../pong/pong.js';
 import { endMatch } from '../tournament.js';
 import { navigateTo } from '../../utils.js';
+import { visibilitychange } from '../../handlevisiblity.js';
 const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
 
@@ -30,13 +31,14 @@ let snakeOpponent = {
 };
 
 let foods = [{ x: null, y: null }];
-
+let  visiblity;
 
 export const startSnakeGame = async () => {
     let modality2 = sessionStorage.getItem('modality');
     const user = sessionStorage.getItem('user');
-   
+    visiblity = "true";
     canvas = document.getElementById('snakeCanvas');
+    sessionStorage.setItem("snakeGame", "true");
     if (!canvas) {
         console.error("Canvas element with id 'snakeCanvas' not found.");
         return;
@@ -273,122 +275,9 @@ export const startSnakeGame = async () => {
             }
         }
     }
-    const handleVisibilityChange = () => {
-        if (window.location.href !== `${apiUrl}/snake`) {
-            cleanup();
-            return; 
-        }
-        
-        const user = sessionStorage.getItem('user');
-        const user_json = JSON.parse(user);
-        let friendID = sessionStorage.getItem('friendID');
-        let playerID = sessionStorage.getItem('player');
-        let inviter = sessionStorage.getItem("Inviter");
-        let groupName = sessionStorage.getItem('groupName');
-        let modality = sessionStorage.getItem('modality');
 
-        if (modality == 'remote' || modality2 == 'tourn-remote') {
-            if (ws) {
-                ws.send(JSON.stringify({
-                    'action': 'player_disconnect',
-                    'message': {
-                        'player_id': playerID,
-                        'friend_id': friendID,
-                        'inviter': inviter,
-                        'group_name': groupName,
-                    }
-                }));
-                ws.close();
-                ws = null;
-            }
-            sessionStorage.removeItem("Inviter");
-            sessionStorage.removeItem("groupName");
-            sessionStorage.removeItem("id_match");
-            sessionStorage.setItem('WS', 'clean');
-            sessionStorage.removeItem("duelGame");
-                ws =  null;         
-            drawGameOver();
-            //navigateTo('/'); 
-        }
-    };
-
-    const handleOffline = () => {
-        if (ws) {
-            ws.send(JSON.stringify({
-                'action': 'end_game'
-            }));
-            ws.close();
-            ws = null
-        }
-        sessionStorage.removeItem("Inviter");
-        sessionStorage.removeItem("groupName");
-        sessionStorage.removeItem("id_match");
-        sessionStorage.setItem('WS', 'clean');
-        sessionStorage.removeItem("duelGame");
-                ws =  null;         
-        stopGame();
-    };
-
- 
-    window.addEventListener('offline', handleVisibilityChange);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    //window.addEventListener('popstate', handleVisibilityChange);
-
-  
-    const originalPushState = history.pushState;
-    history.pushState = function(...args) {
-        originalPushState.apply(this, args);
-        handleVisibilityChange(); 
-    };
-
-    const originalReplaceState = history.replaceState;
-    history.replaceState = function(...args) {
-        originalReplaceState.apply(this, args);
-        handleVisibilityChange(); 
-    };
-
-    const cleanup = () => {
-        const user = sessionStorage.getItem('user');
-
-        let friendID = sessionStorage.getItem('friendID');
-        let playerID = sessionStorage.getItem('player');
-        let inviter = sessionStorage.getItem("Inviter");
-        let groupName = sessionStorage.getItem('groupName');
-
-        if (ws) {
-            ws.send(JSON.stringify({
-                'action': 'player_disconnect',
-                'message': {
-                    'player_id': playerID,
-                    'friend_id': friendID,
-                    'inviter': inviter,
-                    'group_name': groupName,
-                }
-            }));
-            ws.close(); 
-            ws = null;
-            sessionStorage.removeItem("Inviter");
-                sessionStorage.removeItem("groupName");
-                sessionStorage.setItem('WS', 'clean');
-                sessionStorage.removeItem("losingSnake");
-                ws =  null;         
-            sessionStorage.setItem("giveUP", 'true');
-            drawGameOver();
-            //stopGame();
-            //navigateTo('/'); 
-        }
-        window.removeEventListener('offline', handleOffline);
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        window.removeEventListener('popstate', handleVisibilityChange);
-        history.pushState = originalPushState; 
-        history.replaceState = originalReplaceState; 
-    };
-
-    if (window.location.href !== `${apiUrl}/snake`) {
-        cleanup();
-    }
-    
-
+    if (modality2 == 'remote' || modality2 == 'tourn-remote') 
+        visibilitychange(ws, visiblity);
 }
 
 function handleKeyPress(event) {
@@ -524,15 +413,6 @@ function checkCollisions() {
             endGame();
             return;
         }
-
-        // o próprio corpo
-        /*for (let i = 1; i < snake.body.length; i++) {
-            if (head.x === snake.body[i].x && head.y === snake.body[i].y) {
-                sessionStorage.setItem("losingSnake", name);
-                endGame();
-                return;
-            }
-        }*/
     }
 
    
@@ -665,6 +545,7 @@ async function drawGame() {
             sessionStorage.setItem('WS', 'clean');
             sessionStorage.removeItem("duelGame");
         sessionStorage.removeItem("losingSnake");
+        sessionStorage.setItem("snakeGame", "false");
         
         ws =  null;
     }

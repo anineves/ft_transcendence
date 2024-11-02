@@ -22,6 +22,7 @@ import { renderSnake } from './components/snake.js';
 import { snakeSelect } from './components/snakeSelect.js';
 import { closeSocket } from './components/live-chat.js';
 import { endGameWithScore } from './components/pong.js';
+//import { Pond3dtotal } from './components/pong/3dpong.js';
 
 
 
@@ -64,6 +65,7 @@ export const routes = {
     '/3d-pong': render3DPong,
     '/3d-snake': render3Snake,
     '/stats': stats,
+    //'/3dPong': Pond3dtotal,
 };
 
 const protectedRoutes = [
@@ -106,19 +108,22 @@ export const render = () => {
   // Obtém o estado atual do histórico
         updateFooterTranslation();
     const pong = sessionStorage.getItem("pongGame");
-    if(pong == "true" && sessionStorage.getItem('modality') == 'remote')
+    const snake = sessionStorage.getItem("snakeGame");
+    if((pong == "true" || snake == "true")&& sessionStorage.getItem('modality') == 'remote')
     {
         sessionStorage.setItem("pongGame", "false");
+        sessionStorage.setItem("snakeGame", "false");
         //endGameWithScore();
         navigateTo('/live-chat');
         return;
     }
-    if(pong == "true")
+    if(pong == "true" || snake == "true")
     {
         sessionStorage.setItem("pongGame", "false");
+        sessionStorage.setItem("snakeGame", "false");
         console.log("aquiiiiii")
         endGameWithScore();
-        navigateTo('/select-playerOrAI');
+        navigateTo('/game-selection');
         return;
     }
 
@@ -186,22 +191,25 @@ export const logout = () => {
 window.addEventListener('popstate', () => {
     // Verifica se a rota é /pong ou /snake com modalidade "remote" apenas quando o usuário usa "voltar" ou "avançar"
     const pong = sessionStorage.getItem("pongGame");
+    const snake = sessionStorage.getItem("snakeGame");
     const id = sessionStorage.getItem('id_match');
     const path = window.location.pathname;
     const modality = sessionStorage.getItem("modality");
-    if(pong == "true" && modality == 'remote')
+    if((pong == "true" || snake == "true")&& modality == 'remote')
     {console.log("aquiiiiii3 return")
             sessionStorage.setItem("pongGame", "false");
+            sessionStorage.setItem("snakeGame", "false");
             //endGameWithScore();
             navigateTo('/live-chat');
             return;
     }
-    if(pong == "true")
+    if(pong == "true" || snake == "true")
     {
         sessionStorage.setItem("pongGame", "false");
+        sessionStorage.setItem("snakeGame", "false");
         console.log("aquiiiiii return")
         endGameWithScore();
-        navigateTo('/select-playerOrAI');
+        navigateTo('/game-selection');
         return;
     }
    

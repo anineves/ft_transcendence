@@ -8,6 +8,7 @@ let socket;
 export const liveChat = () => {
     sessionStorage.setItem('giveUPtr', 'false')
     sessionStorage.setItem("pongGame", "false");
+    sessionStorage.setItem("snakeGame", "false");
     const player = sessionStorage.getItem('player');
     if(!player){
         navigateTo('/create-player');

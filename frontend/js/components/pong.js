@@ -95,6 +95,6 @@ export const endGameWithScore = async () => {
       });
     stopGame();
     setTimeout(() => {
-        navigateTo('/select-playerOrAI');
+        navigateTo('/game-selection');
     }, 200);
 };
