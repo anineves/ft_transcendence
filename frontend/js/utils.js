@@ -117,19 +117,25 @@ export const render = () => {
     {
         if(sessionStorage.getItem('modality') == '3D'  && pong == "true")
         {
+            sessionStorage.setItem("pongGame", "false");
+            sessionStorage.setItem("snakeGame", "false");
             stop3DGame();
             return;
         }
         if(sessionStorage.getItem('modality') == '3D'  && snake == "true")
         {
+            sessionStorage.setItem("pongGame", "false");
+            sessionStorage.setItem("snakeGame", "false");
             stop3DSnakeGame();
             return;
         }
 
-        if(sessionStorage.getItem('modality') == 'remote')
+        if(sessionStorage.getItem('modality') == 'remote' && (pong == "true" || snake == "true"))
         {
-                navigateTo('/live-chat');
-                return;
+            sessionStorage.setItem("pongGame", "false");
+            sessionStorage.setItem("snakeGame", "false");
+            navigateTo('/live-chat');
+            return;
         }
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
@@ -207,19 +213,25 @@ window.addEventListener('popstate', () => {
         {
             if(sessionStorage.getItem('modality') == '3D'  && pong == "true")
             {
+                sessionStorage.setItem("pongGame", "false");
+                sessionStorage.setItem("snakeGame", "false");
                 stop3DGame();
                 return;
             }
             if(sessionStorage.getItem('modality') == '3D'  && snake == "true")
             {
+                sessionStorage.setItem("pongGame", "false");
+                sessionStorage.setItem("snakeGame", "false");
                 stop3DSnakeGame();
                 return;
             }
     
-            if(sessionStorage.getItem('modality') == 'remote')
+            if(sessionStorage.getItem('modality') == 'remote' && (pong == "true" || snake == "true"))
             {
-                    navigateTo('/live-chat');
-                    return;
+                sessionStorage.setItem("pongGame", "false");
+                sessionStorage.setItem("snakeGame", "false");
+                        navigateTo('/live-chat');
+                        return;
             }
                 sessionStorage.setItem("pongGame", "false");
                 sessionStorage.setItem("snakeGame", "false");

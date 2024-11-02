@@ -7,22 +7,36 @@ export const visibilitychange = (wsPong, visiblity) => {
             cleanup();
             return; 
         }
+    
         console.log("fuiii chamada");
         if (visiblity == "true")
         {
-            visiblity = "false";
-            console.log("Entrei Handle")
+            visiblity = "false"
             
             const user = sessionStorage.getItem('user');
             const user_json = JSON.parse(user);
             let friendID = sessionStorage.getItem('friendID');
-            let playerID = sessionStorage.getItem('player');
+            let playerID = sessionStorage.getItem('playerID');
             let inviter = sessionStorage.getItem("Inviter");
             let groupName = sessionStorage.getItem('groupName');
             let modality = sessionStorage.getItem('modality');
-    
+            let player = JSON.parse(sessionStorage.getItem('playerInfo'));
+            let whoGiveUp 
             if (modality == 'remote' || modality == 'tourn-remote') {
                 if (wsPong) {
+                    if(player.id == friendID)
+                    {   
+                        sessionStorage.setItem("whoGiveUp", "Ifriend");
+                        whoGiveUp = sessionStorage.getItem('whoGiveUp')
+                        console.log("WHOOOO", whoGiveUp, "friend", friendID, "player", player.id);
+                    }
+                    else
+                    {
+                        sessionStorage.setItem("whoGiveUp", "Iplayer");
+                        whoGiveUp = sessionStorage.getItem('whoGiveUp')
+                        console.log("WHOOOO", whoGiveUp, "friend", friendID, "player", player.id);
+
+                    }
                     wsPong.send(JSON.stringify({
                         'action': 'player_disconnect',
                         'message': {

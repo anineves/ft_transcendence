@@ -1,5 +1,6 @@
 import { navigateTo, checkLoginStatus } from '../utils.js';
 const apiUrl = window.config.API_URL;
+import { putPlayer } from './login.js';
 export const createPlayer = () => {
     const app = document.getElementById('app');
     const Player = sessionStorage.getItem("playerInfo");
@@ -102,6 +103,7 @@ export const createPlayer = () => {
                 sessionStorage.setItem('playerInfo', JSON.stringify(data));
                 sessionStorage.setItem('playerID', JSON.stringify(data.id));
                 sessionStorage.setItem('nickname', JSON.stringify(data.nickname));
+                putPlayer("ON");
                 navigateTo('/game-selection'); 
             } else {
                 playerError.textContent += `${translations[savedLanguage].errorNick}`;

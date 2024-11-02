@@ -104,14 +104,17 @@ export const startPongGame = async () => {
             let winner_id = opponent;
             if (id)  {
                 try {
-                    console.log("close", wsPong);
-
                     wsPong = null;
+        
+                    let whoGiveUp = sessionStorage.getItem('whoGiveUp')
+                    if(whoGiveUp == "Ifriend")
+                        playerScore = 5;
+                    if(whoGiveUp == "Iplayer")
+                        opponentScore = 5; 
                     if (playerScore > opponentScore)
                         winner_id = player;
                     const score = `${playerScore}-${opponentScore}`;
                     const duration = "10";
-
                     const urlMatchesID = `${apiUrl}/api/match/${id}`;
                     const response = await fetch(urlMatchesID, {
                         method: 'PUT',
@@ -131,6 +134,7 @@ export const startPongGame = async () => {
                     console.error('Error processing match:', error);
                 }
             }
+
             sessionStorage.removeItem("Inviter");
             sessionStorage.removeItem("groupName");
             sessionStorage.removeItem("id_match");

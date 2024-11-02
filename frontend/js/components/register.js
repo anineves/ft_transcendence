@@ -201,7 +201,6 @@ export const renderRegister = () => {
                     sessionStorage.setItem('jwtToken', loginData.access); 
                     sessionStorage.setItem('refreshToken', loginData.refresh); 
                     sessionStorage.setItem('user', JSON.stringify(loginData.user)); 
-                    putPlayer("ON");
                     checkLoginStatus(); 
                     navigateTo('/create-player', data);  // Redireciona para a próxima página após login
                 } else {
