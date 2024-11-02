@@ -4,6 +4,7 @@ export const createPlayer = () => {
     const app = document.getElementById('app');
     const Player = sessionStorage.getItem("playerInfo");
     const user = JSON.parse(sessionStorage.getItem('user'));
+
     const translations = {
         english: {
             title: 'Create Your Player',
@@ -11,6 +12,8 @@ export const createPlayer = () => {
             submitBtn: 'Submit', 
             created: 'Player already created',
             exitBtn: 'Exit',
+            errorNick: 'This nickname already exists',
+            errorNick2: "Nickname must contain only letters, numbers, and the '-' symbol.",
         },
         portuguese: {
             title: 'Crie Seu Jogador',
@@ -18,6 +21,9 @@ export const createPlayer = () => {
             submitBtn: 'Enviar',
             created: 'Jogador já criado',
             exitBtn: 'Sair',
+            errorNick: 'Este nickname já existe',
+            errorNick2: "O nickname deve conter apenas letras, números e o símbolo '-'."
+
         },
         french: {
             title: 'Créez Votre Joueur',
@@ -25,6 +31,8 @@ export const createPlayer = () => {
             submitBtn: 'Soumettre',
             created: 'Joueur déjà créé',
             exitBtn: 'Quitter',
+            errorNick: 'Ce joueur existe déjà',
+            errorNick2: "Le nickname doit contenir uniquement des lettres, des chiffres et le symbole '-'",
         }
     };
     
@@ -52,6 +60,7 @@ export const createPlayer = () => {
             <h2>${translations[savedLanguage].title}</h2>
             <form id="playerForm">
                <input type="text" id="nickname" placeholder="${translations[savedLanguage].nick}" required class="form-control mb-2">
+                <div id="createPlayerError" class="error-message" style="color:red; font-size: 0.9em;"></div>
                <button type="submit" class="btn">${translations[savedLanguage].submitBtn}</button>
             </form>
         </div>
@@ -61,7 +70,17 @@ export const createPlayer = () => {
         e.preventDefault(); 
 
         const nickname = document.getElementById('nickname').value;
-        
+        const playerError = document.getElementById('createPlayerError');
+        const nameRegex = /^[a-zA-Z0-9-]+$/;
+        let valid = true;
+
+
+        playerError.textContent = '';
+        if(!nameRegex.test(nickname)) {
+            playerError.textContent += `${translations[savedLanguage].errorNick2}`;
+            valid = false;
+        }
+        if (!valid) return;
         sessionStorage.setItem('nickname', nickname);
         const token = sessionStorage.getItem('jwtToken');
         
@@ -85,6 +104,7 @@ export const createPlayer = () => {
                 sessionStorage.setItem('nickname', JSON.stringify(data.nickname));
                 navigateTo('/game-selection'); 
             } else {
+                playerError.textContent += `${translations[savedLanguage].errorNick}`;
                 console.log('Player creation failed: ' + JSON.stringify(data));
             }
         } catch (error) {

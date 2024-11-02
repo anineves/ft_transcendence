@@ -1,4 +1,5 @@
 import { navigateTo, checkLoginStatus  } from '../utils.js';
+import { putPlayer } from './login.js';
 const apiUrl = window.config.API_URL;
 
 export const renderRegister = () => {
@@ -18,7 +19,8 @@ export const renderRegister = () => {
             errorUsername: "Username must contain only letters, numbers, and the '-' symbol.", 
             errorEmail: "Email must be valid.",
             errorPassword: "Password must be at least 8 characters long, including at least one uppercase letter, one lowercase letter, one digit, and a special character _, - or @; other special characters will not be accepted.",
-            errorRepeatPassword: "Passwords do not match."
+            errorRepeatPassword: "Passwords do not match.",
+            errorEmailGeneral: "This e-mail already exist!"
         },
         portuguese: {
             register: "Registar",
@@ -34,7 +36,8 @@ export const renderRegister = () => {
             errorUsername: "O username deve conter apenas letras, números e o símbolo '-'.", 
             errorEmail: "O e-mail deve ser válido.",
             errorPassword: "A palavra-passe deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um dígito e um caracter especial _, - ou @, outros caracteres especiais não serão aceites.",
-            errorRepeatPassword: "As palavras-passe não coincidem."
+            errorRepeatPassword: "As palavras-passe não coincidem.",
+            errorEmailGeneral: "Este e-mail já existe!"
         },
         french: {
             register: "S'inscrire",
@@ -50,7 +53,8 @@ export const renderRegister = () => {
             errorUsername: "Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
             errorEmail: "L'e-mail doit être valide.",
             errorPassword: "Le mot de passe doit contenir au moins 8 caractères, y compris au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial _, - ou @, d'autres caractères spéciaux ne seront pas acceptés.",
-            errorRepeatPassword: "Les mots de passe ne correspondent pas."
+            errorRepeatPassword: "Les mots de passe ne correspondent pas.",
+            errorEmailGeneral: "Cet e-mail existe déjà!"
         }
     };
     
@@ -197,13 +201,14 @@ export const renderRegister = () => {
                     sessionStorage.setItem('jwtToken', loginData.access); 
                     sessionStorage.setItem('refreshToken', loginData.refresh); 
                     sessionStorage.setItem('user', JSON.stringify(loginData.user)); 
+                    putPlayer("ON");
                     checkLoginStatus(); 
                     navigateTo('/create-player', data);  // Redireciona para a próxima página após login
                 } else {
                     console.log('Login after registration failed: ' + JSON.stringify(loginData));
                 }
             } else {
-                // Se o registro falhar, alerta o usuário com a mensagem de erro
+                passwordError.textContent += `${translations[savedLanguage].errorEmailGeneral}`;
                 console.log('Registration failed: ' + JSON.stringify(data));
             }
         } catch (error) {

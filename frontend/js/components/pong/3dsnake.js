@@ -1,3 +1,9 @@
+import { navigateTo } from '../../utils.js';
+
+let animationsnake3d;
+export function init3DSnakeGame() {
+sessionStorage.setItem("snakeGame", "true");
+
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color(0x1f1f2f);
 
@@ -183,10 +189,15 @@ const rightBar = new THREE.Mesh(tableBarTopBotLeftRightMaterial, tableBarMateria
 rightBar.position.set(9.5, 0, 0);
 scene.add(rightBar);
 
-const renderer = new THREE.WebGLRenderer(({ alpha: true }));
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+const app = document.getElementById('app');
 
+// Crie o renderer com o tamanho desejado
+const renderer = new THREE.WebGLRenderer({ alpha: true });
+renderer.setSize(window.innerWidth / 1.5 , window.innerHeight / 1.5);
+
+// Para que o canvas do renderer seja um background no app, você pode fazer o seguinte:
+app.style.position = 'relative'; // Para posicionar corretamente
+app.style.overflow = 'hidden'
 
 //Criar a Snake
 const redSnake = [];
@@ -439,6 +450,7 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', 
 
 
 function showGameOver(result) {
+    console.log("showww");
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
 
     // gameover text
@@ -539,6 +551,7 @@ function redVictory() {
 // NAME OF THE BLUE PLAYER + BLUE VICTORY FUNCTION
 
 function blueVictory() {
+    console.log("entrei bluer")
     scene.remove(food);
     redSnake.forEach(segment => scene.remove(segment));
     blueSnake.forEach(segment => scene.remove(segment));
@@ -582,9 +595,17 @@ function animate(time) {
     window.focus();
     renderer.render(scene, activatedCam);
     if (gameOver) {
-        requestAnimationFrame(animate);
+        setTimeout(() => {
+            stop3DSnakeGame();
+        }, 2000);
         return;
     }
+    renderer.render(scene, activatedCam);
+    
+    app.innerHTML = ''; 
+
+    app.appendChild(renderer.domElement);
+    renderer.domElement.id = "snake3dRender";
 
     //controlar o tempo de movimentacao
     const deltaTime = (time - lastTime) / 1000;
@@ -647,14 +668,41 @@ function animate(time) {
             gameOver = true;
         }
         else if ((redHeadTouch === 2 || blueHeadTouch === 1 || blueScore === 8) && !gameOver) {
-
+            console.log("entreiii else ")
             blueVictory();
             gameOver = true;
         }
     }
 
-    requestAnimationFrame(animate);
+    animationsnake3d = requestAnimationFrame(animate);
 }
 
 
-requestAnimationFrame(animate);
+    animationsnake3d = requestAnimationFrame(animate);
+}
+
+export function stop3DSnakeGame() {
+
+    if (animationsnake3d) {
+        cancelAnimationFrame(animationsnake3d); // Cancela a animação
+        animationsnake3d = null; // Reseta a variável de animação
+    }
+    
+    const app = document.getElementById('app');
+    app.innerHTML = '';
+    const score = document.getElementById('scoreboard');
+    if(score)
+    {
+        score.innerHTML= ''; 
+        score.remove();
+    }
+    const canvas = app.querySelector('canvas');
+    if (canvas) {
+        app.removeChild(canvas);  // Remove o canvas do `app`
+    } // Use innerHTML para limpar todo o conteúdo de forma segura
+    sessionStorage.setItem("snakeGame", "false");
+    // Aguarda um curto intervalo antes de navegar
+    setTimeout(() => {
+        navigateTo('/game-selector');
+    }, 30);
+}

@@ -144,3 +144,14 @@ canvas {
         height: 50px;
     }
 }
+
+#snake3dRender{
+    border: none;
+    background-color: transparent;
+    
+}
+
+#pong3dRender{
+    border: none;
+    background-color: transparent;
+}

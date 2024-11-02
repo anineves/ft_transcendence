@@ -1,29 +1,7 @@
-export const render3Snake = () => {
-    const app = document.getElementById('app');
+import { init3DSnakeGame } from './pong/3dsnake.js';
 
-    app.style.width = "90vw";
-    app.style.height = "90vh";
-    app.style.display = "flex";
-    app.style.justifyContent = "center";
-    app.style.alignItems = "center";
+export const render3DSnake = () => {
+   
+    init3DSnakeGame();  
 
-
-    app.innerHTML = `
-    <div class="three" style="
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        width: 100%; 
-        height: 100%; 
-
-        ">
-        <iframe src="3d-snake.html" style="
-            border: none; 
-            width: 90vw; 
-            height: 80vh; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
-            border-radius: 10px;
-        "></iframe>
-    </div>
-    `;
 };

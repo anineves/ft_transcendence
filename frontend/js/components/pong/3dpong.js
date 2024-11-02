@@ -1,5 +1,11 @@
 // Criar a cena
 import { navigateTo } from '../../utils.js';
+
+let animation3d;
+export function init3DPongGame() {
+sessionStorage.setItem("pongGame", "true");
+
+
 const modality2 = sessionStorage.getItem('modality');
 const user = sessionStorage.getItem('user');
 const user_json = JSON.parse(user);
@@ -141,9 +147,16 @@ pointLight_middle.position.set(0, 2, 10);
 scene.add(pointLight_middle);
 
 // Criar o renderizador
-const renderer = new THREE.WebGLRenderer(({ alpha: true }));
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+const app = document.getElementById('app');
+
+// Crie o renderer com o tamanho desejado
+const renderer = new THREE.WebGLRenderer({ alpha: true });
+renderer.setSize(window.innerWidth / 1.5 , window.innerHeight / 1.5);
+
+// Para que o canvas do renderer seja um background no app, você pode fazer o seguinte:
+app.style.position = 'relative'; // Para posicionar corretamente
+app.style.overflow = 'hidden';  // Anexa o canvas criado ao `app`
+
 
 
 // Criacao Mesa
@@ -320,7 +333,7 @@ function showGameOver(PlayerVictoryMaterial) {
             bevelOffset: 0,
             bevelSegments: 5
         });
-        PlayerVictoryMaterial = new THREE.MeshStandardMaterial({color: 0xff00ff});
+        PlayerVictoryMaterial = new THREE.MeshStandardMaterial({color: 0x0066cc});
     } else if (winred) {
         PlayerVictoryGeometry = new THREE.TextGeometry(`${redNickname}`, {
             font: loadedFont,
@@ -386,7 +399,9 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', 
 
 
 function scoreBoard() {
+    const app = document.getElementById('app');
     const scoreboard = document.createElement('div');
+    app.innerHTML += `<div>`;
     scoreboard.id = 'scoreboard';
     scoreboard.style.position = 'absolute';
     scoreboard.style.top = '40px';
@@ -411,7 +426,7 @@ function scoreBoard() {
 
     const blueScoreText = document.createElement('span');
     blueScoreText.id = 'blue-score';
-    blueScoreText.style.color = 'blue';
+    blueScoreText.style.color = '#0066cc';
     blueScoreText.style.textShadow = '1px 1px 2px white, -1px -1px 2px white'; // Adiciona contorno
     blueScoreText.textContent = blueScore + ' ' + blueNickname;
 
@@ -433,8 +448,8 @@ function updateScoreBoard() {
 let ballMoving = true;
 let redScore = 0;
 let blueScore = 0;
-let ballSpeedX = 0.06;
-let ballSpeedZ = 0.06;
+let ballSpeedX = 0.1;
+let ballSpeedZ = 0.1;
 const paddleSpeed = 0.08;
 let gameOver = false;
 
@@ -443,18 +458,28 @@ scoreBoard();
 // funcao de animacao do jogo
 document.addEventListener('keydown', onDocumentKeyDown);
 document.addEventListener('keyup', onDocumentKeyUp);
+let isAnimating = true;
 
 function animate() {
     window.focus();
     renderer.render(scene, activatedCam);
-    requestAnimationFrame(animate);
+    
     if (gameOver) {
+        setTimeout(() => {
+            stop3DGame();
+        }, 2000);
         return;
     }
+    animation3d = requestAnimationFrame(animate);
+    app.innerHTML = '';  // Isso limpa o conteúdo, mas não o canvas diretamente.
 
-    
+    // Renderiza a cena
+    renderer.render(scene, activatedCam);
 
-    // paddle vermelho
+    // Anexar o canvas ao app temporariamente
+    app.appendChild(renderer.domElement);
+    renderer.domElement.id = "pong3dRender";
+
     if (keyState['w']) {
         paddle_player_red.position.z -= paddleSpeed;
         if (paddle_player_red.position.z <= -2.15) {
@@ -467,8 +492,6 @@ function animate() {
             paddle_player_red.position.z = 2.15;
         }
     }
-
-    // paddle azul
     if (keyState['ArrowUp']) {
         paddle_player_blue.position.z -= paddleSpeed;
         if (paddle_player_blue.position.z <= -2.15) {
@@ -481,48 +504,40 @@ function animate() {
             paddle_player_blue.position.z = 2.15;
         }
     }
-
-    //animaçao da Bola
     if (ballMoving) {
         ball.position.x += ballSpeedX;
         ball.position.z += ballSpeedZ;
     }
-    
-    // com barras laterais
     if (ball.position.z >= (3 - 0.16) || ball.position.z <= (-3 + 0.16))
         ballSpeedZ = -ballSpeedZ;
-    
-    //com os paddles
     if (ball.position.x <= paddle_player_red.position.x + 0.16 && 
         (ball.position.z >= paddle_player_red.position.z - 0.6 && 
         ball.position.z <= paddle_player_red.position.z + 0.6)) {
         ballSpeedX = -ballSpeedX;
-    }
+        ball.position.x = paddle_player_red.position.x + 0.17;
 
+    }
     if (ball.position.x >= paddle_player_blue.position.x - 0.16 && 
         (ball.position.z >= paddle_player_blue.position.z - 0.6 && 
         ball.position.z <= paddle_player_blue.position.z + 0.6)) {
         ballSpeedX = -ballSpeedX;
+        ball.position.x = paddle_player_blue.position.x - 0.17;
     }
-    
     if (ball.position.x <= line_p1.position.x) {
         if (blueScore < 5) {
             blueScore++;
             updateScoreBoard();
         }
-        //console.log("Blue Player score -> " + `${bluePlayerScore}`);
         if (blueScore === 5) {
             bluePlayerWin();
             gameOver = true;
-        } else {
+        } else 
             ball.position.set(0, 0.15, 0);
-        }
     }
     if (ball.position.x >= line_p2.position.x) {
         if (redScore < 5) {
             redScore++;
             updateScoreBoard();
-            //topviewupdateScore();
         }   
           
         if (redScore === 5) {
@@ -534,10 +549,33 @@ function animate() {
     }
 
 }
-
-// Adicionando eventos de teclado ao documento
 document.addEventListener('keydown', onDocumentKeyDown, false);
 document.addEventListener('keyup', onDocumentKeyUp, false);
 document.body.focus();
-// Iniciar a animação
 animate();
+}
+
+export function stop3DGame() {
+    
+    if (animation3d) {
+        cancelAnimationFrame(animation3d);
+        animation3d = null;
+    }
+    const app = document.getElementById('app');
+    app.innerHTML = '';
+    const score = document.getElementById('scoreboard');
+    if(score)
+    {
+        score.innerHTML= ''; 
+        score.remove();
+    }
+    const canvas = app.querySelector('canvas');
+    if (canvas) {
+        app.removeChild(canvas);  
+    } 
+    sessionStorage.setItem("pongGame", "false");
+  
+    setTimeout(() => {
+        navigateTo('/game-selector');
+    }, 0);
+}
