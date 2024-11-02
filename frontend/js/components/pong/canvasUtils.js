@@ -132,7 +132,7 @@ function simulateKeyPress(direction) {
     if (direction === -1) {
         opponentY -= opponentPaddleSpeed; 
     } else if (direction === 1) {
-        opponentY += opponentPaddleSpeed;          console.log("stooooooooop", modality2)
+        opponentY += opponentPaddleSpeed;       
     }
 
     if (opponentY < 0) {

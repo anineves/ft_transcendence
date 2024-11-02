@@ -52,20 +52,20 @@ export const renderPong = () => {
 };
 
 export const recordMatchResult = async () => {
+    const user = sessionStorage.getItem('user');
     const id = sessionStorage.getItem('id_match');
     const modality2 = sessionStorage.getItem('modality');
     let inviter = sessionStorage.getItem("Inviter");
     let nickTorn = sessionStorage.getItem("nickTorn");
+    let duration = "10"
     let opponent =1;
     let winner_id = 1;
-    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
+    console.log('user', user, 'nickTorn', nickTorn)
+    if (id && user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
         try {
-        
             winner_id = opponent;
-            const score = `${0}-${5}}`;
-            const duration = "10";
-            const apiUrl = window.config.API_URL;
             const urlmatchID = `${apiUrl}/api/match/${id}`;
+            const score = `${0}-${5}}`;
             const response = await fetch(urlmatchID, {
                 method: 'PUT',
                 headers: {
@@ -89,9 +89,12 @@ export const recordMatchResult = async () => {
 };
 
 export const endGameWithScore = async () => {
-    await recordMatchResult();
+    await recordMatchResult();window.addEventListener("beforeunload", (event) => {
+        // Coloque aqui a lógica que deseja executar antes do refresh
+        console.log("A página será recarregada ou fechada.");
+      });
     stopGame();
     setTimeout(() => {
-        navigateTo('/selector-playerOrAi');
+        navigateTo('/select-playerOrAI');
     }, 200);
 };

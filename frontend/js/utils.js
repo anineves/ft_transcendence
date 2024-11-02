@@ -105,8 +105,26 @@ export const render = () => {
     const state = window.history.state;
   // Obtém o estado atual do histórico
         updateFooterTranslation();
+    const pong = sessionStorage.getItem("pongGame");
+    if(pong == "true" && sessionStorage.getItem('modality') == 'remote')
+    {
+        sessionStorage.setItem("pongGame", "false");
+        //endGameWithScore();
+        navigateTo('/live-chat');
+        return;
+    }
+    if(pong == "true")
+    {
+        sessionStorage.setItem("pongGame", "false");
+        console.log("aquiiiiii")
+        endGameWithScore();
+        navigateTo('/select-playerOrAI');
+        return;
+    }
+
 
     if (protectedRoutes.includes(path) && !isAuthenticated()) {
+        console.log("aquiiiiii2")
         navigateTo('/'); 
         return;
     }
@@ -168,10 +186,22 @@ export const logout = () => {
 window.addEventListener('popstate', () => {
     // Verifica se a rota é /pong ou /snake com modalidade "remote" apenas quando o usuário usa "voltar" ou "avançar"
     const pong = sessionStorage.getItem("pongGame");
-    console.log("entrieieieie")
+    const id = sessionStorage.getItem('id_match');
     const path = window.location.pathname;
-    if ((path === '/pong' && isRemote()) || (path === '/snake' && isRemote())) {
-        navigateTo('/');
+    const modality = sessionStorage.getItem("modality");
+    if(pong == "true" && modality == 'remote')
+    {console.log("aquiiiiii3 return")
+            sessionStorage.setItem("pongGame", "false");
+            //endGameWithScore();
+            navigateTo('/live-chat');
+            return;
+    }
+    if(pong == "true")
+    {
+        sessionStorage.setItem("pongGame", "false");
+        console.log("aquiiiiii return")
+        endGameWithScore();
+        navigateTo('/select-playerOrAI');
         return;
     }
    

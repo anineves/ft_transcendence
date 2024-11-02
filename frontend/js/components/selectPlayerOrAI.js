@@ -73,7 +73,7 @@ export const selectPlayerorAI = () => {
             </div>
         </div>
     `;
-  
+    sessionStorage.setItem("pongGame", "false");
     document.getElementById('vsPlayerBtn').addEventListener('click', () => {
         sessionStorage.setItem('modality', 'player');
         sessionStorage.setItem('game', 'pong');

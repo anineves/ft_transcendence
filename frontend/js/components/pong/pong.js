@@ -49,6 +49,7 @@ export const startPongGame = async () => {
     } 
         
     if (modality2 == "player" || modality2 == "3D") match_type = "MP";
+    console.log('Pooong usermodality', modality2, 'nickTorn', nickTorn)
     if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
     (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
         if (player) {
@@ -83,7 +84,6 @@ export const startPongGame = async () => {
         
         wsPong.onmessage = async (event) => {
             const data = JSON.parse(event.data);
-            console.log("entreiiiei", data.action)
             if(data.action == 'player_disconnect')
             {
                 if(modality2 == "tourn-remote")
@@ -135,7 +135,6 @@ export const startPongGame = async () => {
             sessionStorage.removeItem("id_match");
             sessionStorage.setItem('WS', 'clean');
             sessionStorage.removeItem("duelGame");
-            sessionStorage.setItem("pongGame", "false");
             wsPong =  null;
             }
             if (data.action === 'ball_track') {
@@ -208,81 +207,9 @@ export function initialize() {
     initializeBall();
     if (!canvas || !context) return;
 
-    const handleVisibilityChange = async () => {
-        if (window.location.href !== "https://10.0.2.15:8080/pong") {
-            cleanup();
-            return; 
-        }
-        console.log("fuiii chamada");
-        if (visiblity == "true")
-        {
-            visiblity = "false";
-            console.log("Entrei Handle")
-            
-            const user = sessionStorage.getItem('user');
-            const user_json = JSON.parse(user);
-            let friendID = sessionStorage.getItem('friendID');
-            let playerID = sessionStorage.getItem('player');
-            let inviter = sessionStorage.getItem("Inviter");
-            let groupName = sessionStorage.getItem('groupName');
-            let modality = sessionStorage.getItem('modality');
-
-            if (modality == 'remote' || modality2 == 'tourn-remote') {
-                if (wsPong) {
-                    wsPong.send(JSON.stringify({
-                        'action': 'player_disconnect',
-                        'message': {
-                            'player_id': playerID,
-                            'friend_id': friendID,
-                            'inviter': inviter,
-                            'group_name': groupName,
-                        }
-                    }));
-                }
-                
-            }
-    }
-    };
-
-    const handleOffline = () => {
-        if (wsPong) {
-            wsPong.send(JSON.stringify({
-                'action': 'end_game'
-            }));
-        }
-        stopGame();
-    };
-
- 
-    window.addEventListener('offline', handleOffline);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    //window.addEventListener('popstate', handleVisibilityChange);
-
-  
-    const originalPushState = history.pushState;
-    history.pushState = function(...args) {
-        originalPushState.apply(this, args);
-        handleVisibilityChange(); 
-    };
-
-    const originalReplaceState = history.replaceState;
-    history.replaceState = function(...args) {
-        originalReplaceState.apply(this, args);
-        handleVisibilityChange(); 
-    };
-
-    const cleanup = () => {
-        window.removeEventListener('offline', handleOffline);
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        window.removeEventListener('popstate', handleVisibilityChange);
-        history.pushState = originalPushState; 
-        history.replaceState = originalReplaceState; 
-    };
-
-    if (window.location.href !== "https://10.0.2.15:8080/pong") {
-        cleanup();
-    }
-    
+    let modality2 = sessionStorage.getItem('modality');
+    if (modality2 == 'remote' || modality2 == 'tourn-remote') 
+        visibilitychange();
     
     function draw() {
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -301,7 +228,7 @@ export function initialize() {
     function update() {
         if (gameOver) return;
         updateBall();
-        let modality2 = sessionStorage.getItem('modality');
+        modality2 = sessionStorage.getItem('modality');
         if (modality2 == 'ai') {
             moveOpponentPaddleAI(ballY);
             isAIActive = true;
@@ -318,7 +245,7 @@ export function initialize() {
         const currentPlayer = sessionStorage.getItem('player');
         const user = sessionStorage.getItem('user');
         const user_json = JSON.parse(user);
-        let modality2 = sessionStorage.getItem('modality');
+        modality2 = sessionStorage.getItem('modality');
         const playerID = sessionStorage.getItem('playerID');
         if (ballX - ballRadius < 0) {
             if (!ballOutOfBoundsLeft) {
@@ -479,14 +406,14 @@ export function initialize() {
             sessionStorage.removeItem("id_match");
             sessionStorage.removeItem("duelGame");
             sessionStorage.setItem('WS', 'clean');
-            wsPong =  null;
             sessionStorage.setItem("pongGame", "false");
+            wsPong =  null;
         }
     }
 
 
 
-    const modality2 = sessionStorage.getItem('modality');
+    modality2 = sessionStorage.getItem('modality');
     if (modality2 != 'remote'  &&  modality2 != 'tourn-remote') {
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) 
@@ -573,3 +500,76 @@ export function showNextMatchButton() {
     });
     app.appendChild(nextMatchButton);
 }
+
+export const visibilitychange = () => {
+    const handleVisibilityChange = async () => {
+        const pong = sessionStorage.getItem("pongGame")
+        console.log()
+        if ((window.location.href !== "https://10.0.2.15:8080/pong") && (window.location.href !== "https://10.0.2.15:8080/wait-remote" && pong == 'true')) {
+            cleanup();
+            return; 
+        }
+        console.log("fuiii chamada");
+        if (visiblity == "true")
+        {
+            visiblity = "false";
+            console.log("Entrei Handle")
+            
+            const user = sessionStorage.getItem('user');
+            const user_json = JSON.parse(user);
+            let friendID = sessionStorage.getItem('friendID');
+            let playerID = sessionStorage.getItem('player');
+            let inviter = sessionStorage.getItem("Inviter");
+            let groupName = sessionStorage.getItem('groupName');
+            let modality = sessionStorage.getItem('modality');
+    
+            if (modality == 'remote' || modality == 'tourn-remote') {
+                if (wsPong) {
+                    wsPong.send(JSON.stringify({
+                        'action': 'player_disconnect',
+                        'message': {
+                            'player_id': playerID,
+                            'friend_id': friendID,
+                            'inviter': inviter,
+                            'group_name': groupName,
+                        }
+                    }));
+                }
+                
+            }
+    }
+    };
+    
+    window.addEventListener('offline', handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('popstate', () => {
+        handleVisibilityChange(); // Chama o mesmo handler
+    });
+    window.addEventListener('beforeunload', () => {
+        handleVisibilityChange(); // Chama o mesmo handler
+    });
+    
+    
+    const originalPushState = history.pushState;
+    history.pushState = function(...args) {
+        originalPushState.apply(this, args);
+        handleVisibilityChange(); 
+    };
+    
+    const originalReplaceState = history.replaceState;
+    history.replaceState = function(...args) {
+        originalReplaceState.apply(this, args);
+        handleVisibilityChange(); 
+    };
+    
+     const cleanup = () => {
+        window.removeEventListener('offline', handleVisibilityChange);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('popstate', handleVisibilityChange);
+        history.pushState = originalPushState; 
+        history.replaceState = originalReplaceState; 
+    };
+    
+
+}
+

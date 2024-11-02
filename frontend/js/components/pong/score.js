@@ -70,7 +70,7 @@ export function drawGameOver(playerScore, opponentScore) {
     context.fillStyle = "#ffcc00";
     context.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 180, canvas.height / 2);
     context.font = "25px 'Press Start 2P', cursive";
-    context.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 2 - 180, canvas.height / 2 + 50);
+    context.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 3 - 185, canvas.height / 2 + 50);
 
     const modality = sessionStorage.getItem('modality');
     if (modality == 'remote'  || giveUp == 'true' || giveUptr == 'true') {
