@@ -416,25 +416,26 @@ export function initialize() {
 
     modality2 = sessionStorage.getItem('modality');
     if (modality2 != 'remote'  &&  modality2 != 'tourn-remote') {
+        console.log("modality", modality2);
         document.addEventListener('keydown', function (event) {
-            if (['ArrowUp', 'ArrowDown'].includes(event.key)) 
+            if (['ArrowUp', 'ArrowDown'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai') 
                 movePaddle(event);
         });
 
         document.addEventListener('keydown', function (event) {
-            if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai' && sessionStorage.getItem('modality') !== 'remote' && modality2 != 'tourn-remote') {
+            if (['w', 'W', 's', 'S'].includes(event.key) )  {
                 movePaddle(event);
             }
         });
 
         document.addEventListener('keyup', function (event) {
-            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+            if (['ArrowUp', 'ArrowDown'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai') {
                 stopPaddle(event);
             }
         });
 
         document.addEventListener('keyup', function (event) {
-            if (['w', 'W', 's', 'S'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai' && sessionStorage.getItem('modality') !== 'remote' && modality2 != 'tourn-remote') {
+            if (['w', 'W', 's', 'S'].includes(event.key)) {
                 stopPaddle(event);
             }
         });

@@ -357,7 +357,7 @@ function updateSnake(snake) {
 
 function placeFood() {
     const modality2 = sessionStorage.getItem('modality');
-    let x = Math.floor(Math.random() * 30) + 1
+    let x = Math.floor(Math.random() * 40) + 1
     let y = Math.floor(Math.random() * 20) + 1
     const snakes = [
         { snake: snakePlayer, name: "player" },
@@ -366,9 +366,9 @@ function placeFood() {
 
     for (const { snake, name } of snakes) {
         if (snake.body.x == x)
-            x = Math.floor(Math.random() * 30) + 1
+            x = Math.floor(Math.random() * 45) + 2
         if (snake.body.y == y)
-            y = Math.floor(Math.random() * 20) + 1
+            y = Math.floor(Math.random() * 22) + 2
     }
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         const player = sessionStorage.getItem('player');
