@@ -236,14 +236,14 @@ export const startSnakeGame = async () => {
 
         document.addEventListener('keydown', (event) => {
             switch(event.key) {
-                case 'w': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: -1 }; break;
-                case 's': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: 1 }; break;
-                case 'a': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: -1, y: 0 }; break;
-                case 'd': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: 1, y: 0 }; break;
-                case 'ArrowUp': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: -1 }; break;
-                case 'ArrowDown': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: 1 }; break;
-                case 'ArrowLeft': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: -1, y: 0 }; break;
-                case 'ArrowRight': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: 1, y: 0 }; break;
+                case 'ArrowUp': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: -1 }; break;
+                case 'ArrowDown': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: 1 }; break;
+                case 'ArrowLeft': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: -1, y: 0 }; break;
+                case 'ArrowRight': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: 1, y: 0 }; break;
+                case 'w': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: -1 }; break;
+                case 's': if (snakeOpponent.direction.y === 0) snakeOpponent.direction = { x: 0, y: 1 }; break;
+                case 'a': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: -1, y: 0 }; break;
+                case 'd': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: 1, y: 0 }; break;
             }
         });
     } 
@@ -357,19 +357,20 @@ function updateSnake(snake) {
 
 function placeFood() {
     const modality2 = sessionStorage.getItem('modality');
-    let x = Math.floor(Math.random() * 40) + 1
-    let y = Math.floor(Math.random() * 20) + 1
+    let x = Math.floor(Math.random() * 36);
+    let y = Math.floor(Math.random() * 20);
     const snakes = [
         { snake: snakePlayer, name: "player" },
         { snake: snakeOpponent, name: "opponent" }
     ];
-
+    
     for (const { snake, name } of snakes) {
         if (snake.body.x == x)
-            x = Math.floor(Math.random() * 45) + 2
+            x = Math.floor(Math.random() * 36);
         if (snake.body.y == y)
-            y = Math.floor(Math.random() * 22) + 2
+            y = Math.floor(Math.random() * 20);
     }
+    console.log("placeeee", x, y);
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         const player = sessionStorage.getItem('player');
         const playerID = sessionStorage.getItem('playerID');
@@ -447,9 +448,7 @@ function checkCollisions() {
 function endGame() {
     gameOver = true;
     if(modality2 ==  'remote') {
-    
         const player = sessionStorage.getItem('player');
-
         ws.send(JSON.stringify({
             'action': 'end_game',
             'message': {
@@ -610,10 +609,10 @@ function drawScore() {
 
     ctx.font = '16px Arial';
     ctx.fillStyle = 'blue';
-    ctx.fillText(`${player1}: ${snakePlayer.foodCount}`, 10, 20);
+    ctx.fillText(`${player1}: ${snakeOpponent.foodCount}`, 10, 20);
 
     ctx.fillStyle = 'purple';
-    ctx.fillText(`${player2}: ${snakeOpponent.foodCount}`, canvas.width - 200, 20);
+    ctx.fillText(`${player2}: ${snakePlayer.foodCount}`, canvas.width - 200, 20);
 }
 
 export function drawGameOver() {
