@@ -107,7 +107,7 @@ class Match(models.Model):
             return None
 
     def __str__(self):        
-        return f"{self.game}: {self.date} -- {self.get_winner()}"
+        return f"{self.game}: {self.date:%d/%m/%y} -- {self.get_winner()}"
     
 
 class PlayerChannel(models.Model):

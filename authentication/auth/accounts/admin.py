@@ -1,4 +1,3 @@
-# accounts/admin.py
 from django.contrib import admin
 from .models import *
 
@@ -20,8 +19,8 @@ class FriendRequestAdmin(admin.ModelAdmin):
     list_display = ('id', 'sender', 'invited')
 
 
-admin.site.register(Match)
 admin.site.register(Game)
+admin.site.register(Match)
 admin.site.register(PlayerChannel)
 admin.site.register(PrivateGroup)
 admin.site.register(MatchGroup)

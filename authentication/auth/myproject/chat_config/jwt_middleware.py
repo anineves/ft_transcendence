@@ -8,9 +8,6 @@ from accounts.models import PlayerChannel
 from asgiref.sync import async_to_sync
 
 
-import pprint
-
-
 class JWTAuthMiddleware(BaseMiddleware):
     
 
@@ -69,15 +66,11 @@ def handle_authentication(obj, token):
 
     obj.user = authenticate_user(token)
     if obj.user:
-        try: #TODO: Find a way to clean channel before updating
+        try:
             player, created = PlayerChannel.objects.update_or_create(
                 player=obj.user.player,
                 defaults={'channel_name': obj.channel_name}
             )
-            if created:
-                print("Created")
-            else:
-                print(player)
             return obj.user
         except Exception as e:
             print(f"Exception: {e}")

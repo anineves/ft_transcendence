@@ -37,7 +37,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         validated_data.pop('password2', None)
         avatar = validated_data.pop('avatar', None)
         password=validated_data['password']
-        print(f"Senha hasheada1: {password}")
+
         try:
             user = CustomUser.objects.create_user(
                 email=validated_data['email'],
@@ -104,7 +104,6 @@ class PlayerSerializer(serializers.ModelSerializer):
     total_winner = serializers.IntegerField(read_only=True) 
     pong_winner = serializers.IntegerField(read_only=True)
     linha_winner = serializers.IntegerField(read_only=True)
-    # status = serializers.SerializerMethodField()
 
     class Meta:
         model = Player
@@ -122,9 +121,6 @@ class PlayerSerializer(serializers.ModelSerializer):
         instance.status=validated_data.get('status', instance.status)
         instance.save()
         return(instance)
-    
-    # def get_status(self, obj):
-    #     return obj.get_status_display()
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):

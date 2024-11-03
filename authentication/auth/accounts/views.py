@@ -316,7 +316,6 @@ class MatchList(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
-        print("Dados recebidos no POST:", request.data) 
         serializer = MatchSerializer(
             data=request.data
         )
