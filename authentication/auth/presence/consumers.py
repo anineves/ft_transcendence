@@ -7,6 +7,8 @@ from accounts.models import PlayerChannel, Player, PrivateGroup, MatchGroup, Tou
 
 from myproject.chat_config.jwt_middleware import handle_authentication
 
+from rest_framework.exceptions import ValidationError
+
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -220,6 +222,8 @@ class PongConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, close_code):
+        print(f"Close_code: {close_code}")
+
         if close_code == 400:
             self.send_self_channel_messages(
                 "Authentication failed. \
@@ -231,6 +235,13 @@ class PongConsumer(WebsocketConsumer):
         )
         if close_code == 401:
             self.match_group.delete()
+        
+        if close_code == 1001:
+            print(f"Closing with 1001")
+            self.match_group.is_active = False
+            self.match_group.save()
+
+        print(f"Closed Properly")
 
         self.close()
         return super().disconnect(close_code)
@@ -337,8 +348,18 @@ class PongConsumer(WebsocketConsumer):
                         }
                     }
                 )
+                
+            if self.match_group.is_active == False:
+                print(f"Is Active: {self.match_group.is_active}")
+                raise ValidationError("CustomValidation error")
+
+
+            self.match_group.is_active = True
+            
             self.match_group.save()
-        except Exception as e:
+        except ValidationError as e:
+            print("Got an exception")
+            return self.disconnect(401)
             print(f"# Something went wrong with creating_new_room: \n{e}")
         return
 
