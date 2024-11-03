@@ -51,7 +51,6 @@ export function initPongSocket(url) {
                 clearTimeout(lobbyTimeout);
                 lobbyTimeout = null;
             }
-            console.log("Lobby is full");
             sessionStorage.setItem('playerID', data.message.player);
             sessionStorage.setItem('friendID', data.message.opponent);
             let duelGame = sessionStorage.getItem("duelGame");
@@ -64,7 +63,6 @@ export function initPongSocket(url) {
             }
     }
     }
-    console.log("Enteiiiiiiiiii");
     ws.onclose = () => {
         ws = null;
     };

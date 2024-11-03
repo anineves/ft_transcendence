@@ -105,7 +105,7 @@ export const renderFriendsPage = async (user) => {
                                 const friendButton = document.createElement('button');
                                 friendButton.textContent = "•" + friendData.nickname;
                                 friendButton.className = 'friend-nickname-btn';
-
+                        
                                 friendButton.onclick = () => {
                                     sessionStorage.setItem('playerProfile', JSON.stringify(friendData));
                                     navigateTo('/player-profile');

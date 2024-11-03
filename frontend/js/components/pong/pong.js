@@ -50,7 +50,7 @@ export const startPongGame = async () => {
     } 
         
     if (modality2 == "player" || modality2 == "3D") match_type = "MP";
-    console.log('Pooong usermodality', modality2, 'nickTorn', nickTorn)
+   
     if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
     (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
         if (player) {
@@ -107,7 +107,6 @@ export const startPongGame = async () => {
                     wsPong = null;
         
                     let whoGiveUp = sessionStorage.getItem('whoGiveUp')
-                    console.log("whoGiveUp", whoGiveUp);
                     if(whoGiveUp)
                         opponentScore = 5;
                     else
@@ -423,7 +422,6 @@ export function initialize() {
 
     modality2 = sessionStorage.getItem('modality');
     if (modality2 != 'remote'  &&  modality2 != 'tourn-remote') {
-        console.log("modality", modality2);
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key) && sessionStorage.getItem('modality') !== 'ai') 
                 movePaddle(event);

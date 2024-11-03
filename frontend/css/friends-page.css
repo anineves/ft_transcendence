@@ -21,33 +21,41 @@
     margin: 20px 0;
     color: #00FFFF;
     font-family: "VT323", monospace;
-    font-size: 25px;
+    font-size: 35px;
 }
 
 #friendsList li {
     margin-bottom: 15px;
     display: flex;
-    align-items: center; 
+    align-items: center;
+    font-size: 3px;
 }
-
 
 .friend-nickname-btn {
     background-color: transparent;
-    border: none;
     color: #00FFFF;
-    padding: 0;
-    font-size: 25px;
+    padding: 10px 20px; 
+    font-size: 30px;
     font-family: "VT323", monospace;
-   
     cursor: pointer;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
+    transition: color 0.3s ease, text-shadow 0.3s ease, border-color 0.3s ease;
     text-shadow: 0 0 5px rgba(0, 255, 255, 0.8);
+    border: 2px solid #00FFFF;
+    border-radius: 8px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box; 
 }
 
 .friend-nickname-btn:hover {
     color: #FF00FF;
     text-shadow: 0 0 10px rgba(255, 0, 255, 1);
+    border-color: #FF00FF; 
 }
+
+
 
 
 .friendship-management-panel {

@@ -49,7 +49,6 @@ export const startSnakeGame = async () => {
     gameOver = false;
     gameInterval;
     speed = 200;
-    console.log("speed", speed);
     ws;
 
 
@@ -112,7 +111,6 @@ export const startSnakeGame = async () => {
                
                 drawGameOver();
             const id = sessionStorage.getItem('id_match');
-            console.log("IDDDD:", id);
             let winner_id = opponent;
             if (id)  {
                 try {
@@ -368,7 +366,6 @@ function placeFood() {
         if (snake.body.y == y)
             y = Math.floor(Math.random() * 20);
     }
-    console.log("placeeee", x, y);
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         const player = sessionStorage.getItem('player');
         const playerID = sessionStorage.getItem('playerID');
@@ -492,9 +489,15 @@ async function drawGame() {
         if (player) {
             try {
 
-                let nameWinner = sessionStorage.getItem('losingSnake');
-                if (nameWinner == 'player')
-                    winner_id = player;
+                let whoGiveUp = sessionStorage.getItem('whoGiveUp')
+                    if(whoGiveUp)
+                        opponentScore = 1000000;
+                    else
+                        playerScore = 1000000; 
+                    sessionStorage.removeItem("whoGiveUp");
+                    if (playerScore > opponentScore)
+                        winner_id = player;
+
                 const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
                 const duration = "10";
                 if(modality2 == 'remote' || modality2 == 'tourn-remote')

@@ -24,7 +24,9 @@ export const waitRemote = () => {
             initPongSocket(wssocket1);
         }
         else
+        {
             console.log("Without groupName")
+        }
     }
     else{
         const app = document.getElementById('app');

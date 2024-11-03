@@ -165,7 +165,7 @@ export const liveChat = () => {
     });
 
     socket3.onopen = function (event) {
-        //console.log("Connected to tournament WebSocket");
+        
     };
 
     socket3.onmessage = function (event) {
@@ -199,7 +199,7 @@ export const liveChat = () => {
     };
 
     socket3.onclose = function () {
-        console.log("Tournament socket was closed");
+        //console.log("Tournament socket was closed");
     };
 
 
@@ -245,7 +245,7 @@ export const liveChat = () => {
     };
 
     socket2.onclose = function () {
-        console.log("Tournament socket was closed");
+        //console.log("Tournament socket was closed");
     };
     
 
@@ -363,7 +363,7 @@ export const liveChat = () => {
     };
 
     socket.onclose = function () {
-        console.log("Chat socket was close"); 
+    
     };
 
     leaveButton.onclick = function () {

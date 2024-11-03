@@ -450,7 +450,6 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', 
 
 
 function showGameOver(result) {
-    console.log("showww");
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
 
     // gameover text

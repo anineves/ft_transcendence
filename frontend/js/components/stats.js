@@ -21,6 +21,7 @@ export const stats = async () => {
             resultInfo: "Result",
             durationInfo: "Duration",
             titleMatch: "Match History",
+            opponent: "Opponent Id",
 
         },
         portuguese: {
@@ -40,7 +41,8 @@ export const stats = async () => {
             typeInfo: "Tipo",
             resultInfo: "Resultado",
             durationInfo: "Duração",
-            titleMatch: "Histórico de Partidas"
+            titleMatch: "Histórico de Partidas",
+            opponent: "Id do Adversario",
         },
         french: {
             pWin: "Pong Vitoires",
@@ -59,7 +61,8 @@ export const stats = async () => {
             typeInfo: "Type",
             resultInfo: "Résultat",
             durationInfo: "Durée",
-            titleMatch: "Historique des Matchs"
+            titleMatch: "Historique des Matchs",
+            opponent: "Id de Adversaire",
         }
     };
 
@@ -131,13 +134,21 @@ export const stats = async () => {
                     }
                 }
 
-                const result = match.winner_id === player.id ? 'Win' : 'Loss';
+                const win = match.winner_id === player.id ? 'Win' : 'Loss';
+                let opponent;
+                if(match.players[0] == player.id)
+                    opponent = match.players[1]
+                else
+                    opponent = match.players[0]
+                const result = match.score;
+
                 matchHistoryRows += `
                 <tr>
                     <td>${matchDate.toLocaleDateString()}</td>
-                    <td>${match.id}</td>
                     <td>${match.game == '1' ? 'Pong' : 'Snake'}</td>
                     <td>${match.match_type}</td>
+                    <td>${opponent}</td>
+                    <td>${win}
                     <td>${result}</td>
                 </tr>
             `;
@@ -174,9 +185,10 @@ export const stats = async () => {
                                 <thead>
                                     <tr>
                                         <th>${translations[savedLanguage].dateInfo}</th>
-                                        <th>${translations[savedLanguage].idInfo}</th>
                                         <th>${translations[savedLanguage].gameInfo}</th>
                                         <th>${translations[savedLanguage].typeInfo}</th>
+                                        <th>${translations[savedLanguage].opponent}</th>
+                                        <th>${translations[savedLanguage].resultInfo}</th>
                                         <th>${translations[savedLanguage].resultInfo}</th>
                                     </tr>
                                 </thead>

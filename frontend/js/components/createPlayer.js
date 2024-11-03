@@ -111,7 +111,6 @@ export const createPlayer = () => {
                 navigateTo('/game-selection'); 
             } else {
                 playerError.textContent += `${translations[savedLanguage].errorNick}`;
-                console.log('Player creation failed: ' + JSON.stringify(data));
             }
         } catch (error) {
             console.error('Error:', error);

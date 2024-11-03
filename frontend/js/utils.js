@@ -139,7 +139,6 @@ export const render = () => {
         }
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
-            console.log("aquiiiiii")
             endGameWithScore();
             navigateTo('/game-selection');
             return;
@@ -235,7 +234,7 @@ window.addEventListener('popstate', () => {
             }
                 sessionStorage.setItem("pongGame", "false");
                 sessionStorage.setItem("snakeGame", "false");
-                console.log("aquiiiiii")
+        
                 endGameWithScore();
                 navigateTo('/game-selection');
                 return;

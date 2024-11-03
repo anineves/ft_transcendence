@@ -60,7 +60,6 @@ export const recordMatchResult = async () => {
     let duration = "10"
     let opponent =1;
     let winner_id = 1;
-    console.log('user', user, 'nickTorn', nickTorn)
     if (id && user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
         try {
             winner_id = opponent;
@@ -90,8 +89,7 @@ export const recordMatchResult = async () => {
 
 export const endGameWithScore = async () => {
     await recordMatchResult();window.addEventListener("beforeunload", (event) => {
-        // Coloque aqui a lógica que deseja executar antes do refresh
-        console.log("A página será recarregada ou fechada.");
+        //console.log("A página será recarregada ou fechada.");
       });
     stopGame();
     setTimeout(() => {
