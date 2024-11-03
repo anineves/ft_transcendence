@@ -1,7 +1,5 @@
 import json
 
-import pprint
-
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
@@ -84,7 +82,6 @@ class ChatConsumer(WebsocketConsumer):
     def chat_message(self, event):
         message = event["message"]
         action = event.get("action")
-        print(message)
         self.send(text_data=json.dumps({
             "action": action if action else "Null",
             "message": message
@@ -128,19 +125,7 @@ class ChatConsumer(WebsocketConsumer):
                         }
                     }
             )
-        else:
-            async_to_sync(self.channel_layer.group_send)(   
-                self.private_group.group_name,
-                    {                
-                        "type": "chat.message",
-                        "message": {
-                            'content': f"{self.user.player}: {message}",
-                            "from_player": self.user.player.id
-                        }
-                }
-            )
-
-        if data.get("action") == "duel-snake":
+        elif data.get("action") == "duel-snake":
             async_to_sync(self.channel_layer.group_send)(   
                 self.private_group.group_name,
                     {                
@@ -253,9 +238,6 @@ class PongConsumer(WebsocketConsumer):
     def receive(self, text_data=None):
         data = json.loads(text_data)
 
-        # print("Data:")
-        # pprint.pp(data)
-
         if data.get('Authorization'):
             self.user = handle_authentication(self, data.get('Authorization'))
             if self.user:
@@ -360,6 +342,7 @@ class PongConsumer(WebsocketConsumer):
             print(f"# Something went wrong with creating_new_room: \n{e}")
         return
 
+
 class TournamentConsumer(WebsocketConsumer):
     tournament_players = []
     max_players = 4
@@ -395,8 +378,6 @@ class TournamentConsumer(WebsocketConsumer):
         )
 
     def add_player_to_tournament(self, player):
-        print("playe")
-        print(player)
         if player not in TournamentConsumer.tournament_players:
             TournamentConsumer.tournament_players.append(player)
             async_to_sync(self.channel_layer.group_send)(
@@ -407,13 +388,10 @@ class TournamentConsumer(WebsocketConsumer):
                 }
             )
 
-        print()
         if len(TournamentConsumer.tournament_players) >= TournamentConsumer.max_players:
             self.start_tournament()
 
     def start_tournament(self):
-        print("aa PArticipantes")
-        print(TournamentConsumer.tournament_players)
         async_to_sync(self.channel_layer.group_send)(
             self.tournament_group_name,
             {
@@ -473,9 +451,6 @@ class SnakeConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None):
         data = json.loads(text_data)
-
-        # print("Data SnakeConsumer:", end=" - ")
-        # pprint.pp(data)
 
         if data.get('Authorization'):
             self.user = handle_authentication(self, data.get('Authorization'))
