@@ -4,8 +4,58 @@ const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
 let socket;
 
+const translations = {
+    english: {
+        title: "Chat",
+        phMsg: "Type your message here...", 
+        duelBtn: "Duel",
+        phBlock: "Nickname to block...",
+        confirmBtn: "Confirm",
+        phUnblock: "Player to unblock...",
+        phDuel: "Player to duel...",
+        duelMsg: "has challenged you to a duel",
+        acceptBtn: "Accept",
+        lostInvMsg: "has challenged you to a duel",
+        fightMsg: " wants to fight!",
+        yourselfMsg: "You cannot challenge yourself to a duel.",
+        fillNickname: "Please enter a player nickname to duel.",
+
+    },
+    portuguese: {
+        title: "Chat",
+        phMsg: "Digite sua mensagem aqui...", 
+        duelBtn: "Duelo",
+        phBlock: "Apelido para bloquear...",
+        confirmBtn: "Confirmar",
+        phUnblock: "Jogador para desbloquear...",
+        phDuel: "Jogador para duelar...",
+        duelMsg: "desafiou você para um duelo",
+        acceptBtn: "Aceitar",
+        lostInvMsg: "desafiou você para um duelo",
+        fightMsg: " quer lutar!",
+        yourselfMsg: "Você não pode desafiar a si mesmo para um duelo.",
+        fillNickname: "Por favor, insira um apelido de jogador para duelar.",
+    },
+    french: {
+        title: "Chat",
+        phMsg: "Tapez votre message ici...", 
+        duelBtn: "Duel",
+        phBlock: "Surnom à bloquer...",
+        confirmBtn: "Confirmer",
+        phUnblock: "Joueur à débloquer...",
+        phDuel: "Joueur à défier...",
+        duelMsg: "vous a défié à un duel",
+        acceptBtn: "Accepter",
+        lostInvMsg: "vous a défié à un duel",
+        fightMsg: " veut se battre!",
+        yourselfMsg: "Vous ne pouvez pas vous défier vous-même à un duel.",
+        fillNickname: "Veuillez entrer un surnom de joueur à défier.",
+    }
+};
+
 
 export const liveChat = () => {
+    sessionStorage.setItem('initPong', 'false');
     sessionStorage.setItem('giveUPtr', 'false')
     sessionStorage.setItem("pongGame", "false");
     sessionStorage.setItem("snakeGame", "false");
@@ -34,62 +84,14 @@ export const liveChat = () => {
          socket = new WebSocket(wssocket);
         }
     }
-    const translations = {
-        english: {
-            title: "Chat",
-            phMsg: "Type your message here...", 
-            duelBtn: "Duel",
-            phBlock: "Nickname to block...",
-            confirmBtn: "Confirm",
-            phUnblock: "Player to unblock...",
-            phDuel: "Player to duel...",
-            duelMsg: "has challenged you to a duel",
-            acceptBtn: "Accept",
-            lostInvMsg: "has challenged you to a duel",
-            fightMsg: " wants to fight!",
-            yourselfMsg: "You cannot challenge yourself to a duel.",
-            fillNickname: "Please enter a player nickname to duel.",
-
-        },
-        portuguese: {
-            title: "Chat",
-            phMsg: "Digite sua mensagem aqui...", 
-            duelBtn: "Duelo",
-            phBlock: "Apelido para bloquear...",
-            confirmBtn: "Confirmar",
-            phUnblock: "Jogador para desbloquear...",
-            phDuel: "Jogador para duelar...",
-            duelMsg: "desafiou você para um duelo",
-            acceptBtn: "Aceitar",
-            lostInvMsg: "desafiou você para um duelo",
-            fightMsg: " quer lutar!",
-            yourselfMsg: "Você não pode desafiar a si mesmo para um duelo.",
-            fillNickname: "Por favor, insira um apelido de jogador para duelar.",
-        },
-        french: {
-            title: "Chat",
-            phMsg: "Tapez votre message ici...", 
-            duelBtn: "Duel",
-            phBlock: "Surnom à bloquer...",
-            confirmBtn: "Confirmer",
-            phUnblock: "Joueur à débloquer...",
-            phDuel: "Joueur à défier...",
-            duelMsg: "vous a défié à un duel",
-            acceptBtn: "Accepter",
-            lostInvMsg: "vous a défié à un duel",
-            fightMsg: " veut se battre!",
-            yourselfMsg: "Vous ne pouvez pas vous défier vous-même à un duel.",
-            fillNickname: "Veuillez entrer un surnom de joueur à défier.",
-        }
-    };
-    
+   
     let savedLanguage = localStorage.getItem('language');
 
 
     if (!savedLanguage || !translations[savedLanguage]) {
         savedLanguage = 'english'; 
-    } 
-  ;
+    };
+
     const app = document.getElementById('app');
     app.innerHTML = `
        
@@ -324,11 +326,11 @@ export const liveChat = () => {
                 chatBox.removeChild(existingDuelMessage);
             }
             
-            const duelMessage = document.createElement('p');
-            duelMessage.id = 'duel-message';
             const acceptButton = document.createElement('button');
             acceptButton.id = 'accept-link';
             acceptButton.innerText = translations[savedLanguage].acceptBtn;
+            const duelMessage = document.createElement('p');
+            duelMessage.id = 'duel-message';
             duelMessage.innerHTML = `${translations[savedLanguage].duelMsg} `;
             duelMessage.appendChild(acceptButton);
             chatBox.appendChild(duelMessage);
@@ -343,9 +345,10 @@ export const liveChat = () => {
                 navigateTo(`/wait-remote`, sessionStorage.getItem("groupName"));
               
             }
-            const timeout = setTimeout(() => {
+      
+        const timeout = setTimeout(() => {
                 duelMessage.innerHTML = `${translations[savedLanguage].duelBtn}`;
-            }, 50000); 
+            }, 10000);
             
             if (user_json.id != message.from_user) {
                 sessionStorage.setItem("Inviter", "False");
@@ -486,4 +489,23 @@ export const liveChat = () => {
 
 export const closeSocket = () => {
     socket.close();
+}
+
+export const timeout =() => 
+{
+    let savedLanguage = localStorage.getItem('language');
+
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    };
+    
+    let duelMessage = document.getElementById('duel-message');
+
+    if(duelMessage)
+    {
+        setTimeout(() => {
+        duelMessage.innerHTML = `${translations[savedLanguage].duelBtn}`;
+    }, 10000); 
+    }
 }

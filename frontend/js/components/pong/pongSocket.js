@@ -1,11 +1,26 @@
 import { navigateTo } from '../../utils.js';
+import { visibilitychange } from '../../handlevisiblity.js';
 
+let ws;
+if(ws)
+{
+    console.log("ha ws")
+    ws.onclose = () => {
+        ws = null;
+    };
+}
+else{
+    console.log("nao ha ws")
 
-let ws = null;
+}
+
 export function initPongSocket(url) {
+
+    const inviter = sessionStorage.getItem('Inviter'); 
+    if(inviter == "True")
+        sessionStorage.setItem('initPong', 'true');
     
     const jwttoken = sessionStorage.getItem('jwtToken'); 
-    const inviter = sessionStorage.getItem('Inviter'); 
     let wsSession = sessionStorage.getItem('WS');
     let modality2 = sessionStorage.getItem('modality');
 
@@ -18,6 +33,8 @@ export function initPongSocket(url) {
     if (!ws) {
         ws = new WebSocket(url);
     }
+
+
     
     let lobbyTimeout = null;
 
@@ -25,21 +42,25 @@ export function initPongSocket(url) {
         ws.send(JSON.stringify({
             Authorization: jwttoken,
         }));
-        
         if(inviter == "True" && modality2 == 'remote')
         {
-            lobbyTimeout = setTimeout(() => {
-                console.log("The opponent did not accept the duel");
-                ws.send(JSON.stringify({
-                    action: 'end_game'
-                }));
-                ws.close();
-                navigateTo('/live-chat'); 
-            }, 10000);
+            if(ws)
+            {
+                lobbyTimeout = setTimeout(() => {
+                    console.log("The opponent did not accept the duel");
+                    ws.send(JSON.stringify({
+                        action: 'end_game'
+                    }));
+                    ws.close();
+                    navigateTo('/live-chat'); 
+                }, 10000);
+            }
+            
         }
     };
 
     ws.onmessage = (event) => {
+
     
         let data = JSON.parse(event.data)
         
@@ -55,12 +76,9 @@ export function initPongSocket(url) {
             sessionStorage.setItem('friendID', data.message.opponent);
             let duelGame = sessionStorage.getItem("duelGame");
             if(duelGame == "duel-snake")
-            {
                 navigateTo('/snake');
-            }
-            else{
+            else
                 navigateTo('/pong');
-            }
     }
     }
     ws.onclose = () => {

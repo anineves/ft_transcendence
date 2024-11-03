@@ -2,8 +2,11 @@ import { initPongSocket } from './pong/pongSocket.js'
 
 const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
-
+let  wssocket2;
 export const waitRemote = () => {
+
+   
+   
     let duelGame = sessionStorage.getItem("duelGame");
     if(duelGame == "duel-snake")
     {
@@ -42,8 +45,9 @@ export const waitRemote = () => {
         
         if (groupName)
         {
-            const wssocket2= `wss://${apiUri}/ws/pong_match/${groupName}/`
+            wssocket2= `wss://${apiUri}/ws/pong_match/${groupName}/`
             initPongSocket(wssocket2);
+            
         }
         else
             console.log("without groupName")

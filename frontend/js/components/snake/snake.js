@@ -115,14 +115,11 @@ export const startSnakeGame = async () => {
                 opponent = friendID;
                 let winner_id = opponent;
                 let whoGiveUp = sessionStorage.getItem('whoGiveUp')
-                console.log("### whoGiveUp ###");
                 if (whoGiveUp) {
-                    console.log("whogiveup1", whoGiveUp);
                     sessionStorage.setItem("losingSnake", "opponent");
                     snakeOpponent.foodCount = 99;
                 }
                 else {
-                    console.log("whogiveup2", whoGiveUp);
                     snakePlayer.foodCount = 99;
                     sessionStorage.setItem("losingSnake", "player");
                 }

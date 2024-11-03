@@ -1,13 +1,19 @@
 const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
+import { navigateTo } from "./utils.js";
 
 export const visibilitychange = (wsPong, visiblity) => {
     console.log("visibility: ", visiblity);
+    
     sessionStorage.removeItem("whoGiveUp");
     const handleVisibilityChange = async () => {
+
+    
+        sessionStorage.setItem('initPong', 'false');
         const pong = sessionStorage.getItem("pongGame")
         const snake = sessionStorage.getItem("snakeGame")
         if ((window.location.href !== `${apiUrl}/pong`) && (window.location.href !== `${apiUrl}/wait-remote` && pong == 'true') && (window.location.href !== `${apiUrl}/snake`) && (window.location.href !== `${apiUrl}/wait-remote` && snake == 'true')) {
+
             cleanup();
             return; 
         }

@@ -5,3 +5,5 @@ window.config = {
     API_URL: `${protocol}//${host}:8080`, 
     API_URI: `${host}:8080`,
 };
+
+let clients = new Set();

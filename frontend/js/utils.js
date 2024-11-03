@@ -198,8 +198,8 @@ export const logout = () => {
     sessionStorage.removeItem('user'); 
     sessionStorage.clear();
     localStorage.clear();
-    checkLoginStatus(); 
-    navigateTo('/'); 
+    //checkLoginStatus(); 
+    //navigateTo('/'); 
 };
 
 //sada para ouvir e lidar com eventos de navegação no navegador, como o uso dos botões "voltar" e "avançar" no histórico do navegador.
