@@ -31,7 +31,7 @@ let snakeOpponent = {
 };
 
 let foods = [{ x: null, y: null }];
-let  visiblity;
+let visiblity;
 
 export const startSnakeGame = async () => {
     let modality2 = sessionStorage.getItem('modality');
@@ -58,9 +58,9 @@ export const startSnakeGame = async () => {
     let inviter = sessionStorage.getItem("Inviter");
     const player = sessionStorage.getItem('player');
     const game = 2;
-   
+
     let opponent = 1;
-    
+
     const friendID = sessionStorage.getItem('friendID');
     const playerID = sessionStorage.getItem('playerID');
 
@@ -85,8 +85,8 @@ export const startSnakeGame = async () => {
 
     if (modality2 == 'remote' || modality2 == 'tourn-remote') {
         const groupName = sessionStorage.getItem("groupName");
-        const wssocket1= `wss://${apiUri}/ws/snake_match/${groupName}/`
-        ws =    initPongSocket(wssocket1);
+        const wssocket1 = `wss://${apiUri}/ws/snake_match/${groupName}/`
+        ws = initPongSocket(wssocket1);
 
         if (ws) {
             document.addEventListener('keydown', handleKeyPress);
@@ -96,9 +96,9 @@ export const startSnakeGame = async () => {
 
             const data = JSON.parse(event.data);
             let message = data.message
-            if(data.action == 'player_disconnect')
-            {
-                if(modality2 == "tourn-remote")
+            console.log("data action =>>>> ", data.action)
+            if (data.action == 'player_disconnect') {
+                if (modality2 == "tourn-remote")
                     sessionStorage.setItem("trGiveUp", "true")
                 if (ws) {
                     ws.send(JSON.stringify({
@@ -108,48 +108,62 @@ export const startSnakeGame = async () => {
                         }
                     }));
                 }
-               
+
                 drawGameOver();
-            const id = sessionStorage.getItem('id_match');
-            let winner_id = opponent;
-            if (id)  {
-                try {
-                    ws = null   
-                    let nameWinner = sessionStorage.getItem('losingSnake');
-                    if (nameWinner == 'player')
-                        winner_id = player;
-                    const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
-                    const duration = "10";
-                    if(modality2 == 'remote' || modality2 == 'tourn-remote')
-                        ws =  null;
-                    const urlMatchesID = `${apiUrl}/api/match/${id}`;
-                    const response = await fetch(urlMatchesID, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ winner_id, score, duration })
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        console.log('Match updated successfully:', data);
-                    } else {
-                        console.log('Error updating match:', data);
-                    }
-                } catch (error) {
-                    console.error('Error processing match:', error);
+                const id = sessionStorage.getItem('id_match');
+                let friendID = sessionStorage.getItem('friendID');
+                opponent = friendID;
+                let winner_id = opponent;
+                let whoGiveUp = sessionStorage.getItem('whoGiveUp')
+                console.log("### whoGiveUp ###");
+                if (whoGiveUp) {
+                    console.log("whogiveup1", whoGiveUp);
+                    sessionStorage.setItem("losingSnake", "opponent");
+                    snakeOpponent.foodCount = 99;
                 }
-            }
+                else {
+                    console.log("whogiveup2", whoGiveUp);
+                    snakePlayer.foodCount = 99;
+                    sessionStorage.setItem("losingSnake", "player");
+                }
+                sessionStorage.removeItem("whoGiveUp");
+                if (id) {
+                    try {
+                        if (sessionStorage.getItem("losingSnake") == 'player')
+                            winner_id = player;
+                        ws = null
+                        const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
+                        const duration = "10";
+                        const urlMatchesID = `${apiUrl}/api/match/${id}`;
+                        const response = await fetch(urlMatchesID, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ winner_id, score, duration })
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            console.log('Match updated successfully:', data);
+                        } else {
+                            console.log('Error updating match:', data);
+                        }
+                    } catch (error) {
+                        console.error('Error processing match:', error);
+                    }
+                }
+               
                 sessionStorage.removeItem("Inviter");
                 sessionStorage.removeItem("groupName");
                 sessionStorage.removeItem("id_match");
                 sessionStorage.setItem('WS', 'clean');
                 sessionStorage.removeItem("losingSnake");
                 sessionStorage.removeItem("duelGame");
-                ws =  null;         
+                sessionStorage.removeItem("whoGiveUp");
+                ws = null;
             }
 
 
@@ -163,7 +177,7 @@ export const startSnakeGame = async () => {
                     snakeOpponent.foodCount = message.snake_opponent.foodCount;
                     snakeOpponent.hitWall = message.snake_opponent.hitWall;
                 };
-            
+
                 let direction;
                 switch (message.key) {
                     case 'ArrowUp':
@@ -174,7 +188,7 @@ export const startSnakeGame = async () => {
                             updateSnakeState(snakeOpponent, direction, message);
                         }
                         break;
-            
+
                     case 'ArrowDown':
                         direction = { x: 0, y: 1 };
                         if (playerID === message.player && snakePlayer.direction.y === 0) {
@@ -183,7 +197,7 @@ export const startSnakeGame = async () => {
                             updateSnakeState(snakeOpponent, direction, message);
                         }
                         break;
-            
+
                     case 'ArrowLeft':
                         direction = { x: -1, y: 0 };
                         if (playerID === message.player && snakePlayer.direction.x === 0) {
@@ -192,7 +206,7 @@ export const startSnakeGame = async () => {
                             updateSnakeState(snakeOpponent, direction, message);
                         }
                         break;
-            
+
                     case 'ArrowRight':
                         direction = { x: 1, y: 0 };
                         if (playerID === message.player && snakePlayer.direction.x === 0) {
@@ -214,7 +228,7 @@ export const startSnakeGame = async () => {
                 ws.close();
             }
         };
-            
+
         ws.onclose = () => {
             document.removeEventListener('keydown', handleKeyPress);
             ws = null;
@@ -231,7 +245,7 @@ export const startSnakeGame = async () => {
     if (modality2 != 'remote') {
 
         document.addEventListener('keydown', (event) => {
-            switch(event.key) {
+            switch (event.key) {
                 case 'ArrowUp': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: -1 }; break;
                 case 'ArrowDown': if (snakePlayer.direction.y === 0) snakePlayer.direction = { x: 0, y: 1 }; break;
                 case 'ArrowLeft': if (snakePlayer.direction.x === 0) snakePlayer.direction = { x: -1, y: 0 }; break;
@@ -242,10 +256,10 @@ export const startSnakeGame = async () => {
                 case 'd': if (snakeOpponent.direction.x === 0) snakeOpponent.direction = { x: 1, y: 0 }; break;
             }
         });
-    } 
-    
-    if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
-    (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
+    }
+
+    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
+        (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
         if (player) {
             const urlMatches = `${apiUrl}/api/matches/`;
             try {
@@ -272,14 +286,14 @@ export const startSnakeGame = async () => {
         }
     }
 
-    if (modality2 == 'remote' || modality2 == 'tourn-remote') 
+    if (modality2 == 'remote' || modality2 == 'tourn-remote')
         visibilitychange(ws, visiblity);
 }
 
 function handleKeyPress(event) {
     const player = sessionStorage.getItem('player');
     const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-    
+
     if (validKeys.includes(event.key)) {
         ws.send(JSON.stringify({
             'action': 'move_snake',
@@ -290,19 +304,20 @@ function handleKeyPress(event) {
                     'body': snakePlayer.body,
                     'foodCount': snakePlayer.foodCount,
                     'hitWall': snakePlayer.hitWall,
+
                 },
                 'snake_opponent': {
                     'body': snakeOpponent.body,
                     'foodCount': snakeOpponent.foodCount,
                     'hitWall': snakeOpponent.hitWall,
-                } 
+                }
             }
         }));
     }
 }
 
 export function resetGameSnake() {
-    
+
     snakePlayer.body = [{ x: 3, y: 3 }];
     snakePlayer.direction = { x: 1, y: 0 };
     snakePlayer.foodCount = 0;
@@ -317,7 +332,7 @@ export function resetGameSnake() {
         y: 7
     }];
     gameOver = false;
-  
+
 }
 
 function gameLoop() {
@@ -359,7 +374,7 @@ function placeFood() {
         { snake: snakePlayer, name: "player" },
         { snake: snakeOpponent, name: "opponent" }
     ];
-    
+
     for (const { snake, name } of snakes) {
         if (snake.body.x == x)
             x = Math.floor(Math.random() * 36);
@@ -380,8 +395,8 @@ function placeFood() {
                 }
             }));
         }
-        return ;
-    }else{
+        return;
+    } else {
         foods.push({
             x: x,
             y: y
@@ -407,20 +422,20 @@ function checkCollisions() {
         }
     }
 
-   
+
     const playerHead = snakePlayer.body[0];
     const opponentHead = snakeOpponent.body[0];
-    
+
     if (playerHead.x === opponentHead.x && playerHead.y === opponentHead.y) {
         if (snakePlayer.body.length > snakeOpponent.body.length) {
             sessionStorage.setItem("losingSnake", "opponent");
         } else if (snakePlayer.body.length < snakeOpponent.body.length) {
             sessionStorage.setItem("losingSnake", "player");
         } else {
-            sessionStorage.setItem("losingSnake", "both"); 
+            sessionStorage.setItem("losingSnake", "both");
         }
         endGame();
-       
+
     }
     for (let i = 1; i < snakeOpponent.body.length; i++) {
         if (playerHead.x === snakeOpponent.body[i].x && playerHead.y === snakeOpponent.body[i].y) {
@@ -442,7 +457,7 @@ function checkCollisions() {
 
 function endGame() {
     gameOver = true;
-    if(modality2 ==  'remote') {
+    if (modality2 == 'remote') {
         const player = sessionStorage.getItem('player');
         ws.send(JSON.stringify({
             'action': 'end_game',
@@ -484,66 +499,59 @@ async function drawGame() {
         let nickTorn = sessionStorage.getItem("nickTorn");
         let winner_id = opponent;
 
-        if (user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')) &&
-    (modality2 != 'tourn-remote'||( modality2 == 'tourn-remote' && nickTorn == 'True')))  {
-        if (player) {
-            try {
+        if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
+            (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+            if (player) {
+                try {
 
-                let whoGiveUp = sessionStorage.getItem('whoGiveUp')
-                    if(whoGiveUp)
-                        opponentScore = 1000000;
-                    else
-                        playerScore = 1000000; 
-                    sessionStorage.removeItem("whoGiveUp");
-                    if (playerScore > opponentScore)
+                    let nameWinner = sessionStorage.getItem('losingSnake');
+                    if (nameWinner == 'player')
                         winner_id = player;
+                    const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
+                    const duration = "10";
+                    if (modality2 == 'remote' || modality2 == 'tourn-remote')
+                        ws = null;
+                    const urlMatchesID = `${apiUrl}/api/match/${id}`;
+                    const response = await fetch(urlMatchesID, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ winner_id, score, duration })
+                    });
 
-                const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
-                const duration = "10";
-                if(modality2 == 'remote' || modality2 == 'tourn-remote')
-                    ws =  null;
-                const urlMatchesID = `${apiUrl}/api/match/${id}`;
-                const response = await fetch(urlMatchesID, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ winner_id, score, duration })
-                });
+                    const data = await response.json();
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    console.log('Match updated successfully:', data);
-                } else {
-                    console.log('Error updating match:', data);
+                    if (response.ok) {
+                        console.log('Match updated successfully:', data);
+                    } else {
+                        console.log('Error updating match:', data);
+                    }
+                } catch (error) {
+                    console.error('Error processing match:', error);
                 }
-            } catch (error) {
-                console.error('Error processing match:', error);
             }
-        }
         }
         drawGameOver();
         if (sessionStorage.getItem('modality') == 'tournament') {
             sessionStorage.setItem('game', 'snake');
             showNextMatchButton();
         }
-        if(sessionStorage.getItem('modality') == 'tourn-remote')
-        {
-                const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
-                const winner = snakePlayer.foodCount > snakeOpponent.foodCount ? currentMatch.player1 : currentMatch.player2;
-                endMatch(winner); 
+        if (sessionStorage.getItem('modality') == 'tourn-remote') {
+            const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+            const winner = snakePlayer.foodCount > snakeOpponent.foodCount ? currentMatch.player1 : currentMatch.player2;
+            endMatch(winner);
         }
         sessionStorage.removeItem("Inviter");
-            sessionStorage.removeItem("groupName");
-            sessionStorage.removeItem("id_match");
-            sessionStorage.setItem('WS', 'clean');
-            sessionStorage.removeItem("duelGame");
+        sessionStorage.removeItem("groupName");
+        sessionStorage.removeItem("id_match");
+        sessionStorage.setItem('WS', 'clean');
+        sessionStorage.removeItem("duelGame");
         sessionStorage.removeItem("losingSnake");
         sessionStorage.setItem("snakeGame", "false");
-        
-        ws =  null;
+
+        ws = null;
     }
 }
 
@@ -603,7 +611,7 @@ function drawScore() {
     let player1 = "Player";
     let player2 = "Oponente";
 
-   
+
     if (modality == 'tournament' || modality == "tourn-remote") {
         ({ player1, player2 } = currentMatch);
     }
@@ -618,13 +626,15 @@ function drawScore() {
 
 export function drawGameOver() {
     let nameWinner = sessionStorage.getItem('losingSnake');
+
     ctx.fillStyle = 'yellow';
     ctx.font = '30px Arial';
     const giveUp = sessionStorage.getItem('giveUP');
-    if(giveUp == "true")
-        ctx.fillText('Someone GiveUp!',canvas.width / 2 - 90, canvas.height / 2 - 100);
+    if (giveUp == "true")
+        ctx.fillText('Someone GiveUp!', canvas.width / 2 - 90, canvas.height / 2 - 100);
     ctx.fillText('Game Over!', canvas.width / 2 - 70, canvas.height / 2 - 20);
     const winner = nameWinner;
+    console.log("Winner =====>>> ", winner , nameWinner);
     ctx.fillText(`${winner} wins!`, canvas.width / 2 - 70, canvas.height / 2 + 20);
     stopGame();
 }
@@ -633,15 +643,16 @@ export function stopGame() {
     const modality = sessionStorage.getItem('modality');
     clearInterval(gameInterval);
     const giveUp = sessionStorage.getItem('giveUP');
-    const giveUptr= sessionStorage.getItem('trGiveUp');
+    const giveUptr = sessionStorage.getItem('trGiveUp');
     console.log("modality Stop game", modality)
-    if (modality == 'remote'  || giveUp == 'true' || giveUptr == 'true') {
+    if (modality == 'remote' || giveUp == 'true' || giveUptr == 'true') {
         sessionStorage.setItem('giveUP', 'false')
+
         setTimeout(() => {
             navigateTo('/live-chat');
         }, 2000);
     }
-    else if(modality != 'tournament' &&  modality != 'tourn-remote'){
+    else if (modality != 'tournament' && modality != 'tourn-remote') {
         setTimeout(() => {
             navigateTo('/snake-selector');
         }, 2000);

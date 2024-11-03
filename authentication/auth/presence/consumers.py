@@ -458,20 +458,21 @@ class SnakeConsumer(WebsocketConsumer):
                 self.get_or_create_new_room()
             else:
                 return self.disconnect(400)
-            
-        if data.get('action') == 'player_disconnect':
-            message = data.get('message')
-            async_to_sync(self.channel_layer.group_send)(
-            self.match_group.group_name, 
-            {
-                "type": "snake.log",
-                "action": data.get('action'),
-                "message": message
-            }
-        )
 
         if data.get('action') == 'end_game':
             return self.disconnect(401)
+    
+        if data.get('action') == 'player_disconnect':
+            message = data.get('message')
+            async_to_sync(self.channel_layer.group_send)(
+                self.match_group.group_name, 
+                {
+                    "type": "snake.log",
+                    "action": data.get('action'),
+                    "message": message
+                }
+        )
+
         elif data.get('action') != None:
             message = data.get('message')
             async_to_sync(self.channel_layer.group_send)(

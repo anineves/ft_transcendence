@@ -94,4 +94,4 @@ export const selectPlayerorAI = () => {
         sessionStorage.setItem('game', 'pong');
         navigateTo('/tournament');
     });
-};
+};sessionStorage.getItem('modality') == '3D'

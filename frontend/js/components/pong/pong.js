@@ -450,24 +450,28 @@ export function initialize() {
         const friendID = sessionStorage.getItem('friendID');
         document.addEventListener('keydown', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                wsPong.send(JSON.stringify({
-                    'action': 'move_paddle',
-                    'message': {
-                        'user': playerID,
-                        'key': event.key
-                    }
-                }));
+                if (wsPong) {
+                    wsPong.send(JSON.stringify({
+                        'action': 'move_paddle',
+                        'message': {
+                            'user': playerID,
+                            'key': event.key
+                        }
+                    }));
+                }
             }
         });
         document.addEventListener('keyup', function (event) {
             if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                wsPong.send(JSON.stringify({
-                    'action': 'stop_paddle',
-                    'message': {
-                        'user': playerID,
-                        'key': event.key
-                    }
-                }));
+                if (wsPong) {
+                    wsPong.send(JSON.stringify({
+                        'action': 'stop_paddle',
+                        'message': {
+                            'user': playerID,
+                            'key': event.key
+                        }
+                    }));
+                }
             }
         });
     }
