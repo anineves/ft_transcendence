@@ -27,7 +27,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         try:
             validators.validate_password(password=password)
         except ValidationError as e:
-            print(f"ValidationError: {e}")
             raise serializers.ValidationError("CustomValidation error")
 
         if attrs['password'] != attrs['password2']:
