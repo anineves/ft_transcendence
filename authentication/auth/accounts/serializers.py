@@ -6,6 +6,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import ValidationError
 from django.db.models import Q
 
+import django.contrib.auth.password_validation as validators
+
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
@@ -21,6 +23,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
+        password = attrs.get('password')
+        try:
+            validators.validate_password(password=password)
+        except ValidationError as e:
+            print(f"ValidationError: {e}")
+            raise serializers.ValidationError("CustomValidation error")
+
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError("The passwords don't match")
         return attrs
