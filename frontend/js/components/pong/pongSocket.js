@@ -66,23 +66,16 @@ export function initPongSocket(url) {
     }
     console.log("Enteiiiiiiiiii");
     ws.onclose = () => {
-        console.log("onclose 1 ",ws);
-        console.log("CHEGUEIIII");
-        console.error("WebSocket connection closed.");
         ws = null;
     };
     return ws;
 }
 
 export function closePongSocket(ws) {
-    console.log("Tentando fechar WebSocket:", ws);
     if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.close();  // Fechando explicitamente o WebSocket
+        ws.close();  
     }
     ws.onclose = () => {
-        console.log("onclose 2 ",ws);
-        console.log("WebSocket fechado com sucesso.");
-        console.error("WebSocket connection closed.");
         ws = null;
     };
 }

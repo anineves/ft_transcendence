@@ -35,7 +35,7 @@ export const renderGameSelection = async () => {
                     const user = sessionStorage.getItem('user');
                     checkLoginStatus();
                 } else {
-                    console.error('OAuth login failed', data);
+                    console.log('OAuth login failed', data);
                 }
             } catch (error) {
                 console.error('Error:', error);

@@ -10,6 +10,7 @@ export const createPlayer = () => {
         english: {
             title: 'Create Your Player',
             nick: 'Please insert a nickname',
+            playerMessage: 'To register your games, and access other features, please create your player',
             submitBtn: 'Submit', 
             created: 'Player already created',
             exitBtn: 'Exit',
@@ -19,6 +20,7 @@ export const createPlayer = () => {
         portuguese: {
             title: 'Crie Seu Jogador',
             nick: 'Por favor, insira um apelido',
+            playerMessage: 'Para registar os seus jogos, e ter acessos a outras funcionalidades, por favor crie o seu player',
             submitBtn: 'Enviar',
             created: 'Jogador já criado',
             exitBtn: 'Sair',
@@ -29,6 +31,7 @@ export const createPlayer = () => {
         french: {
             title: 'Créez Votre Joueur',
             nick: 'Veuillez insérer un pseudonyme',
+            playerMessage: "Pour enregistrer vos jeux et accéder à d'autres fonctionnalités, veuillez créer votre lecteur",
             submitBtn: 'Soumettre',
             created: 'Joueur déjà créé',
             exitBtn: 'Quitter',
@@ -59,6 +62,7 @@ export const createPlayer = () => {
     app.innerHTML = `
         <div class="background-form">
             <h2>${translations[savedLanguage].title}</h2>
+            <p>${translations[savedLanguage].playerMessage}</p>
             <form id="playerForm">
                <input type="text" id="nickname" placeholder="${translations[savedLanguage].nick}" required class="form-control mb-2">
                 <div id="createPlayerError" class="error-message" style="color:red; font-size: 0.9em;"></div>

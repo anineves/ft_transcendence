@@ -40,7 +40,6 @@ export const startSnakeGame = async () => {
     canvas = document.getElementById('snakeCanvas');
     sessionStorage.setItem("snakeGame", "true");
     if (!canvas) {
-        console.error("Canvas element with id 'snakeCanvas' not found.");
         return;
     }
 
@@ -140,7 +139,7 @@ export const startSnakeGame = async () => {
                     if (response.ok) {
                         console.log('Match updated successfully:', data);
                     } else {
-                        console.error('Error updating match:', data);
+                        console.log('Error updating match:', data);
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
@@ -228,7 +227,6 @@ export const startSnakeGame = async () => {
             sessionStorage.removeItem("Inviter");
             sessionStorage.removeItem("groupName");
             sessionStorage.setItem('WS', 'clean');
-            console.error("Snake socket was closed");
         };
     }
 
@@ -268,7 +266,7 @@ export const startSnakeGame = async () => {
                     console.log('Match created successfully:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
-                    console.error('Match error', data);
+                    console.log('Match error', data);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -516,7 +514,7 @@ async function drawGame() {
                 if (response.ok) {
                     console.log('Match updated successfully:', data);
                 } else {
-                    console.error('Error updating match:', data);
+                    console.log('Error updating match:', data);
                 }
             } catch (error) {
                 console.error('Error processing match:', error);

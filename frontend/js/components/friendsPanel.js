@@ -4,7 +4,6 @@ export const renderPlayerProfile = async () => {
     const playerJson = sessionStorage.getItem('playerProfile');
 
     if (!playerJson) {
-        console.error("Player profile not found in session storage.");
         navigateTo('/live-chat');
         return;
     }

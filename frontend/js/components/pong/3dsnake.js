@@ -48,7 +48,7 @@ async function createMatch() {
                     console.log('Data:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
-                    console.error('Match error', data);
+                    console.log('Match error', data);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -90,7 +90,7 @@ async function updateMatch() {
                 if (response.ok) {
                     console.log('Match updated successfully:', data);
                 } else {
-                    console.error('Error updating match:', data);
+                    console.log('Error updating match:', data);
                 }
             } catch (error) {
                 console.error('Error processing match:', error);

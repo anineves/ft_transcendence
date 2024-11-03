@@ -1,14 +1,16 @@
+const apiUrl = window.config.API_URL;
+const apiUri = window.config.API_URI;
 
 export const visibilitychange = (wsPong, visiblity) => {
+    sessionStorage.removeItem("whoGiveUp");
     const handleVisibilityChange = async () => {
         const pong = sessionStorage.getItem("pongGame")
-        console.log()
-        if ((window.location.href !== "https://10.0.2.15:8080/pong") && (window.location.href !== "https://10.0.2.15:8080/wait-remote" && pong == 'true')) {
+        const snake = sessionStorage.getItem("snakeGame")
+        if ((window.location.href !== `${apiUrl}/pong`) && (window.location.href !== `${apiUrl}/wait-remote` && pong == 'true') && (window.location.href !== `${apiUrl}/snake`) && (window.location.href !== `${apiUrl}/wait-remote` && snake == 'true')) {
             cleanup();
             return; 
         }
-    
-        console.log("fuiii chamada");
+
         if (visiblity == "true")
         {
             visiblity = "false"
@@ -21,21 +23,12 @@ export const visibilitychange = (wsPong, visiblity) => {
             let groupName = sessionStorage.getItem('groupName');
             let modality = sessionStorage.getItem('modality');
             let player = JSON.parse(sessionStorage.getItem('playerInfo'));
-            let whoGiveUp 
+          
             if (modality == 'remote' || modality == 'tourn-remote') {
                 if (wsPong) {
-                    if(player.id == friendID)
+                    if(player.id == playerID)
                     {   
-                        sessionStorage.setItem("whoGiveUp", "Ifriend");
-                        whoGiveUp = sessionStorage.getItem('whoGiveUp')
-                        console.log("WHOOOO", whoGiveUp, "friend", friendID, "player", player.id);
-                    }
-                    else
-                    {
-                        sessionStorage.setItem("whoGiveUp", "Iplayer");
-                        whoGiveUp = sessionStorage.getItem('whoGiveUp')
-                        console.log("WHOOOO", whoGiveUp, "friend", friendID, "player", player.id);
-
+                        sessionStorage.setItem("whoGiveUp", "IPlayer");
                     }
                     wsPong.send(JSON.stringify({
                         'action': 'player_disconnect',
@@ -55,10 +48,10 @@ export const visibilitychange = (wsPong, visiblity) => {
     window.addEventListener('offline', handleVisibilityChange);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('popstate', () => {
-        handleVisibilityChange(); // Chama o mesmo handler
+        handleVisibilityChange(); 
     });
     window.addEventListener('beforeunload', () => {
-        handleVisibilityChange(); // Chama o mesmo handler
+        handleVisibilityChange(); 
     });
     
     

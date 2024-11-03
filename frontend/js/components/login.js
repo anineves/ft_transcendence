@@ -177,7 +177,7 @@ export const renderLogin = () => {
                                 return;
                             }
                         } else {
-                            console.error("error loading players");
+                            console.log("error loading players");
                         }
                     } catch (error) {
                         console.error('Error', error);
@@ -288,7 +288,7 @@ const showCodeForm = async () => {
                             return;
                         }
                     } else {
-                        console.error("error loading players");
+                        console.log("error loading players");
                     }
                 } catch (error) {
                     console.error('Error', error);

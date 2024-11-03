@@ -18,7 +18,7 @@ export const liveChat = () => {
     const nickname2 = sessionStorage.getItem('nickname');
     const nickname = nickname2.replace(/^"|"$/g, '');
     if (!jwttoken) {
-        console.error("JWT Token is missing");
+        console.log("JWT Token is missing");
         return;
     }
 
@@ -199,7 +199,7 @@ export const liveChat = () => {
     };
 
     socket3.onclose = function () {
-        console.error("Tournament socket was closed");
+        console.log("Tournament socket was closed");
     };
 
 
@@ -245,7 +245,7 @@ export const liveChat = () => {
     };
 
     socket2.onclose = function () {
-        console.error("Tournament socket was closed");
+        console.log("Tournament socket was closed");
     };
     
 
@@ -363,7 +363,7 @@ export const liveChat = () => {
     };
 
     socket.onclose = function () {
-        console.error("Chat socket was close"); 
+        console.log("Chat socket was close"); 
     };
 
     leaveButton.onclick = function () {

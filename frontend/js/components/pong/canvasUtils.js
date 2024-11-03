@@ -12,9 +12,7 @@ export function initializeCanvas() {
         ballRadius = 10;
         playerY = (canvas.height - paddleHeight) / 2;
         opponentY = (canvas.height - paddleHeight) / 2;
-    } else {
-        //console.error('Canvas element not found');
-    }
+    } 
 }
 
 export function drawCenterLine() {

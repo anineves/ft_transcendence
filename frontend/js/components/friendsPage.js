@@ -1,6 +1,7 @@
 import { renderRequestPanel } from './requestPanel.js';
 import { navigateTo } from '../utils.js';
 const apiUrl = window.config.API_URL;
+
 export const renderFriendsPage = async (user) => {
     const app = document.getElementById('app');
     
@@ -16,6 +17,7 @@ export const renderFriendsPage = async (user) => {
             sucessRequest: "Friend request sent successfully!",
             failedRequest: "Failed to send friend request: '",
             errorFriend: "There is no player created with this data, please enter a valid name",
+            repeatRequest: "You're already friends, check your friends list or friend requests.",
         },
         portuguese: {
             title: "Amigos",
@@ -28,6 +30,7 @@ export const renderFriendsPage = async (user) => {
             sucessRequest: "Solicitação de amizade enviada com sucesso!",
             failedRequest: "Falha ao enviar solicitação de amizade: '",
             errorFriend: "Nao ha jogador criado com esses dados, por favor insira um nome valido",
+            repeatRequest: "Já são amigos, vejam a vossa lista de amigos ou os vossos pedidos de amizade.",
         },
         french: {
             title: "Amis",
@@ -40,6 +43,7 @@ export const renderFriendsPage = async (user) => {
             sucessRequest: "Demande d'ami envoyée avec succès !",
             failedRequest: "Échec de l'envoi de la demande d'ami : '",
             errorFriend: "Aucun joueur n'a été créé avec ces données, veuillez entrer un nom valide",
+            repeatRequest: "Vous êtes déjà amis, vérifiez votre liste d'amis ou vos demandes d'amis.",
         }
     };
     
@@ -185,9 +189,10 @@ export const renderFriendsPage = async (user) => {
 
             if (response.ok) {
                 console.log(`${translations[savedLanguage].sucessRequest}`);
+                navigateTo('/friendPage')
             } else {
                 const errorData = await response.json();
-                console.log(`${translations[savedLanguage].failedRequest}` + JSON.stringify(errorData));
+                invitefriendError.textContent += `${translations[savedLanguage].repeatRequest}`;
             }
         } catch (error) {
             console.error('Error:', error);

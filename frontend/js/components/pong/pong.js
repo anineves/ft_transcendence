@@ -70,7 +70,7 @@ export const startPongGame = async () => {
                     console.log('Match created successfully:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
-                    console.error('Match error', data);
+                    console.log('Match error', data);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -107,10 +107,12 @@ export const startPongGame = async () => {
                     wsPong = null;
         
                     let whoGiveUp = sessionStorage.getItem('whoGiveUp')
-                    if(whoGiveUp == "Ifriend")
-                        playerScore = 5;
-                    if(whoGiveUp == "Iplayer")
-                        opponentScore = 5; 
+                    console.log("whoGiveUp", whoGiveUp);
+                    if(whoGiveUp)
+                        opponentScore = 5;
+                    else
+                        playerScore = 5; 
+                    sessionStorage.removeItem("whoGiveUp");
                     if (playerScore > opponentScore)
                         winner_id = player;
                     const score = `${playerScore}-${opponentScore}`;
@@ -128,7 +130,7 @@ export const startPongGame = async () => {
                     if (response.ok) {
                         console.log('Match updated successfully:', data);
                     } else {
-                        console.error('Error updating match:', data);
+                        console.log('Error updating match:', data);
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
@@ -140,6 +142,7 @@ export const startPongGame = async () => {
             sessionStorage.removeItem("id_match");
             sessionStorage.setItem('WS', 'clean');
             sessionStorage.removeItem("duelGame");
+            sessionStorage.removeItem("whoGiveUp");
             wsPong =  null;
             }
             if (data.action === 'ball_track') {
@@ -390,7 +393,7 @@ export function initialize() {
                     if (response.ok) {
                         console.log('Match updated successfully:', data);
                     } else {
-                        console.error('Error updating match:', data);
+                        console.log('Error updating match:', data);
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
