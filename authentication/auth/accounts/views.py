@@ -88,9 +88,9 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
         refresh = RefreshToken.for_user(user)
         scheme = 'https'  # Force to https
-        host = "10.0.2.15"  # Remove porta padrão 80 se estiver presente
+        host = "10.12.3.5"  # Remove porta padrão 80 se estiver presente
         port = '8080'  # Defina a porta que deseja usar
-        path = user.avatar.url # Caminho do arquivo
+        path = user.avatar.url if user.avatar else None# Caminho do arquivo
         absolute_url = f"{scheme}://{host}:{port}{path}"
         print("###################")
         print(absolute_url)
@@ -271,7 +271,7 @@ class RespondFriendRequest(APIView):
 # Tem que sair daqui
 def oauth_login(request):
     authorization_url = 'https://api.intra.42.fr/oauth/authorize'
-    redirect_uri = 'https://10.12.2.1:8080/game-selection' 
+    redirect_uri = 'https://10.12.3.5:8080/game-selection' 
     client_id = os.getenv('CLIENT_ID')
     
     return redirect(f'{authorization_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code')

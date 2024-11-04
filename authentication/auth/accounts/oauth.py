@@ -9,7 +9,7 @@ class CustomOAuth2Backend(BaseBackend):
     def authenticate(self, request, code):
         token_url = 'https://api.intra.42.fr/oauth/token'
         user_info_url = 'https://api.intra.42.fr/v2/me'
-        redirect_uri = 'https://10.12.2.1:8080/game-selection'
+        redirect_uri = 'https://10.12.3.5:8080/game-selection'
 
         token_response = requests.post(token_url, data={
             'grant_type': 'authorization_code',

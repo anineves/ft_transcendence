@@ -67,9 +67,9 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user is None:
             raise serializers.ValidationError('Invalid credentials', code='authorization')
         scheme = 'https'  # Force to https
-        host = "10.0.2.15"  # Remove porta padrão 80 se estiver presente
+        host = "10.12.3.5"  # Remove porta padrão 80 se estiver presente
         port = '8080'  # Defina a porta que deseja usar
-        path = user.avatar.url # Caminho do arquivo
+        path = user.avatar.url if user.avatar else None # Caminho do arquivo
         absolute_url = f"{scheme}://{host}:{port}{path}"
         print("###################")
         print(absolute_url)
