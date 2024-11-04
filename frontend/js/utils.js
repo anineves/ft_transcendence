@@ -115,14 +115,14 @@ export const render = () => {
     const snake = sessionStorage.getItem("snakeGame");
     if(pong == "true" || snake == "true")
     {
-        if(sessionStorage.getItem('modality') == '3D'  && pong == "true")
+        if((sessionStorage.getItem('modality') == '3D' || sessionStorage.getItem('modality') == 'player') && pong == "true")
         {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
             stop3DGame();
             return;
         }
-        if(sessionStorage.getItem('modality') == '3D'  && snake == "true")
+        if((sessionStorage.getItem('modality') == '3D' || sessionStorage.getItem('modality') == 'player')  && snake == "true")
         {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
@@ -210,14 +210,14 @@ window.addEventListener('popstate', () => {
     const snake = sessionStorage.getItem("snakeGame");
     if(pong == "true" || snake == "true")
         {
-            if(sessionStorage.getItem('modality') == '3D'  && pong == "true")
+            if((sessionStorage.getItem('modality') == '3D' || sessionStorage.getItem('modality') == 'player') && pong == "true")
             {
                 sessionStorage.setItem("pongGame", "false");
                 sessionStorage.setItem("snakeGame", "false");
                 stop3DGame();
                 return;
             }
-            if(sessionStorage.getItem('modality') == '3D'  && snake == "true")
+            if((sessionStorage.getItem('modality') == '3D' || sessionStorage.getItem('modality') == 'player')  && snake == "true")
             {
                 sessionStorage.setItem("pongGame", "false");
                 sessionStorage.setItem("snakeGame", "false");

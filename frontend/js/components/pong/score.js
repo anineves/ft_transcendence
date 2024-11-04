@@ -28,12 +28,19 @@ export function drawScore(playerScore, opponentScore) {
     if (!savedLanguage || !translations[savedLanguage]) 
         savedLanguage = 'english'; 
     const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+    let friendID = sessionStorage.getItem('friendID');
+    let playerID = sessionStorage.getItem('playerID');
+    let player = JSON.parse(sessionStorage.getItem('playerInfo'));
     const modality = sessionStorage.getItem('modality');
     let player1 = translations[savedLanguage].player
     let player2 = translations[savedLanguage].opponent
     const nickname = sessionStorage.getItem('nickname'); 
-    if(nickname)
-        player1 = nickname ? nickname.replace(/^"|"$/g, '') : ""; 
+    if(nickname) {
+        if (player.id == friendID) 
+            player2 = nickname ? nickname.replace(/^"|"$/g, '') : "";
+        else if (player.id == playerID)
+            player1 = nickname ? nickname.replace(/^"|"$/g, '') : ""; 
+    }
     if (modality == 'tournament' || modality == "tourn-remote") {
         ({ player1, player2 } = currentMatch);
     }

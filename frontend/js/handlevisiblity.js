@@ -2,6 +2,7 @@ const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
 
 export const visibilitychange = (wsPong, visiblity) => {
+    console.log("visibility: ", visiblity);
     sessionStorage.removeItem("whoGiveUp");
     const handleVisibilityChange = async () => {
         const pong = sessionStorage.getItem("pongGame")
@@ -14,9 +15,6 @@ export const visibilitychange = (wsPong, visiblity) => {
         if (visiblity == "true")
         {
             visiblity = "false"
-            
-            const user = sessionStorage.getItem('user');
-            const user_json = JSON.parse(user);
             let friendID = sessionStorage.getItem('friendID');
             let playerID = sessionStorage.getItem('playerID');
             let inviter = sessionStorage.getItem("Inviter");
@@ -55,17 +53,17 @@ export const visibilitychange = (wsPong, visiblity) => {
     });
     
     
-    const originalPushState = history.pushState;
-    history.pushState = function(...args) {
-        originalPushState.apply(this, args);
-        handleVisibilityChange(); 
-    };
-    
-    const originalReplaceState = history.replaceState;
-    history.replaceState = function(...args) {
-        originalReplaceState.apply(this, args);
-        handleVisibilityChange(); 
-    };
+    //const originalPushState = history.pushState;
+    //history.pushState = function(...args) {
+    //    originalPushState.apply(this, args);
+    //    handleVisibilityChange(); 
+    //};
+    //
+    //const originalReplaceState = history.replaceState;
+    //history.replaceState = function(...args) {
+    //    originalReplaceState.apply(this, args);
+    //    handleVisibilityChange(); 
+    //};
     
      const cleanup = () => {
         window.removeEventListener('offline', handleVisibilityChange);

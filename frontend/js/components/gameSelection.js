@@ -1,4 +1,5 @@
 import { checkLoginStatus, navigateTo } from '../utils.js';
+import { putPlayer } from './login.js';
 const apiUrl = window.config.API_URL;
 export const renderGameSelection = async () => {
     // opcional
@@ -26,13 +27,46 @@ export const renderGameSelection = async () => {
                     },
                     body: JSON.stringify({ code })
                 });
-                
+
                 const data = await response.json();
 
                 if (data.access_token) {
                     sessionStorage.setItem('jwtToken', data.access_token);
                     sessionStorage.setItem('user', JSON.stringify(data.user));
                     const user = sessionStorage.getItem('user');
+                    const userId = data.user.id;
+                    const token = data.access_token;
+                    const urlPlayers = `${apiUrl}/api/players/`;
+                    try {
+                        const playerResponse = await fetch(urlPlayers, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+
+                        if (playerResponse.ok) {
+                            const playerData = await playerResponse.json();
+                            const player = playerData.find(p => p.user === userId);
+
+                            if (player) {
+                                sessionStorage.setItem('player', JSON.stringify(player.id));
+                                sessionStorage.setItem('playerInfo', JSON.stringify(player));
+                                sessionStorage.setItem('nickname', JSON.stringify(player.nickname));
+                                putPlayer("ON");
+                            } else {
+                                checkLoginStatus();
+                                sessionStorage.setItem('firtChat', 'true');
+                                navigateTo('/create-player');
+                                return;
+                            }
+                        } else {
+                            console.log("error loading players");
+                        }
+                    } catch (error) {
+                        console.error('Error', error);
+                    }
                     checkLoginStatus();
                 } else {
                     console.log('OAuth login failed', data);
@@ -43,7 +77,7 @@ export const renderGameSelection = async () => {
         }
     }
 
-   
+
     app.innerHTML = `
     <div class="select-game">
     
