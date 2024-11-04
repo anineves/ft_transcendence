@@ -43,6 +43,8 @@ export function initPongSocket(url) {
     
         let data = JSON.parse(event.data)
         
+        console.log('Data:', data)
+
         if (data.action === 'match_created') {
             console.log(`Match created with ID: ${data.match_id}`);
         }
@@ -61,6 +63,8 @@ export function initPongSocket(url) {
             else{
                 navigateTo('/pong');
             }
+        if (data.action == 'failed_match')
+            console.log('Failed Match!')
     }
     }
     ws.onclose = () => {

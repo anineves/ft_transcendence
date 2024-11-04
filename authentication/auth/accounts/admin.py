@@ -19,9 +19,12 @@ class PlayerAdmin(admin.ModelAdmin):
 class FriendRequestAdmin(admin.ModelAdmin):
     list_display = ('id', 'sender', 'invited')
 
+@admin.register(MatchGroup)
+class MatchGroupAdmin(admin.ModelAdmin):
+    list_display = ('group_name', 'id', 'player', 'opponent', 'is_active')
+
 
 admin.site.register(Match)
 admin.site.register(Game)
 admin.site.register(PlayerChannel)
 admin.site.register(PrivateGroup)
-admin.site.register(MatchGroup)

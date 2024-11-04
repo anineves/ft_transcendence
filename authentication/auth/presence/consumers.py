@@ -45,7 +45,9 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None):
         data = json.loads(text_data)
-        
+
+        print(f"Data: {data}")
+
         if data.get('Authorization'):
             user = handle_authentication(self, data.get('Authorization'))
             if user:
@@ -222,7 +224,6 @@ class PongConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, close_code):
-        print(f"Close_code: {close_code}")
 
         if close_code == 400:
             self.send_self_channel_messages(
@@ -234,14 +235,14 @@ class PongConsumer(WebsocketConsumer):
             self.match_group.group_name, self.channel_name
         )
         if close_code == 401:
+            print("Shutting down by 401")
             self.match_group.delete()
         
         if close_code == 1001:
-            print(f"Closing with 1001")
+            print(f"Closing with 1001: <{self.match_group.player}>")
+            print(f"Closing with 1001: ID {self.match_group.id}")
             self.match_group.is_active = False
             self.match_group.save()
-
-        print(f"Closed Properly")
 
         self.close()
         return super().disconnect(close_code)
@@ -334,6 +335,9 @@ class PongConsumer(WebsocketConsumer):
                 async_to_sync(self.channel_layer.group_add)(
                     self.match_group.group_name, self.channel_name)
             else:
+                if self.match_group.is_active == False:
+                    print(f"Is Active: {self.match_group.is_active}")
+                    raise ValidationError("A player was disconnected from the match.")
                 self.match_group.opponent = player
                 async_to_sync(self.channel_layer.group_add)(
                     self.match_group.group_name, self.channel_name)
@@ -348,19 +352,12 @@ class PongConsumer(WebsocketConsumer):
                         }
                     }
                 )
-                
-            if self.match_group.is_active == False:
-                print(f"Is Active: {self.match_group.is_active}")
-                raise ValidationError("CustomValidation error")
-
-
-            self.match_group.is_active = True
-            
+            print(f"Saving match {self.match_group} with player {player} by ID {self.match_group.id}")
             self.match_group.save()
         except ValidationError as e:
-            print("Got an exception")
-            return self.disconnect(401)
+            self.send_self_channel_messages("failed_match")
             print(f"# Something went wrong with creating_new_room: \n{e}")
+            # return self.disconnect(401) -> Must close
         return
 
 
