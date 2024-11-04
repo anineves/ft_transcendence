@@ -65,12 +65,14 @@ def authenticate_user(token):
 def handle_authentication(obj, token):
 
     obj.user = authenticate_user(token)
+    print(f"In handle auth: {obj.user}")
     if obj.user:
         try:
             player, created = PlayerChannel.objects.update_or_create(
                 player=obj.user.player,
                 defaults={'channel_name': obj.channel_name}
             )
+            print("Created Channel")
             return obj.user
         except Exception as e:
             print(f"Exception: {e}")

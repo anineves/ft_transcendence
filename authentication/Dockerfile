@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Create required directories
-RUN mkdir -p /auth /scripts /data/web/static /data/web/media
+RUN mkdir -p /auth /scripts ./data/web/static /data/web/media
 
 # Copy the relevant directories into the container
 COPY ./auth /auth
@@ -21,7 +21,7 @@ RUN python -m venv /venv && \
   /venv/bin/pip install -r /auth/requirements.txt && \
   adduser --disabled-password --no-create-home duser && \
   chown -R duser:duser /venv /auth /scripts /data && \
-  chmod -R 777 /data/web/static /data/web/media && \ 
+  chmod -R 755 /data/web/static /data/web/media && \ 
   chmod -R 755 /scripts && \  
   chmod +x /scripts/commands.sh
 
