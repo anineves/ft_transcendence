@@ -257,6 +257,7 @@ class PongConsumer(WebsocketConsumer):
                 return self.disconnect(400)
         
         if data.get('action') == 'end_game':
+            print("EndGame Pong")
             return self.disconnect(401)
 
         if data.get('action') == 'player_disconnect':
@@ -479,6 +480,7 @@ class SnakeConsumer(WebsocketConsumer):
                 return self.disconnect(400)
 
         if data.get('action') == 'end_game':
+            print
             return self.disconnect(401)
     
         if data.get('action') == 'player_disconnect':

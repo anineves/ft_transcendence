@@ -367,7 +367,7 @@ function updateSnake(snake) {
 }
 
 function placeFood() {
-    const modality2 = sessionStorage.getItem('modality');
+    let modality2 = sessionStorage.getItem('modality');
     let x = Math.floor(Math.random() * 36);
     let y = Math.floor(Math.random() * 20);
     const snakes = [
@@ -457,6 +457,7 @@ function checkCollisions() {
 
 function endGame() {
     gameOver = true;
+    let modality2 = sessionStorage.getItem('modality');
     if (modality2 == 'remote') {
         const player = sessionStorage.getItem('player');
         ws.send(JSON.stringify({
@@ -469,9 +470,7 @@ function endGame() {
     }
 }
 
-const inviter = sessionStorage.getItem('Inviter'); // Não sei se posso deixar isso aqui
-const user = sessionStorage.getItem('user');
-const modality2 = sessionStorage.getItem('modality');
+
 
 async function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -488,7 +487,7 @@ async function drawGame() {
         let inviter = sessionStorage.getItem("Inviter");
         const player = sessionStorage.getItem('player');
         const game = 0;
-        const modality2 = sessionStorage.getItem('modality');
+        let modality2 = sessionStorage.getItem('modality');
         let opponent = 1;
         let friendId = sessionStorage.getItem('friendID');
         if (modality2 == 'remote' && inviter == "True" || modality2 == 'tourn-remote')
