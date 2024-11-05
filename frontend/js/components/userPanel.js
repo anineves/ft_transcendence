@@ -122,7 +122,8 @@ export const renderPanel = async (user) => {
             <div id="updateProfileSection" style="display: none;">
                 <h2>${translations[savedLanguage].update}</h2>
                 <form id="updateProfileForm">
-                    <input type="file" id="updateAvatar" class="form-control mb-2">
+                    <input type="file" id="updateAvatar" class="form-control mb-2"> 
+                    <button type="button" id="removeAvatarBtn" class="btn"><i class="fas fa-trash"></i></button>
                     <input type="text" id="updateFirstName" placeholder="${translations[savedLanguage].first}" class="form-control mb-2">
                     <input type="text" id="updateLastName" placeholder="${translations[savedLanguage].last}" class="form-control mb-2">
                     <input type="text" id="updateUsername" placeholder="${translations[savedLanguage].user}" class="form-control mb-2">
@@ -214,6 +215,7 @@ export const renderPanel = async (user) => {
     document.getElementById('playBtn').addEventListener('click', () => {
         navigateTo('/game-selection');
     });
+    sessionStorage.setItem('removeAvatar', 'false'); 
     document.getElementById('logoutBtn').addEventListener('click', logout);
     document.getElementById('editBtn2').addEventListener('click', toggleEditProfile);
     document.getElementById('friendBtn').addEventListener('click', () => navigateTo('/friendPage', user));
@@ -221,7 +223,10 @@ export const renderPanel = async (user) => {
     document.getElementById('sendMessageBtn').addEventListener('click', handleSendMessage);
     document.getElementById('updateProfileForm').addEventListener('submit', (e) => handleUpdateProfile(e, user));
     document.getElementById('backProfileBtn').addEventListener('click', () => navigateTo('/user-panel', user));
-
+    document.getElementById('removeAvatarBtn').addEventListener('click', () => {
+        document.getElementById('updateAvatar').value = ""; 
+        sessionStorage.setItem('removeAvatar', 'true'); 
+    });
 };
 
 
@@ -283,6 +288,7 @@ const handleUpdateProfile = async (e, user) => {
     const lastName = document.getElementById('updateLastName').value.trim();
     const username = document.getElementById('updateUsername').value.trim();
     const email = document.getElementById('updateEmail').value.trim();
+    const removeAvatar = sessionStorage.getItem('removeAvatar') === 'true';
     const nameRegex = /^[a-zA-Z0-9-]+$/;
     let valid = true;
     if (firstName && !nameRegex.test(firstName)) {
@@ -304,6 +310,10 @@ const handleUpdateProfile = async (e, user) => {
     }
     if (!valid)
         return;
+    if (removeAvatar) {
+        formData.append('avatar', '');
+        sessionStorage.setItem('removeAvatar', 'false'); 
+    }
 
     if (avatarFile) 
         formData.append('avatar', avatarFile);
