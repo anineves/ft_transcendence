@@ -32,6 +32,21 @@
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }
 
+#removeAvatarBtn {
+ 
+    background: transparent !important;
+    border:  none !important; 
+    
+}
+
+#removeAvatarBtn button{
+    
+    background: transparent !important;
+    border:  none !important; 
+    
+}
+
+
 .user-panel .btn {
     background: linear-gradient(145deg, #00FFFF);
     color: #fff;
