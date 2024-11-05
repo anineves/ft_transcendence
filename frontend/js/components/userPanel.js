@@ -126,8 +126,6 @@ export const renderPanel = async (user) => {
                     <button type="button" id="removeAvatarBtn" class="btn"><i class="fas fa-trash"></i></button>
                     <input type="text" id="updateFirstName" placeholder="${translations[savedLanguage].first}" class="form-control mb-2">
                     <input type="text" id="updateLastName" placeholder="${translations[savedLanguage].last}" class="form-control mb-2">
-                    <input type="text" id="updateUsername" placeholder="${translations[savedLanguage].user}" class="form-control mb-2">
-                    <input type="email" id="updateEmail" placeholder="${translations[savedLanguage].email}" class="form-control mb-2">
                     <div id="updateError" class="error-message" style="color:red; font-size: 0.9em;"></div> 
                     <button type="submit" class="btn">${translations[savedLanguage].updateBtn}</button>
                 </form>
@@ -286,8 +284,6 @@ const handleUpdateProfile = async (e, user) => {
     const avatarFile = document.getElementById('updateAvatar').files[0];
     const firstName = document.getElementById('updateFirstName').value.trim();
     const lastName = document.getElementById('updateLastName').value.trim();
-    const username = document.getElementById('updateUsername').value.trim();
-    const email = document.getElementById('updateEmail').value.trim();
     const removeAvatar = sessionStorage.getItem('removeAvatar') === 'true';
     const nameRegex = /^[a-zA-Z0-9-]+$/;
     let valid = true;
@@ -297,15 +293,6 @@ const handleUpdateProfile = async (e, user) => {
     }
     if (lastName && !nameRegex.test(lastName)) {
         updateError.textContent += `${translations[savedLanguage].errorLastName}`;
-        valid = false;
-    }
-    if ( username && !nameRegex.test(username)) {
-        updateError.textContent += `${translations[savedLanguage].errorUsername}`;
-        valid = false;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email && !emailRegex.test(email)) {
-        updateError.textContent += `${translations[savedLanguage].errorEmail}`;
         valid = false;
     }
     if (!valid)
@@ -321,11 +308,6 @@ const handleUpdateProfile = async (e, user) => {
         formData.append('first_name', firstName);
     if (lastName) 
         formData.append('last_name', lastName);
-    if (username) 
-        formData.append('username', username);
-    if (email) 
-        formData.append('email', email);
-
     try {
         const apiUrl = window.config.API_URL;
         const urluserID = `${apiUrl}/api/user/${user.id}`;

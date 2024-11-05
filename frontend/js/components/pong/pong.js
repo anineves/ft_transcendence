@@ -89,6 +89,8 @@ export const startPongGame = async () => {
             {
                 if(modality2 == "tourn-remote")
                     sessionStorage.setItem("trGiveUp", "true")
+                if(modality2 == "remote")
+                    sessionStorage.setItem('giveUP', 'true')
                 if (wsPong) {
                     wsPong.send(JSON.stringify({
                         'action': 'end_game',

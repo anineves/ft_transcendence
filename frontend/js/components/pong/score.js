@@ -2,7 +2,7 @@ import { context, canvas } from './canvasUtils.js';
 import { resetGameState } from './pong.js';
 import { navigateTo } from '../../utils.js';
 
-const translations = {
+export const translations = {
     english: {
         player: "Player", 
         opponent: "Opponent", 
@@ -64,6 +64,9 @@ export function drawGameOver(playerScore, opponentScore) {
 
     const giveUp = sessionStorage.getItem('giveUP');
     const giveUptr= sessionStorage.getItem('trGiveUp');
+    context.font = "30px 'Press Start 2P', cursive";
+    context.fillStyle = "#ffcc00";
+    context.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 180, canvas.height / 2);
     if(giveUp == "true" || giveUptr == 'true')
     {
         context.font = "20px 'Press Start 2P', cursive";
@@ -72,12 +75,12 @@ export function drawGameOver(playerScore, opponentScore) {
         sessionStorage.setItem('giveUP', 'false');
         sessionStorage.setItem('trGiveUp', 'false');
     }
-    
-    context.font = "30px 'Press Start 2P', cursive";
-    context.fillStyle = "#ffcc00";
-    context.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 180, canvas.height / 2);
-    context.font = "25px 'Press Start 2P', cursive";
-    context.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 3 - 185, canvas.height / 2 + 50);
+    else
+    {
+        context.font = "25px 'Press Start 2P', cursive";
+        context.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 3 - 185, canvas.height / 2 + 50);
+
+    }
 
     const modality = sessionStorage.getItem('modality');
     if (modality == 'remote'  || giveUp == 'true' || giveUptr == 'true') {

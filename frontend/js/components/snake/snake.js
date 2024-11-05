@@ -14,6 +14,29 @@ let gameInterval;
 let speed;
 let ws = null;
 
+export const translations = {
+    english: {
+        player: "Player", 
+        opponent: "Opponent", 
+        gameOver: "Game Over", 
+        giveUp: "Someone gave up!"
+    }, 
+    portuguese: {
+        player: "Jogador",
+        opponent: "Adversário",
+        gameOver: "Fim de Jogo",
+        giveUp: "Alguém desistiu!"
+    },
+    french: {
+        player: "Joueur",
+        opponent: "Adversaire",
+        gameOver: "Jeu Terminé",
+        giveUp: "Quelqu'un abandonne!"
+    }
+};
+
+
+
 let snakePlayer = {
     body: [{ x: 3, y: 3 }],
     direction: { x: 1, y: 0 },
@@ -91,12 +114,11 @@ export const startSnakeGame = async () => {
         if (ws) {
             document.addEventListener('keydown', handleKeyPress);
         }
-        console.log('ENTREI IN RANDOM VISIS')
+
         ws.onmessage = async (event) => {
 
             const data = JSON.parse(event.data);
             let message = data.message
-            console.log("data action =>>>> ", data.action)
             if (data.action == 'player_disconnect') {
                 if (modality2 == "tourn-remote")
                     sessionStorage.setItem("trGiveUp", "true")
@@ -109,7 +131,6 @@ export const startSnakeGame = async () => {
                     }));
                 }
 
-                drawGameOver();
                 const id = sessionStorage.getItem('id_match');
                 let friendID = sessionStorage.getItem('friendID');
                 opponent = friendID;
@@ -126,6 +147,7 @@ export const startSnakeGame = async () => {
                     snakePlayer.foodCount = 99;
                     sessionStorage.setItem("losingSnake", "player");
                 }
+                drawGameOver(snakePlayer.foodCount, snakeOpponent.foodCount);
                 sessionStorage.removeItem("whoGiveUp");
                 if (id) {
                     try {
@@ -481,7 +503,7 @@ async function drawGame() {
     drawScore();
 
     if (gameOver) {
-        drawGameOver();
+        drawGameOver(snakePlayer.foodCount, snakeOpponent.foodCount);
         const id = sessionStorage.getItem('id_match');
         const user = sessionStorage.getItem('user');
         let inviter = sessionStorage.getItem("Inviter");
@@ -532,7 +554,7 @@ async function drawGame() {
                 }
             }
         }
-        drawGameOver();
+        drawGameOver(snakePlayer.foodCount, snakeOpponent.foodCount);
         if (sessionStorage.getItem('modality') == 'tournament') {
             sessionStorage.setItem('game', 'snake');
             showNextMatchButton();
@@ -623,18 +645,36 @@ function drawScore() {
     ctx.fillText(`${player2}: ${snakePlayer.foodCount}`, canvas.width - 200, 20);
 }
 
-export function drawGameOver() {
+export function drawGameOver(playerScore, opponentScore) {
+    
+    let savedLanguage = localStorage.getItem('language');
+    if (!savedLanguage || !translations[savedLanguage]) 
+        savedLanguage = 'english'; 
     let nameWinner = sessionStorage.getItem('losingSnake');
-
+    let player1 = translations[savedLanguage].player
+    let player2 = translations[savedLanguage].opponent
     ctx.fillStyle = 'yellow';
     ctx.font = '30px Arial';
     const giveUp = sessionStorage.getItem('giveUP');
-    if (giveUp == "true")
-        ctx.fillText('Someone GiveUp!', canvas.width / 2 - 90, canvas.height / 2 - 100);
-    ctx.fillText('Game Over!', canvas.width / 2 - 70, canvas.height / 2 - 20);
-    const winner = nameWinner;
-    console.log("Winner =====>>> ", winner , nameWinner);
-    ctx.fillText(`${winner} wins!`, canvas.width / 2 - 70, canvas.height / 2 + 20);
+    const giveUptr= sessionStorage.getItem('trGiveUp');
+
+    ctx.font = "30px 'Press Start 2P', cursive";
+    ctx.fillStyle = "#ffcc00";
+    ctx.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 180, canvas.height / 2);
+    if(giveUp == "true" || giveUptr == 'true')
+    {
+        ctx.font = "20px 'Press Start 2P', cursive";
+        ctx.fillStyle = "#ff0000";
+        ctx.fillText(`${translations[savedLanguage].giveUp}`,canvas.width / 2 - 200, canvas.height / 2 - 100);
+        sessionStorage.setItem('giveUP', 'false');
+        sessionStorage.setItem('trGiveUp', 'false');
+    }
+    else
+    {
+        ctx.font = "25px 'Press Start 2P', cursive";
+        ctx.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 3 - 185, canvas.height / 2 + 50);
+
+    }
     stopGame();
 }
 
