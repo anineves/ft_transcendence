@@ -65,7 +65,6 @@ def authenticate_user(token):
 def handle_authentication(obj, token):
 
     obj.user = authenticate_user(token)
-    print(f"In handle auth: {obj.user}")
     if obj.user:
         try:
             player, created = PlayerChannel.objects.update_or_create(

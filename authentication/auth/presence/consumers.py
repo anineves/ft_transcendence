@@ -457,9 +457,11 @@ class SnakeConsumer(WebsocketConsumer):
             self.match_group.group_name, self.channel_name
         )
         if close_code == 401:
+            print(f"Called 401 (delete): {self.user.player} | {self.match_group} ")
             self.match_group.delete()
 
         if close_code == 1001:
+            print(f"Called 1001 (save): {self.user.player} | {self.match_group} ")
             self.match_group.is_active = False
             self.match_group.save()
         
@@ -491,6 +493,7 @@ class SnakeConsumer(WebsocketConsumer):
         )
         elif data.get('action') != None:
             message = data.get('message')
+            print(f"Calling random action {message}")
             async_to_sync(self.channel_layer.group_send)(
                 self.match_group.group_name, 
                 {
@@ -523,6 +526,7 @@ class SnakeConsumer(WebsocketConsumer):
                 group_name=self.snake_match
             )
             if created:
+                print(f"Created -> Player:{player} - self.match_group: {self.match_group}")
                 self.match_group.player = player
                 async_to_sync(self.channel_layer.group_add)(
                     self.match_group.group_name, self.channel_name)
@@ -545,6 +549,7 @@ class SnakeConsumer(WebsocketConsumer):
                 )
             self.match_group.save()
         except ValidationError as e:
+            print(f"ValidationError -> Error:{e} | Player: {player}")
             self.send_self_channel_messages("failed_match")
         return
 

@@ -91,7 +91,7 @@ export const startSnakeGame = async () => {
         if (ws) {
             document.addEventListener('keydown', handleKeyPress);
         }
-
+        console.log('ENTREI IN RANDOM VISIS')
         ws.onmessage = async (event) => {
 
             const data = JSON.parse(event.data);
