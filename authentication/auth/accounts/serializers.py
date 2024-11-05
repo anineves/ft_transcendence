@@ -37,7 +37,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         validated_data.pop('password2', None)
         avatar = validated_data.pop('avatar', None)
         password=validated_data['password']
-        print(f"Senha hasheada1: {password}")
+
         try:
             user = CustomUser.objects.create_user(
                 email=validated_data['email'],
@@ -66,7 +66,13 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         if user is None:
             raise serializers.ValidationError('Invalid credentials', code='authorization')
-
+        scheme = 'https'  # Force to https
+        host = "10.12.3.5"  # Remove porta padrão 80 se estiver presente
+        port = '8080'  # Defina a porta que deseja usar
+        path = user.avatar.url if user.avatar else None # Caminho do arquivo
+        absolute_url = f"{scheme}://{host}:{port}{path}"
+        print("###################")
+        print(absolute_url)
         data.update({
             'user': {
                 'id': user.id,
@@ -74,7 +80,7 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'avatar': self.context['request'].build_absolute_uri(user.avatar.url) if user.avatar else None,
+                'avatar': absolute_url if user.avatar else None,
                 'otp': user.otp_agreement
             }
         })
@@ -93,8 +99,15 @@ class UserSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         request = self.context.get('request')
+        if(instance.avatar and request):
+            # Get the request's scheme and host
+            scheme = 'https'  # Force to https
+            host = request.get_host().replace(':80', '')  # Remove porta padrão 80 se estiver presente
+            port = '8080'  # Defina a porta que deseja usar
+            path = instance.avatar.url  # Caminho do arquivo
+            absolute_url = f"{scheme}://{host}:{port}{path}"
         if instance.avatar and request:
-            representation['avatar_url'] = request.build_absolute_uri(instance.avatar.url)
+            representation['avatar'] = absolute_url
         else:
             representation['avatar_url'] = None
         return representation
@@ -104,7 +117,6 @@ class PlayerSerializer(serializers.ModelSerializer):
     total_winner = serializers.IntegerField(read_only=True) 
     pong_winner = serializers.IntegerField(read_only=True)
     linha_winner = serializers.IntegerField(read_only=True)
-    # status = serializers.SerializerMethodField()
 
     class Meta:
         model = Player
@@ -122,9 +134,6 @@ class PlayerSerializer(serializers.ModelSerializer):
         instance.status=validated_data.get('status', instance.status)
         instance.save()
         return(instance)
-    
-    # def get_status(self, obj):
-    #     return obj.get_status_display()
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):

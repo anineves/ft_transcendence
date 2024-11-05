@@ -1,4 +1,3 @@
-# accounts/admin.py
 from django.contrib import admin
 from .models import *
 
@@ -24,7 +23,7 @@ class MatchGroupAdmin(admin.ModelAdmin):
     list_display = ('group_name', 'id', 'player', 'opponent', 'is_active')
 
 
-admin.site.register(Match)
 admin.site.register(Game)
+admin.site.register(Match)
 admin.site.register(PlayerChannel)
 admin.site.register(PrivateGroup)

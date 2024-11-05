@@ -70,7 +70,7 @@ CORS_ALLOWED_ORIGINS =[
     'http://127.0.0.1:5500',
     'https://localhost:8080',
     'https://127.0.0.1:8080',
-    'https://10.12.2.1:8080',
+    'https://10.12.3.5:8080',
 ]
 
 
@@ -88,7 +88,7 @@ ROOT_URLCONF = 'myproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'presence/template'],
+        'DIRS': [BASE_DIR / 'template'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -183,7 +183,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = DATA_DIR / 'static'
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = DATA_DIR / 'media'
+MEDIA_ROOT = DATA_DIR / 'media/'
 
 # data/web/media
 
@@ -221,4 +221,4 @@ EMAIL_HOST_PASSWORD = 'lmln pyab glmg izrl'
 #SECURE_SSL_REDIRECT = True
 
 # Certifique-se de que o middleware de CSRF funciona corretamente com WebSockets
-CSRF_TRUSTED_ORIGINS = ['https://10.12.2.1']  
+CSRF_TRUSTED_ORIGINS = ['https://10.12.3.5']  

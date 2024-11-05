@@ -27,7 +27,6 @@ urlpatterns = [
     path('matches/', MatchList.as_view(), name='match_list'),
     path('match/<int:pk>', MatchDetail.as_view(), name='match_detail'),
 
-
     path('otp/', OneTimePasswordLogin.as_view(), name='one_time_pass'),
 ]
 

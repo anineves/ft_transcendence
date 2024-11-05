@@ -47,7 +47,9 @@ class ChatConsumer(WebsocketConsumer):
         data = json.loads(text_data)
 
         if data.get('Authorization'):
+            print("Authorization")
             user = handle_authentication(self, data.get('Authorization'))
+            print(f"Authorization User {user}")
             if user:
                 async_to_sync(self.channel_layer.group_send)(
                     self.global_chat, 
@@ -58,8 +60,10 @@ class ChatConsumer(WebsocketConsumer):
                         }
                     }   
                 )
+                print(f"Return Authorized")
                 return
             else:
+                print(f"Return Not Authorized")
                 return self.disconnect(400)
         
         if data.get('action') == "block" or data.get('action') == "unblock":

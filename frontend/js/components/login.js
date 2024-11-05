@@ -144,6 +144,7 @@ export const renderLogin = () => {
                 if(data.otp_agreement) {
                     showCodeForm();
                 } else {
+                    console.log("USSEEEERRRR", data)
                     sessionStorage.setItem('register', 'form');
                     sessionStorage.setItem('jwtToken', data.access); 
                     sessionStorage.setItem('refreshToken', data.refresh); 
@@ -173,6 +174,7 @@ export const renderLogin = () => {
                             } else {
                                 checkLoginStatus(); 
                                 sessionStorage.setItem('firtChat', 'true');
+                                console.log("Playyyyyyyer", playerData)
                                 navigateTo('/create-player');
                                 return;
                             }
@@ -274,6 +276,7 @@ const showCodeForm = async () => {
             
                     if (playerResponse.ok) {
                         const playerData = await playerResponse.json();
+                       
                         const player = playerData.find(p => p.user === userId);
                         
                         if (player) {
