@@ -46,8 +46,6 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data=None):
         data = json.loads(text_data)
 
-        print(f"Data: {data}")
-
         if data.get('Authorization'):
             user = handle_authentication(self, data.get('Authorization'))
             if user:
@@ -235,12 +233,9 @@ class PongConsumer(WebsocketConsumer):
             self.match_group.group_name, self.channel_name
         )
         if close_code == 401:
-            print("Shutting down by 401")
             self.match_group.delete()
         
         if close_code == 1001:
-            print(f"Closing with 1001: <{self.match_group.player}>")
-            print(f"Closing with 1001: ID {self.match_group.id}")
             self.match_group.is_active = False
             self.match_group.save()
 
@@ -335,9 +330,7 @@ class PongConsumer(WebsocketConsumer):
                 async_to_sync(self.channel_layer.group_add)(
                     self.match_group.group_name, self.channel_name)
             else:
-                print(f"Is Active Before: {self.match_group.is_active}")
                 if self.match_group.is_active == False:
-                    print(f"Is Active After: {self.match_group.is_active}")
                     raise ValidationError("A player was disconnected from the match.")
                 self.match_group.opponent = player
                 async_to_sync(self.channel_layer.group_add)(
@@ -353,12 +346,9 @@ class PongConsumer(WebsocketConsumer):
                         }
                     }
                 )
-            print(f"Saving match {self.match_group} with player {player} by ID {self.match_group.id}")
             self.match_group.save()
         except ValidationError as e:
             self.send_self_channel_messages("failed_match")
-            print(f"# Something went wrong with creating_new_room: \n{e}")
-            # return self.disconnect(401) # -> Must close
         return
 
 
@@ -465,6 +455,10 @@ class SnakeConsumer(WebsocketConsumer):
         if close_code == 401:
             self.match_group.delete()
 
+        if close_code == 1001:
+            self.match_group.is_active = False
+            self.match_group.save()
+        
         self.close()
         return super().disconnect(close_code)
 
@@ -491,7 +485,6 @@ class SnakeConsumer(WebsocketConsumer):
                     "message": message
                 }
         )
-
         elif data.get('action') != None:
             message = data.get('message')
             async_to_sync(self.channel_layer.group_send)(
@@ -530,6 +523,8 @@ class SnakeConsumer(WebsocketConsumer):
                 async_to_sync(self.channel_layer.group_add)(
                     self.match_group.group_name, self.channel_name)
             else:
+                if self.match_group.is_active == False:
+                    raise ValidationError("A player was disconnected from the match.")
                 self.match_group.opponent = player
                 async_to_sync(self.channel_layer.group_add)(
                     self.match_group.group_name, self.channel_name)
@@ -545,8 +540,8 @@ class SnakeConsumer(WebsocketConsumer):
                     }
                 )
             self.match_group.save()
-        except Exception as e:
-            print(f"# Something went wrong with creating_new_room: \n{e}")
+        except ValidationError as e:
+            self.send_self_channel_messages("failed_match")
         return
 
 class TournamentConsumerSnake(WebsocketConsumer):
