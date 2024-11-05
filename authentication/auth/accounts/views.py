@@ -87,13 +87,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
         refresh = RefreshToken.for_user(user)
-        scheme = 'https'  # Force to https
-        host = "10.12.3.5"  # Remove porta padrão 80 se estiver presente
-        port = '8080'  # Defina a porta que deseja usar
-        path = user.avatar.url if user.avatar else None# Caminho do arquivo
-        absolute_url = f"{scheme}://{host}:{port}{path}"
-        print("###################")
-        print(absolute_url)
         response_data = {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
@@ -103,7 +96,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'avatar': absolute_url if user.avatar else None,
+                'avatar': request.build_absolute_uri(user.avatar.url).replace("http://", "https://") if user.avatar else None,
                 'otp_agreement': user.otp_agreement
             }
         }
@@ -271,7 +264,7 @@ class RespondFriendRequest(APIView):
 # Tem que sair daqui
 def oauth_login(request):
     authorization_url = 'https://api.intra.42.fr/oauth/authorize'
-    redirect_uri = 'https://10.12.3.5:8080/game-selection' 
+    redirect_uri = 'https://10.0.2.15:8080/game-selection' 
     client_id = os.getenv('CLIENT_ID')
     
     return redirect(f'{authorization_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code')

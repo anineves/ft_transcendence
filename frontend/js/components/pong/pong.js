@@ -503,12 +503,15 @@ export function showNextMatchButton() {
     nextMatchButton.innerText = 'Next Match';
     nextMatchButton.className = 'btn';
     nextMatchButton.style.margin = '20px auto';
+    
     nextMatchButton.addEventListener('click', () => {
-        
+   
+        nextMatchButton.disabled = true;
+
         const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
         const winner = playerScore > opponentScore ? currentMatch.player1 : currentMatch.player2;
         endMatch(winner);
     });
+
     app.appendChild(nextMatchButton);
 }
-

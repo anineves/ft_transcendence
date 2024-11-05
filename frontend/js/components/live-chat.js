@@ -345,7 +345,7 @@ export const liveChat = () => {
             }
             const timeout = setTimeout(() => {
                 duelMessage.innerHTML = `${translations[savedLanguage].duelBtn}`;
-            }, 50000); 
+            }, 10000); 
             
             if (user_json.id != message.from_user) {
                 sessionStorage.setItem("Inviter", "False");

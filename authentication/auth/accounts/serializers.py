@@ -66,13 +66,6 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         if user is None:
             raise serializers.ValidationError('Invalid credentials', code='authorization')
-        scheme = 'https'  # Force to https
-        host = "10.12.3.5"  # Remove porta padrão 80 se estiver presente
-        port = '8080'  # Defina a porta que deseja usar
-        path = user.avatar.url if user.avatar else None # Caminho do arquivo
-        absolute_url = f"{scheme}://{host}:{port}{path}"
-        print("###################")
-        print(absolute_url)
         data.update({
             'user': {
                 'id': user.id,
@@ -80,7 +73,7 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'avatar': absolute_url if user.avatar else None,
+                'avatar': self.context['request'].build_absolute_uri(user.avatar.url).replace("http://", "https://") if user.avatar else None,
                 'otp': user.otp_agreement
             }
         })
@@ -99,15 +92,8 @@ class UserSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         request = self.context.get('request')
-        if(instance.avatar and request):
-            # Get the request's scheme and host
-            scheme = 'https'  # Force to https
-            host = request.get_host().replace(':80', '')  # Remove porta padrão 80 se estiver presente
-            port = '8080'  # Defina a porta que deseja usar
-            path = instance.avatar.url  # Caminho do arquivo
-            absolute_url = f"{scheme}://{host}:{port}{path}"
         if instance.avatar and request:
-            representation['avatar'] = absolute_url
+            representation['avatar'] = request.build_absolute_uri(instance.avatar.url).replace("http://", "https://")
         else:
             representation['avatar_url'] = None
         return representation
