@@ -48,10 +48,27 @@ export function initPongSocket(url) {
         if (data.action === 'match_created') {
             console.log(`Match created with ID: ${data.match_id}`);
         }
+        let invitedTimeout = null;
+        if(inviter != "True" && modality2 == 'remote')
+            {
+                console.log('ENTREI')
+                invitedTimeout = setTimeout(() => {
+                    console.log("The opponent gave up");
+                    ws.send(JSON.stringify({
+                        action: 'end_game'
+                    }));
+                    ws.close();
+                    navigateTo('/live-chat'); 
+                }, 10000);
+            }
         if (data.action == 'full_lobby') {
             if (lobbyTimeout) {
                 clearTimeout(lobbyTimeout);
-                lobbyTimeout = null;
+                lobbyTimeout = null;            
+            }
+            if (invitedTimeout) {
+                clearTimeout(invitedTimeout);
+                invitedTimeout = null;
             }
             sessionStorage.setItem('playerID', data.message.player);
             sessionStorage.setItem('friendID', data.message.opponent);
@@ -63,7 +80,7 @@ export function initPongSocket(url) {
             else{
                 navigateTo('/pong');
             }
-        if (data.action == 'failed_match')
+        if (data.message == 'failed_match')
             console.log('Failed Match!')
     }
     }

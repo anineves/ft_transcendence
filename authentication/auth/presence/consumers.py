@@ -256,7 +256,7 @@ class PongConsumer(WebsocketConsumer):
                 self.get_or_create_new_room()
             else:
                 return self.disconnect(400)
-
+        
         if data.get('action') == 'end_game':
             return self.disconnect(401)
 
@@ -335,8 +335,9 @@ class PongConsumer(WebsocketConsumer):
                 async_to_sync(self.channel_layer.group_add)(
                     self.match_group.group_name, self.channel_name)
             else:
+                print(f"Is Active Before: {self.match_group.is_active}")
                 if self.match_group.is_active == False:
-                    print(f"Is Active: {self.match_group.is_active}")
+                    print(f"Is Active After: {self.match_group.is_active}")
                     raise ValidationError("A player was disconnected from the match.")
                 self.match_group.opponent = player
                 async_to_sync(self.channel_layer.group_add)(
@@ -357,7 +358,7 @@ class PongConsumer(WebsocketConsumer):
         except ValidationError as e:
             self.send_self_channel_messages("failed_match")
             print(f"# Something went wrong with creating_new_room: \n{e}")
-            # return self.disconnect(401) -> Must close
+            # return self.disconnect(401) # -> Must close
         return
 
 
