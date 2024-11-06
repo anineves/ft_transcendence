@@ -41,7 +41,7 @@ export function drawScore(playerScore, opponentScore) {
         else if (player.id == playerID)
             player1 = nickname ? nickname.replace(/^"|"$/g, '') : ""; 
     }
-    if (modality == 'tournament' || modality == "tourn-remote") {
+    if (modality == 'tournament') {
         ({ player1, player2 } = currentMatch);
     }
 
@@ -63,11 +63,10 @@ export function drawGameOver(playerScore, opponentScore) {
         player1 = nickname ? nickname.replace(/^"|"$/g, '') : ""; 
 
     const giveUp = sessionStorage.getItem('giveUP');
-    const giveUptr= sessionStorage.getItem('trGiveUp');
     context.font = "30px 'Press Start 2P', cursive";
     context.fillStyle = "#ffcc00";
     context.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 180, canvas.height / 2);
-    if(giveUp == "true" || giveUptr == 'true')
+    if(giveUp == "true")
     {
         context.font = "20px 'Press Start 2P', cursive";
         context.fillStyle = "#ff0000";
@@ -83,14 +82,14 @@ export function drawGameOver(playerScore, opponentScore) {
     }
 
     const modality = sessionStorage.getItem('modality');
-    if (modality == 'remote'  || giveUp == 'true' || giveUptr == 'true') {
+    if (modality == 'remote'  || giveUp == 'true') {
         sessionStorage.setItem('giveUP', 'false')
         
         setTimeout(() => {
             navigateTo('/live-chat');
         }, 5000);
     }
-    else if(modality != 'tournament' && modality != 'tourn-remote'){
+    else if(modality != 'tournament'){
         setTimeout(() => {
             navigateTo('/select-playerOrAI');
         }, 5000);

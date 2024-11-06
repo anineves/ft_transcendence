@@ -144,7 +144,6 @@ export const renderLogin = () => {
                 if(data.otp_agreement) {
                     showCodeForm();
                 } else {
-                    console.log("USSEEEERRRR", data)
                     sessionStorage.setItem('register', 'form');
                     sessionStorage.setItem('jwtToken', data.access); 
                     sessionStorage.setItem('refreshToken', data.refresh); 
@@ -174,7 +173,6 @@ export const renderLogin = () => {
                             } else {
                                 checkLoginStatus(); 
                                 sessionStorage.setItem('firtChat', 'true');
-                                console.log("Playyyyyyyer", playerData)
                                 navigateTo('/create-player');
                                 return;
                             }
@@ -339,7 +337,7 @@ export const putPlayer = async (status) => {
                 navigateTo('/game-selection');
     
             } else if (user) {
-                console.log("Error player not found");
+                console.log("player not found");
             }
         } catch (error) {
             console.error('Error:', error);

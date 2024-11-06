@@ -359,7 +359,7 @@ class PongConsumer(WebsocketConsumer):
 
 class TournamentConsumer(WebsocketConsumer):
     tournament_players = []
-    max_players = 4
+    max_players = 2
 
 
     def connect(self):
@@ -379,7 +379,7 @@ class TournamentConsumer(WebsocketConsumer):
             self.create_tournament()
         elif data.get('action') == 'join_tournament':
             player = data.get('player')  
-            self.add_player_to_tournament(player) 
+            self.add_player_to_tournament(player)
 
     def create_tournament(self):
         TournamentConsumer.tournament_players.clear()
@@ -390,6 +390,7 @@ class TournamentConsumer(WebsocketConsumer):
                 'message': "Tournament created! Players can now join."
             }
         )
+    
 
     def add_player_to_tournament(self, player):
         if player not in TournamentConsumer.tournament_players:

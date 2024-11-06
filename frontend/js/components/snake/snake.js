@@ -61,11 +61,10 @@ export const startSnakeGame = async () => {
     const user = sessionStorage.getItem('user');
     visiblity = "true";
     canvas = document.getElementById('snakeCanvas');
-    sessionStorage.setItem("snakeGame", "true");
     if (!canvas) {
         return;
     }
-
+    
     ctx = canvas.getContext('2d');
     numCells = canvas.width / gridSize;
     gridSize = 16;
@@ -73,9 +72,10 @@ export const startSnakeGame = async () => {
     gameInterval;
     speed = 200;
     ws;
-
-
+    
+    
     resetGameSnake();
+    
     gameInterval = setInterval(gameLoop, speed);
 
     let inviter = sessionStorage.getItem("Inviter");
@@ -84,17 +84,17 @@ export const startSnakeGame = async () => {
 
     let opponent = 1;
 
-    const friendID = sessionStorage.getItem('friendID');
-    const playerID = sessionStorage.getItem('playerID');
+    let friendID = sessionStorage.getItem('friendID');
+    let playerID = sessionStorage.getItem('playerID');
 
     let nickTorn = sessionStorage.getItem("nickTorn");
-    if (modality2 == 'remote' && inviter == "True" || modality2 == 'tourn-remote')
+    if (modality2 == 'remote' && inviter == "True")
         opponent = friendID;
     const players = [player, opponent];
     let match_type = "RM";
     if (modality2 == "ai") match_type = "AI";
     if (modality2 == "remote") match_type = "RM";
-    if (modality2 == "tournament" || modality2 == 'tourn-remote') {
+    if (modality2 == "tournament") {
         match_type = "TN"
         const match = document.getElementById('match-footer');
         match.innerHTML = `
@@ -106,11 +106,14 @@ export const startSnakeGame = async () => {
     sessionStorage.setItem('players', players);
 
 
-    if (modality2 == 'remote' || modality2 == 'tourn-remote') {
-        const groupName = sessionStorage.getItem("groupName");
+    if (modality2 == 'remote') {
+
+        let groupName = sessionStorage.getItem("groupName");
+        if(!groupName)
+            groupName = 'snakeGroup';
         const wssocket1 = `wss://${apiUri}/ws/snake_match/${groupName}/`
         ws = initPongSocket(wssocket1);
-
+        
         if (ws) {
             document.addEventListener('keydown', handleKeyPress);
         }
@@ -120,8 +123,6 @@ export const startSnakeGame = async () => {
             const data = JSON.parse(event.data);
             let message = data.message
             if (data.action == 'player_disconnect') {
-                if (modality2 == "tourn-remote")
-                    sessionStorage.setItem("trGiveUp", "true")
                 if (ws) {
                     ws.send(JSON.stringify({
                         'action': 'end_game',
@@ -136,14 +137,11 @@ export const startSnakeGame = async () => {
                 opponent = friendID;
                 let winner_id = opponent;
                 let whoGiveUp = sessionStorage.getItem('whoGiveUp')
-                console.log("### whoGiveUp ###");
                 if (whoGiveUp) {
-                    console.log("whogiveup1", whoGiveUp);
                     sessionStorage.setItem("losingSnake", "opponent");
                     snakeOpponent.foodCount = 99;
                 }
                 else {
-                    console.log("whogiveup2", whoGiveUp);
                     snakePlayer.foodCount = 99;
                     sessionStorage.setItem("losingSnake", "player");
                 }
@@ -185,11 +183,15 @@ export const startSnakeGame = async () => {
                 sessionStorage.removeItem("losingSnake");
                 sessionStorage.removeItem("duelGame");
                 sessionStorage.removeItem("whoGiveUp");
+                sessionStorage.removeItem('findOpponent');
                 ws = null;
             }
 
 
             if (data.action === 'move_snake') {
+                friendID = sessionStorage.getItem('friendID');
+                playerID = sessionStorage.getItem('playerID');
+
                 const updateSnakeState = (snake, direction, message) => {
                     snake.direction = direction;
                     snakePlayer.body = message.snake_player.body;
@@ -259,10 +261,13 @@ export const startSnakeGame = async () => {
             sessionStorage.removeItem('duelGame');
             sessionStorage.removeItem('players');
             sessionStorage.removeItem("Inviter");
+            sessionStorage.removeItem('findOpponent');
             sessionStorage.removeItem("groupName");
             sessionStorage.setItem('WS', 'clean');
         };
     }
+  
+    //sessionStorage.setItem("snakeGame", "true");
 
     if (modality2 != 'remote') {
 
@@ -280,8 +285,7 @@ export const startSnakeGame = async () => {
         });
     }
 
-    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
-        (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True'))) {
         if (player) {
             const urlMatches = `${apiUrl}/api/matches/`;
             try {
@@ -308,7 +312,7 @@ export const startSnakeGame = async () => {
         }
     }
 
-    if (modality2 == 'remote' || modality2 == 'tourn-remote')
+    if (modality2 == 'remote')
         visibilitychange(ws, visiblity);
 }
 
@@ -403,7 +407,7 @@ function placeFood() {
         if (snake.body.y == y)
             y = Math.floor(Math.random() * 20);
     }
-    if (modality2 == 'remote' || modality2 == 'tourn-remote') {
+    if (modality2 == 'remote') {
         const player = sessionStorage.getItem('player');
         const playerID = sessionStorage.getItem('playerID');
         if (player === playerID) {
@@ -512,16 +516,16 @@ async function drawGame() {
         let modality2 = sessionStorage.getItem('modality');
         let opponent = 1;
         let friendId = sessionStorage.getItem('friendID');
-        if (modality2 == 'remote' && inviter == "True" || modality2 == 'tourn-remote')
+        if (modality2 == 'remote' && inviter == "True")
             opponent = friendId;
         const players = [player, opponent];
         sessionStorage.setItem('game', 'snake');
         sessionStorage.setItem('players', players);
         let nickTorn = sessionStorage.getItem("nickTorn");
+        sessionStorage.setItem("snakeGame", "false");
         let winner_id = opponent;
 
-        if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
-            (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+        if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True'))) {
             if (player) {
                 try {
 
@@ -530,7 +534,7 @@ async function drawGame() {
                         winner_id = player;
                     const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
                     const duration = "10";
-                    if (modality2 == 'remote' || modality2 == 'tourn-remote')
+                    if (modality2 == 'remote')
                         ws = null;
                     const urlMatchesID = `${apiUrl}/api/match/${id}`;
                     const response = await fetch(urlMatchesID, {
@@ -545,7 +549,7 @@ async function drawGame() {
                     const data = await response.json();
 
                     if (response.ok) {
-                        console.log('Match updated successfully:', data);
+                        console.log('Match updated successfully:', data,  sessionStorage.getItem("snakeGame") )
                     } else {
                         console.log('Error updating match:', data);
                     }
@@ -554,17 +558,12 @@ async function drawGame() {
                 }
             }
         }
-        drawGameOver(snakePlayer.foodCount, snakeOpponent.foodCount);
         if (sessionStorage.getItem('modality') == 'tournament') {
             sessionStorage.setItem('game', 'snake');
             showNextMatchButton();
         }
-        if (sessionStorage.getItem('modality') == 'tourn-remote') {
-            const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
-            const winner = snakePlayer.foodCount > snakeOpponent.foodCount ? currentMatch.player1 : currentMatch.player2;
-            endMatch(winner);
-        }
         sessionStorage.removeItem("Inviter");
+        sessionStorage.removeItem('findOpponent');
         sessionStorage.removeItem("groupName");
         sessionStorage.removeItem("id_match");
         sessionStorage.setItem('WS', 'clean');
@@ -633,7 +632,7 @@ function drawScore() {
     let player2 = "Oponente";
 
 
-    if (modality == 'tournament' || modality == "tourn-remote") {
+    if (modality == 'tournament') {
         ({ player1, player2 } = currentMatch);
     }
 
@@ -656,12 +655,11 @@ export function drawGameOver(playerScore, opponentScore) {
     ctx.fillStyle = 'yellow';
     ctx.font = '30px Arial';
     const giveUp = sessionStorage.getItem('giveUP');
-    const giveUptr= sessionStorage.getItem('trGiveUp');
 
     ctx.font = "30px 'Press Start 2P', cursive";
     ctx.fillStyle = "#ffcc00";
     ctx.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 180, canvas.height / 2);
-    if(giveUp == "true" || giveUptr == 'true')
+    if(giveUp == "true")
     {
         ctx.font = "20px 'Press Start 2P', cursive";
         ctx.fillStyle = "#ff0000";
@@ -682,16 +680,14 @@ export function stopGame() {
     const modality = sessionStorage.getItem('modality');
     clearInterval(gameInterval);
     const giveUp = sessionStorage.getItem('giveUP');
-    const giveUptr = sessionStorage.getItem('trGiveUp');
-    console.log("modality Stop game", modality)
-    if (modality == 'remote' || giveUp == 'true' || giveUptr == 'true') {
+    if (modality == 'remote' || giveUp == 'true') {
         sessionStorage.setItem('giveUP', 'false')
 
         setTimeout(() => {
             navigateTo('/live-chat');
         }, 2000);
     }
-    else if (modality != 'tournament' && modality != 'tourn-remote') {
+    else if (modality != 'tournament') {
         setTimeout(() => {
             navigateTo('/snake-selector');
         }, 2000);

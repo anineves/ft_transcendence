@@ -90,7 +90,6 @@ export const renderPanel = async (user) => {
     const app = document.getElementById('app');
     const defaultAvatar = '../../assets/avatar.png';
     const avatarUrl = user.avatar || defaultAvatar;
-    console.log("avatarURL", avatarUrl);
     const player = JSON.parse(sessionStorage.getItem('playerInfo'));
     const nickname = sessionStorage.getItem('nickname') || 'N/A';
    
@@ -240,7 +239,9 @@ const toggleEditProfile = () => {
 const handleSendMessage = () => {
     const nickname = sessionStorage.getItem('nickname');
     if (nickname !== 'N/A') 
+    {
         navigateTo('/live-chat');
+    }
     else 
         navigateTo('/create-player');
 };
@@ -311,8 +312,6 @@ const handleUpdateProfile = async (e, user) => {
     try {
         const apiUrl = window.config.API_URL;
         const urluserID = `${apiUrl}/api/user/${user.id}`;
-
-        console.log("avatarr", avatarFile, "eeee", urluserID)
         const response = await fetch(urluserID, { 
             method: 'PUT',
             headers: {
@@ -320,16 +319,13 @@ const handleUpdateProfile = async (e, user) => {
             },
             body: formData
         });
-
         const data = await response.json();
-        console.log("data", data);
-
         if (response.ok) {
             sessionStorage.setItem('user', JSON.stringify(data));
             checkLoginStatus();
             navigateTo('/user-panel', data);
         } else {
-            console.log('Update failed: ' + JSON.stringify(data));
+            //console.log('Update failed: ' + JSON.stringify(data));
         }
     } catch (error) {
         console.error('Error:', error);

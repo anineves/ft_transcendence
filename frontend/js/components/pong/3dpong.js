@@ -25,6 +25,7 @@ const players = [player_id, opponent];
 const apiUrl = window.config.API_URL;
 
 async function createMatch() {
+    sessionStorage.setItem("pongGame", "true");
     const modality2 = sessionStorage.getItem('modality');
     const user = sessionStorage.getItem('user');
     const player_id = sessionStorage.getItem("player");
@@ -33,8 +34,7 @@ async function createMatch() {
         redNickname = nickname
     
 
-    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
-        (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament')) {
         if (player_id) {
 
             const urlMatches = `${apiUrl}/api/matches/`;
@@ -67,13 +67,13 @@ if(user)
     createMatch();
 
 async function updateMatch() {
+    sessionStorage.setItem("pongGame", "false");
     const id = sessionStorage.getItem('id_match');
     const modality2 = sessionStorage.getItem('modality');
     const user = sessionStorage.getItem('user');
     const player_id = sessionStorage.getItem("player");
 
-    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
-        (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament')) {
         if (player_id) {
             try {
                 let winner_id = 1;
@@ -95,9 +95,9 @@ async function updateMatch() {
                 const data = await response.json();
 
                 if (response.ok) {
-                    console.log('Match updated successfully:', data);
+                    //console.log('Match updated successfully:', data);
                 } else {
-                    console.log('Error updating match:', data);
+                    
                 }
             } catch (error) {
                 console.error('Error processing match:', error);

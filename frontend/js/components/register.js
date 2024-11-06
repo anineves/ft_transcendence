@@ -169,7 +169,6 @@ export const renderRegister = () => {
 
             const apiUrl = window.config.API_URL;
             const urlRegister = `${apiUrl}/api/register/`;
-            console.log("URLLLL", urlRegister);
             const response = await fetch(urlRegister, {
                 method: 'POST',
                 body: formData 

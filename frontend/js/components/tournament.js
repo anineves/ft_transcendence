@@ -184,8 +184,6 @@ const shuffleArray = (array) => {
 export const initializeTournament = () => {
     const modality = sessionStorage.getItem('modality');
     let players = JSON.parse(sessionStorage.getItem('playerNames'));
-    if (modality != 'tourn-remote')
-        shuffleArray(players)
     const rounds = [];
     for (let i = 0; i < players.length; i += 2) {
         rounds.push([players[i], players[i + 1]]);
@@ -213,7 +211,7 @@ const startMatch = () => {
     const playersInfo = JSON.parse(sessionStorage.getItem('playersInfo'));
 
     const playersMap = {};
-    if (modality == "remote" || modality == 'tourn-remote') {
+    if (modality == "remote") {
         playersInfo.forEach(player => {
             playersMap[player.nickname] = player.id;
         });
@@ -232,30 +230,7 @@ const startMatch = () => {
             <div class="match-footer">
                 <p> The next game will be: ${player1} vs ${player2} </p>
             </div>`
-        if (modality == 'tourn-remote') {
-            const player1Id = playersMap[player1];
-            const player2Id = playersMap[player2];
-
-
-            const groupName = `privateGroup${player1Id}${player2Id}`;
-            sessionStorage.setItem("groupName", groupName);
-
-            sessionStorage.setItem('playerID', player1Id);
-            sessionStorage.setItem('friendID', player2Id);
-            const player = sessionStorage.getItem('player');
-            if (player == player1Id)
-                sessionStorage.setItem("nickTorn", "True");
-            else
-                sessionStorage.setItem("nickTorn", "False");
-            setTimeout(() => {
-                const game = sessionStorage.getItem('game')
-                if (game == "pong")
-                    navigateTo('/pong');
-                else if (game == "snake")
-                    navigateTo('/snake');
-            }, 2000);
-        }
-        else {
+    
             resetGameState();
             resetGameSnake();
             setTimeout(() => {
@@ -263,14 +238,13 @@ const startMatch = () => {
                 if (game == 'pong')
                     navigateTo('/pong');
                 else if (game == 'snake')
+                {
                     navigateTo('/snake')
+                }
             }, 2000);
-        }
+    
     } else {
         const winners = JSON.parse(sessionStorage.getItem('winners'));
-        const giveUptr = sessionStorage.getItem('trGiveUp')
-        if (giveUptr == "true")
-            return;
         if (winners.length > 1) {
             const nextRound = [];
             for (let i = 0; i < winners.length; i += 2) {

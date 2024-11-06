@@ -18,7 +18,7 @@ export const renderPong = () => {
     const user = sessionStorage.getItem('user');
     const modality2 = sessionStorage.getItem('modality');
     const app = document.getElementById('app');
-    const showButtons = modality2 != 'remote' && modality2 != 'tournament' && modality2 != 'tourn-remote';
+    const showButtons = modality2 != 'remote' && modality2 != 'tournament';
     let savedLanguage = localStorage.getItem('language');
     if (!savedLanguage || !translations[savedLanguage]) 
         savedLanguage = 'english'; 
@@ -56,7 +56,7 @@ export const recordMatchResult = async () => {
     const id = sessionStorage.getItem('id_match');
     const modality2 = sessionStorage.getItem('modality');
     let inviter = sessionStorage.getItem("Inviter");
-    let nickTorn = sessionStorage.getItem("nickTorn");
+
     let duration = "10"
     let opponent =1;
     let winner_id = 1;
@@ -88,8 +88,15 @@ export const recordMatchResult = async () => {
 };
 
 export const endGameWithScore = async () => {
-    await recordMatchResult();window.addEventListener("beforeunload", (event) => {
-        //console.log("A página será recarregada ou fechada.");
+    await recordMatchResult();
+    sessionStorage.removeItem("Inviter");
+    sessionStorage.removeItem("groupName");
+    sessionStorage.removeItem("id_match");
+    sessionStorage.removeItem("duelGame");
+    sessionStorage.setItem("pongGame", "false");
+    sessionStorage.removeItem('findOpponent');
+    window.addEventListener("beforeunload", (event) => {
+    
       });
     stopGame();
     setTimeout(() => {
