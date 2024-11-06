@@ -13,6 +13,9 @@ export function initializeCanvas() {
         playerY = (canvas.height - paddleHeight) / 2;
         opponentY = (canvas.height - paddleHeight) / 2;
     } 
+    else{
+        
+    }
 }
 
 export function drawCenterLine() {

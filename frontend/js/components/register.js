@@ -20,7 +20,9 @@ export const renderRegister = () => {
             errorEmail: "Email must be valid.",
             errorPassword: "Password must be at least 8 characters long, including at least one uppercase letter, one lowercase letter, one digit, and a special character _, - or @; other special characters will not be accepted.",
             errorRepeatPassword: "Passwords do not match.",
-            errorEmailGeneral: "This e-mail already exist!"
+            errorEmailGeneral: "This e-mail already exist!",
+            errorextension: "Please upload a PNG or JPG file.",
+            
         },
         portuguese: {
             register: "Registar",
@@ -37,7 +39,8 @@ export const renderRegister = () => {
             errorEmail: "O e-mail deve ser válido.",
             errorPassword: "A palavra-passe deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um dígito e um caracter especial _, - ou @, outros caracteres especiais não serão aceites.",
             errorRepeatPassword: "As palavras-passe não coincidem.",
-            errorEmailGeneral: "Este e-mail já existe!"
+            errorEmailGeneral: "Este e-mail já existe!",
+            errorextension: "Por favor, envie um arquivo PNG ou JPG.",
         },
         french: {
             register: "S'inscrire",
@@ -54,7 +57,8 @@ export const renderRegister = () => {
             errorEmail: "L'e-mail doit être valide.",
             errorPassword: "Le mot de passe doit contenir au moins 8 caractères, y compris au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial _, - ou @, d'autres caractères spéciaux ne seront pas acceptés.",
             errorRepeatPassword: "Les mots de passe ne correspondent pas.",
-            errorEmailGeneral: "Cet e-mail existe déjà!"
+            errorEmailGeneral: "Cet e-mail existe déjà!",
+            errorextension: "Veuillez télécharger un fichier PNG ou JPG.",
         }
     };
     
@@ -141,6 +145,16 @@ export const renderRegister = () => {
         if (!nameRegex.test(username)) {
             passwordError.textContent += `${translations[savedLanguage].errorUsername}`;
             valid = false;
+        }
+        if (avatar) {
+            const fileName = avatar.name;
+            const fileExtension = fileName.split('.').pop().toLowerCase();
+            
+            if (fileExtension !== 'png' && fileExtension !== 'jpg' && fileExtension !== 'jpeg') 
+            {
+                passwordError.textContent += `${translations[savedLanguage].errorextension}`;
+                valid = false;
+            }
         }
     
    

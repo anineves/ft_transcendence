@@ -67,7 +67,7 @@ export const recordMatchResult = async () => {
         try {
             winner_id = opponent;
             const urlmatchID = `${apiUrl}/api/match/${id}`;
-            const score = `${0}-${5}}`;
+            const score = `${0}-${5}`;
             const response = await fetch(urlmatchID, {
                 method: 'PUT',
                 headers: {

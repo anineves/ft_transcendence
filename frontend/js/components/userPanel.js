@@ -1,6 +1,7 @@
 import { navigateTo, checkLoginStatus, logout } from '../utils.js';
 import { renderFriendsPage } from './friendsPage.js';
 const apiUrl = window.config.API_URL;
+
 const translations = {
     english: {
         title: "User Profile",
@@ -24,7 +25,8 @@ const translations = {
         errorFirstName: "First name must contain only letters, numbers, and the '-' symbol.", 
         errorLastName: "Last name must contain only letters, numbers, and the '-' symbol.", 
         errorUsername: "Username must contain only letters, numbers, and the '-' symbol.", 
-         errorEmail: "Email must be valid.",
+        errorEmail: "Email must be valid.",
+        errorextension: "Please upload a PNG or JPG file.",
     },
     portuguese: {
         title: "Perfil do Usuário",
@@ -49,6 +51,7 @@ const translations = {
         errorLastName: "Sobrenome deve conter apenas letras, números e o símbolo '-'.", 
         errorUsername: "O username deve conter apenas letras, números e o símbolo '-'.", 
         errorEmail: "O e-mail deve ser válido.",
+        errorextension: "Por favor, envie um arquivo PNG ou JPG.",
         
     },
     french: {
@@ -74,19 +77,20 @@ const translations = {
         errorLastName: "Le nom de famille doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
         errorUsername: "Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
         errorEmail: "L'e-mail doit être valide.",
+        errorextension: "Veuillez télécharger un fichier PNG ou JPG.",
     }
 };
 
 
-let savedLanguage = localStorage.getItem('language');
-
-
-if (!savedLanguage || !translations[savedLanguage]) {
-    savedLanguage = 'english';
-}
-;
 
 export const renderPanel = async (user) => {
+    let savedLanguage = localStorage.getItem('language');
+    
+    
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english';
+    }
+    ;
     const app = document.getElementById('app');
     const defaultAvatar = '../../assets/avatar.png';
     let avatarUrl = user.avatar || defaultAvatar;
@@ -302,6 +306,17 @@ const handleUpdateProfile = async (e, user) => {
         updateError.textContent += `${translations[savedLanguage].errorLastName}`;
         valid = false;
     }
+    if (avatarFile) {
+        const fileName = avatarFile.name;
+        const fileExtension = fileName.split('.').pop().toLowerCase();
+        
+        if (fileExtension !== 'png' && fileExtension !== 'jpg' || fileExtension !== 'jpeg') 
+        {
+            updateError.textContent += `${translations[savedLanguage].errorextension}`;
+            valid = false;
+        }
+    }
+    
     if (!valid)
         return;
     if (removeAvatar) {
@@ -309,8 +324,6 @@ const handleUpdateProfile = async (e, user) => {
         sessionStorage.setItem('removeAvatar', 'false'); 
     }
 
-    if (avatarFile) 
-        formData.append('avatar', avatarFile);
     if (firstName) 
         formData.append('first_name', firstName);
     if (lastName) 

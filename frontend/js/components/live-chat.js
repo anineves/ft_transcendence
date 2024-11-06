@@ -177,14 +177,16 @@ export const liveChat = () => {
     const wssocket3= `wss://${apiUri}/ws/tournament_snake/`
     const socket3 = new WebSocket(wssocket3);
 
+    
+    socket3.onopen = function (event) {
+        socket3.send(JSON.stringify({
+            Authorization: jwttoken,
+        }));
+    };
+    
     createTournamentButtonSnake.addEventListener('click', function () {
         socket3.send(JSON.stringify({ action: 'create_tournament_snake' }));     
     });
-
-    socket3.onopen = function (event) {
-        
-    };
-
     socket3.onmessage = function (event) {
         duelPong = document.getElementById('duel-button');
         duelSnake = document.getElementById('duel-button-snake');
@@ -193,14 +195,17 @@ export const liveChat = () => {
         participateButton = document.getElementById('participate-tournament-button');
         const data = JSON.parse(event.data);
         if (data.action == 'created_tournament_snake') {
-            if (participateButtonSnake.style.display == 'none' && participateButton.style.display == 'none') 
+            console.log("duel", sessionStorage.getItem("duelwait"));
+            if (sessionStorage.getItem("duelwait") != "true" && participateButtonSnake && participateButtonSnake.style.display == 'none' &&  participateButton && participateButton.style.display == 'none') 
             { 
                 createTournamentButtonSnake.style.display = 'none';
                 participateButtonSnake.style.display = 'block';
                 participateButtonSnake.addEventListener('click', function () {
                     sessionStorage.setItem("participate", "true");
-                    duelPong.style.display = 'none';
-                    duelSnake.style.display = 'none';
+                    if(duelPong)
+                        duelPong.style.display = 'none';
+                    if(duelSnake)
+                        duelSnake.style.display = 'none';
                     participateButton.style.display = 'none';
                     socket3.send(JSON.stringify({ action: 'join_tournament_snake', player: { nickname: nickname , id: player} }));
                 });
@@ -210,10 +215,14 @@ export const liveChat = () => {
         if (data.action === 'tournament_full_snake') {
             sessionStorage.setItem("participate", "false");
             sessionStorage.removeItem("participate");
-            participateButton.style.display = 'none';
-            participateButtonSnake.style.display = 'none';
-            createTournamentButton.style.display = 'block';
-            createTournamentButtonSnake.style.display= 'block';
+            if(participateButton)
+                participateButton.style.display = 'none';
+            if(participateButtonSnake)
+                participateButtonSnake.style.display = 'none';
+            if(createTournamentButton)
+                createTournamentButton.style.display = 'block';
+            if(createTournamentButtonSnake)
+                createTournamentButtonSnake.style.display= 'block';
             const playerIdArray = data.participants.map(participant => participant.id);
             sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
             sessionStorage.setItem('modality', 'remote');
@@ -238,18 +247,23 @@ export const liveChat = () => {
     };
 
     socket3.onclose = function () {
+        
     };
 
 
     const createTournamentButton = document.getElementById('create-tournament-button');
     const wssocket2= `wss://${apiUri}/ws/tournament/`
     const socket2 = new WebSocket(wssocket2);
+    
+    socket2.onopen = function (event) {
+        socket2.send(JSON.stringify({
+            Authorization: jwttoken,
+        }));
+    };
+    
     createTournamentButton.addEventListener('click', function () {
         socket2.send(JSON.stringify({ action: 'create_tournament' }));
     });
-
-    socket2.onopen = function (event) {
-    };
 
     socket2.onmessage = function (event) {
         duelPong = document.getElementById('duel-button');
@@ -260,15 +274,18 @@ export const liveChat = () => {
 
         const data = JSON.parse(event.data);
         if (data.action == 'created_tournament') {
-            if (participateButtonSnake.style.display == 'none' && participateButton.style.display == 'none') 
+            if (sessionStorage.getItem("duelwait") != "true" && participateButtonSnake && participateButtonSnake.style.display == 'none' &&  participateButton && participateButton.style.display == 'none') 
             { 
                 createTournamentButton.style.display = 'none';
                 participateButton.style.display = 'block';
                 participateButton.addEventListener('click', function () {
                     sessionStorage.setItem("participate", "true");
-                    duelPong.style.display = 'none';
-                    duelSnake.style.display = 'none';
-                    participateButtonSnake.style.display = 'none';
+                    if(duelPong)
+                        duelPong.style.display = 'none';
+                    if(duelSnake)
+                        duelSnake.style.display = 'none';
+                    if(participateButtonSnake)
+                        participateButtonSnake.style.display = 'none';
                     socket2.send(JSON.stringify({ action: 'join_tournament', player: { nickname: nickname , id: player} }));
                 });
             }
@@ -278,10 +295,14 @@ export const liveChat = () => {
         if (data.action === 'tournament_full') { 
             sessionStorage.setItem("participate", "false");
             sessionStorage.removeItem("participate");
-            participateButton.style.display = 'none';
-            participateButtonSnake.style.display = 'none';
-            createTournamentButton.style.display = 'block';
-            createTournamentButtonSnake.style.display= 'block';
+            if(participateButton)
+                participateButton.style.display = 'none';
+            if(participateButtonSnake)
+                participateButtonSnake.style.display = 'none';
+            if(createTournamentButton)
+                createTournamentButton.style.display = 'block';
+            if(createTournamentButtonSnake)
+                createTournamentButtonSnake.style.display= 'block';
             const playerIdArray = data.participants.map(participant => participant.id);
             sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
             sessionStorage.setItem('modality', 'remote');
@@ -376,6 +397,7 @@ export const liveChat = () => {
         addMessage(message.content, isOwnMessage);
         if ((data.action == "duel" || data.action == "duel-snake"))
         {
+            sessionStorage.setItem("duelwait", "true");
             let groupName = message.group_name;
             sessionStorage.setItem("groupName", groupName);
             const chatBox = document.getElementById('chat-box'); 
@@ -412,22 +434,31 @@ export const liveChat = () => {
             if (user_json.id == message.from_user) {
                 sessionStorage.setItem("Inviter", "True");
                 navigateTo(`/wait-remote`, sessionStorage.getItem("groupName"));
-              
+                console.log("remover inviter");
+                sessionStorage.removeItem("duelwait");
             }
             const timeout = setTimeout(() => {
                 duelMessage.innerHTML = `${translations[savedLanguage].lostInvMsg}`;
-                duelPong.style.display = 'block';
-                duelSnake.style.display = 'block';
-                createTournamentButton.style.display = 'block';
-                createTournamentButtonSnake.style.display = 'block';
+                if(duelPong)
+                    duelPong.style.display = 'block';
+                if(duelSnake)
+                    duelSnake.style.display = 'block';
+                if(createTournamentButton)
+                    createTournamentButton.style.display = 'block';
+                if(createTournamentButtonSnake)
+                    createTournamentButtonSnake.style.display = 'block';
+                console.log("remover set");
+                sessionStorage.removeItem("duelwait");
             }, 10000); 
             
             if (user_json.id != message.from_user) {
+                
                 sessionStorage.setItem("Inviter", "False");
                 sessionStorage.setItem('modality', 'remote');
                 acceptButton.addEventListener('click', () => {
                     clearTimeout(timeout); // Cancela o timeout
                     navigateTo(`/wait-remote`, sessionStorage.getItem("groupName"));
+                    sessionStorage.removeItem("duelwait");
                 });
             }
         }

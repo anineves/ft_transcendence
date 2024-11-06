@@ -627,12 +627,23 @@ function drawEye(x, y) {
 }
 
 function drawScore() {
+    let savedLanguage = localStorage.getItem('language');
+    if (!savedLanguage || !translations[savedLanguage]) 
+        savedLanguage = 'english'; 
     const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+    let friendID = sessionStorage.getItem('friendID');
+    let playerID = sessionStorage.getItem('playerID');
+    let player = JSON.parse(sessionStorage.getItem('playerInfo'));
     const modality = sessionStorage.getItem('modality');
-    let player1 = "Player";
-    let player2 = "Oponente";
-
-
+    let player1 = translations[savedLanguage].player
+    let player2 = translations[savedLanguage].opponent
+    const nickname = sessionStorage.getItem('nickname'); 
+    if(nickname) {
+        if (player.id == friendID) 
+            player2 = nickname ? nickname.replace(/^"|"$/g, '') : "";
+        else if (player.id == playerID)
+            player1 = nickname ? nickname.replace(/^"|"$/g, '') : ""; 
+    }
     if (modality == 'tournament') {
         ({ player1, player2 } = currentMatch);
     }
@@ -659,19 +670,19 @@ export function drawGameOver(playerScore, opponentScore) {
 
     ctx.font = "30px 'Press Start 2P', cursive";
     ctx.fillStyle = "#ffcc00";
-    ctx.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 180, canvas.height / 2);
+    ctx.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 130, canvas.height / 2 -40);
     if(giveUp == "true")
     {
         ctx.font = "20px 'Press Start 2P', cursive";
         ctx.fillStyle = "#ff0000";
-        ctx.fillText(`${translations[savedLanguage].giveUp}`,canvas.width / 2 - 200, canvas.height / 2 - 100);
+        ctx.fillText(`${translations[savedLanguage].giveUp}`,canvas.width / 2 - 140, canvas.height / 2 + 70);
         sessionStorage.setItem('giveUP', 'false');
         sessionStorage.setItem('trGiveUp', 'false');
     }
     else
     {
-        ctx.font = "25px 'Press Start 2P', cursive";
-        ctx.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 3 - 185, canvas.height / 2 + 50);
+        ctx.font = "20px 'Press Start 2P', cursive";
+        ctx.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 3 - 130, canvas.height / 2 + 70);
 
     }
     stopGame();

@@ -184,6 +184,7 @@ const shuffleArray = (array) => {
 export const initializeTournament = () => {
     const modality = sessionStorage.getItem('modality');
     let players = JSON.parse(sessionStorage.getItem('playerNames'));
+    shuffleArray(players);
     const rounds = [];
     for (let i = 0; i < players.length; i += 2) {
         rounds.push([players[i], players[i + 1]]);
