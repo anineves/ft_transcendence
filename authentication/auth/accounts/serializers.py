@@ -87,6 +87,14 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
+from urllib.parse import unquote
+
+
+        # encoded_url = "https://example.com/path%3Fquery%3Dvalue%26id%3D123"
+        # decoded_url = unquote(encoded_url)
+        # print(decoded_url)  # Output: https://example.com/path?query=value&id=123
+
+ 
 class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -99,17 +107,20 @@ class UserSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         request = self.context.get('request')
-        if(instance.avatar and request):
+        if instance.avatar and request:
             scheme = 'https'  # Force to https
             # host = request.get_host().replace(':80', '')  # Remove porta padrão 80 se estiver presente
             host = os.getenv('MAIN_HOST', 0)
             port = '8443'  # Defina a porta que deseja usar
             path = instance.avatar.url  # Caminho do arquivo
             absolute_url = f"{scheme}://{host}:{port}{path}"
-            print(f'Email: {instance.email}')
         if instance.avatar and request:
-            print(f"absolute_url: {absolute_url}")
-            representation['avatar'] = absolute_url
+            if path.find('intra.42'):
+                new_path = path[16:]
+                new_path = f"https://{new_path}"
+                representation['avatar'] = new_path
+            else:
+                representation['avatar'] = absolute_url
         else:
             representation['avatar_url'] = None
         return representation

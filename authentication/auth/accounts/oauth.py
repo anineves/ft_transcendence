@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.serializers import ValidationError
 import requests
 import os
+from django.db import IntegrityError
 
 
 class CustomOAuth2Backend(BaseBackend):
@@ -44,13 +45,18 @@ class CustomOAuth2Backend(BaseBackend):
         avatar = user_info.get('image').get('link')
         
         User = get_user_model()
-        user, created = User.objects.get_or_create(
-            email=email,
-            username = username,
-            defaults={
-                'first_name': first_name,
-                'last_name': last_name,
-                'avatar': avatar
-            }
-        )
+
+        try:
+            user, created = User.objects.get_or_create(
+                email=email,
+                # is_ft_student = True,
+                defaults={
+                    'username': username,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'avatar': avatar
+                }
+            )
+        except IntegrityError as e:
+            return None
         return user
