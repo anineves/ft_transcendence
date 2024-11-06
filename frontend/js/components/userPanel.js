@@ -145,7 +145,13 @@ export const renderPanel = async (user) => {
         try {
             const apiUrl = window.config.API_URL;
             const urlMatches = `${apiUrl}/api/matches/`;
-            const response = await fetch(urlMatches);
+            const response = await fetch(urlMatches,{
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             const matches = await response.json();
 
             let pongWins = 0;
@@ -203,8 +209,6 @@ export const renderPanel = async (user) => {
             document.getElementById('statsBtn').addEventListener('click', () => {
                 navigateTo('/stats');
             });
-        
-            
         } catch (error) {
             console.error('Falha ao buscar partidas:', error);
         }
@@ -272,7 +276,7 @@ const handleUpdateOtp = async (user) => {
             checkLoginStatus();
             navigateTo('/user-panel', data);
         } else {
-            console.log('Update failed: ' + JSON.stringify(data));
+            //console.log('Update failed: ' + JSON.stringify(data));
         }
     } catch (error) {
         console.error('Error:', error);

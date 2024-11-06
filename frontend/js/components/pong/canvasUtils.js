@@ -31,7 +31,6 @@ let opponentPaddleInterval;
 let paddleSpeed = 10;
 
 export function movePaddle(event) {
-    console.log("move")
     const modality2 = sessionStorage.getItem('modality');
     if(modality2 != 'remote')
     {
@@ -63,7 +62,6 @@ export function movePaddle(event) {
     }
     else if(modality2 == 'remote')
     {
-        console.log("move remote")
         const playerID = sessionStorage.getItem('playerID');
         const friendID = sessionStorage.getItem('friendID');
         let arrow_key = event.message.key

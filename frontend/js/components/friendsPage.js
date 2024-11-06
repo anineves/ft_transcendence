@@ -122,8 +122,6 @@ export const renderFriendsPage = async (user) => {
                 } else {
                     friendsList.innerHTML = `<li>${translations[savedLanguage].noFriends}</li>`;
                 }
-            } else {
-                //console.log('Failed to load friends.');
             }
         } catch (error) {
             console.error('Error:', error);

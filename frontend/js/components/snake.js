@@ -4,6 +4,8 @@ import { endGameWithScore } from './pong.js';
 import { resetGameSnake } from './snake/snake.js';
 
 export const renderSnake = () => {
+    sessionStorage.setItem("snakeGame", "true");
+    sessionStorage.removeItem("participate");
     let inviter = sessionStorage.getItem("Inviter");
     const apiUrl = window.config.API_URL;
     const user = sessionStorage.getItem('user');

@@ -111,11 +111,16 @@ export const render = () => {
     const state = window.history.state;
     // Obtém o estado atual do histórico
     updateFooterTranslation();
-    let pong = sessionStorage.getItem("pongGame");
-    let snake = sessionStorage.getItem("snakeGame");
-
+    const pong = sessionStorage.getItem("pongGame");
+    const snake = sessionStorage.getItem("snakeGame");
     if (pong == "true" || snake == "true") {
-        if ((sessionStorage.getItem('modality') == '3D' || sessionStorage.getItem('modality') == 'player') && pong == "true") {
+        if (sessionStorage.getItem('modality') == 'remote' && (pong == "true" || snake == "true")) {
+            sessionStorage.setItem("pongGame", "false");
+            sessionStorage.setItem("snakeGame", "false");
+            navigateTo('/live-chat');
+            return;
+        }
+        if ( pong == "true") {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
             endGameWithScore();
@@ -123,7 +128,7 @@ export const render = () => {
                 stop3DGame();
             return;
         }
-        if ((sessionStorage.getItem('modality') == '3D' || sessionStorage.getItem('modality') == 'player') && snake == "true") {
+        if (snake == "true") {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
             endGameWithScore();
@@ -132,16 +137,14 @@ export const render = () => {
             return;
         }
 
-        if (sessionStorage.getItem('modality') == 'remote' && (pong == "true" || snake == "true")) {
-            console.log("pong", pong, "snake", snake);
-            console.log("Entreiifhfhghii");
-            sessionStorage.setItem("pongGame", "false");
-            navigateTo('/live-chat');
-            return;
-        }
+        sessionStorage.setItem("pongGame", "false");
+        sessionStorage.setItem("snakeGame", "false");
+
+        endGameWithScore();
+        navigateTo('/game-selection');
+        return;
 
     }
-
     if (protectedRoutes.includes(path) && !isAuthenticated()) {
         navigateTo('/');
         return;
@@ -206,7 +209,13 @@ window.addEventListener('popstate', () => {
     const pong = sessionStorage.getItem("pongGame");
     const snake = sessionStorage.getItem("snakeGame");
     if (pong == "true" || snake == "true") {
-        if ((sessionStorage.getItem('modality') == '3D' || sessionStorage.getItem('modality') == 'player') && pong == "true") {
+        if (sessionStorage.getItem('modality') == 'remote' && (pong == "true" || snake == "true")) {
+            sessionStorage.setItem("pongGame", "false");
+            sessionStorage.setItem("snakeGame", "false");
+            navigateTo('/live-chat');
+            return;
+        }
+        if ( pong == "true") {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
             endGameWithScore();
@@ -214,7 +223,7 @@ window.addEventListener('popstate', () => {
                 stop3DGame();
             return;
         }
-        if ((sessionStorage.getItem('modality') == '3D' || sessionStorage.getItem('modality') == 'player') && snake == "true") {
+        if (snake == "true") {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
             endGameWithScore();
@@ -223,13 +232,6 @@ window.addEventListener('popstate', () => {
             return;
         }
 
-        if (sessionStorage.getItem('modality') == 'remote' && (pong == "true" || snake == "true")) {
-            sessionStorage.setItem("pongGame", "false");
-            console.log('live utils 2')
-            sessionStorage.setItem("snakeGame", "false");
-            navigateTo('/live-chat');
-            return;
-        }
         sessionStorage.setItem("pongGame", "false");
         sessionStorage.setItem("snakeGame", "false");
 

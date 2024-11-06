@@ -77,7 +77,13 @@ export const stats = async () => {
     try {
         const apiUrl = window.config.API_URL;
         let urlMatches = `${apiUrl}/api/matches/`;
-        const response = await fetch(urlMatches);
+        const response = await fetch(urlMatches,{
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                'Content-Type': 'application/json'
+            }
+        });
         const matches = await response.json();
 
 

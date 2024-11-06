@@ -23,10 +23,6 @@ export const waitRemote = () => {
             const wssocket1= `wss://${apiUri}/ws/snake_match/${groupName}/`
             initPongSocket(wssocket1);
         }
-        else
-        {
-            console.log("Without groupName")
-        }
     }
     else{
         const app = document.getElementById('app');
@@ -45,7 +41,5 @@ export const waitRemote = () => {
             const wssocket2= `wss://${apiUri}/ws/pong_match/${groupName}/`
             initPongSocket(wssocket2);
         }
-        else
-            console.log("without groupName")
 }
 };

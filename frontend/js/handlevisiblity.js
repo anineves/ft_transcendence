@@ -20,8 +20,8 @@ export const visibilitychange = (wsPong, visiblity) => {
             let groupName = sessionStorage.getItem('groupName');
             let modality = sessionStorage.getItem('modality');
             let player = JSON.parse(sessionStorage.getItem('playerInfo'));
-            sessionStorage.setItem("pongGame", "false");
-            sessionStorage.setItem("snakeGame", "false");
+            //sessionStorage.setItem("pongGame", "false");
+            //sessionStorage.setItem("snakeGame", "false");
           
             if (modality == 'remote') {
                 if (wsPong) {
@@ -45,9 +45,11 @@ export const visibilitychange = (wsPong, visiblity) => {
     window.addEventListener('offline', handleVisibilityChange);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('popstate', () => {
+        console.log("aquiii setas")
         handleVisibilityChange(); 
     });
     window.addEventListener('beforeunload', () => {
+        console.log("aquiii atu")
         handleVisibilityChange(); 
     });
     

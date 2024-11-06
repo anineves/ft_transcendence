@@ -177,7 +177,7 @@ export const renderLogin = () => {
                                 return;
                             }
                         } else {
-                            console.log("error loading players");
+                            //console.log("error loading players");
                         }
                     } catch (error) {
                         console.error('Error', error);
@@ -337,7 +337,7 @@ export const putPlayer = async (status) => {
                 navigateTo('/game-selection');
     
             } else if (user) {
-                console.log("player not found");
+                //console.log("player not found");
             }
         } catch (error) {
             console.error('Error:', error);

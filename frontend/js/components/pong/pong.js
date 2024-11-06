@@ -70,7 +70,7 @@ export const startPongGame = async () => {
                     console.log('Match created successfully:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
-                    console.log('Match error', data);
+                    //console.log('Match error', data);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -83,8 +83,6 @@ export const startPongGame = async () => {
             groupName = 'pongGroup';
         const initws = `wss://${apiUri}/ws/pong_match/${groupName}/`
         wsPong = initPongSocket(initws);
-        console.log("wsPong", wsPong);
-        
         wsPong.onmessage = async (event) => {
             const data = JSON.parse(event.data);
             if(data.action == 'player_disconnect')
@@ -131,7 +129,7 @@ export const startPongGame = async () => {
                     if (response.ok) {
                         console.log('Match updated successfully:', data);
                     } else {
-                        console.log('Error updating match:', data);
+                       // console.log('Error updating match:', data);
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
@@ -395,7 +393,7 @@ export function initialize() {
                     if (response.ok) {
                         console.log('Match updated successfully:', data);
                     } else {
-                        console.log('Error updating match:', data);
+                       // console.log('Error updating match:', data);
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
@@ -444,7 +442,6 @@ export function initialize() {
         });
     }
     else if (modality2 == 'remote') {
-        console.log("Entreiieieieiei")
         const playerID = sessionStorage.getItem('player');
         const friendID = sessionStorage.getItem('friendID');
         document.addEventListener('keydown', function (event) {

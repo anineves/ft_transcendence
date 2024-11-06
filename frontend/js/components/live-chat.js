@@ -4,6 +4,66 @@ const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
 let socket;
 
+const translations = {
+    english: {
+        title: "Chat",
+        phMsg: "Type your message here...", 
+        lostInvMsg: "Lost invitation to duel",
+        duelBtn: "Duel",
+        phBlock: "Nickname to block...",
+        confirmBtn: "Confirm",
+        phUnblock: "Player to unblock...",
+        phDuel: "Player to duel...",
+        duelMsg: "has challenged you to a duel",
+        acceptBtn: "Accept",
+        fightMsg: " wants to fight!",
+        yourselfMsg: "You cannot challenge yourself to a duel.",
+        fillNickname: "Please enter a player nickname to duel.",
+        findOpponent: "Find an opponent to Pong",
+        findOpponentSnake: "Find an opponent to Snake",
+        participatePong: "Participate in Pong game",
+        participateSnake: "Participate in Snake game",
+
+    },
+    portuguese: {
+        title: "Chat",
+        phMsg: "Digite sua mensagem aqui...", 
+        duelBtn: "Duelo",
+        lostInvMsg: "Perdeu convite para Duelo",
+        phBlock: "Apelido para bloquear...",
+        confirmBtn: "Confirmar",
+        phUnblock: "Jogador para desbloquear...",
+        phDuel: "Jogador para duelar...",
+        duelMsg: "desafiou você para um duelo",
+        acceptBtn: "Aceitar",
+        fightMsg: " quer lutar!",
+        yourselfMsg: "Você não pode desafiar a si mesmo para um duelo.",
+        fillNickname: "Por favor, insira um apelido de jogador para duelar.",
+        findOpponent: "Encontre um Adversario Pong",
+        findOpponentSnake: "Encontre um Adversario Snake",
+        participatePong: "Participar em jogo Pong",
+        participateSnake: "Participar em jogo Snake",
+    },
+    french: {
+        title: "Chat",
+        phMsg: "Tapez votre message ici...", 
+        duelBtn: "Duel",
+        lostInvMsg: "Invitation perdue au duel",
+        phBlock: "Surnom à bloquer...",
+        confirmBtn: "Confirmer",
+        phUnblock: "Joueur à débloquer...",
+        phDuel: "Joueur à défier...",
+        duelMsg: "vous a défié à un duel",
+        acceptBtn: "Accepter",
+        fightMsg: " veut se battre!",
+        yourselfMsg: "Vous ne pouvez pas vous défier vous-même à un duel.",
+        fillNickname: "Veuillez entrer un surnom de joueur à défier.",
+        findOpponent: "Trouvez un adversaire pour",
+        findOpponentSnake: "Trouvez un adversaire pour",
+        participatePong: "Participer au jeu Pong",
+        participateSnake: "Participer au jeu Snake",
+    }
+};
 
 export const liveChat = () => {
     sessionStorage.setItem("pongGame", "false");
@@ -33,69 +93,7 @@ export const liveChat = () => {
          socket = new WebSocket(wssocket);
         }
     }
-    const translations = {
-        english: {
-            title: "Chat",
-            phMsg: "Type your message here...", 
-            duelMsg: "Lost invitation to duel",
-            duelBtn: "Duel",
-            phBlock: "Nickname to block...",
-            confirmBtn: "Confirm",
-            phUnblock: "Player to unblock...",
-            phDuel: "Player to duel...",
-            duelMsg: "has challenged you to a duel",
-            acceptBtn: "Accept",
-            lostInvMsg: "has challenged you to a duel",
-            fightMsg: " wants to fight!",
-            yourselfMsg: "You cannot challenge yourself to a duel.",
-            fillNickname: "Please enter a player nickname to duel.",
-            findOpponent: "Find an opponent to Pong",
-            findOpponentSnake: "Find an opponent to Snake",
-            participatePong: "Participate in Pong game",
-            participateSnake: "Participate in Snake game",
-
-        },
-        portuguese: {
-            title: "Chat",
-            phMsg: "Digite sua mensagem aqui...", 
-            duelBtn: "Duelo",
-            duelMsg: "Perdeu convite para Duelo",
-            phBlock: "Apelido para bloquear...",
-            confirmBtn: "Confirmar",
-            phUnblock: "Jogador para desbloquear...",
-            phDuel: "Jogador para duelar...",
-            duelMsg: "desafiou você para um duelo",
-            acceptBtn: "Aceitar",
-            lostInvMsg: "desafiou você para um duelo",
-            fightMsg: " quer lutar!",
-            yourselfMsg: "Você não pode desafiar a si mesmo para um duelo.",
-            fillNickname: "Por favor, insira um apelido de jogador para duelar.",
-            findOpponent: "Encontre um Adversario Pong",
-            findOpponentSnake: "Encontre um Adversario Snake",
-            participatePong: "Participar em jogo Pong",
-            participateSnake: "Participar em jogo Snake",
-        },
-        french: {
-            title: "Chat",
-            phMsg: "Tapez votre message ici...", 
-            duelBtn: "Duel",
-            duelMsg: "Invitation perdue au duel",
-            phBlock: "Surnom à bloquer...",
-            confirmBtn: "Confirmer",
-            phUnblock: "Joueur à débloquer...",
-            phDuel: "Joueur à défier...",
-            duelMsg: "vous a défié à un duel",
-            acceptBtn: "Accepter",
-            lostInvMsg: "vous a défié à un duel",
-            fightMsg: " veut se battre!",
-            yourselfMsg: "Vous ne pouvez pas vous défier vous-même à un duel.",
-            fillNickname: "Veuillez entrer un surnom de joueur à défier.",
-            findOpponent: "Trouvez un adversaire pour",
-            findOpponentSnake: "Trouvez un adversaire pour",
-            participatePong: "Participer au jeu Pong",
-            participateSnake: "Participer au jeu Snake",
-        }
-    };
+    
     
     let savedLanguage = localStorage.getItem('language');
 
@@ -128,7 +126,9 @@ export const liveChat = () => {
                 <button id="duel-button"><i class="fas fa-crossed-swords"></i> ${translations[savedLanguage].duelBtn}</button>
                 <button id="duel-button-snake"><i class="fas fa-crossed-swords"></i> ${translations[savedLanguage].duelBtn} Snake</button>
                 <button id="create-tournament-button" class="create-button">${translations[savedLanguage].findOpponent}</button>
+                <button id="participate-tournament-button" style="display:none;" class="create-button">${translations[savedLanguage].participatePong}</button>
                 <button id="create-tournament-button-snake" class="create-button-snake">${translations[savedLanguage].findOpponentSnake}</button>
+                <button id="participate-tournament-button-snake" style="display:none;" class="create-button-snake">${translations[savedLanguage].participateSnake}</button>
             </div>
             <div id="block-input-container" style="display: none;">
                 <input id="block-player-input" type="text" placeholder="${translations[savedLanguage].phBlock}...">
@@ -167,18 +167,15 @@ export const liveChat = () => {
     const unblockPlayerInput = document.getElementById('unblock-player-input');
     const confirmUnblockButton = document.getElementById('confirm-unblock-button');
     const errorliveChat = document.getElementById('errorChat');
-    const duelPong = document.getElementById('duel-button');
+    let duelPong = document.getElementById('duel-button');
+    let duelSnake = document.getElementById('duel-button-snake');
     errorliveChat.textContent = ''; 
-
-
-
+    let participateButtonSnake = document.getElementById('participate-tournament-button-snake');
+    let participateButton = document.getElementById('participate-tournament-button');
+   
     const createTournamentButtonSnake = document.getElementById('create-tournament-button-snake');
     const wssocket3= `wss://${apiUri}/ws/tournament_snake/`
     const socket3 = new WebSocket(wssocket3);
-    let participateButtonSnake ;
-    let participateButton ;
-    participateButtonSnake = document.getElementById('participate-tournament-button-snake');
-    participateButton = document.getElementById('participate-tournament-button');
 
     createTournamentButtonSnake.addEventListener('click', function () {
         socket3.send(JSON.stringify({ action: 'create_tournament_snake' }));     
@@ -189,27 +186,34 @@ export const liveChat = () => {
     };
 
     socket3.onmessage = function (event) {
+        duelPong = document.getElementById('duel-button');
+        duelSnake = document.getElementById('duel-button-snake');
+        
+        participateButtonSnake = document.getElementById('participate-tournament-button-snake');
+        participateButton = document.getElementById('participate-tournament-button');
         const data = JSON.parse(event.data);
         if (data.action == 'created_tournament_snake') {
-            participateButtonSnake = document.getElementById('participate-tournament-button-snake');
-            participateButton = document.getElementById('participate-tournament-button');
-            if (!participateButtonSnake && !participateButton) 
+            if (participateButtonSnake.style.display == 'none' && participateButton.style.display == 'none') 
             { 
-                participateButtonSnake = document.createElement('button');
-                participateButtonSnake.innerText = translations[savedLanguage].participateSnake;
-                participateButtonSnake.id = 'participate-tournament-button-snake';
-                document.body.appendChild(participateButtonSnake);
+                createTournamentButtonSnake.style.display = 'none';
+                participateButtonSnake.style.display = 'block';
                 participateButtonSnake.addEventListener('click', function () {
+                    sessionStorage.setItem("participate", "true");
+                    duelPong.style.display = 'none';
+                    duelSnake.style.display = 'none';
+                    participateButton.style.display = 'none';
                     socket3.send(JSON.stringify({ action: 'join_tournament_snake', player: { nickname: nickname , id: player} }));
                 });
             }
         }
     
         if (data.action === 'tournament_full_snake') {
-            
-            participateButtonSnake = document.getElementById('participate-tournament-button-snake');
-            participateButton = document.getElementById('participate-tournament-button');
-            document.body.removeChild(participateButtonSnake);
+            sessionStorage.setItem("participate", "false");
+            sessionStorage.removeItem("participate");
+            participateButton.style.display = 'none';
+            participateButtonSnake.style.display = 'none';
+            createTournamentButton.style.display = 'block';
+            createTournamentButtonSnake.style.display= 'block';
             const playerIdArray = data.participants.map(participant => participant.id);
             sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
             sessionStorage.setItem('modality', 'remote');
@@ -245,32 +249,39 @@ export const liveChat = () => {
     });
 
     socket2.onopen = function (event) {
-        //console.log("Connected to tournament WebSocket");
     };
 
     socket2.onmessage = function (event) {
+        duelPong = document.getElementById('duel-button');
+        duelSnake = document.getElementById('duel-button-snake');
+        
+        participateButtonSnake = document.getElementById('participate-tournament-button-snake');
+        participateButton = document.getElementById('participate-tournament-button');
+
         const data = JSON.parse(event.data);
-        console.log()
         if (data.action == 'created_tournament') {
-            participateButtonSnake = document.getElementById('participate-tournament-button-snake');
-            participateButton = document.getElementById('participate-tournament-button');
-            if (!participateButtonSnake && !participateButton) 
+            if (participateButtonSnake.style.display == 'none' && participateButton.style.display == 'none') 
             { 
-            participateButton = document.createElement('button');
-            participateButton.innerText = translations[savedLanguage].participatePong;
-            participateButton.id = 'participate-tournament-button';
-            document.body.appendChild(participateButton);
-            participateButton.addEventListener('click', function () {
-                socket2.send(JSON.stringify({ action: 'join_tournament', player: { nickname: nickname , id: player} }));
-            });
+                createTournamentButton.style.display = 'none';
+                participateButton.style.display = 'block';
+                participateButton.addEventListener('click', function () {
+                    sessionStorage.setItem("participate", "true");
+                    duelPong.style.display = 'none';
+                    duelSnake.style.display = 'none';
+                    participateButtonSnake.style.display = 'none';
+                    socket2.send(JSON.stringify({ action: 'join_tournament', player: { nickname: nickname , id: player} }));
+                });
+            }
         }
-    }
     
-        if (data.action === 'tournament_full') {
-            
-            participateButtonSnake = document.getElementById('participate-tournament-button-snake');
-            participateButton = document.getElementById('participate-tournament-button');
-            document.body.removeChild(participateButton);
+    
+        if (data.action === 'tournament_full') { 
+            sessionStorage.setItem("participate", "false");
+            sessionStorage.removeItem("participate");
+            participateButton.style.display = 'none';
+            participateButtonSnake.style.display = 'none';
+            createTournamentButton.style.display = 'block';
+            createTournamentButtonSnake.style.display= 'block';
             const playerIdArray = data.participants.map(participant => participant.id);
             sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
             sessionStorage.setItem('modality', 'remote');
@@ -296,7 +307,7 @@ export const liveChat = () => {
     };
 
     socket2.onclose = function () {
-        //console.log("Tournament socket was closed");
+      
     };
     
 
@@ -332,8 +343,6 @@ export const liveChat = () => {
                     if (player) {
                         sessionStorage.setItem('playerProfile', JSON.stringify(player));
                         navigateTo('/player-profile');
-                    } else {
-                        //console.log("Player not found");
                     }
                 } else {
                     //console.log("Error loading players");
@@ -365,7 +374,7 @@ export const liveChat = () => {
         const isOwnMessage = firstWord === nickname;
         
         addMessage(message.content, isOwnMessage);
-        if (data.action == "duel" || data.action == "duel-snake")
+        if ((data.action == "duel" || data.action == "duel-snake"))
         {
             let groupName = message.group_name;
             sessionStorage.setItem("groupName", groupName);
@@ -379,14 +388,21 @@ export const liveChat = () => {
             duelMessage.id = 'duel-message';
             const acceptButton = document.createElement('button');
             acceptButton.id = 'accept-link';
-            acceptButton.innerText = translations[savedLanguage].acceptBtn;
-            duelMessage.innerHTML = `${translations[savedLanguage].duelMsg} `;
-            duelMessage.appendChild(acceptButton);
+            console.log(sessionStorage.getItem("participate"))
+            if(sessionStorage.getItem("participate") != "true")
+            {
+
+                acceptButton.innerText = translations[savedLanguage].acceptBtn;
+                duelMessage.innerHTML = `${translations[savedLanguage].duelMsg} `;
+                duelMessage.appendChild(acceptButton);
+            }
             chatBox.appendChild(duelMessage);
             chatBox.scrollTop = chatBox.scrollHeight; 
-            const duelPong = document.getElementById('duel-button');
+            createTournamentButton.style.display = 'none';
+            createTournamentButtonSnake.style.display = 'none';
+            participateButton.style.display = 'none';
+            participateButtonSnake.style.display = 'none';
             duelPong.style.display = 'none';
-            const duelSnake = document.getElementById('duel-button-snake');
             duelSnake.style.display = 'none';
             if(data.action == "duel-snake")
                 sessionStorage.setItem("duelGame", "duel-snake");
@@ -399,9 +415,11 @@ export const liveChat = () => {
               
             }
             const timeout = setTimeout(() => {
-                duelMessage.innerHTML = `${translations[savedLanguage].duelMsg}`;
+                duelMessage.innerHTML = `${translations[savedLanguage].lostInvMsg}`;
                 duelPong.style.display = 'block';
                 duelSnake.style.display = 'block';
+                createTournamentButton.style.display = 'block';
+                createTournamentButtonSnake.style.display = 'block';
             }, 10000); 
             
             if (user_json.id != message.from_user) {
@@ -542,5 +560,6 @@ export const liveChat = () => {
 };
 
 export const closeSocket = () => {
-    socket.close();
+    if(socket)
+        socket.close();
 }

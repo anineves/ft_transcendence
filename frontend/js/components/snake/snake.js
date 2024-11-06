@@ -57,6 +57,7 @@ let foods = [{ x: null, y: null }];
 let visiblity;
 
 export const startSnakeGame = async () => {
+    sessionStorage.setItem('game', 'snake');
     let modality2 = sessionStorage.getItem('modality');
     const user = sessionStorage.getItem('user');
     visiblity = "true";
@@ -102,7 +103,7 @@ export const startSnakeGame = async () => {
             </div>`
     }
     if (modality2 == "player" || modality2 == "3D") match_type = "MP";
-    sessionStorage.setItem('game', 'snake');
+    
     sessionStorage.setItem('players', players);
 
 
@@ -169,7 +170,7 @@ export const startSnakeGame = async () => {
                         if (response.ok) {
                             console.log('Match updated successfully:', data);
                         } else {
-                            console.log('Error updating match:', data);
+                            //console.log('Error updating match:', data);
                         }
                     } catch (error) {
                         console.error('Error processing match:', error);
@@ -304,7 +305,7 @@ export const startSnakeGame = async () => {
                     console.log('Match created successfully:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
-                    console.log('Match error', data);
+                   // console.log('Match error', data);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -551,7 +552,7 @@ async function drawGame() {
                     if (response.ok) {
                         console.log('Match updated successfully:', data,  sessionStorage.getItem("snakeGame") )
                     } else {
-                        console.log('Error updating match:', data);
+                        //console.log('Error updating match:', data);
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);

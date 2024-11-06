@@ -42,9 +42,6 @@ export function initPongSocket(url) {
     ws.onmessage = (event) => {
     
         let data = JSON.parse(event.data)
-        
-        console.log('Data:', data)
-
         if (data.action === 'match_created') {
             console.log(`Match created with ID: ${data.match_id}`);
         }

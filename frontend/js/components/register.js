@@ -203,7 +203,7 @@ export const renderRegister = () => {
                     checkLoginStatus(); 
                     navigateTo('/create-player', data);  // Redireciona para a próxima página após login
                 } else {
-                    console.log('Login after registration failed: ' + JSON.stringify(loginData));
+                   // console.log('Login after registration failed: ' + JSON.stringify(loginData));
                 }
             } else {
                 passwordError.textContent += `${translations[savedLanguage].errorEmailGeneral}`;
