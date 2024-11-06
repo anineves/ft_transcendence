@@ -104,7 +104,7 @@ export const renderRequestPanel = () => {
                     }
                 });
             } else {
-                console.log('Failed to load friend requests.');
+                //console.log('Failed to load friend requests.');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -127,7 +127,7 @@ export const renderRequestPanel = () => {
             if (response.ok) {
                 displayRequests();  
             } else {
-                console.log('Failed to update friend request.');
+                //console.log('Failed to update friend request.');
             }
         } catch (error) {
             console.error('Error:', error);

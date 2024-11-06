@@ -43,7 +43,7 @@ export function initPongSocket(url) {
     
         let data = JSON.parse(event.data)
         if (data.action === 'match_created') {
-            console.log(`Match created with ID: ${data.match_id}`);
+            //console.log(`Match created with ID: ${data.match_id}`);
         }
         let invitedTimeout = null;
         if(inviter != "True" && modality2 == 'remote' && !findOpponent)

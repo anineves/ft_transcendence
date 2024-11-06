@@ -168,7 +168,7 @@ export const startSnakeGame = async () => {
                         const data = await response.json();
 
                         if (response.ok) {
-                            console.log('Match updated successfully:', data);
+                            //console.log('Match updated successfully:', data);
                         } else {
                             //console.log('Error updating match:', data);
                         }
@@ -302,7 +302,7 @@ export const startSnakeGame = async () => {
                 const data = await response.json();
 
                 if (data) {
-                    console.log('Match created successfully:', data);
+                    //console.log('Match created successfully:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
                    // console.log('Match error', data);
@@ -550,7 +550,7 @@ async function drawGame() {
                     const data = await response.json();
 
                     if (response.ok) {
-                        console.log('Match updated successfully:', data,  sessionStorage.getItem("snakeGame") )
+                        //console.log('Match updated successfully:', data,  sessionStorage.getItem("snakeGame") )
                     } else {
                         //console.log('Error updating match:', data);
                     }

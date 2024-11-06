@@ -217,7 +217,7 @@ const showCodeForm = async () => {
             if (response.ok) {
                 // showCodeForm(emailOrUsername, password); #TODO: POST twice to OTP
             } else {
-                console.log('Failed to send verification code.1');
+                //console.log('Failed to send verification code.1');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -289,7 +289,7 @@ const showCodeForm = async () => {
                             return;
                         }
                     } else {
-                        console.log("error loading players");
+                        //console.log("error loading players");
                     }
                 } catch (error) {
                     console.error('Error', error);
@@ -299,7 +299,7 @@ const showCodeForm = async () => {
                 sessionStorage.setItem('firtChat', 'true');
                 navigateTo('/game-selection', data); 
             } else {
-                console.log('Failed to send verification code.2');
+                //('Failed to send verification code.2');
             }
         } catch (error) {
             console.error('Error:', error);

@@ -80,7 +80,7 @@ export const recordMatchResult = async () => {
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Match updated successfully:', data);
+                //console.log('Match updated successfully:', data);
             } else {
                 //console.log('Error updating match:', data);
             }

@@ -110,6 +110,12 @@ export const render = () => {
     const route = routes[path] || renderMenu;
     const state = window.history.state;
     // Obtém o estado atual do histórico
+    let flag = document.getElementById('languageDropdown');
+    if(path == '/pong' || path == '/snake' || path == '/3d-pong' || path == '/3d-snake')
+        flag.style.display = 'none'
+    if(path != '/pong' && path != '/snake' && path != '/3d-pong' && path != '/3d-snake')
+        flag.style.display = 'block'
+
     updateFooterTranslation();
     const pong = sessionStorage.getItem("pongGame");
     const snake = sessionStorage.getItem("snakeGame");

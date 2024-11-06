@@ -45,11 +45,9 @@ export const visibilitychange = (wsPong, visiblity) => {
     window.addEventListener('offline', handleVisibilityChange);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('popstate', () => {
-        console.log("aquiii setas")
         handleVisibilityChange(); 
     });
     window.addEventListener('beforeunload', () => {
-        console.log("aquiii atu")
         handleVisibilityChange(); 
     });
     

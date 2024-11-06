@@ -53,7 +53,7 @@ async function createMatch() {
                 if (data) {
                     sessionStorage.setItem('id_match', data.id);
                 } else {
-                    console.log('Match error', data);
+                    //console.log('Match error', data);
                 }
             } catch (error) {
                 console.error('Error:', error);

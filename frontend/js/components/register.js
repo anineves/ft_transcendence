@@ -221,7 +221,7 @@ export const renderRegister = () => {
                 }
             } else {
                 passwordError.textContent += `${translations[savedLanguage].errorEmailGeneral}`;
-                console.log('Registration failed: ' + JSON.stringify(data));
+                //console.log('Registration failed: ' + JSON.stringify(data));
             }
         } catch (error) {
             console.error('Error:', error);
