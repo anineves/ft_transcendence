@@ -7,9 +7,10 @@ import os
 
 class CustomOAuth2Backend(BaseBackend):
     def authenticate(self, request, code):
+        host = os.getenv('MAIN_HOST', 0)
         token_url = 'https://api.intra.42.fr/oauth/token'
         user_info_url = 'https://api.intra.42.fr/v2/me'
-        redirect_uri = 'https://10.0.2.15:8080/game-selection'
+        redirect_uri = f'https://{host}:8443/game-selection'
 
         token_response = requests.post(token_url, data={
             'grant_type': 'authorization_code',
@@ -52,5 +53,4 @@ class CustomOAuth2Backend(BaseBackend):
                 'avatar': avatar
             }
         )
-
         return user

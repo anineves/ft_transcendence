@@ -27,11 +27,13 @@ SECRET_KEY =  os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.getenv('DEBUG',0)))
 
-ALLOWED_HOSTS = [
-    h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')
-    if h.strip()
-]
+# ALLOWED_HOSTS = [
+#     h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')
+#     if h.strip()
+# ]
 
+
+ALLOWED_HOSTS = [ os.getenv('MAIN_HOST', '') ]
 
 # Application definition
 
@@ -65,12 +67,14 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
+host = os.getenv('MAIN_HOST', 0)
+
 CORS_ALLOWED_ORIGINS =[
     'http://localhost:5500',
     'http://127.0.0.1:5500',
     'https://localhost:8080',
     'https://127.0.0.1:8080',
-    'https://10.0.2.15:8080',
+    f'https://{host}:8443',
 ]
 
 
@@ -221,4 +225,5 @@ EMAIL_HOST_PASSWORD = 'lmln pyab glmg izrl'
 #SECURE_SSL_REDIRECT = True
 
 # Certifique-se de que o middleware de CSRF funciona corretamente com WebSockets
-CSRF_TRUSTED_ORIGINS = ['https://10.0.2.15']  
+host = os.getenv('MAIN_HOST', 0)
+CSRF_TRUSTED_ORIGINS = [f'https://{host}']  

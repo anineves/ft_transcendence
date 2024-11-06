@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import ValidationError
 from django.db.models import Q
-
+import os
 import django.contrib.auth.password_validation as validators
 
 
@@ -67,6 +67,12 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user is None:
             raise serializers.ValidationError('Invalid credentials', code='authorization')
 
+        scheme = 'https'  # Force to https
+        # host = "10.12.2.2"  # Remove porta padrão 80 se estiver presente
+        host = os.getenv('MAIN_HOST', 0)
+        port = '8443'  # Defina a porta que deseja usar
+        path = user.avatar.url if user.avatar else None # Caminho do arquivo
+        absolute_url = f"{scheme}://{host}:{port}{path}"
         data.update({
             'user': {
                 'id': user.id,
@@ -74,7 +80,7 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'avatar': self.context['request'].build_absolute_uri(user.avatar.url).replace("http://", "https://") if user.avatar else None,
+                'avatar': absolute_url if user.avatar else None,
                 'otp': user.otp_agreement
             }
         })
@@ -93,8 +99,17 @@ class UserSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         request = self.context.get('request')
+        if(instance.avatar and request):
+            scheme = 'https'  # Force to https
+            # host = request.get_host().replace(':80', '')  # Remove porta padrão 80 se estiver presente
+            host = os.getenv('MAIN_HOST', 0)
+            port = '8443'  # Defina a porta que deseja usar
+            path = instance.avatar.url  # Caminho do arquivo
+            absolute_url = f"{scheme}://{host}:{port}{path}"
+            print(f'Email: {instance.email}')
         if instance.avatar and request:
-            representation['avatar'] = request.build_absolute_uri(instance.avatar.url).replace("http://", "https://")
+            print(f"absolute_url: {absolute_url}")
+            representation['avatar'] = absolute_url
         else:
             representation['avatar_url'] = None
         return representation

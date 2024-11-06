@@ -16,7 +16,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY . /usr/share/nginx/html
 
 
-EXPOSE 443
+EXPOSE 8443
 
 CMD ["nginx", "-g", "daemon off;"]
 
