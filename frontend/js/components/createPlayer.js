@@ -15,7 +15,7 @@ export const createPlayer = () => {
             created: 'Player already created',
             exitBtn: 'Exit',
             errorNick: 'This nickname already exists',
-            errorNick2: "Nickname must contain only letters, numbers, and the '-' symbol.",
+            errorNick2: "Nickname must contain only letters, numbers, and the '-' symbol , and less than 15 characters.",
         },
         portuguese: {
             title: 'Crie Seu Jogador',
@@ -25,7 +25,7 @@ export const createPlayer = () => {
             created: 'Jogador já criado',
             exitBtn: 'Sair',
             errorNick: 'Este nickname já existe',
-            errorNick2: "O nickname deve conter apenas letras, números e o símbolo '-'."
+            errorNick2: "O nickname deve conter apenas letras, números e o símbolo '-'  e menos de 15 caracteres.."
 
         },
         french: {
@@ -36,7 +36,7 @@ export const createPlayer = () => {
             created: 'Joueur déjà créé',
             exitBtn: 'Quitter',
             errorNick: 'Ce joueur existe déjà',
-            errorNick2: "Le nickname doit contenir uniquement des lettres, des chiffres et le symbole '-'",
+            errorNick2: "Le nickname doit contenir uniquement des lettres, des chiffres et le symbole '-' et moins de 15 caractères.",
         }
     };
     
@@ -81,7 +81,7 @@ export const createPlayer = () => {
 
 
         playerError.textContent = '';
-        if(!nameRegex.test(nickname)) {
+        if(!nameRegex.test(nickname) && nickname.length > 15) {
             playerError.textContent += `${translations[savedLanguage].errorNick2}`;
             valid = false;
         }

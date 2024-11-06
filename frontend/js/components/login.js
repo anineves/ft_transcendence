@@ -10,7 +10,7 @@ const translations = {
         errorLogin: "There is no user created with this data",
         errorUsername: "There is no user created with this data,Username must contain only letters, numbers, and the '-' symbol.", 
         errorPassword: "Password must be at least 8 characters long, including at least one uppercase letter, one lowercase letter, one digit, and a special character _, - or @; other special characters will not be accepted.",
-        errorWrongPassword: "Wrong password."
+        errorWrongPassword: "Wrong password.",
     },
     portuguese: {
         login: "Entrar",
@@ -99,7 +99,7 @@ export const renderLogin = () => {
             passwordError.textContent += `${translations[savedLanguage].errorPassword}`
             valid = false; 
         }
-       
+        if(emailRegex.le)
 
         if (!valid) return;
         const apiUrl = window.config.API_URL;
