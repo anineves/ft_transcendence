@@ -49,7 +49,7 @@ class CustomOAuth2Backend(BaseBackend):
         try:
             user, created = User.objects.get_or_create(
                 email=email,
-                # is_ft_student = True,
+                ft_student = True,
                 defaults={
                     'username': username,
                     'first_name': first_name,
@@ -58,5 +58,5 @@ class CustomOAuth2Backend(BaseBackend):
                 }
             )
         except IntegrityError as e:
-            return None
+            raise ValidationError({"Email already exists."})
         return user

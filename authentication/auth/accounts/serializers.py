@@ -8,6 +8,7 @@ from django.db.models import Q
 import os
 import django.contrib.auth.password_validation as validators
 
+from .set_avatar_path import set_avatar_path
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
@@ -67,12 +68,8 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user is None:
             raise serializers.ValidationError('Invalid credentials', code='authorization')
 
-        scheme = 'https'  # Force to https
-        # host = "10.12.2.2"  # Remove porta padrão 80 se estiver presente
-        host = os.getenv('MAIN_HOST', 0)
-        port = '8443'  # Defina a porta que deseja usar
-        path = user.avatar.url if user.avatar else None # Caminho do arquivo
-        absolute_url = f"{scheme}://{host}:{port}{path}"
+        path = user.avatar.url if user.avatar else None
+        absolute_url = set_avatar_path(path)
         data.update({
             'user': {
                 'id': user.id,
@@ -80,45 +77,30 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'avatar': absolute_url if user.avatar else None,
+                'avatar': absolute_url,
                 'otp': user.otp_agreement
             }
         })
         return data
 
 
-from urllib.parse import unquote
-
-
-        # encoded_url = "https://example.com/path%3Fquery%3Dvalue%26id%3D123"
-        # decoded_url = unquote(encoded_url)
-        # print(decoded_url)  # Output: https://example.com/path?query=value&id=123
-
- 
 class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CustomUser
         fields = ['id', 'email', 'username', 'first_name', \
-                  'last_name', 'avatar', 'date_joined', 'otp_agreement']
-        read_only_fields = ['id', 'email', 'username', 'date_joined', 'otp']
+                  'last_name', 'avatar', 'date_joined', 'otp_agreement', 'ft_student']
+        read_only_fields = ['id', 'email', 'username', 'date_joined', 'otp', 'ft_student']
         
     
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         request = self.context.get('request')
         if instance.avatar and request:
-            scheme = 'https'  # Force to https
-            # host = request.get_host().replace(':80', '')  # Remove porta padrão 80 se estiver presente
-            host = os.getenv('MAIN_HOST', 0)
-            port = '8443'  # Defina a porta que deseja usar
-            path = instance.avatar.url  # Caminho do arquivo
-            absolute_url = f"{scheme}://{host}:{port}{path}"
-        if instance.avatar and request:
-            if path.find('intra.42'):
-                new_path = path[16:]
-                new_path = f"https://{new_path}"
-                representation['avatar'] = new_path
+            path = instance.avatar.url
+            absolute_url = set_avatar_path(path)
+            if instance.ft_student:
+                representation['avatar'] = path.replace('/media/https%3A/', 'https://')
             else:
                 representation['avatar'] = absolute_url
         else:
@@ -184,7 +166,8 @@ class FriendRequestSerializer(serializers.ModelSerializer):
         validated_data['sender'] = sender
         validated_data['invited'] = invited
         return super().create(validated_data)
-    
+
+
 class MatchSerializer(serializers.ModelSerializer):
     match_type = serializers.SerializerMethodField()
 
@@ -194,7 +177,6 @@ class MatchSerializer(serializers.ModelSerializer):
         read_only_fields = ['id' ,'date']
     
     def create(self, validated_data):
-        print("Dados:", validated_data)
         if 'match_type' not in validated_data:
             validated_data['match_type'] = self.initial_data.get('match_type') 
         return super().create(validated_data)

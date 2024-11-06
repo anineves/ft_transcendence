@@ -89,8 +89,9 @@ if (!savedLanguage || !translations[savedLanguage]) {
 export const renderPanel = async (user) => {
     const app = document.getElementById('app');
     const defaultAvatar = '../../assets/avatar.png';
-    const avatarUrl = user.avatar || defaultAvatar;
-    console.log("avatarURL", avatarUrl);
+    let avatarUrl = user.avatar || defaultAvatar;
+    if (user.avatar && !user.ft_student) 
+        avatarUrl = `${avatarUrl}?${new Date().getTime()}`
     const player = JSON.parse(sessionStorage.getItem('playerInfo'));
     const nickname = sessionStorage.getItem('nickname') || 'N/A';
    
@@ -100,7 +101,7 @@ export const renderPanel = async (user) => {
             <h2>${translations[savedLanguage].title}</h2>
             <div class="profile-content">
                 <div class="info">
-                <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="user-avatar" class="avatar">
+                <img id="avatarImg" src="${avatarUrl}" alt="user-avatar" class="avatar">
                         <h2 id="editBtn2">                        <i class="fas fa-pencil-alt"></i></h2>
                         <p><strong>${translations[savedLanguage].user}:</strong> ${user.username}</p>
                         <p><strong>${translations[savedLanguage].nick}:</strong> ${nickname}</p>
