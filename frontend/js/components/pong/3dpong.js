@@ -448,8 +448,8 @@ function updateScoreBoard() {
 let ballMoving = true;
 let redScore = 0;
 let blueScore = 0;
-let ballSpeedX = 0.1;
-let ballSpeedZ = 0.1;
+let ballSpeedX = 0.09;
+let ballSpeedZ = 0.09;
 const paddleSpeed = 0.08;
 let gameOver = false;
 
