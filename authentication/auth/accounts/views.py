@@ -184,6 +184,7 @@ class PlayerDetail(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Player.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
     def put(self, request, pk):
         try:
             player = Player.objects.get(id=pk)
@@ -250,6 +251,7 @@ class RespondFriendRequest(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, pk):
         invited_player = request.user.player
+        answer = request.data.get('accepted')
         try:
             friend_request = FriendRequest.objects.select_related(
                 'sender', 
@@ -258,10 +260,14 @@ class RespondFriendRequest(APIView):
         except:
             raise Http404('Friend Request was not found')
         if friend_request.invited == invited_player:
-            invited_player.friends.add(friend_request.sender)
-            friend_request.sender.friends.add(invited_player)
-            friend_request.delete()
-            return Response(data={'Friend request accepted'}, status=status.HTTP_204_NO_CONTENT)
+            if answer == True:
+                invited_player.friends.add(friend_request.sender)
+                friend_request.sender.friends.add(invited_player)
+                friend_request.delete()
+                return Response(data={'Friend request accepted'}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                friend_request.delete()
+                return Response(data={'Friend request rejected'}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(data={'Not allowed'}, status=status.HTTP_403_FORBIDDEN)
 
