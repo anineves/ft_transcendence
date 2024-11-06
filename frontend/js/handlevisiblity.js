@@ -26,9 +26,7 @@ export const visibilitychange = (wsPong, visiblity) => {
             if (modality == 'remote') {
                 if (wsPong) {
                     if(player.id == playerID)
-                    {   
                         sessionStorage.setItem("whoGiveUp", "IPlayer");
-                    }
                     wsPong.send(JSON.stringify({
                         'action': 'player_disconnect',
                         'message': {

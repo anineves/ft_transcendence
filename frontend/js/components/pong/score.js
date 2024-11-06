@@ -65,19 +65,19 @@ export function drawGameOver(playerScore, opponentScore) {
     const giveUp = sessionStorage.getItem('giveUP');
     context.font = "30px 'Press Start 2P', cursive";
     context.fillStyle = "#ffcc00";
-    context.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 180, canvas.height / 2);
+    context.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 130, canvas.height / 2 - 40);
     if(giveUp == "true")
     {
         context.font = "20px 'Press Start 2P', cursive";
         context.fillStyle = "#ff0000";
-        context.fillText(`${translations[savedLanguage].giveUp}`,canvas.width / 2 - 200, canvas.height / 2 - 100);
+        context.fillText(`${translations[savedLanguage].giveUp}`,canvas.width / 2 - 140, canvas.height / 2 + 70);
         sessionStorage.setItem('giveUP', 'false');
         sessionStorage.setItem('trGiveUp', 'false');
     }
     else
     {
-        context.font = "25px 'Press Start 2P', cursive";
-        context.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 3 - 185, canvas.height / 2 + 50);
+        context.font = "20px 'Press Start 2P', cursive";
+        context.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 3 - 130, canvas.height / 2 + 70);
 
     }
 
