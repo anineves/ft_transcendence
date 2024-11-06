@@ -2,6 +2,7 @@ import { navigateTo } from '../../utils.js';
 
 let animationsnake3d;
 export function init3DSnakeGame() {
+
 sessionStorage.setItem("snakeGame", "true");
 
 const scene = new THREE.Scene();
@@ -19,6 +20,7 @@ const apiUrl = window.config.API_URL;
 
 
 async function createMatch() {
+    sessionStorage.setItem("snakeGame", "true");
     const modality2 = sessionStorage.getItem('modality');
     const user = sessionStorage.getItem('user');
     const player_id = sessionStorage.getItem("player");
@@ -27,8 +29,7 @@ async function createMatch() {
         redNickname = nickname;
     
 
-    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
-        (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament')) {
         if (player_id) {
 
             const urlMatches = `${apiUrl}/api/matches/`;
@@ -45,7 +46,6 @@ async function createMatch() {
                 const data = await response.json();
 
                 if (data) {
-                    console.log('Data:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
                     console.log('Match error', data);
@@ -60,13 +60,13 @@ async function createMatch() {
 if (user)
     createMatch();
 async function updateMatch() {
+    sessionStorage.setItem("snakeGame", "false");
     const id = sessionStorage.getItem('id_match');
     const modality2 = sessionStorage.getItem('modality');
     const user = sessionStorage.getItem('user');
     const player_id = sessionStorage.getItem("player");
 
-    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True')) &&
-        (modality2 != 'tourn-remote' || (modality2 == 'tourn-remote' && nickTorn == 'True'))) {
+    if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament')) {
         if (player_id) {
             try {
                 let winner_id = 1;
@@ -550,7 +550,6 @@ function redVictory() {
 // NAME OF THE BLUE PLAYER + BLUE VICTORY FUNCTION
 
 function blueVictory() {
-    console.log("entrei bluer")
     scene.remove(food);
     redSnake.forEach(segment => scene.remove(segment));
     blueSnake.forEach(segment => scene.remove(segment));
@@ -667,7 +666,6 @@ function animate(time) {
             gameOver = true;
         }
         else if ((redHeadTouch === 2 || blueHeadTouch === 1 || blueScore === 8) && !gameOver) {
-            console.log("entreiii else ")
             blueVictory();
             gameOver = true;
         }

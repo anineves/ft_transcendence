@@ -8,6 +8,7 @@ export function initPongSocket(url) {
     const inviter = sessionStorage.getItem('Inviter'); 
     let wsSession = sessionStorage.getItem('WS');
     let modality2 = sessionStorage.getItem('modality');
+    let findOpponent = sessionStorage.getItem('findOpponent');
 
     if (wsSession == "clean")
     {
@@ -26,10 +27,9 @@ export function initPongSocket(url) {
             Authorization: jwttoken,
         }));
         
-        if(inviter == "True" && modality2 == 'remote')
+        if(inviter == "True" && modality2 == 'remote' && !findOpponent)
         {
             lobbyTimeout = setTimeout(() => {
-                console.log("The opponent did not accept the duel");
                 ws.send(JSON.stringify({
                     action: 'end_game'
                 }));
@@ -49,11 +49,9 @@ export function initPongSocket(url) {
             console.log(`Match created with ID: ${data.match_id}`);
         }
         let invitedTimeout = null;
-        if(inviter != "True" && modality2 == 'remote')
+        if(inviter != "True" && modality2 == 'remote' && !findOpponent)
             {
-                console.log('ENTREI')
                 invitedTimeout = setTimeout(() => {
-                    console.log("The opponent gave up");
                     ws.send(JSON.stringify({
                         action: 'end_game'
                     }));
@@ -61,7 +59,7 @@ export function initPongSocket(url) {
                     navigateTo('/live-chat'); 
                 }, 10000);
             }
-        if (data.action == 'full_lobby') {
+        if (data.action == 'full_lobby' && !findOpponent) {
             if (lobbyTimeout) {
                 clearTimeout(lobbyTimeout);
                 lobbyTimeout = null;            
@@ -74,12 +72,9 @@ export function initPongSocket(url) {
             sessionStorage.setItem('friendID', data.message.opponent);
             let duelGame = sessionStorage.getItem("duelGame");
             if(duelGame == "duel-snake")
-            {
                 navigateTo('/snake');
-            }
-            else{
+            else
                 navigateTo('/pong');
-            }
         if (data.message == 'failed_match')
             console.log('Failed Match!')
     }

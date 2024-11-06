@@ -123,13 +123,12 @@ export const renderFriendsPage = async (user) => {
                     friendsList.innerHTML = `<li>${translations[savedLanguage].noFriends}</li>`;
                 }
             } else {
-                console.log('Failed to load friends.');
+                //console.log('Failed to load friends.');
             }
         } catch (error) {
             console.error('Error:', error);
         }
     } else {
-        console.log(`${translations[savedLanguage].neededPlayer}`);
         navigateTo('/create-player');
     }
 
@@ -188,7 +187,6 @@ export const renderFriendsPage = async (user) => {
             });
 
             if (response.ok) {
-                console.log(`${translations[savedLanguage].sucessRequest}`);
                 navigateTo('/friendPage')
             } else {
                 const errorData = await response.json();

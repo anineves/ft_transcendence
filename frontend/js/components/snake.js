@@ -1,13 +1,15 @@
 import { startSnakeGame, stopGame, changeGameSpeed, addExtraFood } from './snake/snake.js';
 import { navigateTo } from '../utils.js';
 import { endGameWithScore } from './pong.js';
+import { resetGameSnake } from './snake/snake.js';
+
 export const renderSnake = () => {
     let inviter = sessionStorage.getItem("Inviter");
     const apiUrl = window.config.API_URL;
     const user = sessionStorage.getItem('user');
     const modality2 = sessionStorage.getItem('modality');
     const app = document.getElementById('app');
-    const showButtons = modality2 != 'remote' && modality2 != 'tournament' && modality2 != 'tourn-remote';
+    const showButtons = modality2 != 'remote' && modality2 != 'tournament';
 
     app.innerHTML = `
         <div class="arcade-container">
@@ -28,7 +30,7 @@ export const renderSnake = () => {
             </div>
         </div>
     `;
-
+    resetGameSnake();
     startSnakeGame();
     if(showButtons)
         document.getElementById('exitBtn').addEventListener('click', endGameWithScore);

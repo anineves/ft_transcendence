@@ -2,7 +2,6 @@ const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
 
 export const visibilitychange = (wsPong, visiblity) => {
-    console.log("visibility: ", visiblity);
     sessionStorage.removeItem("whoGiveUp");
     const handleVisibilityChange = async () => {
         const pong = sessionStorage.getItem("pongGame")
@@ -21,13 +20,13 @@ export const visibilitychange = (wsPong, visiblity) => {
             let groupName = sessionStorage.getItem('groupName');
             let modality = sessionStorage.getItem('modality');
             let player = JSON.parse(sessionStorage.getItem('playerInfo'));
+            sessionStorage.setItem("pongGame", "false");
+            sessionStorage.setItem("snakeGame", "false");
           
-            if (modality == 'remote' || modality == 'tourn-remote') {
+            if (modality == 'remote') {
                 if (wsPong) {
                     if(player.id == playerID)
-                    {   
                         sessionStorage.setItem("whoGiveUp", "IPlayer");
-                    }
                     wsPong.send(JSON.stringify({
                         'action': 'player_disconnect',
                         'message': {
@@ -51,19 +50,6 @@ export const visibilitychange = (wsPong, visiblity) => {
     window.addEventListener('beforeunload', () => {
         handleVisibilityChange(); 
     });
-    
-    
-    //const originalPushState = history.pushState;
-    //history.pushState = function(...args) {
-    //    originalPushState.apply(this, args);
-    //    handleVisibilityChange(); 
-    //};
-    //
-    //const originalReplaceState = history.replaceState;
-    //history.replaceState = function(...args) {
-    //    originalReplaceState.apply(this, args);
-    //    handleVisibilityChange(); 
-    //};
     
      const cleanup = () => {
         window.removeEventListener('offline', handleVisibilityChange);
