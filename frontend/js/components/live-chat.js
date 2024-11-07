@@ -2,7 +2,9 @@ import { navigateTo, checkLoginStatus } from '../utils.js';
 import {  initializeTournament} from './tournament.js';
 const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
-let socket;
+let socketChat;
+let socketPong;
+let socketSnake;
 
 const translations = {
     english: {
@@ -85,12 +87,12 @@ export const liveChat = () => {
     let firstChat = sessionStorage.getItem('firtChat');
     if(firstChat == 'true')
     {
-        socket = new WebSocket(wssocket);
+        socketChat = new WebSocket(wssocket);
         sessionStorage.setItem('firtChat', 'false');
     }
     else {
-        if (!socket) {
-         socket = new WebSocket(wssocket);
+        if (!socketChat) {
+         socketChat = new WebSocket(wssocket);
         }
     }
     
@@ -174,20 +176,25 @@ export const liveChat = () => {
     let participateButton = document.getElementById('participate-tournament-button');
    
     const createTournamentButtonSnake = document.getElementById('create-tournament-button-snake');
-    const wssocket3= `wss://${apiUri}/ws/tournament_snake/`
-    const socket3 = new WebSocket(wssocket3);
+    const wssocketSnake= `wss://${apiUri}/ws/tournament_snake/`
+    console.log("Socket Snake", socketSnake);
+    if(!socketSnake)
+    {
+        socketSnake = new WebSocket(wssocketSnake);
+        console.log("Entrei em !Socket Snake", socketSnake);
+    }
 
     
-    socket3.onopen = function (event) {
-        socket3.send(JSON.stringify({
+    socketSnake.onopen = function (event) {
+        socketSnake.send(JSON.stringify({
             Authorization: jwttoken,
         }));
     };
     
     createTournamentButtonSnake.addEventListener('click', function () {
-        socket3.send(JSON.stringify({ action: 'create_tournament_snake' }));     
+        socketSnake.send(JSON.stringify({ action: 'create_tournament_snake' }));     
     });
-    socket3.onmessage = function (event) {
+    socketSnake.onmessage = function (event) {
         duelPong = document.getElementById('duel-button');
         duelSnake = document.getElementById('duel-button-snake');
         
@@ -205,8 +212,11 @@ export const liveChat = () => {
                         duelPong.style.display = 'none';
                     if(duelSnake)
                         duelSnake.style.display = 'none';
-                    participateButton.style.display = 'none';
-                    socket3.send(JSON.stringify({ action: 'join_tournament_snake', player: { nickname: nickname , id: player} }));
+                    if(participateButton)
+                        participateButton.style.display = 'none';
+                    if(createTournamentButton)
+                        createTournamentButton.style.display = "none"
+                    socketSnake.send(JSON.stringify({ action: 'join_tournament_snake', player: { nickname: nickname , id: player} }));
                 });
             }
         }
@@ -235,36 +245,36 @@ export const liveChat = () => {
             sessionStorage.setItem('game', "snake");
             if(player == sessionStorage.getItem('playerID') || player == sessionStorage.getItem('friendID'))
             {
-                socket3.close();
                 navigateTo('/snake');
             }
         }
     };
 
-    socket3.onerror = function (error) {
+    socketSnake.onerror = function (error) {
         console.error("WebSocket Error:", error);
     };
 
-    socket3.onclose = function () {
+    socketSnake.onclose = function () {
         
     };
 
 
     const createTournamentButton = document.getElementById('create-tournament-button');
-    const wssocket2= `wss://${apiUri}/ws/tournament/`
-    const socket2 = new WebSocket(wssocket2);
+    const wssocketPong= `wss://${apiUri}/ws/tournament/`
+    if(!socketPong)
+        socketPong = new WebSocket(wssocketPong);
     
-    socket2.onopen = function (event) {
-        socket2.send(JSON.stringify({
+    socketPong.onopen = function (event) {
+        socketPong.send(JSON.stringify({
             Authorization: jwttoken,
         }));
     };
     
     createTournamentButton.addEventListener('click', function () {
-        socket2.send(JSON.stringify({ action: 'create_tournament' }));
+        socketPong.send(JSON.stringify({ action: 'create_tournament' }));
     });
 
-    socket2.onmessage = function (event) {
+    socketPong.onmessage = function (event) {
         duelPong = document.getElementById('duel-button');
         duelSnake = document.getElementById('duel-button-snake');
         
@@ -285,7 +295,9 @@ export const liveChat = () => {
                         duelSnake.style.display = 'none';
                     if(participateButtonSnake)
                         participateButtonSnake.style.display = 'none';
-                    socket2.send(JSON.stringify({ action: 'join_tournament', player: { nickname: nickname , id: player} }));
+                    if(createTournamentButtonSnake)
+                        createTournamentButtonSnake.style.display = "none";
+                    socketPong.send(JSON.stringify({ action: 'join_tournament', player: { nickname: nickname , id: player} }));
                 });
             }
         }
@@ -315,18 +327,17 @@ export const liveChat = () => {
             sessionStorage.setItem('game', "pong");
             if(player == sessionStorage.getItem('playerID') || player == sessionStorage.getItem('friendID'))
             {
-                socket2.close();
                 navigateTo('/pong');
             }
         }
        
     };
 
-    socket2.onerror = function (error) {
+    socketPong.onerror = function (error) {
         console.error("WebSocket Error:", error);
     };
 
-    socket2.onclose = function () {
+    socketPong.onclose = function () {
       
     };
     
@@ -381,13 +392,13 @@ export const liveChat = () => {
     const user = sessionStorage.getItem('user');
     const user_json = JSON.parse(user);
 
-    socket.onopen = function (event) {
-        socket.send(JSON.stringify({
+    socketChat.onopen = function (event) {
+        socketChat.send(JSON.stringify({
             Authorization: jwttoken,
         }));
     };
   
-    socket.onmessage = function (event) {
+    socketChat.onmessage = function (event) {
         const data = JSON.parse(event.data);
         const message = data.message
         const firstWord = message.content.split(' ')[0];
@@ -461,11 +472,11 @@ export const liveChat = () => {
         }
     };
 
-    socket.onerror = function (error) {
+    socketChat.onerror = function (error) {
         console.error("WebSocket Error:", error);
     };
 
-    socket.onclose = function () {
+    socketChat.onclose = function () {
     
     };
 
@@ -481,7 +492,7 @@ export const liveChat = () => {
     confirmBlockButton.onclick = function () {
         const playerToBlock = blockPlayerInput.value.trim();
         if (playerToBlock) {
-            socket.send(JSON.stringify({ action: 'block', player: playerToBlock }));
+            socketChat.send(JSON.stringify({ action: 'block', player: playerToBlock }));
             blockInputContainer.style.display = 'none';
             blockPlayerInput.value = ''; 
         }
@@ -495,7 +506,7 @@ export const liveChat = () => {
     confirmUnblockButton.onclick = function () {
         const playerToUnblock = unblockPlayerInput.value.trim();
         if (playerToUnblock) {
-            socket.send(JSON.stringify({ action: 'unblock', player: playerToUnblock }));
+            socketChat.send(JSON.stringify({ action: 'unblock', player: playerToUnblock }));
             unblockInputContainer.style.display = 'none';
             unblockPlayerInput.value = ''; 
         }
@@ -506,7 +517,7 @@ export const liveChat = () => {
         const message = messageInput.value.trim();
         if (message) {
             privacy = message[0] === '@' ? true : false;
-            socket.send(JSON.stringify({ message: message, is_private: privacy }));
+            socketChat.send(JSON.stringify({ message: message, is_private: privacy }));
             messageInput.value = '';
         }
     };
@@ -518,7 +529,7 @@ export const liveChat = () => {
     });
 
     /*window.addEventListener('beforeunload', function (event) {
-        socket.close();
+        socketChat.close();
         return;
     });*/
 
@@ -554,7 +565,7 @@ export const liveChat = () => {
                 
                 let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
                 
-                socket.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
+                socketChat.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
             }
         } else {
             errorliveChat.textContent= `${translations[savedLanguage].fillNickname}`
@@ -576,7 +587,7 @@ export const liveChat = () => {
                 
                 let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
                 
-                socket.send(JSON.stringify({ action: 'duel-snake', message: duel_message, is_private: true }));
+                socketChat.send(JSON.stringify({ action: 'duel-snake', message: duel_message, is_private: true }));
             }
     
         } else {
@@ -589,5 +600,5 @@ export const liveChat = () => {
 
 export const closeSocket = () => {
     if(socket)
-        socket.close();
+        socketChat.close();
 }

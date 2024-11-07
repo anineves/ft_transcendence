@@ -258,6 +258,13 @@ const handleSendMessage = () => {
 
 
 const handleUpdateOtp = async (user) => {
+    let savedLanguage = localStorage.getItem('language');
+    
+    
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english';
+    }
+    ;
     let otp_agreement = user.otp_agreement; // Verifica o estado atual de OTP
     otp_agreement = !otp_agreement // Alterna entre verdadeiro e falso
 
@@ -290,6 +297,13 @@ const handleUpdateOtp = async (user) => {
 
 const handleUpdateProfile = async (e, user) => {
     e.preventDefault();
+    let savedLanguage = localStorage.getItem('language');
+    
+    
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english';
+    }
+    ;
 
     const formData = new FormData();
     const avatarFile = document.getElementById('updateAvatar').files[0];
@@ -310,10 +324,13 @@ const handleUpdateProfile = async (e, user) => {
         const fileName = avatarFile.name;
         const fileExtension = fileName.split('.').pop().toLowerCase();
         
-        if (fileExtension !== 'png' && fileExtension !== 'jpg' || fileExtension !== 'jpeg') 
+        if (fileExtension != 'png' && fileExtension != 'jpg' && fileExtension != 'jpeg') 
         {
             updateError.textContent += `${translations[savedLanguage].errorextension}`;
             valid = false;
+        }
+        else{
+            formData.append('avatar', avatarFile)
         }
     }
     

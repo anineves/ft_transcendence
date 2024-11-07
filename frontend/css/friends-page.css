@@ -98,6 +98,23 @@
     padding: 10px;
 }
 
+.status-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.status-icon.online {
+    background-color: green;
+}
+
+.status-icon.offline {
+    background-color: red;
+}
+
+
 
 @media (max-width: 768px) {
     .friendship-management-panel {
