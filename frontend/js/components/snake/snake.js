@@ -185,6 +185,7 @@ export const startSnakeGame = async () => {
                 sessionStorage.removeItem("duelGame");
                 sessionStorage.removeItem("whoGiveUp");
                 sessionStorage.removeItem('findOpponent');
+                sessionStorage.removeItem("duelwait");
                 ws = null;
             }
 
@@ -321,7 +322,7 @@ function handleKeyPress(event) {
     const player = sessionStorage.getItem('player');
     const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
-    if (validKeys.includes(event.key)) {
+    if (validKeys.includes(event.key) && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({
             'action': 'move_snake',
             'message': {
@@ -570,6 +571,7 @@ async function drawGame() {
         sessionStorage.setItem('WS', 'clean');
         sessionStorage.removeItem("duelGame");
         sessionStorage.removeItem("losingSnake");
+        sessionStorage.removeItem("duelwait");
         sessionStorage.setItem("snakeGame", "false");
 
         ws = null;

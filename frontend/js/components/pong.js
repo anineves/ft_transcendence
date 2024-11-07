@@ -99,6 +99,7 @@ export const endGameWithScore = async () => {
     sessionStorage.setItem("pongGame", "false");
     sessionStorage.setItem("snakeGame", "false");
     sessionStorage.removeItem('findOpponent');
+    sessionStorage.removeItem("duelwait");
     window.addEventListener("beforeunload", (event) => {
     
       });

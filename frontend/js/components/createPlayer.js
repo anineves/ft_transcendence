@@ -81,7 +81,7 @@ export const createPlayer = () => {
 
 
         playerError.textContent = '';
-        if(!nameRegex.test(nickname) && nickname.length > 15) {
+        if(!nameRegex.test(nickname) || nickname.length > 15) {
             playerError.textContent += `${translations[savedLanguage].errorNick2}`;
             valid = false;
         }

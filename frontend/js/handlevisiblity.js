@@ -24,7 +24,7 @@ export const visibilitychange = (wsPong, visiblity) => {
             //sessionStorage.setItem("snakeGame", "false");
           
             if (modality == 'remote') {
-                if (wsPong) {
+                if (wsPong && wsPong.readyState === WebSocket.OPEN) {
                     if(player.id == playerID)
                         sessionStorage.setItem("whoGiveUp", "IPlayer");
                     wsPong.send(JSON.stringify({

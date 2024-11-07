@@ -1,4 +1,5 @@
 import { navigateTo, checkLoginStatus } from '../utils.js';
+import { closeSocket } from './live-chat.js';
 const apiUrl = window.config.API_URL;
 const translations = {
     english: {
@@ -40,6 +41,7 @@ const translations = {
 
 };
 export const renderLogin = () => {
+    closeSocket();
     let savedLanguage = localStorage.getItem('language');
 
 

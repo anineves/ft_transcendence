@@ -143,6 +143,7 @@ export const startPongGame = async () => {
             sessionStorage.removeItem("duelGame");
             sessionStorage.removeItem("whoGiveUp");
             sessionStorage.removeItem('findOpponent');
+            sessionStorage.removeItem("duelwait");
             wsPong =  null;
             }
             if (data.action === 'ball_track') {
@@ -410,6 +411,7 @@ export function initialize() {
             sessionStorage.setItem('WS', 'clean');
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.removeItem('findOpponent');
+            sessionStorage.removeItem("duelwait");
             wsPong =  null;
         }
     }
