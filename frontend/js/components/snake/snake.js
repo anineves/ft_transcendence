@@ -148,6 +148,10 @@ export const startSnakeGame = async () => {
                 }
                 drawGameOver(snakePlayer.foodCount, snakeOpponent.foodCount);
                 sessionStorage.removeItem("whoGiveUp");
+                if (ws) {
+                    ws.close();
+                    console.log("PongSocket 4")
+                }
                 if (id) {
                     try {
                         if (sessionStorage.getItem("losingSnake") == 'player')
@@ -526,7 +530,10 @@ async function drawGame() {
         let nickTorn = sessionStorage.getItem("nickTorn");
         sessionStorage.setItem("snakeGame", "false");
         let winner_id = opponent;
-
+        if (ws) {
+            ws.close();
+            console.log("PongSocket 4")
+        }
         if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True'))) {
             if (player) {
                 try {
@@ -698,7 +705,7 @@ export function stopGame() {
         sessionStorage.setItem('giveUP', 'false')
 
         setTimeout(() => {
-            navigateTo('/live-chat');
+            navigateTo('/game-selection');
         }, 2000);
     }
     else if (modality != 'tournament') {

@@ -102,10 +102,13 @@ export const startPongGame = async () => {
             stopGame();
             const id = sessionStorage.getItem('id_match');
             let winner_id = opponent;
+            if (wsPong) {
+                wsPong.close();
+                console.log("PongSocket 4")
+            }
             if (id)  {
                 try {
-                    wsPong = null;
-        
+
                     let whoGiveUp = sessionStorage.getItem('whoGiveUp')
                     if(whoGiveUp)
                         opponentScore = 5;
@@ -144,7 +147,6 @@ export const startPongGame = async () => {
             sessionStorage.removeItem("whoGiveUp");
             sessionStorage.removeItem('findOpponent');
             sessionStorage.removeItem("duelwait");
-            wsPong =  null;
             }
             if (data.action === 'ball_track') {
                 ballX = data.message.ball_x;
@@ -372,6 +374,11 @@ export function initialize() {
             stopGame();
             const id = sessionStorage.getItem('id_match');
             let winner_id = opponent;
+            if (wsPong) {
+                wsPong.close();
+                console.log("PongSocket 4")
+            }
+            
             if (player && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')))  {
                 try {
                     if(modality2 == 'remote')
@@ -412,7 +419,7 @@ export function initialize() {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.removeItem('findOpponent');
             sessionStorage.removeItem("duelwait");
-            wsPong =  null;
+            closePongSocket(wsPong);
         }
     }
 

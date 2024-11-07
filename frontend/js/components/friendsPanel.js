@@ -4,7 +4,7 @@ export const renderPlayerProfile = async () => {
     const playerJson = sessionStorage.getItem('playerProfile');
 
     if (!playerJson) {
-        navigateTo('/live-chat');
+        navigateTo('/game-selection');
         return;
     }
     const translations = {
@@ -224,11 +224,11 @@ export const renderPlayerProfile = async () => {
 
     } catch (error) {
         console.error('Failed to fetch player stats:', error);
-        navigateTo('/live-chat');
+        navigateTo('/');
     }
 
     document.getElementById('backBtn').addEventListener('click', () => {
-        navigateTo('/live-chat');
+        navigateTo('/game-selection');
     });
 
     document.getElementById('historyBtn').addEventListener('click', () => {

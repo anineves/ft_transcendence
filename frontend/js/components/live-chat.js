@@ -70,7 +70,6 @@ const translations = {
 export const liveChat = () => {
     sessionStorage.removeItem('participate');
     sessionStorage.removeItem('findOpponent');
-    sessionStorage.removeItem("groupName");
     sessionStorage.setItem("pongGame", "false");
     sessionStorage.setItem("snakeGame", "false");
     const player = sessionStorage.getItem('player');
@@ -88,14 +87,17 @@ export const liveChat = () => {
 
     const wssocket= `wss://${apiUri}/ws/global_chat/`
     let firstChat = sessionStorage.getItem('firtChat');
+    console.log('Chama no socket', socketChat);
     if(firstChat == 'true')
     {
         socketChat = new WebSocket(wssocket);
         sessionStorage.setItem('firtChat', 'false');
     }
     else {
+        console.log("Mesma socket");
         if (!socketChat) {
-         socketChat = new WebSocket(wssocket);
+            console.log("New socket");
+            socketChat = new WebSocket(wssocket);
         }
     }
     
@@ -182,7 +184,6 @@ export const liveChat = () => {
    
     const createTournamentButtonSnake = document.getElementById('create-tournament-button-snake');
     const wssocketSnake= `wss://${apiUri}/ws/tournament_snake/`
-    console.log("Socket Snake", socketSnake);
     if(!socketSnake)
     {
         socketSnake = new WebSocket(wssocketSnake);
@@ -233,7 +234,6 @@ export const liveChat = () => {
                 });
             }
         }
-        console.log("Group:", groupName1);
         if (data.action === 'tournament_full_snake' && !groupName1) {
             sessionStorage.setItem("participate", "false");
             sessionStorage.removeItem("participate");
@@ -270,9 +270,10 @@ export const liveChat = () => {
     socketSnake.onerror = function (error) {
         console.error("WebSocket Error:", error);
     };
-
+    
     socketSnake.onclose = function () {
-        
+        console.error("SocketSnake was closed!");
+        socketSnake = null;     
     };
 
 
@@ -368,7 +369,8 @@ export const liveChat = () => {
     };
 
     socketPong.onclose = function () {
-      
+        console.error("SocketPong was closed!");
+        socketPong = null;
     };
     
 
@@ -426,13 +428,14 @@ export const liveChat = () => {
         socketChat.send(JSON.stringify({
             Authorization: jwttoken,
         }));
+        console.log("Authorizing -> ", socketChat)
     };
   
     socketChat.onmessage = function (event) {
+        console.log("Event:", event);
         let confPong = document.getElementById('duel-input-container');
         let confSnake = document.getElementById('duel-input-container-snake');
         const data = JSON.parse(event.data);
-        console.log("Action", data.action);
         const message = data.message
         const firstWord = message.content.split(' ')[0];
         const isOwnMessage = firstWord === nickname;
@@ -440,7 +443,6 @@ export const liveChat = () => {
         addMessage(message.content, isOwnMessage);
         if ((data.action == "duel" || data.action == "duel-snake"))
             {
-            console.log("mandar convit")
             sessionStorage.setItem("duelwait", "true");
             let groupName = message.group_name;
             const chatBox = document.getElementById('chat-box'); 
@@ -482,6 +484,7 @@ export const liveChat = () => {
                 sessionStorage.setItem("groupName", groupName);
                 sessionStorage.setItem("Inviter", "True");
                 navigateTo(`/wait-remote`, sessionStorage.getItem("groupName"));
+                //socketChat.close();
             }
             const timeout = setTimeout(() => {
                 duelMessage.innerHTML = `${translations[savedLanguage].lostInvMsg}`;
@@ -503,6 +506,7 @@ export const liveChat = () => {
                     sessionStorage.setItem("groupName", groupName);
                     clearTimeout(timeout);
                     navigateTo(`/wait-remote`, sessionStorage.getItem("groupName"));
+                    //socketChat.close();
                 });
             }
         }
@@ -513,7 +517,8 @@ export const liveChat = () => {
     };
 
     socketChat.onclose = function () {
-    
+        console.error("socketChat was closed");
+        socketChat = null;
     };
 
     leaveButton.onclick = function () {
@@ -622,7 +627,7 @@ export const liveChat = () => {
                 document.getElementById('duel-player-input-snake').value = ''; 
                 
                 let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
-                
+                console.log("aquiiiiiiiiiii");
                 socketChat.send(JSON.stringify({ action: 'duel-snake', message: duel_message, is_private: true }));
             }
     

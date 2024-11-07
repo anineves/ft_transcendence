@@ -71,6 +71,7 @@ class ChatConsumer(WebsocketConsumer):
         
         message = data["message"]
         sender = self.user.player
+        print(f"Message: {message}")
         if data.get("is_private"):
             self.handle_private_chat(data)
         else:
@@ -95,6 +96,7 @@ class ChatConsumer(WebsocketConsumer):
 
     def handle_private_chat(self, data):
         message = data.get("message")
+        print(f"Data in PrivateChat: {data}")
         #TODO: Handle these three try
         try:
             message_split = message.split(" ", 1)
@@ -119,6 +121,7 @@ class ChatConsumer(WebsocketConsumer):
             return self.send_self_channel_messages("Message was not sent")
         
         if data.get("action") == "duel":
+            print(f"\nInside PongDuel -> player:{self.user.player}\n")
             async_to_sync(self.channel_layer.group_send)(   
                 self.private_group.group_name,
                     {                
@@ -132,6 +135,7 @@ class ChatConsumer(WebsocketConsumer):
                     }
             )
         elif data.get("action") == "duel-snake":
+            print(f"\nInside SnakeDuel -> player:{self.user.player}\n")
             async_to_sync(self.channel_layer.group_send)(   
                 self.private_group.group_name,
                     {                
@@ -145,7 +149,8 @@ class ChatConsumer(WebsocketConsumer):
                     }
             )
         else:
-            async_to_sync(self.channel_layer.group_send)(   
+            print(f"\nInside Common Message -> player:{self.user.player} {self.private_group.group_name}\n")
+            async_to_sync(self.channel_layer.group_send)(
                 self.private_group.group_name,
                     {                
                         "type": "chat.message",
