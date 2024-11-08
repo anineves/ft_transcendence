@@ -647,10 +647,10 @@ function drawScore() {
 
     ctx.font = '16px Arial';
     ctx.fillStyle = 'blue';
-    ctx.fillText(`${player1}: ${snakeOpponent.foodCount}`, 10, 20);
+    ctx.fillText(`${player2}: ${snakeOpponent.foodCount}`, 10, 20);
 
     ctx.fillStyle = 'purple';
-    ctx.fillText(`${player2}: ${snakePlayer.foodCount}`, canvas.width - 200, 20);
+    ctx.fillText(`${player1}: ${snakePlayer.foodCount}`, canvas.width - 200, 20);
 }
 
 export function drawGameOver(playerScore, opponentScore) {
