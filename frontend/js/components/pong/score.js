@@ -88,7 +88,7 @@ export function drawGameOver(playerScore, opponentScore) {
         sessionStorage.setItem('giveUP', 'false')
         
         setTimeout(() => {
-            navigateTo('/game-selection');
+            navigateTo('/live-chat');
         }, 5000);
     }
     else if(modality != 'tournament'){

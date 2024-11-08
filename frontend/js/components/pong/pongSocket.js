@@ -35,7 +35,7 @@ export function initPongSocket(url) {
                 }));
                 console.log("PongSocket 1")
                 ws.close();
-                navigateTo('/game-selection'); 
+                navigateTo('/live-chat'); 
             }, 10000);
         }
     };
@@ -55,7 +55,7 @@ export function initPongSocket(url) {
                     }));
                     console.log("PongSocket 2")
                     ws.close();
-                    navigateTo('/game-selection'); 
+                    navigateTo('/live-chat'); 
                 }, 10000);
             }
         if (data.action == 'full_lobby' && !findOpponent) {

@@ -14,12 +14,12 @@ class ChatConsumer(WebsocketConsumer):
 
 
     def connect(self):
-
         self.global_chat = "global_chat"
         async_to_sync(self.channel_layer.group_add)(
             self.global_chat, self.channel_name
         )
         self.accept()
+      
 
     def disconnect(self, close_code):
         
@@ -60,12 +60,12 @@ class ChatConsumer(WebsocketConsumer):
                         }
                     }   
                 )
-                print(f"Return Authorized")
+                print(f"#########Return Authorized")
+                self.create_private_groups_for_new_player()
                 return
             else:
                 print(f"Return Not Authorized")
                 return self.disconnect(400)
-        
         if data.get('action') == "block" or data.get('action') == "unblock":
             return self.block_player(data.get('player'), data.get('action'))
         
@@ -85,6 +85,15 @@ class ChatConsumer(WebsocketConsumer):
                     }
                 }
             )
+
+    def create_private_groups_for_new_player(self):
+        print("SEEEEEELLLLLFFFFFFFFFFFFFFF")
+        print(self)
+        from_player = self.user.player.id
+        all_players = PlayerChannel.objects.exclude(channel_name=self.channel_name)
+        for player_channel in all_players:
+            to_player = player_channel.player
+            self.get_or_create_new_room(to_player)
 
     def chat_message(self, event):
         message = event["message"]

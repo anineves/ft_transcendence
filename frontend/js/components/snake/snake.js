@@ -1,4 +1,4 @@
-import { initPongSocket } from '../pong/pongSocket.js'
+import { closePongSocket, initPongSocket } from '../pong/pongSocket.js'
 import { showNextMatchButton } from '../pong/pong.js';
 import { endMatch } from '../tournament.js';
 import { navigateTo } from '../../utils.js';
@@ -190,7 +190,7 @@ export const startSnakeGame = async () => {
                 sessionStorage.removeItem("whoGiveUp");
                 sessionStorage.removeItem('findOpponent');
                 sessionStorage.removeItem("duelwait");
-                ws = null;
+                closePongSocket(ws)
             }
 
 
@@ -258,19 +258,7 @@ export const startSnakeGame = async () => {
                 ws.close();
             }
         };
-
-        ws.onclose = () => {
-            document.removeEventListener('keydown', handleKeyPress);
-            ws = null;
-            sessionStorage.removeItem('friendID');
-            sessionStorage.removeItem('playerID');
-            sessionStorage.removeItem('duelGame');
-            sessionStorage.removeItem('players');
-            sessionStorage.removeItem("Inviter");
-            sessionStorage.removeItem('findOpponent');
-            sessionStorage.removeItem("groupName");
-            sessionStorage.setItem('WS', 'clean');
-        };
+    
     }
   
     //sessionStorage.setItem("snakeGame", "true");
@@ -572,16 +560,16 @@ async function drawGame() {
             showNextMatchButton();
         }
         sessionStorage.removeItem("Inviter");
-        sessionStorage.removeItem('findOpponent');
         sessionStorage.removeItem("groupName");
         sessionStorage.removeItem("id_match");
-        sessionStorage.setItem('WS', 'clean');
         sessionStorage.removeItem("duelGame");
+        sessionStorage.setItem('WS', 'clean');
+        sessionStorage.setItem("snakeGame", "false");
+        sessionStorage.removeItem('findOpponent');
         sessionStorage.removeItem("losingSnake");
         sessionStorage.removeItem("duelwait");
-        sessionStorage.setItem("snakeGame", "false");
+        closePongSocket(ws);
 
-        ws = null;
     }
 }
 
@@ -705,7 +693,7 @@ export function stopGame() {
         sessionStorage.setItem('giveUP', 'false')
 
         setTimeout(() => {
-            navigateTo('/game-selection');
+            navigateTo('/live-chat');
         }, 2000);
     }
     else if (modality != 'tournament') {

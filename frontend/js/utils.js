@@ -123,7 +123,7 @@ export const render = () => {
         if (sessionStorage.getItem('modality') == 'remote' && (pong == "true" || snake == "true")) {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
-            navigateTo('/game-selection');
+            navigateTo('/live-chat');
             return;
         }
         if ( pong == "true") {
@@ -218,7 +218,7 @@ window.addEventListener('popstate', () => {
         if (sessionStorage.getItem('modality') == 'remote' && (pong == "true" || snake == "true")) {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
-            navigateTo('/game-selection');
+            navigateTo('/live-chat');
             return;
         }
         if ( pong == "true") {
