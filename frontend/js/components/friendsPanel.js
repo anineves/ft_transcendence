@@ -228,7 +228,7 @@ export const renderPlayerProfile = async () => {
     }
 
     document.getElementById('backBtn').addEventListener('click', () => {
-        navigateTo('/game-selection');
+        navigateTo('/live-chat');
     });
 
     document.getElementById('historyBtn').addEventListener('click', () => {

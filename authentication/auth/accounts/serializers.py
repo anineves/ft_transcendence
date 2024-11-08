@@ -116,7 +116,8 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ['id', 'nickname', 'friendship', 'user', \
-                  'created_at', 'total_winner', 'pong_winner', 'linha_winner', 'status']
+                  'created_at', 'total_winner', 'pong_winner',\
+                  'linha_winner', 'status']
         
         read_only_fields = ['id' ,'created_at', 'user']
 

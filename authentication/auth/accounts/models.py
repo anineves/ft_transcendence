@@ -56,6 +56,7 @@ class Player(models.Model):
     class OnlineStatus(models.TextChoices):
         ONLINE = "ON", _("Online")
         OFFLINE = "OF", _("Offline")
+        IN_GAME = "IG", _("In_Game")
 
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=15, unique=True)

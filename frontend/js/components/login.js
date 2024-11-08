@@ -336,7 +336,7 @@ export const putPlayer = async (status) => {
                 sessionStorage.setItem('playerStatus', playerT.status);
                 
                 checkLoginStatus();
-                navigateTo('/game-selection');
+                //navigateTo('/game-selection');
     
             } else if (user) {
                 //console.log("player not found");

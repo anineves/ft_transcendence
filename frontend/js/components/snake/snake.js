@@ -114,7 +114,8 @@ export const startSnakeGame = async () => {
             groupName = 'snakeGroup';
         const wssocket1 = `wss://${apiUri}/ws/snake_match/${groupName}/`
         ws = initPongSocket(wssocket1);
-        
+        document.removeEventListener('keydown', handleKeyPress);
+        document.removeEventListener('keyup', handleKeyPress);
         if (ws) {
             document.addEventListener('keydown', handleKeyPress);
         }
@@ -264,6 +265,8 @@ export const startSnakeGame = async () => {
     //sessionStorage.setItem("snakeGame", "true");
 
     if (modality2 != 'remote') {
+        document.removeEventListener('keydown', handleKeyPress);
+        document.removeEventListener('keyup', handleKeyPress);
 
         document.addEventListener('keydown', (event) => {
             switch (event.key) {
@@ -687,6 +690,7 @@ export function drawGameOver(playerScore, opponentScore) {
 
 export function stopGame() {
     document.removeEventListener('keydown', handleKeyPress);
+    document.removeEventListener('keyup', handleKeyPress);
     const modality = sessionStorage.getItem('modality');
     clearInterval(gameInterval);
     const giveUp = sessionStorage.getItem('giveUP');

@@ -200,12 +200,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        #'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     )
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=900), #TODO: Change it to 30
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=900),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -216,8 +216,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = False
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'transcendence.school42@gmail.com'
-EMAIL_HOST_PASSWORD = 'lmln pyab glmg izrl'
+EMAIL_HOST_USER = os.getenv('TWOFACTOR_EMAIL', 0)
+EMAIL_HOST_PASSWORD = os.getenv('TWOFACTOR_PW', 0)
 
 #SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 

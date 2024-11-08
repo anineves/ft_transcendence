@@ -1,5 +1,6 @@
 import { navigateTo, checkLoginStatus } from '../utils.js'; 
 import {  initializeTournament} from './tournament.js';
+import { putPlayer } from './login.js';
 const apiUrl = window.config.API_URL;
 const apiUri = window.config.API_URI;
 let socketChat;
@@ -67,7 +68,8 @@ const translations = {
     }
 };
 
-export const liveChat = () => {
+export const liveChat =  () => {
+    putPlayer("ON");
     sessionStorage.removeItem('participate');
     sessionStorage.removeItem('findOpponent');
     sessionStorage.removeItem("groupName");
@@ -162,7 +164,7 @@ export const liveChat = () => {
     const chatBox = document.getElementById('chat-box');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
-    const leaveButton = document.getElementById('leave-button');
+    //const leaveButton = document.getElementById('leave-button');
     const blockButton = document.getElementById('block-button');
     const blockInputContainer = document.getElementById('block-input-container');
     const blockPlayerInput = document.getElementById('block-player-input');
@@ -262,6 +264,7 @@ export const liveChat = () => {
             sessionStorage.setItem('game', "snake");
             if(player == sessionStorage.getItem('playerID') || player == sessionStorage.getItem('friendID'))
             {
+                putPlayer("IG");
                 sessionStorage.setItem('findOpponent', 'true');
                 navigateTo('/snake');
             }
@@ -358,6 +361,7 @@ export const liveChat = () => {
             sessionStorage.setItem('game', "pong");
             if(player == sessionStorage.getItem('playerID') || player == sessionStorage.getItem('friendID'))
             {
+                putPlayer("IG");
                 sessionStorage.setItem('findOpponent', 'true');
                 navigateTo('/pong');
             }
@@ -480,7 +484,7 @@ export const liveChat = () => {
                 sessionStorage.setItem("duelGame", "duel-pong");
             chatBox.appendChild(duelMessage);
             if (user_json.id == message.from_user) {
-                console.log("aqiii")
+                putPlayer("IG");
                 sessionStorage.setItem("groupName", groupName);
                 sessionStorage.setItem("Inviter", "True");
                 navigateTo(`/wait-remote`, sessionStorage.getItem("groupName"));
@@ -500,6 +504,7 @@ export const liveChat = () => {
             
             if (user_json.id != message.from_user) {
                 acceptButton.addEventListener('click', () => {
+                    putPlayer("IG");
                     sessionStorage.setItem("Inviter", "False");
                     sessionStorage.setItem('modality', 'remote');
                     sessionStorage.setItem("groupName", groupName);
@@ -518,9 +523,9 @@ export const liveChat = () => {
     
     };
 
-    leaveButton.onclick = function () {
-        navigateTo('/game-selection');
-    };
+    //leaveButton.onclick = function () {
+    //    navigateTo('/game-selection');
+    //};
 
     blockButton.onclick = function () {
         blockInputContainer.style.display = 'block';
@@ -601,9 +606,12 @@ export const liveChat = () => {
                 document.getElementById('duel-input-container').style.display = 'none'; 
                 document.getElementById('duel-player-input').value = ''; 
                 
-                let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
-                
-                socketChat.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
+                if(playerStatus(playerNickname))
+                {
+                        console.log("Entrei 2", playerStatus(playerNickname));
+                        let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
+                        socketChat.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
+                }
             }
         } else {
             errorliveChat.textContent= `${translations[savedLanguage].fillNickname}`
@@ -620,12 +628,16 @@ export const liveChat = () => {
                 errorliveChat.textContent = `${translations[savedLanguage].yourselfMsg}`;
             }
             else{
+                
                 document.getElementById('duel-input-container-snake').style.display = 'none'; 
                 document.getElementById('duel-player-input-snake').value = ''; 
-                
-                let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
-                
-                socketChat.send(JSON.stringify({ action: 'duel-snake', message: duel_message, is_private: true }));
+                console.log("Check status player 2", playerStatus(playerNickname));
+                if(playerStatus(playerNickname))
+                {
+                    console.log("Entrei 2", playerStatus(playerNickname));
+                    let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
+                    socketChat.send(JSON.stringify({ action: 'duel-snake', message: duel_message, is_private: true }));
+                }
             }
     
         } else {
@@ -634,6 +646,50 @@ export const liveChat = () => {
     });    
     
     
+};
+
+export const playerStatus = async(nickname) => {
+    let errorliveChat = document.getElementById('errorChat');
+    console.log("Entreii player status");
+    
+    const jwttoken = sessionStorage.getItem('jwtToken'); 
+    if (!jwttoken) {
+        console.log("JWT Token is missing");
+        return false; // Retorna falso se o token JWT estiver faltando
+    }
+
+    const urlPlayers = `${apiUrl}/api/players/`;
+    try {
+        const playerResponse = await fetch(urlPlayers, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwttoken}` 
+            }
+        });
+
+        if (playerResponse) {
+            const playerData = await playerResponse.json();
+            const player = playerData.find(p => p.nickname === nickname);
+            
+            if (player) {
+                console.log("playyyer", player);
+                if (player.status == "ON") {
+                    console.log("Entreii player status ONNNNN", player.status);
+                    return true; 
+                    
+                } else {
+                    errorliveChat.textContent = "This player is not available";
+                    console.log("Entreii player status OFFFFFFF", player.status);
+                    return false; 
+                }
+            }
+        } 
+    } catch (error) {
+        console.error('Error fetching player data:', error);
+    }
+
+    return false; // Caso haja erro, assume indisponibilidade
 };
 
 export const closeSocket = () => {
