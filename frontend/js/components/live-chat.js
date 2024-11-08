@@ -252,6 +252,7 @@ export const liveChat = () => {
             const playerIdArray = data.participants.map(participant => participant.id);
             sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
             sessionStorage.setItem('modality', 'remote');
+            //sessionStorage.setItem('findOpponent', 'true');
             sessionStorage.setItem('friendID', playerIdArray[1]);
             sessionStorage.setItem('playerID', playerIdArray[0]);
             if(player == sessionStorage.getItem('playerID'))
@@ -347,7 +348,7 @@ export const liveChat = () => {
             const playerIdArray = data.participants.map(participant => participant.id);
             sessionStorage.setItem('playersInfo', JSON.stringify(data.participants));
             sessionStorage.setItem('modality', 'remote');
-            sessionStorage.setItem('findOpponent', 'true');
+            //sessionStorage.setItem('findOpponent', 'true');
             sessionStorage.setItem('friendID', playerIdArray[1]);
             sessionStorage.setItem('playerID', playerIdArray[0]);
             if(player == sessionStorage.getItem('playerID'))
@@ -357,6 +358,7 @@ export const liveChat = () => {
             sessionStorage.setItem('game', "pong");
             if(player == sessionStorage.getItem('playerID') || player == sessionStorage.getItem('friendID'))
             {
+                sessionStorage.setItem('findOpponent', 'true');
                 navigateTo('/pong');
             }
         }

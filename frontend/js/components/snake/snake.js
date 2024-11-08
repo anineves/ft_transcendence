@@ -150,7 +150,7 @@ export const startSnakeGame = async () => {
                 sessionStorage.removeItem("whoGiveUp");
                 if (ws) {
                     ws.close();
-                    console.log("PongSocket 4")
+                    console.log("SnakeSocket 4")
                 }
                 if (id) {
                     try {
@@ -314,7 +314,7 @@ function handleKeyPress(event) {
     const player = sessionStorage.getItem('player');
     const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
-    if (validKeys.includes(event.key) && ws.readyState === WebSocket.OPEN) {
+    if (validKeys.includes(event.key) && ws != null) {
         ws.send(JSON.stringify({
             'action': 'move_snake',
             'message': {
@@ -520,7 +520,7 @@ async function drawGame() {
         let winner_id = opponent;
         if (ws) {
             ws.close();
-            console.log("PongSocket 4")
+            console.log("SnakeSocket 3")
         }
         if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True'))) {
             if (player) {
@@ -686,6 +686,7 @@ export function drawGameOver(playerScore, opponentScore) {
 }
 
 export function stopGame() {
+    document.removeEventListener('keydown', handleKeyPress);
     const modality = sessionStorage.getItem('modality');
     clearInterval(gameInterval);
     const giveUp = sessionStorage.getItem('giveUP');

@@ -450,46 +450,61 @@ export function initialize() {
             }
         });
     }
-    else if (modality2 == 'remote') {
-        const playerID = sessionStorage.getItem('player');
-        const friendID = sessionStorage.getItem('friendID');
-        document.addEventListener('keydown', function (event) {
-            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                if (wsPong) {
-                    wsPong.send(JSON.stringify({
-                        'action': 'move_paddle',
-                        'message': {
-                            'user': playerID,
-                            'key': event.key
-                        }
-                    }));
-                }
-            }
-        });
-        document.addEventListener('keyup', function (event) {
-            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                if (wsPong) {
-                    wsPong.send(JSON.stringify({
-                        'action': 'stop_paddle',
-                        'message': {
-                            'user': playerID,
-                            'key': event.key
-                        }
-                    }));
-                }
-            }
-        });
+    else if (modality2 == 'remote' && wsPong) {
+        console.log("pongSnakeee", wsPong);
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
+
+       
     }
     gameLoop();
 }
 
 export function stopGame() {
-    
+
+    document.removeEventListener('keydown', keyDownHandler);
+    document.removeEventListener('keyup', keyUpHandler);
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
     }
 }
+
+export function keyDownHandler(event) {
+    const playerID = sessionStorage.getItem('player');
+    const friendID = sessionStorage.getItem('friendID');
+    if (['ArrowUp', 'ArrowDown'].includes(event.key) && wsPong) {
+        wsPong.send(JSON.stringify({
+            'action': 'move_paddle',
+            'message': {
+                'user': playerID,
+                'key': event.key
+            }
+        }));
+    }
+}
+export function keyUpHandler(event) {
+    const playerID = sessionStorage.getItem('player');
+    const friendID = sessionStorage.getItem('friendID');
+    if (['ArrowUp', 'ArrowDown'].includes(event.key) && wsPong) {
+        wsPong.send(JSON.stringify({
+            'action': 'stop_paddle',
+            'message': {
+                'user': playerID,
+                'key': event.key
+            }
+        }));
+    }
+}
+
+//export function stopGame() {
+//    document.removeEventListener('keydown', keyDownHandler);
+//    document.removeEventListener('keyup', keyUpHandler);
+//    if (animationFrameId) {
+//        cancelAnimationFrame(animationFrameId);
+//        animationFrameId = null;
+//    }
+//}
 
 export function resetGameState() {
     playerScore = 0;
