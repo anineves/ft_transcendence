@@ -14,12 +14,12 @@ class ChatConsumer(WebsocketConsumer):
 
 
     def connect(self):
-
         self.global_chat = "global_chat"
         async_to_sync(self.channel_layer.group_add)(
             self.global_chat, self.channel_name
         )
         self.accept()
+      
 
     def disconnect(self, close_code):
         
@@ -47,9 +47,7 @@ class ChatConsumer(WebsocketConsumer):
         data = json.loads(text_data)
 
         if data.get('Authorization'):
-            print("Authorization")
             user = handle_authentication(self, data.get('Authorization'))
-            print(f"Authorization User {user}")
             if user:
                 async_to_sync(self.channel_layer.group_send)(
                     self.global_chat, 
@@ -60,12 +58,10 @@ class ChatConsumer(WebsocketConsumer):
                         }
                     }   
                 )
-                print(f"Return Authorized")
+                self.create_private_groups_for_new_player()
                 return
             else:
-                print(f"Return Not Authorized")
                 return self.disconnect(400)
-        
         if data.get('action') == "block" or data.get('action') == "unblock":
             return self.block_player(data.get('player'), data.get('action'))
         
@@ -85,6 +81,13 @@ class ChatConsumer(WebsocketConsumer):
                 }
             )
 
+    def create_private_groups_for_new_player(self):
+        from_player = self.user.player.id
+        all_players = PlayerChannel.objects.exclude(channel_name=self.channel_name)
+        for player_channel in all_players:
+            to_player = player_channel.player
+            self.get_or_create_new_room(to_player)
+
     def chat_message(self, event):
         message = event["message"]
         action = event.get("action")
@@ -95,7 +98,6 @@ class ChatConsumer(WebsocketConsumer):
 
     def handle_private_chat(self, data):
         message = data.get("message")
-        #TODO: Handle these three try
         try:
             message_split = message.split(" ", 1)
             nickname = message_split[0][1:]
@@ -145,7 +147,7 @@ class ChatConsumer(WebsocketConsumer):
                     }
             )
         else:
-            async_to_sync(self.channel_layer.group_send)(   
+            async_to_sync(self.channel_layer.group_send)(
                 self.private_group.group_name,
                     {                
                         "type": "chat.message",
@@ -194,7 +196,7 @@ class ChatConsumer(WebsocketConsumer):
         try:
             player_to_block = Player.objects.get(nickname=nickname)
         except Player.DoesNotExist:
-            return self.send_self_channel_messages("Player does not exist") #TODO Second time I use it. Maybe a new method
+            return self.send_self_channel_messages("Player does not exist")
         
         if self.user.player.nickname == nickname:
            return self.send_self_channel_messages(f"You cannot block yourself")
@@ -257,7 +259,6 @@ class PongConsumer(WebsocketConsumer):
                 return self.disconnect(400)
         
         if data.get('action') == 'end_game':
-            print("EndGame Pong")
             return self.disconnect(401)
 
         if data.get('action') == 'player_disconnect':
@@ -459,11 +460,9 @@ class SnakeConsumer(WebsocketConsumer):
             self.match_group.group_name, self.channel_name
         )
         if close_code == 401:
-            print(f"Called 401 (delete): {self.user.player} | {self.match_group} ")
             self.match_group.delete()
 
         if close_code == 1001:
-            print(f"Called 1001 (save): {self.user.player} | {self.match_group} ")
             self.match_group.is_active = False
             self.match_group.save()
         
@@ -481,7 +480,6 @@ class SnakeConsumer(WebsocketConsumer):
                 return self.disconnect(400)
 
         if data.get('action') == 'end_game':
-            print
             return self.disconnect(401)
     
         if data.get('action') == 'player_disconnect':
@@ -496,7 +494,6 @@ class SnakeConsumer(WebsocketConsumer):
         )
         elif data.get('action') != None:
             message = data.get('message')
-            print(f"Calling random action {message}")
             async_to_sync(self.channel_layer.group_send)(
                 self.match_group.group_name, 
                 {
@@ -529,7 +526,6 @@ class SnakeConsumer(WebsocketConsumer):
                 group_name=self.snake_match
             )
             if created:
-                print(f"Created -> Player:{player} - self.match_group: {self.match_group}")
                 self.match_group.player = player
                 async_to_sync(self.channel_layer.group_add)(
                     self.match_group.group_name, self.channel_name)
@@ -552,7 +548,6 @@ class SnakeConsumer(WebsocketConsumer):
                 )
             self.match_group.save()
         except ValidationError as e:
-            print(f"ValidationError -> Error:{e} | Player: {player}")
             self.send_self_channel_messages("failed_match")
         return
 

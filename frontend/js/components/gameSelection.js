@@ -61,15 +61,11 @@ export const renderGameSelection = async () => {
                                 navigateTo('/create-player');
                                 return;
                             }
-                        } else {
-                            console.log("error loading players");
-                        }
+                        } 
                     } catch (error) {
                         console.error('Error', error);
                     }
                     checkLoginStatus();
-                } else {
-                    console.log('OAuth login failed', data);
                 }
             } catch (error) {
                 console.error('Error:', error);

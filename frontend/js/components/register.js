@@ -14,13 +14,15 @@ export const renderRegister = () => {
             pass: "Password",
             confirmPass: "Confirm Password",
             submit: "Register",
-            errorFirstName: "First name must contain only letters, numbers, and the '-' symbol.", 
-            errorLastName: "Last name must contain only letters, numbers, and the '-' symbol.", 
-            errorUsername: "Username must contain only letters, numbers, and the '-' symbol.", 
+            errorFirstName: "First name must contain only letters, numbers, and the '-' symbol and less than 25 characters.", 
+            errorLastName: "Last name must contain only letters, numbers, and the '-' symbol and less than 25 characters.", 
+            errorUsername: "Username must contain only letters, numbers, and the '-' symbol and less than 25 characters.", 
             errorEmail: "Email must be valid.",
-            errorPassword: "Password must be at least 8 characters long, including at least one uppercase letter, one lowercase letter, one digit, and a special character _, - or @; other special characters will not be accepted.",
+            errorPassword: "The password must contain between 8 and 25 characters, including at least one uppercase letter, one lowercase letter, one digit and one special character _, - or @, other special characters will not be accepted.",
             errorRepeatPassword: "Passwords do not match.",
-            errorEmailGeneral: "This e-mail already exist!"
+            errorEmailGeneral: "This e-mail already exist!",
+            errorextension: "Please upload a PNG or JPG file.",
+            
         },
         portuguese: {
             register: "Registar",
@@ -31,13 +33,14 @@ export const renderRegister = () => {
             pass: "Palavra-passe",
             confirmPass: "Confirmar Palavra-passe",
             submit: "Registar",
-            errorFirstName: "O primeiro nome deve conter apenas letras, números e o símbolo '-'.", 
-            errorLastName: "Sobrenome deve conter apenas letras, números e o símbolo '-'.", 
-            errorUsername: "O username deve conter apenas letras, números e o símbolo '-'.", 
+            errorFirstName: "O primeiro nome deve conter apenas letras, números e o símbolo '-' e menos de 25 caracteres", 
+            errorLastName: "Sobrenome deve conter apenas letras, números e o símbolo '-' e menos de 25 caracteres.", 
+            errorUsername: "O username deve conter apenas letras, números e o símbolo '-' e menos de 25 caracteres.", 
             errorEmail: "O e-mail deve ser válido.",
-            errorPassword: "A palavra-passe deve conter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um dígito e um caracter especial _, - ou @, outros caracteres especiais não serão aceites.",
+            errorPassword: "A palavra-passe deve conter entre 8 e 25 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um dígito e um caracter especial _, - ou @, outros caracteres especiais não serão aceites.",
             errorRepeatPassword: "As palavras-passe não coincidem.",
-            errorEmailGeneral: "Este e-mail já existe!"
+            errorEmailGeneral: "Este e-mail já existe!",
+            errorextension: "Por favor, envie um arquivo PNG ou JPG.",
         },
         french: {
             register: "S'inscrire",
@@ -48,13 +51,14 @@ export const renderRegister = () => {
             pass: "Mot de passe",
             confirmPass: "Confirmer le mot de passe",
             submit: "S'inscrire",
-            errorFirstName: "Le prénom doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
-            errorLastName: "Le nom de famille doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
-            errorUsername: "Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
+            errorFirstName: "Le prénom doit contenir uniquement des lettres, des chiffres et le symbole '-' et moins de 25 caractères.", 
+            errorLastName: "Le nom de famille doit contenir uniquement des lettres, des chiffres et le symbole '-' et moins de 25 caractères.", 
+            errorUsername: "Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et le symbole '-' et moins de 25 caractères.", 
             errorEmail: "L'e-mail doit être valide.",
-            errorPassword: "Le mot de passe doit contenir au moins 8 caractères, y compris au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial _, - ou @, d'autres caractères spéciaux ne seront pas acceptés.",
+            errorPassword: "Le mot de passe doit contenir entre 8 et 25 caractères, dont au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial _, - ou @, les autres caractères spéciaux ne seront pas acceptés.",
             errorRepeatPassword: "Les mots de passe ne correspondent pas.",
-            errorEmailGeneral: "Cet e-mail existe déjà!"
+            errorEmailGeneral: "Cet e-mail existe déjà!",
+            errorextension: "Veuillez télécharger un fichier PNG ou JPG.",
         }
     };
     
@@ -115,32 +119,42 @@ export const renderRegister = () => {
         const nameRegex = /^[a-zA-Z0-9-]+$/; 
         let valid = true;
     
-        if (!passwordRegex.test(password)) {
+        if (!passwordRegex.test(password) || password.length > 25) {
             passwordError.textContent = `${translations[savedLanguage].errorPassword}`
             valid = false; 
         }
     
   
-        if (password !== password2) {
+        if (password !== password2 || password.length > 25) {
             confirmPasswordError.textContent = `${translations[savedLanguage].errorRepeatPassword}`
             valid = false;
         }
     
         if (!valid) return;
-        if (!nameRegex.test(firstName)) {
+        if (!nameRegex.test(firstName) || firstName > 29) {
             passwordError.textContent += `${translations[savedLanguage].errorFirstName}`;
             valid = false;
         }
    
-        if (!nameRegex.test(lastName)) {
+        if (!nameRegex.test(lastName) || lastName > 29) {
             passwordError.textContent += `${translations[savedLanguage].errorLastName}`;
             valid = false;
         }
     
 
-        if (!nameRegex.test(username)) {
+        if (!nameRegex.test(username) || username > 29) {
             passwordError.textContent += `${translations[savedLanguage].errorUsername}`;
             valid = false;
+        }
+        if (avatar) {
+            const fileName = avatar.name;
+            const fileExtension = fileName.split('.').pop().toLowerCase();
+            
+            if (fileExtension !== 'png' && fileExtension !== 'jpg' && fileExtension !== 'jpeg') 
+            {
+                passwordError.textContent += `${translations[savedLanguage].errorextension}`;
+                valid = false;
+            }
         }
     
    
@@ -203,11 +217,11 @@ export const renderRegister = () => {
                     checkLoginStatus(); 
                     navigateTo('/create-player', data);  // Redireciona para a próxima página após login
                 } else {
-                    console.log('Login after registration failed: ' + JSON.stringify(loginData));
+                   // console.log('Login after registration failed: ' + JSON.stringify(loginData));
                 }
             } else {
                 passwordError.textContent += `${translations[savedLanguage].errorEmailGeneral}`;
-                console.log('Registration failed: ' + JSON.stringify(data));
+                //console.log('Registration failed: ' + JSON.stringify(data));
             }
         } catch (error) {
             console.error('Error:', error);

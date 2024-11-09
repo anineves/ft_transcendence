@@ -79,14 +79,15 @@ export const renderRequestPanel = () => {
                 const data = await response.json();
                 const receivedRequestsList = document.getElementById('receivedRequestsList');
                 const sentRequestsList = document.getElementById('sentRequestsList');
-
+                const nickname2 = sessionStorage.getItem('nickname');
+                const nickname = nickname2.replace(/^"|"$/g, '');
                 receivedRequestsList.innerHTML = '';
                 sentRequestsList.innerHTML = '';
-
+                
                 data.forEach(request => {
                     const listItem = document.createElement('li');
                     listItem.textContent = `${request.sender} ${translations[savedLanguage].recvMsg}`;
-                    if (request.invited === user.username) {
+                    if (request.invited === nickname) {
                         const acceptButton = document.createElement('button');
                         acceptButton.textContent = `${translations[savedLanguage].acceptBtn}`;
                         acceptButton.addEventListener('click', () => handleFriendRequest(request.id, true));
@@ -98,13 +99,13 @@ export const renderRequestPanel = () => {
                         listItem.appendChild(acceptButton);
                         listItem.appendChild(rejectButton);
                         receivedRequestsList.appendChild(listItem);
-                    } else if (request.sender === user.username) {
+                    } else if (request.sender === nickname) {
                         listItem.textContent = `${translations[savedLanguage].sendMsg} ${request.invited}`;
                         sentRequestsList.appendChild(listItem);
                     }
                 });
             } else {
-                console.log('Failed to load friend requests.');
+                //console.log('Failed to load friend requests.');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -127,7 +128,7 @@ export const renderRequestPanel = () => {
             if (response.ok) {
                 displayRequests();  
             } else {
-                console.log('Failed to update friend request.');
+                //console.log('Failed to update friend request.');
             }
         } catch (error) {
             console.error('Error:', error);

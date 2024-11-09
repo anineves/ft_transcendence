@@ -42,11 +42,8 @@ export function initPongSocket(url) {
     ws.onmessage = (event) => {
     
         let data = JSON.parse(event.data)
-        
-        console.log('Data:', data)
-
         if (data.action === 'match_created') {
-            console.log(`Match created with ID: ${data.match_id}`);
+            //console.log(`Match created with ID: ${data.match_id}`);
         }
         let invitedTimeout = null;
         if(inviter != "True" && modality2 == 'remote' && !findOpponent)
@@ -81,15 +78,14 @@ export function initPongSocket(url) {
     }
     ws.onclose = () => {
         ws = null;
+        //console.log("Closing in InitPocket")
     };
     return ws;
 }
 
 export function closePongSocket(ws) {
     if (ws && ws.readyState === WebSocket.OPEN) {
+        //console.log("PongSocket 3")
         ws.close();  
     }
-    ws.onclose = () => {
-        ws = null;
-    };
 }

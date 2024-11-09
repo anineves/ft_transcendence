@@ -1,4 +1,5 @@
 import { navigateTo, checkLoginStatus } from '../utils.js';
+import { closeSocket, playerStatus } from './live-chat.js';
 const apiUrl = window.config.API_URL;
 const translations = {
     english: {
@@ -10,7 +11,7 @@ const translations = {
         errorLogin: "There is no user created with this data",
         errorUsername: "There is no user created with this data,Username must contain only letters, numbers, and the '-' symbol.", 
         errorPassword: "Password must be at least 8 characters long, including at least one uppercase letter, one lowercase letter, one digit, and a special character _, - or @; other special characters will not be accepted.",
-        errorWrongPassword: "Wrong password."
+        errorWrongPassword: "Wrong password.",
     },
     portuguese: {
         login: "Entrar",
@@ -40,6 +41,7 @@ const translations = {
 
 };
 export const renderLogin = () => {
+    closeSocket();
     let savedLanguage = localStorage.getItem('language');
 
 
@@ -99,7 +101,7 @@ export const renderLogin = () => {
             passwordError.textContent += `${translations[savedLanguage].errorPassword}`
             valid = false; 
         }
-       
+        if(emailRegex.le)
 
         if (!valid) return;
         const apiUrl = window.config.API_URL;
@@ -177,7 +179,7 @@ export const renderLogin = () => {
                                 return;
                             }
                         } else {
-                            console.log("error loading players");
+                            //console.log("error loading players");
                         }
                     } catch (error) {
                         console.error('Error', error);
@@ -215,9 +217,9 @@ const showCodeForm = async () => {
             });
 
             if (response.ok) {
-                // showCodeForm(emailOrUsername, password); #TODO: POST twice to OTP
+                // showCodeForm(emailOrUsername, password);
             } else {
-                console.log('Failed to send verification code.1');
+                //console.log('Failed to send verification code.1');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -289,7 +291,7 @@ const showCodeForm = async () => {
                             return;
                         }
                     } else {
-                        console.log("error loading players");
+                        //console.log("error loading players");
                     }
                 } catch (error) {
                     console.error('Error', error);
@@ -299,7 +301,7 @@ const showCodeForm = async () => {
                 sessionStorage.setItem('firtChat', 'true');
                 navigateTo('/game-selection', data); 
             } else {
-                console.log('Failed to send verification code.2');
+                //('Failed to send verification code.2');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -331,13 +333,14 @@ export const putPlayer = async (status) => {
         
             if (playerInfo.ok) {
                 const playerT = await playerInfo.json();
+                //console.log("Player Status: ", playerT.status);
                 sessionStorage.setItem('playerStatus', playerT.status);
                 
                 checkLoginStatus();
-                navigateTo('/game-selection');
+                //navigateTo('/game-selection');
     
             } else if (user) {
-                console.log("player not found");
+                //console.log("player not found");
             }
         } catch (error) {
             console.error('Error:', error);

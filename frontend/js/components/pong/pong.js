@@ -67,10 +67,10 @@ export const startPongGame = async () => {
 
                 const data = await response.json();
                 if (data) {
-                    console.log('Match created successfully:', data);
+                    //console.log('Match created successfully:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
-                    console.log('Match error', data);
+                    //console.log('Match error', data);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -83,8 +83,6 @@ export const startPongGame = async () => {
             groupName = 'pongGroup';
         const initws = `wss://${apiUri}/ws/pong_match/${groupName}/`
         wsPong = initPongSocket(initws);
-        console.log("wsPong", wsPong);
-        
         wsPong.onmessage = async (event) => {
             const data = JSON.parse(event.data);
             if(data.action == 'player_disconnect')
@@ -104,10 +102,12 @@ export const startPongGame = async () => {
             stopGame();
             const id = sessionStorage.getItem('id_match');
             let winner_id = opponent;
+            if (wsPong) {
+                wsPong.close();
+            }
             if (id)  {
                 try {
-                    wsPong = null;
-        
+
                     let whoGiveUp = sessionStorage.getItem('whoGiveUp')
                     if(whoGiveUp)
                         opponentScore = 5;
@@ -129,9 +129,9 @@ export const startPongGame = async () => {
                     });
                     const data = await response.json();
                     if (response.ok) {
-                        console.log('Match updated successfully:', data);
+                        //console.log('Match updated successfully:', data);
                     } else {
-                        console.log('Error updating match:', data);
+                       // console.log('Error updating match:', data);
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
@@ -145,7 +145,7 @@ export const startPongGame = async () => {
             sessionStorage.removeItem("duelGame");
             sessionStorage.removeItem("whoGiveUp");
             sessionStorage.removeItem('findOpponent');
-            wsPong =  null;
+            sessionStorage.removeItem("duelwait");
             }
             if (data.action === 'ball_track') {
                 ballX = data.message.ball_x;
@@ -373,6 +373,10 @@ export function initialize() {
             stopGame();
             const id = sessionStorage.getItem('id_match');
             let winner_id = opponent;
+            if (wsPong) {
+                wsPong.close();
+            }
+            
             if (player && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')))  {
                 try {
                     if(modality2 == 'remote')
@@ -393,9 +397,9 @@ export function initialize() {
                     });
                     const data = await response.json();
                     if (response.ok) {
-                        console.log('Match updated successfully:', data);
+                        //console.log('Match updated successfully:', data);
                     } else {
-                        console.log('Error updating match:', data);
+                       // console.log('Error updating match:', data);
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
@@ -412,7 +416,8 @@ export function initialize() {
             sessionStorage.setItem('WS', 'clean');
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.removeItem('findOpponent');
-            wsPong =  null;
+            sessionStorage.removeItem("duelwait");
+            closePongSocket(wsPong);
         }
     }
 
@@ -443,47 +448,60 @@ export function initialize() {
             }
         });
     }
-    else if (modality2 == 'remote') {
-        console.log("Entreiieieieiei")
-        const playerID = sessionStorage.getItem('player');
-        const friendID = sessionStorage.getItem('friendID');
-        document.addEventListener('keydown', function (event) {
-            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                if (wsPong) {
-                    wsPong.send(JSON.stringify({
-                        'action': 'move_paddle',
-                        'message': {
-                            'user': playerID,
-                            'key': event.key
-                        }
-                    }));
-                }
-            }
-        });
-        document.addEventListener('keyup', function (event) {
-            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                if (wsPong) {
-                    wsPong.send(JSON.stringify({
-                        'action': 'stop_paddle',
-                        'message': {
-                            'user': playerID,
-                            'key': event.key
-                        }
-                    }));
-                }
-            }
-        });
+    else if (modality2 == 'remote' && wsPong) {
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
+
+       
     }
     gameLoop();
 }
 
 export function stopGame() {
-    
+
+    document.removeEventListener('keydown', keyDownHandler);
+    document.removeEventListener('keyup', keyUpHandler);
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
     }
 }
+
+export function keyDownHandler(event) {
+    const playerID = sessionStorage.getItem('player');
+    const friendID = sessionStorage.getItem('friendID');
+    if (['ArrowUp', 'ArrowDown'].includes(event.key) && wsPong) {
+        wsPong.send(JSON.stringify({
+            'action': 'move_paddle',
+            'message': {
+                'user': playerID,
+                'key': event.key
+            }
+        }));
+    }
+}
+export function keyUpHandler(event) {
+    const playerID = sessionStorage.getItem('player');
+    const friendID = sessionStorage.getItem('friendID');
+    if (['ArrowUp', 'ArrowDown'].includes(event.key) && wsPong) {
+        wsPong.send(JSON.stringify({
+            'action': 'stop_paddle',
+            'message': {
+                'user': playerID,
+                'key': event.key
+            }
+        }));
+    }
+}
+
+//export function stopGame() {
+//    document.removeEventListener('keydown', keyDownHandler);
+//    document.removeEventListener('keyup', keyUpHandler);
+//    if (animationFrameId) {
+//        cancelAnimationFrame(animationFrameId);
+//        animationFrameId = null;
+//    }
+//}
 
 export function resetGameState() {
     playerScore = 0;

@@ -19,6 +19,8 @@ from datetime import timedelta
 from django.utils import timezone
 from django.core.mail import send_mail
 
+from .set_avatar_path import set_avatar_path
+
 
 class UserRegister(viewsets.ViewSet):
     def create(self, request):
@@ -86,6 +88,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             if request.data.get('otp', None) != user.otp:
                 return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
+        path = user.avatar.url if user.avatar else None
+        absolute_url = set_avatar_path(path)
         refresh = RefreshToken.for_user(user)
         response_data = {
             'refresh': str(refresh),
@@ -96,8 +100,9 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'avatar': request.build_absolute_uri(user.avatar.url).replace("http://", "https://") if user.avatar else None,
-                'otp_agreement': user.otp_agreement
+                'avatar': absolute_url,
+                'otp_agreement': user.otp_agreement,
+                'ft_student': user.ft_student,
             }
         }
         return Response(response_data, status=status.HTTP_200_OK)
@@ -179,6 +184,7 @@ class PlayerDetail(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Player.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
     def put(self, request, pk):
         try:
             player = Player.objects.get(id=pk)
@@ -245,6 +251,7 @@ class RespondFriendRequest(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, pk):
         invited_player = request.user.player
+        answer = request.data.get('accepted')
         try:
             friend_request = FriendRequest.objects.select_related(
                 'sender', 
@@ -253,24 +260,27 @@ class RespondFriendRequest(APIView):
         except:
             raise Http404('Friend Request was not found')
         if friend_request.invited == invited_player:
-            invited_player.friends.add(friend_request.sender)
-            friend_request.sender.friends.add(invited_player)
-            friend_request.delete()
-            return Response(data={'Friend request accepted'}, status=status.HTTP_204_NO_CONTENT)
+            if answer == True:
+                invited_player.friends.add(friend_request.sender)
+                friend_request.sender.friends.add(invited_player)
+                friend_request.delete()
+                return Response(data={'Friend request accepted'}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                friend_request.delete()
+                return Response(data={'Friend request rejected'}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(data={'Not allowed'}, status=status.HTTP_403_FORBIDDEN)
 
 
-# Tem que sair daqui
 def oauth_login(request):
+    host = os.getenv('MAIN_HOST', 0)
     authorization_url = 'https://api.intra.42.fr/oauth/authorize'
-    redirect_uri = 'https://10.0.2.15:8080/game-selection' 
+    redirect_uri = f'https://{host}:8443/game-selection' 
     client_id = os.getenv('CLIENT_ID')
     
     return redirect(f'{authorization_url}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code')
 
 
-# Tem que sair daqui
 @api_view(['POST'])
 def oauth_callback(request):
     code = request.data.get('code')
@@ -284,7 +294,7 @@ def oauth_callback(request):
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
         refresh_token = str(refresh)
-        avatar_url = user.avatar.url.replace('/media/https%3A/', 'https://')
+        avatar_url = user.avatar.url.replace('/media/https%3A/', 'https://') if user.avatar else None
 
         response_data = {
             'access_token': access_token,
@@ -296,6 +306,7 @@ def oauth_callback(request):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'avatar': avatar_url,
+                'ft_student': user.ft_student,
             }
         }
         return Response(response_data, status=status.HTTP_201_CREATED)

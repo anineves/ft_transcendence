@@ -1,6 +1,7 @@
 import { navigateTo, checkLoginStatus, logout } from '../utils.js';
 import { renderFriendsPage } from './friendsPage.js';
 const apiUrl = window.config.API_URL;
+
 const translations = {
     english: {
         title: "User Profile",
@@ -24,7 +25,8 @@ const translations = {
         errorFirstName: "First name must contain only letters, numbers, and the '-' symbol.", 
         errorLastName: "Last name must contain only letters, numbers, and the '-' symbol.", 
         errorUsername: "Username must contain only letters, numbers, and the '-' symbol.", 
-         errorEmail: "Email must be valid.",
+        errorEmail: "Email must be valid.",
+        errorextension: "Please upload a PNG or JPG file.",
     },
     portuguese: {
         title: "Perfil do Usuário",
@@ -49,6 +51,7 @@ const translations = {
         errorLastName: "Sobrenome deve conter apenas letras, números e o símbolo '-'.", 
         errorUsername: "O username deve conter apenas letras, números e o símbolo '-'.", 
         errorEmail: "O e-mail deve ser válido.",
+        errorextension: "Por favor, envie um arquivo PNG ou JPG.",
         
     },
     french: {
@@ -74,22 +77,25 @@ const translations = {
         errorLastName: "Le nom de famille doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
         errorUsername: "Le nom d'utilisateur doit contenir uniquement des lettres, des chiffres et le symbole '-'.", 
         errorEmail: "L'e-mail doit être valide.",
+        errorextension: "Veuillez télécharger un fichier PNG ou JPG.",
     }
 };
 
 
-let savedLanguage = localStorage.getItem('language');
-
-
-if (!savedLanguage || !translations[savedLanguage]) {
-    savedLanguage = 'english';
-}
-;
 
 export const renderPanel = async (user) => {
+    let savedLanguage = localStorage.getItem('language');
+    
+    
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english';
+    }
+    ;
     const app = document.getElementById('app');
     const defaultAvatar = '../../assets/avatar.png';
-    const avatarUrl = user.avatar || defaultAvatar;
+    let avatarUrl = user.avatar || defaultAvatar;
+    if (user.avatar && !user.ft_student) 
+        avatarUrl = `${avatarUrl}?${new Date().getTime()}`
     const player = JSON.parse(sessionStorage.getItem('playerInfo'));
     const nickname = sessionStorage.getItem('nickname') || 'N/A';
    
@@ -99,7 +105,7 @@ export const renderPanel = async (user) => {
             <h2>${translations[savedLanguage].title}</h2>
             <div class="profile-content">
                 <div class="info">
-                <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="user-avatar" class="avatar">
+                <img id="avatarImg" src="${avatarUrl}" alt="user-avatar" class="avatar">
                         <h2 id="editBtn2">                        <i class="fas fa-pencil-alt"></i></h2>
                         <p><strong>${translations[savedLanguage].user}:</strong> ${user.username}</p>
                         <p><strong>${translations[savedLanguage].nick}:</strong> ${nickname}</p>
@@ -143,7 +149,13 @@ export const renderPanel = async (user) => {
         try {
             const apiUrl = window.config.API_URL;
             const urlMatches = `${apiUrl}/api/matches/`;
-            const response = await fetch(urlMatches);
+            const response = await fetch(urlMatches,{
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             const matches = await response.json();
 
             let pongWins = 0;
@@ -201,8 +213,6 @@ export const renderPanel = async (user) => {
             document.getElementById('statsBtn').addEventListener('click', () => {
                 navigateTo('/stats');
             });
-        
-            
         } catch (error) {
             console.error('Falha ao buscar partidas:', error);
         }
@@ -248,6 +258,13 @@ const handleSendMessage = () => {
 
 
 const handleUpdateOtp = async (user) => {
+    let savedLanguage = localStorage.getItem('language');
+    
+    
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english';
+    }
+    ;
     let otp_agreement = user.otp_agreement; // Verifica o estado atual de OTP
     otp_agreement = !otp_agreement // Alterna entre verdadeiro e falso
 
@@ -270,7 +287,7 @@ const handleUpdateOtp = async (user) => {
             checkLoginStatus();
             navigateTo('/user-panel', data);
         } else {
-            console.log('Update failed: ' + JSON.stringify(data));
+            //console.log('Update failed: ' + JSON.stringify(data));
         }
     } catch (error) {
         console.error('Error:', error);
@@ -280,6 +297,13 @@ const handleUpdateOtp = async (user) => {
 
 const handleUpdateProfile = async (e, user) => {
     e.preventDefault();
+    let savedLanguage = localStorage.getItem('language');
+    
+    
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english';
+    }
+    ;
 
     const formData = new FormData();
     const avatarFile = document.getElementById('updateAvatar').files[0];
@@ -296,6 +320,20 @@ const handleUpdateProfile = async (e, user) => {
         updateError.textContent += `${translations[savedLanguage].errorLastName}`;
         valid = false;
     }
+    if (avatarFile) {
+        const fileName = avatarFile.name;
+        const fileExtension = fileName.split('.').pop().toLowerCase();
+        
+        if (fileExtension != 'png' && fileExtension != 'jpg' && fileExtension != 'jpeg') 
+        {
+            updateError.textContent += `${translations[savedLanguage].errorextension}`;
+            valid = false;
+        }
+        else{
+            formData.append('avatar', avatarFile)
+        }
+    }
+    
     if (!valid)
         return;
     if (removeAvatar) {
@@ -303,8 +341,6 @@ const handleUpdateProfile = async (e, user) => {
         sessionStorage.setItem('removeAvatar', 'false'); 
     }
 
-    if (avatarFile) 
-        formData.append('avatar', avatarFile);
     if (firstName) 
         formData.append('first_name', firstName);
     if (lastName) 

@@ -27,11 +27,13 @@ SECRET_KEY =  os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.getenv('DEBUG',0)))
 
-ALLOWED_HOSTS = [
-    h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')
-    if h.strip()
-]
+# ALLOWED_HOSTS = [
+#     h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')
+#     if h.strip()
+# ]
 
+
+ALLOWED_HOSTS = [ os.getenv('MAIN_HOST', '') ]
 
 # Application definition
 
@@ -65,12 +67,14 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
+host = os.getenv('MAIN_HOST', 0)
+
 CORS_ALLOWED_ORIGINS =[
     'http://localhost:5500',
     'http://127.0.0.1:5500',
     'https://localhost:8080',
     'https://127.0.0.1:8080',
-    'https://10.0.2.15:8080',
+    f'https://{host}:8443',
 ]
 
 
@@ -108,25 +112,14 @@ LOGOUT_REDIRECT_URL = "index"
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-#DATABASES = {
-#   'default': {
-#       'ENGINE': 'django.db.backends.sqlite3',
-#       'NAME': BASE_DIR / 'db.sqlite3',
-#   }
-#}
-
-
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE', 'change-me'),
-        'NAME': os.getenv('POSTGRES_DB', 'change-me'),
-        'USER': os.getenv('POSTGRES_USER', 'change-me'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'change-me'),
-        'HOST': os.getenv('POSTGRES_HOST', 'change-me'),
-        'PORT': os.getenv('POSTGRES_PORT', 'change-me'),
+        'ENGINE': os.getenv('DB_ENGINE', 'default'),
+        'NAME': os.getenv('POSTGRES_DB', 'default'),
+        'USER': os.getenv('POSTGRES_USER', 'default'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'default'),
+        'HOST': os.getenv('POSTGRES_HOST', 'default'),
+        'PORT': os.getenv('POSTGRES_PORT', 'default'),
     }
 }
 
@@ -201,7 +194,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=900), #TODO: Change it to 30
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=900),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -212,13 +205,14 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = False
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'transcendence.school42@gmail.com'
-EMAIL_HOST_PASSWORD = 'lmln pyab glmg izrl'
+EMAIL_HOST_USER = os.getenv('TWOFACTOR_EMAIL', 0)
+EMAIL_HOST_PASSWORD = os.getenv('TWOFACTOR_PW', 0)
 
-#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Defina para True se o site estiver em produção com HTTPS
-#SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = True
 
 # Certifique-se de que o middleware de CSRF funciona corretamente com WebSockets
-CSRF_TRUSTED_ORIGINS = ['https://10.0.2.15']  
+host = os.getenv('MAIN_HOST', 0)
+CSRF_TRUSTED_ORIGINS = [f'https://{host}']  

@@ -20,11 +20,11 @@ export const visibilitychange = (wsPong, visiblity) => {
             let groupName = sessionStorage.getItem('groupName');
             let modality = sessionStorage.getItem('modality');
             let player = JSON.parse(sessionStorage.getItem('playerInfo'));
-            sessionStorage.setItem("pongGame", "false");
-            sessionStorage.setItem("snakeGame", "false");
+            //sessionStorage.setItem("pongGame", "false");
+            //sessionStorage.setItem("snakeGame", "false");
           
             if (modality == 'remote') {
-                if (wsPong) {
+                if (wsPong && wsPong.readyState === WebSocket.OPEN) {
                     if(player.id == playerID)
                         sessionStorage.setItem("whoGiveUp", "IPlayer");
                     wsPong.send(JSON.stringify({

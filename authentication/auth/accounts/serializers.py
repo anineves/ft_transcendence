@@ -5,9 +5,10 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import ValidationError
 from django.db.models import Q
-
+import os
 import django.contrib.auth.password_validation as validators
 
+from .set_avatar_path import set_avatar_path
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
@@ -67,6 +68,8 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user is None:
             raise serializers.ValidationError('Invalid credentials', code='authorization')
 
+        path = user.avatar.url if user.avatar else None
+        absolute_url = set_avatar_path(path)
         data.update({
             'user': {
                 'id': user.id,
@@ -74,7 +77,7 @@ class CustomeTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'username': user.username,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'avatar': self.context['request'].build_absolute_uri(user.avatar.url).replace("http://", "https://") if user.avatar else None,
+                'avatar': absolute_url,
                 'otp': user.otp_agreement
             }
         })
@@ -86,15 +89,20 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id', 'email', 'username', 'first_name', \
-                  'last_name', 'avatar', 'date_joined', 'otp_agreement']
-        read_only_fields = ['id', 'email', 'username', 'date_joined', 'otp']
+                  'last_name', 'avatar', 'date_joined', 'otp_agreement', 'ft_student']
+        read_only_fields = ['id', 'email', 'username', 'date_joined', 'otp', 'ft_student']
         
     
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         request = self.context.get('request')
         if instance.avatar and request:
-            representation['avatar'] = request.build_absolute_uri(instance.avatar.url).replace("http://", "https://")
+            path = instance.avatar.url
+            absolute_url = set_avatar_path(path)
+            if instance.ft_student:
+                representation['avatar'] = path.replace('/media/https%3A/', 'https://')
+            else:
+                representation['avatar'] = absolute_url
         else:
             representation['avatar_url'] = None
         return representation
@@ -108,7 +116,8 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ['id', 'nickname', 'friendship', 'user', \
-                  'created_at', 'total_winner', 'pong_winner', 'linha_winner', 'status']
+                  'created_at', 'total_winner', 'pong_winner',\
+                  'linha_winner', 'status']
         
         read_only_fields = ['id' ,'created_at', 'user']
 
@@ -158,7 +167,8 @@ class FriendRequestSerializer(serializers.ModelSerializer):
         validated_data['sender'] = sender
         validated_data['invited'] = invited
         return super().create(validated_data)
-    
+
+
 class MatchSerializer(serializers.ModelSerializer):
     match_type = serializers.SerializerMethodField()
 
@@ -168,7 +178,6 @@ class MatchSerializer(serializers.ModelSerializer):
         read_only_fields = ['id' ,'date']
     
     def create(self, validated_data):
-        print("Dados:", validated_data)
         if 'match_type' not in validated_data:
             validated_data['match_type'] = self.initial_data.get('match_type') 
         return super().create(validated_data)

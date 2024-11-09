@@ -1,4 +1,4 @@
-import { initPongSocket } from '../pong/pongSocket.js'
+import { closePongSocket, initPongSocket } from '../pong/pongSocket.js'
 import { showNextMatchButton } from '../pong/pong.js';
 import { endMatch } from '../tournament.js';
 import { navigateTo } from '../../utils.js';
@@ -57,6 +57,7 @@ let foods = [{ x: null, y: null }];
 let visiblity;
 
 export const startSnakeGame = async () => {
+    sessionStorage.setItem('game', 'snake');
     let modality2 = sessionStorage.getItem('modality');
     const user = sessionStorage.getItem('user');
     visiblity = "true";
@@ -102,7 +103,7 @@ export const startSnakeGame = async () => {
             </div>`
     }
     if (modality2 == "player" || modality2 == "3D") match_type = "MP";
-    sessionStorage.setItem('game', 'snake');
+    
     sessionStorage.setItem('players', players);
 
 
@@ -113,7 +114,8 @@ export const startSnakeGame = async () => {
             groupName = 'snakeGroup';
         const wssocket1 = `wss://${apiUri}/ws/snake_match/${groupName}/`
         ws = initPongSocket(wssocket1);
-        
+        document.removeEventListener('keydown', handleKeyPress);
+        document.removeEventListener('keyup', handleKeyPress);
         if (ws) {
             document.addEventListener('keydown', handleKeyPress);
         }
@@ -147,9 +149,12 @@ export const startSnakeGame = async () => {
                 }
                 drawGameOver(snakePlayer.foodCount, snakeOpponent.foodCount);
                 sessionStorage.removeItem("whoGiveUp");
+                if (ws) {
+                    ws.close();
+                }
                 if (id) {
                     try {
-                        if (sessionStorage.getItem("losingSnake") == 'player')
+                        if (sessionStorage.getItem("losingSnake") == 'opponent')
                             winner_id = player;
                         ws = null
                         const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
@@ -167,9 +172,9 @@ export const startSnakeGame = async () => {
                         const data = await response.json();
 
                         if (response.ok) {
-                            console.log('Match updated successfully:', data);
+                            //console.log('Match updated successfully:', data);
                         } else {
-                            console.log('Error updating match:', data);
+                            //console.log('Error updating match:', data);
                         }
                     } catch (error) {
                         console.error('Error processing match:', error);
@@ -184,7 +189,8 @@ export const startSnakeGame = async () => {
                 sessionStorage.removeItem("duelGame");
                 sessionStorage.removeItem("whoGiveUp");
                 sessionStorage.removeItem('findOpponent');
-                ws = null;
+                sessionStorage.removeItem("duelwait");
+                closePongSocket(ws)
             }
 
 
@@ -252,24 +258,14 @@ export const startSnakeGame = async () => {
                 ws.close();
             }
         };
-
-        ws.onclose = () => {
-            document.removeEventListener('keydown', handleKeyPress);
-            ws = null;
-            sessionStorage.removeItem('friendID');
-            sessionStorage.removeItem('playerID');
-            sessionStorage.removeItem('duelGame');
-            sessionStorage.removeItem('players');
-            sessionStorage.removeItem("Inviter");
-            sessionStorage.removeItem('findOpponent');
-            sessionStorage.removeItem("groupName");
-            sessionStorage.setItem('WS', 'clean');
-        };
+    
     }
   
     //sessionStorage.setItem("snakeGame", "true");
 
     if (modality2 != 'remote') {
+        document.removeEventListener('keydown', handleKeyPress);
+        document.removeEventListener('keyup', handleKeyPress);
 
         document.addEventListener('keydown', (event) => {
             switch (event.key) {
@@ -301,10 +297,10 @@ export const startSnakeGame = async () => {
                 const data = await response.json();
 
                 if (data) {
-                    console.log('Match created successfully:', data);
+                    //console.log('Match created successfully:', data);
                     sessionStorage.setItem('id_match', data.id);
                 } else {
-                    console.log('Match error', data);
+                   // console.log('Match error', data);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -320,7 +316,7 @@ function handleKeyPress(event) {
     const player = sessionStorage.getItem('player');
     const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
-    if (validKeys.includes(event.key)) {
+    if (validKeys.includes(event.key) && ws != null) {
         ws.send(JSON.stringify({
             'action': 'move_snake',
             'message': {
@@ -442,6 +438,7 @@ function checkCollisions() {
         const head = snake.body[0];
         if (head.x < 0 || head.x >= (numCells - 1) || head.y < 0 || head.y >= (canvas.height / gridSize - 1)) {
             sessionStorage.setItem("losingSnake", name);
+            //console.log("losing", name);
             snake.hitWall = true;
             endGame();
             return;
@@ -461,6 +458,7 @@ function checkCollisions() {
             sessionStorage.setItem("losingSnake", "both");
         }
         endGame();
+        return;
 
     }
     for (let i = 1; i < snakeOpponent.body.length; i++) {
@@ -524,13 +522,16 @@ async function drawGame() {
         let nickTorn = sessionStorage.getItem("nickTorn");
         sessionStorage.setItem("snakeGame", "false");
         let winner_id = opponent;
-
+        if (ws) {
+            ws.close();
+        }
         if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True'))) {
             if (player) {
                 try {
 
-                    let nameWinner = sessionStorage.getItem('losingSnake');
-                    if (nameWinner == 'player')
+                    const id = sessionStorage.getItem('id_match');
+
+                    if (sessionStorage.getItem("losingSnake") == 'opponent')
                         winner_id = player;
                     const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
                     const duration = "10";
@@ -549,9 +550,9 @@ async function drawGame() {
                     const data = await response.json();
 
                     if (response.ok) {
-                        console.log('Match updated successfully:', data,  sessionStorage.getItem("snakeGame") )
+                        //console.log('Match updated successfully:', data,  sessionStorage.getItem("snakeGame") )
                     } else {
-                        console.log('Error updating match:', data);
+                        //console.log('Error updating match:', data);
                     }
                 } catch (error) {
                     console.error('Error processing match:', error);
@@ -563,15 +564,16 @@ async function drawGame() {
             showNextMatchButton();
         }
         sessionStorage.removeItem("Inviter");
-        sessionStorage.removeItem('findOpponent');
         sessionStorage.removeItem("groupName");
         sessionStorage.removeItem("id_match");
-        sessionStorage.setItem('WS', 'clean');
         sessionStorage.removeItem("duelGame");
-        sessionStorage.removeItem("losingSnake");
+        sessionStorage.setItem('WS', 'clean');
         sessionStorage.setItem("snakeGame", "false");
+        sessionStorage.removeItem('findOpponent');
+        sessionStorage.removeItem("losingSnake");
+        sessionStorage.removeItem("duelwait");
+        closePongSocket(ws);
 
-        ws = null;
     }
 }
 
@@ -626,22 +628,33 @@ function drawEye(x, y) {
 }
 
 function drawScore() {
+    let savedLanguage = localStorage.getItem('language');
+    if (!savedLanguage || !translations[savedLanguage]) 
+        savedLanguage = 'english'; 
     const currentMatch = JSON.parse(sessionStorage.getItem('currentMatch'));
+    let friendID = sessionStorage.getItem('friendID');
+    let playerID = sessionStorage.getItem('playerID');
+    let player = JSON.parse(sessionStorage.getItem('playerInfo'));
     const modality = sessionStorage.getItem('modality');
-    let player1 = "Player";
-    let player2 = "Oponente";
-
-
+    let player1 = translations[savedLanguage].player
+    let player2 = translations[savedLanguage].opponent
+    const nickname = sessionStorage.getItem('nickname'); 
+    if(nickname) {
+        if (player.id == friendID) 
+            player2 = nickname ? nickname.replace(/^"|"$/g, '') : "";
+        else if (player.id == playerID)
+            player1 = nickname ? nickname.replace(/^"|"$/g, '') : ""; 
+    }
     if (modality == 'tournament') {
         ({ player1, player2 } = currentMatch);
     }
 
     ctx.font = '16px Arial';
     ctx.fillStyle = 'blue';
-    ctx.fillText(`${player1}: ${snakeOpponent.foodCount}`, 10, 20);
+    ctx.fillText(`${player2}: ${snakeOpponent.foodCount}`, 10, 20);
 
     ctx.fillStyle = 'purple';
-    ctx.fillText(`${player2}: ${snakePlayer.foodCount}`, canvas.width - 200, 20);
+    ctx.fillText(`${player1}: ${snakePlayer.foodCount}`, canvas.width - 200, 20);
 }
 
 export function drawGameOver(playerScore, opponentScore) {
@@ -658,25 +671,27 @@ export function drawGameOver(playerScore, opponentScore) {
 
     ctx.font = "30px 'Press Start 2P', cursive";
     ctx.fillStyle = "#ffcc00";
-    ctx.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 180, canvas.height / 2);
+    ctx.fillText(`${translations[savedLanguage].gameOver}`, canvas.width / 2 - 130, canvas.height / 2 -40);
     if(giveUp == "true")
     {
         ctx.font = "20px 'Press Start 2P', cursive";
         ctx.fillStyle = "#ff0000";
-        ctx.fillText(`${translations[savedLanguage].giveUp}`,canvas.width / 2 - 200, canvas.height / 2 - 100);
+        ctx.fillText(`${translations[savedLanguage].giveUp}`,canvas.width / 2 - 140, canvas.height / 2 + 70);
         sessionStorage.setItem('giveUP', 'false');
         sessionStorage.setItem('trGiveUp', 'false');
     }
     else
     {
-        ctx.font = "25px 'Press Start 2P', cursive";
-        ctx.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 3 - 185, canvas.height / 2 + 50);
+        ctx.font = "20px 'Press Start 2P', cursive";
+        ctx.fillText(`${player1}: ${playerScore} | ${player2}: ${opponentScore}`, canvas.width / 3 - 130, canvas.height / 2 + 70);
 
     }
     stopGame();
 }
 
 export function stopGame() {
+    document.removeEventListener('keydown', handleKeyPress);
+    document.removeEventListener('keyup', handleKeyPress);
     const modality = sessionStorage.getItem('modality');
     clearInterval(gameInterval);
     const giveUp = sessionStorage.getItem('giveUP');

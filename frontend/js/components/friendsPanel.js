@@ -4,7 +4,7 @@ export const renderPlayerProfile = async () => {
     const playerJson = sessionStorage.getItem('playerProfile');
 
     if (!playerJson) {
-        navigateTo('/live-chat');
+        navigateTo('/game-selection');
         return;
     }
     const translations = {
@@ -90,6 +90,9 @@ export const renderPlayerProfile = async () => {
     const player = JSON.parse(playerJson);
     const app = document.getElementById('app');
     const defaultAvatar = '../../assets/avatar.png';
+    const statusText = player.status === "ON" ? " online" : " offline";  
+    const statusIcon = player.status === "ON" ? `<span class="status-icon online"></span>` : `<span class="status-icon offline"></span>`; 
+
     const avatarUrl = player.avatar || defaultAvatar;
 
     try {
@@ -97,9 +100,8 @@ export const renderPlayerProfile = async () => {
             <div class="user-panel">
                 <div id="profileSection">
                     <h2>${translations[savedLanguage].title}</h2>
-                    <img id="avatarImg" src="${avatarUrl}?${new Date().getTime()}" alt="Player Avatar" class="avatar">
                     <p><strong>${translations[savedLanguage].nickFriend}:</strong> ${player.nickname}</p>
-                    <p><strong>${translations[savedLanguage].statusFriend}:</strong> ${player.status}</p>
+                    <p><strong>${translations[savedLanguage].statusFriend}:</strong> ${statusIcon}${statusText}</p>
                     <p><strong>${translations[savedLanguage].idFriend}:</strong> ${player.id}</p>
                     <p><strong>${translations[savedLanguage].ttWinsPong}</strong> <span id="totalPongWins">Loading...</span></p>
                     <p><strong>${translations[savedLanguage].ttLossesPong}:</strong> <span id="totalPongLosses">Loading...</span></p>
@@ -108,7 +110,6 @@ export const renderPlayerProfile = async () => {
                     <p><strong>${translations[savedLanguage].ttLossesSnake}:</strong> <span id="totalSnakeLosses">Loading...</span></p>
                     <p><strong>${translations[savedLanguage].ttMatchesSnake}:</strong> <span id="totalSnakeMatches">Loading...</span></p>
                     <button id="backBtn" class="btn">${translations[savedLanguage].chatBtn}</button>
-                    <button id="gameBtn" class="btn">${translations[savedLanguage].gameBtn}</button>
                     <button id="historyBtn" class="btn">${translations[savedLanguage].matchHistBnt}</button>
                 </div>
                 <div class="match-history" id="matchHistory" style="display: none;">
@@ -134,7 +135,13 @@ export const renderPlayerProfile = async () => {
 
         const apiUrl = window.config.API_URL;
         const urlMatches= `${apiUrl}/api/matches/`;
-        const response = await fetch(urlMatches);
+        const response = await fetch(urlMatches, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                'Content-Type': 'application/json'
+            }
+        });
         const matches = await response.json();
 
         let totalPongWins = 0;
@@ -217,15 +224,11 @@ export const renderPlayerProfile = async () => {
 
     } catch (error) {
         console.error('Failed to fetch player stats:', error);
-        navigateTo('/live-chat');
+        navigateTo('/');
     }
 
     document.getElementById('backBtn').addEventListener('click', () => {
         navigateTo('/live-chat');
-    });
-
-    document.getElementById('gameBtn').addEventListener('click', () => {
-        navigateTo('/game-selection');
     });
 
     document.getElementById('historyBtn').addEventListener('click', () => {

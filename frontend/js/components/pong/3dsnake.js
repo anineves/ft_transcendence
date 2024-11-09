@@ -48,7 +48,7 @@ async function createMatch() {
                 if (data) {
                     sessionStorage.setItem('id_match', data.id);
                 } else {
-                    console.log('Match error', data);
+                    //console.log('Match error', data);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -88,9 +88,9 @@ async function updateMatch() {
                 const data = await response.json();
 
                 if (response.ok) {
-                    console.log('Match updated successfully:', data);
+                    //console.log('Match updated successfully:', data);
                 } else {
-                    console.log('Error updating match:', data);
+                    //console.log('Error updating match:', data);
                 }
             } catch (error) {
                 console.error('Error processing match:', error);
@@ -660,12 +660,12 @@ function animate(time) {
             tieResult();
             gameOver = true;
         }
-        else if ((redHeadTouch === 1 || blueHeadTouch === 2 || redScore === 8) && !gameOver) {
+        else if ((redHeadTouch === 1 || blueHeadTouch === 2 || redScore === 40) && !gameOver) {
 
             redVictory();
             gameOver = true;
         }
-        else if ((redHeadTouch === 2 || blueHeadTouch === 1 || blueScore === 8) && !gameOver) {
+        else if ((redHeadTouch === 2 || blueHeadTouch === 1 || blueScore === 40) && !gameOver) {
             blueVictory();
             gameOver = true;
         }

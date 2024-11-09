@@ -35,35 +35,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "443:443"
+      - "8443:8443"
     volumes:
-    # - frontend_html_data:/usr/share/nginx/html 
+      - frontend_html_data:/usr/share/nginx/html 
       - ./frontend/nginx.conf:/etc/nginx/nginx.conf
-      - ./frontend:/usr/share/nginx/html
-      - ./data/web/media:/data/web/media 
+      #- ./frontend:/usr/share/nginx/html
     networks:
       - Transcendence
-#  elasticsearch:
-#    image: elasticsearch:8.15.1
-#    ports:
-#      - "9200:9200"
-#  
-#  logstash:
-#    image: logstash:8.15.1
-#    command: -f /etc/logstash/conf.d/
-#    volumes:
-#      - ./logstash.d:/etc/logstash/conf.d
-#    depends_on:
-#      - elasticsearch
-#    ports:
-#      - "5000:5000"
-#
-#  kibana:
-#    image: kibana:8.15.1
-#    depends_on:
-#      - elasticsearch
-#    ports:
-#      - "5601:5601"
 
 volumes:
   postgres_data:

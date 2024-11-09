@@ -113,7 +113,7 @@ export const renderFriendsPage = async (user) => {
                                 listItem.appendChild(friendButton);
                                 friendsList.appendChild(listItem);
                             } else {
-                                console.log(`Failed to load friend with ID: ${friendId}`);
+                                //console.log(`Failed to load friend with ID: ${friendId}`);
                             }
                         } catch (friendError) {
                             console.error('Error fetching friend data:', friendError);
@@ -122,8 +122,6 @@ export const renderFriendsPage = async (user) => {
                 } else {
                     friendsList.innerHTML = `<li>${translations[savedLanguage].noFriends}</li>`;
                 }
-            } else {
-                //console.log('Failed to load friends.');
             }
         } catch (error) {
             console.error('Error:', error);

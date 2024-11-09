@@ -4,10 +4,19 @@ COMPOSE = ./docker-compose.yml
 all: up 
 
 up: 
-	docker compose -p $(NAME) -f $(COMPOSE) up --build -d
+	@if ! docker compose -p $(NAME) ps | grep -q 'Up'; then \
+	    docker compose -p $(NAME) -f $(COMPOSE) up -d --build; \
+	else \
+	    echo "$(NAME) containers are already running."; \
+	fi
 
 down:
-	docker compose -p $(NAME) down --volumes
+	@if docker compose -p $(NAME) ps | grep -q 'Up'; then \
+		echo "entrei aqui no downnn"; \
+		docker compose -p $(NAME) down --volumes; \
+	else \
+		echo "Nothing to go downnnn!"; \
+	fi
 
 start:
 	docker compose -p $(NAME) start
@@ -16,8 +25,12 @@ stop:
 	docker compose -p $(NAME) stop
 
 rm-image:
-	docker rmi -f $$(docker images -q)
-
+	@if [ -z $$(docker images -aq)] || [ $$(docker images -aq) = ""]; then \
+		echo "Nothing to clean!"; \
+	else \
+		docker rmi -f $$(docker images -q); \
+		echo "TO CLEAN IMAGES!"; \
+	fi
 clean: down rm-image
 
 fclean: clean

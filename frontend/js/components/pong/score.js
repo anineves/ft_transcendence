@@ -44,10 +44,12 @@ export function drawScore(playerScore, opponentScore) {
     if (modality == 'tournament') {
         ({ player1, player2 } = currentMatch);
     }
-
-
     context.font = "16px 'Press Start 2P', cursive";
     context.fillStyle = "#ffcc00";
+    if(modality == "ai")
+        player2 = "AI"
+    if(modality == "ai" && playerID)
+        player1 = nickname ? nickname.replace(/^"|"$/g, '') : ""; 
     context.fillText(`${player1}: ${playerScore}`, 20, 20);
     context.fillText(`${player2}: ${opponentScore}`, canvas.width - 220, 20);
 }

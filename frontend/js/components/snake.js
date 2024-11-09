@@ -1,9 +1,9 @@
 import { startSnakeGame, stopGame, changeGameSpeed, addExtraFood } from './snake/snake.js';
 import { navigateTo } from '../utils.js';
-import { endGameWithScore } from './pong.js';
 import { resetGameSnake } from './snake/snake.js';
-
 export const renderSnake = () => {
+    sessionStorage.setItem("snakeGame", "true");
+    sessionStorage.removeItem("participate");
     let inviter = sessionStorage.getItem("Inviter");
     const apiUrl = window.config.API_URL;
     const user = sessionStorage.getItem('user');
@@ -33,20 +33,63 @@ export const renderSnake = () => {
     resetGameSnake();
     startSnakeGame();
     if(showButtons)
-        document.getElementById('exitBtn').addEventListener('click', endGameWithScore);
+        document.getElementById('exitBtn').addEventListener('click', endGameWithScoreSnake);
 
-    const speedButtons = document.querySelectorAll('.arcade-button[data-speed]');
-    speedButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const speed = parseInt(button.getAttribute('data-speed'));
-            changeGameSpeed(speed);
-        });
-    });
+};
+
+export const recordMatchResultSnake = async () => {
+    const apiUrl = window.config.API_URL;
+    const user = sessionStorage.getItem('user');
+    const id = sessionStorage.getItem('id_match');
+    const modality2 = sessionStorage.getItem('modality');
+    let inviter = sessionStorage.getItem("Inviter");
+    let nickTorn = sessionStorage.getItem("nickTorn")
+
+    let duration = "10"
+    let opponent =1;
+    let winner_id = 1;
+    if (id && user && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True'))) {
+        try {
+            winner_id = opponent;
+            const urlmatchID = `${apiUrl}/api/match/${id}`;
+            const score = `${0}-${99}`;
+            const response = await fetch(urlmatchID, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ winner_id, score, duration })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                //console.log('Match updated successfully:', data);
+            } else {
+                //console.log('Error updating match:', data);
+            }
+        } catch (error) {
+            console.error('Error processing match:', error);
+        }
+    }
+};
+
+
+export const endGameWithScoreSnake = async () => {
+    await recordMatchResultSnake();
+    sessionStorage.removeItem("Inviter");
+    sessionStorage.removeItem("groupName");
+    sessionStorage.removeItem("id_match");
+    sessionStorage.removeItem("duelGame");
+    sessionStorage.setItem("pongGame", "false");
+    sessionStorage.setItem("snakeGame", "false");
+    sessionStorage.removeItem('findOpponent');
+    sessionStorage.removeItem("duelwait");
+    window.addEventListener("beforeunload", (event) => {
     
-    
-    document.getElementById('extraFoodButton').addEventListener('click', () => {
-        addExtraFood();
-    });
+      });
+    stopGame();
 };
 
    

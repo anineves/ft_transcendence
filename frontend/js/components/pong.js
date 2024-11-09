@@ -15,6 +15,8 @@ const translations = {
 };
 
 export const renderPong = () => {
+    sessionStorage.setItem("pongGame", "true");
+    sessionStorage.removeItem("participate");
     const user = sessionStorage.getItem('user');
     const modality2 = sessionStorage.getItem('modality');
     const app = document.getElementById('app');
@@ -56,6 +58,7 @@ export const recordMatchResult = async () => {
     const id = sessionStorage.getItem('id_match');
     const modality2 = sessionStorage.getItem('modality');
     let inviter = sessionStorage.getItem("Inviter");
+    let nickTorn = sessionStorage.getItem("nickTorn")
 
     let duration = "10"
     let opponent =1;
@@ -64,7 +67,7 @@ export const recordMatchResult = async () => {
         try {
             winner_id = opponent;
             const urlmatchID = `${apiUrl}/api/match/${id}`;
-            const score = `${0}-${5}}`;
+            const score = `${0}-${5}`;
             const response = await fetch(urlmatchID, {
                 method: 'PUT',
                 headers: {
@@ -77,9 +80,9 @@ export const recordMatchResult = async () => {
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Match updated successfully:', data);
+                //console.log('Match updated successfully:', data);
             } else {
-                console.log('Error updating match:', data);
+                //console.log('Error updating match:', data);
             }
         } catch (error) {
             console.error('Error processing match:', error);
@@ -94,7 +97,9 @@ export const endGameWithScore = async () => {
     sessionStorage.removeItem("id_match");
     sessionStorage.removeItem("duelGame");
     sessionStorage.setItem("pongGame", "false");
+    sessionStorage.setItem("snakeGame", "false");
     sessionStorage.removeItem('findOpponent');
+    sessionStorage.removeItem("duelwait");
     window.addEventListener("beforeunload", (event) => {
     
       });

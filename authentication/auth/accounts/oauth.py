@@ -3,13 +3,15 @@ from django.contrib.auth import get_user_model
 from rest_framework.serializers import ValidationError
 import requests
 import os
+from django.db import IntegrityError
 
 
 class CustomOAuth2Backend(BaseBackend):
     def authenticate(self, request, code):
+        host = os.getenv('MAIN_HOST', 0)
         token_url = 'https://api.intra.42.fr/oauth/token'
         user_info_url = 'https://api.intra.42.fr/v2/me'
-        redirect_uri = 'https://10.0.2.15:8080/game-selection'
+        redirect_uri = f'https://{host}:8443/game-selection'
 
         token_response = requests.post(token_url, data={
             'grant_type': 'authorization_code',
@@ -43,14 +45,18 @@ class CustomOAuth2Backend(BaseBackend):
         avatar = user_info.get('image').get('link')
         
         User = get_user_model()
-        user, created = User.objects.get_or_create(
-            email=email,
-            username = username,
-            defaults={
-                'first_name': first_name,
-                'last_name': last_name,
-                'avatar': avatar
-            }
-        )
 
+        try:
+            user, created = User.objects.get_or_create(
+                email=email,
+                ft_student = True,
+                defaults={
+                    'username': username,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'avatar': avatar
+                }
+            )
+        except IntegrityError as e:
+            raise ValidationError({"Email already exists."})
         return user
