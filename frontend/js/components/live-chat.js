@@ -26,6 +26,7 @@ const translations = {
         findOpponentSnake: "Find an opponent to Snake",
         participatePong: "Participate in Pong game",
         participateSnake: "Participate in Snake game",
+        playerUnavailable: "Player Unavailable",
 
     },
     portuguese: {
@@ -46,6 +47,7 @@ const translations = {
         findOpponentSnake: "Encontre um Adversario Snake",
         participatePong: "Participar em jogo Pong",
         participateSnake: "Participar em jogo Snake",
+        playerUnavailable: "Jogador Indisponivel",
     },
     french: {
         title: "Chat",
@@ -65,11 +67,12 @@ const translations = {
         findOpponentSnake: "Trouvez un adversaire pour",
         participatePong: "Participer au jeu Pong",
         participateSnake: "Participer au jeu Snake",
+        playerUnavailable: "Jogador Indisponivel",
     }
 };
 
 export const liveChat =  () => {
-    putPlayer("ON");
+    putPlayer("IG");
     sessionStorage.removeItem('participate');
     sessionStorage.removeItem('findOpponent');
     sessionStorage.removeItem("groupName");
@@ -173,7 +176,7 @@ export const liveChat =  () => {
     const unblockInputContainer = document.getElementById('unblock-input-container');
     const unblockPlayerInput = document.getElementById('unblock-player-input');
     const confirmUnblockButton = document.getElementById('confirm-unblock-button');
-    const errorliveChat = document.getElementById('errorChat');
+    let errorliveChat = document.getElementById('errorChat');
     let duelPong = document.getElementById('duel-button');
     let duelSnake = document.getElementById('duel-button-snake');
     let confirmPong = document.getElementById('confirm-duel-button');
@@ -264,7 +267,7 @@ export const liveChat =  () => {
             sessionStorage.setItem('game', "snake");
             if(player == sessionStorage.getItem('playerID') || player == sessionStorage.getItem('friendID'))
             {
-                putPlayer("IG");
+                putPlayer("ON");
                 sessionStorage.setItem('findOpponent', 'true');
                 navigateTo('/snake');
             }
@@ -361,7 +364,7 @@ export const liveChat =  () => {
             sessionStorage.setItem('game', "pong");
             if(player == sessionStorage.getItem('playerID') || player == sessionStorage.getItem('friendID'))
             {
-                putPlayer("IG");
+                putPlayer("ON");
                 sessionStorage.setItem('findOpponent', 'true');
                 navigateTo('/pong');
             }
@@ -483,14 +486,16 @@ export const liveChat =  () => {
             if(data.action == "duel")
                 sessionStorage.setItem("duelGame", "duel-pong");
             chatBox.appendChild(duelMessage);
+            putPlayer("ON");
             if (user_json.id == message.from_user) {
-                putPlayer("IG");
+                putPlayer("ON");
                 sessionStorage.setItem("groupName", groupName);
                 sessionStorage.setItem("Inviter", "True");
                 navigateTo(`/wait-remote`, sessionStorage.getItem("groupName"));
             }
             const timeout = setTimeout(() => {
                 duelMessage.innerHTML = `${translations[savedLanguage].lostInvMsg}`;
+                //putPlayer("IG");
                 if(duelPong)
                     duelPong.style.display = 'block';
                 if(duelSnake)
@@ -504,7 +509,7 @@ export const liveChat =  () => {
             
             if (user_json.id != message.from_user) {
                 acceptButton.addEventListener('click', () => {
-                    putPlayer("IG");
+                    putPlayer("ON");
                     sessionStorage.setItem("Inviter", "False");
                     sessionStorage.setItem('modality', 'remote');
                     sessionStorage.setItem("groupName", groupName);
@@ -594,63 +599,73 @@ export const liveChat =  () => {
             duelContainer.style.display = 'none';
     });
     
-    document.getElementById('confirm-duel-button').addEventListener('click', function() {
+    document.getElementById('confirm-duel-button').addEventListener('click', async function() {
         const playerNickname = document.getElementById('duel-player-input').value;
         sessionStorage.setItem("duelGame", "duel-pong");
     
         if (playerNickname) {
             if (playerNickname === nickname) {
                 errorliveChat.textContent = `${translations[savedLanguage].yourselfMsg}`;
-            }
-            else{
+            } else {
                 document.getElementById('duel-input-container').style.display = 'none'; 
                 document.getElementById('duel-player-input').value = ''; 
-                
-                if(playerStatus(playerNickname))
-                {
-                        console.log("Entrei 2", playerStatus(playerNickname));
-                        let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
-                        socketChat.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
+    
+                // Esperar pela resposta do status do jogador antes de enviar o convite
+                const isPlayerAvailable = await playerStatus(playerNickname);
+                if (isPlayerAvailable) {
+                    console.log("Entrei pong ");
+                    let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
+                    socketChat.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
+                } else {
+                    errorliveChat.textContent = `${translations[savedLanguage].playerUnavailable}`;
                 }
             }
         } else {
-            errorliveChat.textContent= `${translations[savedLanguage].fillNickname}`
+            errorliveChat.textContent = `${translations[savedLanguage].fillNickname}`;
         }
-    });    
+    });  
 
     
-    document.getElementById('confirm-duel-button-snake').addEventListener('click', function() {
+    document.getElementById('confirm-duel-button-snake').addEventListener('click', async function() {
         const playerNickname = document.getElementById('duel-player-input-snake').value;
         sessionStorage.setItem("duelGame", "duel-snake");
     
         if (playerNickname) {
             if (playerNickname === nickname) {
                 errorliveChat.textContent = `${translations[savedLanguage].yourselfMsg}`;
-            }
-            else{
-                
+            } else {
                 document.getElementById('duel-input-container-snake').style.display = 'none'; 
                 document.getElementById('duel-player-input-snake').value = ''; 
-                console.log("Check status player 2", playerStatus(playerNickname));
-                if(playerStatus(playerNickname))
-                {
-                    console.log("Entrei 2", playerStatus(playerNickname));
+                
+                // Esperar pela resposta do status do jogador antes de enviar o convite
+                const isPlayerAvailable = await playerStatus(playerNickname);
+                if (isPlayerAvailable) {
+                    console.log("Entrei 2");
                     let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
                     socketChat.send(JSON.stringify({ action: 'duel-snake', message: duel_message, is_private: true }));
+                } else {
+                    errorliveChat.textContent = `${translations[savedLanguage].playerUnavailable}`;
                 }
             }
-    
         } else {
-            errorliveChat.textContent= `${translations[savedLanguage].fillNickname}`
+            errorliveChat.textContent = `${translations[savedLanguage].fillNickname}`;
         }
-    });    
+    });
     
     
 };
 
 export const playerStatus = async(nickname) => {
     let errorliveChat = document.getElementById('errorChat');
+    errorliveChat.textContent == '';
     console.log("Entreii player status");
+    let savedLanguage = localStorage.getItem('language');
+
+
+    if (!savedLanguage || !translations[savedLanguage]) {
+        savedLanguage = 'english'; 
+    } 
+  ;
     
     const jwttoken = sessionStorage.getItem('jwtToken'); 
     if (!jwttoken) {
@@ -674,12 +689,12 @@ export const playerStatus = async(nickname) => {
             
             if (player) {
                 console.log("playyyer", player);
-                if (player.status == "ON") {
-                    console.log("Entreii player status ONNNNN", player.status);
+                if (player.status == "IG") {
+                    console.log("Entreii player status IG", player.status);
                     return true; 
-                    
                 } else {
-                    errorliveChat.textContent = "This player is not available";
+                    //errorliveChat = document.getElementById('errorChat');
+                    //errorliveChat.textContent =  `${translations[savedLanguage].playerUnavailable}`
                     console.log("Entreii player status OFFFFFFF", player.status);
                     return false; 
                 }

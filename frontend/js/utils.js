@@ -106,6 +106,7 @@ export const navigateTo = (path, user = null) => {
 
 // Renderiza o conteúdo da página com base na URL
 export const render = () => {
+    putPlayer('ON');
     const path = window.location.pathname; // Obtém o caminho atual da URL
     const route = routes[path] || renderMenu;
     const state = window.history.state;

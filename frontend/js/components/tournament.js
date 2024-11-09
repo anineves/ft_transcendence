@@ -185,14 +185,30 @@ export const initializeTournament = () => {
     const modality = sessionStorage.getItem('modality');
     let players = JSON.parse(sessionStorage.getItem('playerNames'));
     shuffleArray(players);
-    const rounds = [];
-    for (let i = 0; i < players.length; i += 2) {
-        rounds.push([players[i], players[i + 1]]);
-    }
-    sessionStorage.setItem('rounds', JSON.stringify(rounds));
-    sessionStorage.setItem('currentRound', '0');
-    sessionStorage.setItem('winners', '[]');
-    startMatch();
+    displayPlayers(players);
+
+    setTimeout(() => {
+        const rounds = [];
+        for (let i = 0; i < players.length; i += 2) {
+            rounds.push([players[i], players[i + 1]]);
+        }
+        sessionStorage.setItem('rounds', JSON.stringify(rounds));
+        sessionStorage.setItem('currentRound', '0');
+        sessionStorage.setItem('winners', '[]');
+        startMatch();
+    }, 3000);
+};
+
+const displayPlayers = (players) => {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+        <div class="player-list">
+            <h2>Players:</h2>
+            <ul>
+                ${players.map(player => `<li>${player}</li>`).join('')}
+            </ul>
+        </div>
+    `;
 };
 
 const startMatch = () => {
