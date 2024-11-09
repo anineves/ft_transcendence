@@ -24,6 +24,7 @@ import { closeSocket } from './components/live-chat.js';
 import { endGameWithScore } from './components/pong.js';
 import { stop3DGame } from './components/pong/3dpong.js';
 import { stop3DSnakeGame } from './components/pong/3dsnake.js';
+import { endGameWithScoreSnake } from './components/snake.js';
 
 //import { Pond3dtotal } from './components/pong/3dpong.js';
 
@@ -106,7 +107,7 @@ export const navigateTo = (path, user = null) => {
 
 // Renderiza o conteúdo da página com base na URL
 export const render = () => {
-    putPlayer('ON');
+    //console.log("Stayus Utils");
     const path = window.location.pathname; // Obtém o caminho atual da URL
     const route = routes[path] || renderMenu;
     const state = window.history.state;
@@ -116,7 +117,8 @@ export const render = () => {
         flag.style.display = 'none'
     if(path != '/pong' && path != '/snake' && path != '/3d-pong' && path != '/3d-snake')
         flag.style.display = 'block'
-
+    if (path !=  '/live-chat')
+        putPlayer('ON');
     updateFooterTranslation();
     const pong = sessionStorage.getItem("pongGame");
     const snake = sessionStorage.getItem("snakeGame");
@@ -138,7 +140,7 @@ export const render = () => {
         if (snake == "true") {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
-            endGameWithScore();
+            endGameWithScoreSnake();
             if (sessionStorage.getItem('modality') == '3D')
                 stop3DSnakeGame();
             return;
@@ -175,7 +177,7 @@ export const checkLoginStatus = () => {
     const userAvatar = document.getElementById('userAvatar');
     const avatarImg = document.getElementById('avatarImg');
     const bar = document.getElementById('startBtn');
-
+    const path = window.location.pathname;
     if (jwtToken) {
         if (user) {
 
@@ -192,6 +194,9 @@ export const checkLoginStatus = () => {
     } else {
 
         bar.style.display = 'block';
+        userAvatar.style.display = 'none';
+    }
+    if(user && (path == '/pong' || path == '/snake' || path == '/3d-pong' || path == '/3d-snake')) {
         userAvatar.style.display = 'none';
     }
 };
@@ -233,7 +238,7 @@ window.addEventListener('popstate', () => {
         if (snake == "true") {
             sessionStorage.setItem("pongGame", "false");
             sessionStorage.setItem("snakeGame", "false");
-            endGameWithScore();
+            endGameWithScoreSnake();
             if (sessionStorage.getItem('modality') == '3D')
                 stop3DSnakeGame();
             return;

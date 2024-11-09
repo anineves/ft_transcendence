@@ -1,5 +1,5 @@
 import { navigateTo, checkLoginStatus } from '../utils.js';
-import { closeSocket } from './live-chat.js';
+import { closeSocket, playerStatus } from './live-chat.js';
 const apiUrl = window.config.API_URL;
 const translations = {
     english: {
@@ -333,6 +333,7 @@ export const putPlayer = async (status) => {
         
             if (playerInfo.ok) {
                 const playerT = await playerInfo.json();
+                //console.log("Player Status: ", playerT.status);
                 sessionStorage.setItem('playerStatus', playerT.status);
                 
                 checkLoginStatus();

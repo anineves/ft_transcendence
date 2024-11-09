@@ -33,7 +33,6 @@ export function initPongSocket(url) {
                 ws.send(JSON.stringify({
                     action: 'end_game'
                 }));
-                console.log("PongSocket 1")
                 ws.close();
                 navigateTo('/live-chat'); 
             }, 10000);
@@ -53,7 +52,6 @@ export function initPongSocket(url) {
                     ws.send(JSON.stringify({
                         action: 'end_game'
                     }));
-                    console.log("PongSocket 2")
                     ws.close();
                     navigateTo('/live-chat'); 
                 }, 10000);
@@ -80,14 +78,14 @@ export function initPongSocket(url) {
     }
     ws.onclose = () => {
         ws = null;
-        console.log("Closing in InitPocket")
+        //console.log("Closing in InitPocket")
     };
     return ws;
 }
 
 export function closePongSocket(ws) {
     if (ws && ws.readyState === WebSocket.OPEN) {
-        console.log("PongSocket 3")
+        //console.log("PongSocket 3")
         ws.close();  
     }
 }

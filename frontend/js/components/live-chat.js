@@ -184,14 +184,14 @@ export const liveChat =  () => {
     errorliveChat.textContent = ''; 
     let participateButtonSnake = document.getElementById('participate-tournament-button-snake');
     let participateButton = document.getElementById('participate-tournament-button');
-   
+    putPlayer('IG');
     const createTournamentButtonSnake = document.getElementById('create-tournament-button-snake');
     const wssocketSnake= `wss://${apiUri}/ws/tournament_snake/`
-    console.log("Socket Snake", socketSnake);
+    //console.log("Socket Snake", socketSnake);
     if(!socketSnake)
     {
         socketSnake = new WebSocket(wssocketSnake);
-        console.log("Entrei em !Socket Snake", socketSnake);
+        //console.log("Entrei em !Socket Snake", socketSnake);
     }
 
     
@@ -238,7 +238,7 @@ export const liveChat =  () => {
                 });
             }
         }
-        console.log("Group:", groupName1);
+        //console.log("Group:", groupName1);
         if (data.action === 'tournament_full_snake' && !groupName1) {
             sessionStorage.setItem("participate", "false");
             sessionStorage.removeItem("participate");
@@ -267,6 +267,7 @@ export const liveChat =  () => {
             sessionStorage.setItem('game', "snake");
             if(player == sessionStorage.getItem('playerID') || player == sessionStorage.getItem('friendID'))
             {
+                //console.log("Stayus ONNNNN 1");
                 putPlayer("ON");
                 sessionStorage.setItem('findOpponent', 'true');
                 navigateTo('/snake');
@@ -335,7 +336,7 @@ export const liveChat =  () => {
         }
     
     
-        console.log("Group pong:", groupName1);
+        //console.log("Group pong:", groupName1);
         if (data.action === 'tournament_full' && !groupName1) {
             sessionStorage.setItem("participate", "false");
             sessionStorage.removeItem("participate");
@@ -364,6 +365,7 @@ export const liveChat =  () => {
             sessionStorage.setItem('game', "pong");
             if(player == sessionStorage.getItem('playerID') || player == sessionStorage.getItem('friendID'))
             {
+                //console.log("Stayus ONNNNN 2");   
                 putPlayer("ON");
                 sessionStorage.setItem('findOpponent', 'true');
                 navigateTo('/pong');
@@ -441,7 +443,7 @@ export const liveChat =  () => {
         let confPong = document.getElementById('duel-input-container');
         let confSnake = document.getElementById('duel-input-container-snake');
         const data = JSON.parse(event.data);
-        console.log("Action", data.action);
+        //console.log("Action", data.action);
         const message = data.message
         const firstWord = message.content.split(' ')[0];
         const isOwnMessage = firstWord === nickname;
@@ -449,7 +451,6 @@ export const liveChat =  () => {
         addMessage(message.content, isOwnMessage);
         if ((data.action == "duel" || data.action == "duel-snake"))
             {
-            console.log("mandar convit")
             sessionStorage.setItem("duelwait", "true");
             let groupName = message.group_name;
             const chatBox = document.getElementById('chat-box'); 
@@ -464,7 +465,6 @@ export const liveChat =  () => {
             acceptButton.id = 'accept-link';
             if(sessionStorage.getItem("participate") != "true")
             {
-                console.log("mandar convit2")
                 acceptButton.innerText = translations[savedLanguage].acceptBtn;
                 duelMessage.innerHTML = `${translations[savedLanguage].duelMsg} `;
                 duelMessage.appendChild(acceptButton);
@@ -486,8 +486,9 @@ export const liveChat =  () => {
             if(data.action == "duel")
                 sessionStorage.setItem("duelGame", "duel-pong");
             chatBox.appendChild(duelMessage);
-            putPlayer("ON");
+            //putPlayer("ON");
             if (user_json.id == message.from_user) {
+                //console.log("Stayus ONNNNN 4");
                 putPlayer("ON");
                 sessionStorage.setItem("groupName", groupName);
                 sessionStorage.setItem("Inviter", "True");
@@ -509,6 +510,7 @@ export const liveChat =  () => {
             
             if (user_json.id != message.from_user) {
                 acceptButton.addEventListener('click', () => {
+                    //console.log("Stayus ONNNNN 5");
                     putPlayer("ON");
                     sessionStorage.setItem("Inviter", "False");
                     sessionStorage.setItem('modality', 'remote');
@@ -613,7 +615,6 @@ export const liveChat =  () => {
                 // Esperar pela resposta do status do jogador antes de enviar o convite
                 const isPlayerAvailable = await playerStatus(playerNickname);
                 if (isPlayerAvailable) {
-                    console.log("Entrei pong ");
                     let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
                     socketChat.send(JSON.stringify({ action: 'duel', message: duel_message, is_private: true }));
                 } else {
@@ -640,7 +641,6 @@ export const liveChat =  () => {
                 // Esperar pela resposta do status do jogador antes de enviar o convite
                 const isPlayerAvailable = await playerStatus(playerNickname);
                 if (isPlayerAvailable) {
-                    console.log("Entrei 2");
                     let duel_message = '@' + playerNickname + `${translations[savedLanguage].fightMsg}`;
                     socketChat.send(JSON.stringify({ action: 'duel-snake', message: duel_message, is_private: true }));
                 } else {
@@ -658,7 +658,6 @@ export const liveChat =  () => {
 export const playerStatus = async(nickname) => {
     let errorliveChat = document.getElementById('errorChat');
     errorliveChat.textContent == '';
-    console.log("Entreii player status");
     let savedLanguage = localStorage.getItem('language');
 
 
@@ -688,14 +687,15 @@ export const playerStatus = async(nickname) => {
             const player = playerData.find(p => p.nickname === nickname);
             
             if (player) {
-                console.log("playyyer", player);
+                //console.log("playyyer", player);
                 if (player.status == "IG") {
-                    console.log("Entreii player status IG", player.status);
+                    //console.log("Entreii player status IG", player.status);
                     return true; 
                 } else {
                     //errorliveChat = document.getElementById('errorChat');
                     //errorliveChat.textContent =  `${translations[savedLanguage].playerUnavailable}`
-                    console.log("Entreii player status OFFFFFFF", player.status);
+                    //console.log("Entreii player status OFFFFFFF", player.status);
+                    putPlayer('IG');
                     return false; 
                 }
             }

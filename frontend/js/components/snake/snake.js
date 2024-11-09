@@ -151,11 +151,10 @@ export const startSnakeGame = async () => {
                 sessionStorage.removeItem("whoGiveUp");
                 if (ws) {
                     ws.close();
-                    console.log("SnakeSocket 4")
                 }
                 if (id) {
                     try {
-                        if (sessionStorage.getItem("losingSnake") == 'player')
+                        if (sessionStorage.getItem("losingSnake") == 'opponent')
                             winner_id = player;
                         ws = null
                         const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
@@ -439,6 +438,7 @@ function checkCollisions() {
         const head = snake.body[0];
         if (head.x < 0 || head.x >= (numCells - 1) || head.y < 0 || head.y >= (canvas.height / gridSize - 1)) {
             sessionStorage.setItem("losingSnake", name);
+            //console.log("losing", name);
             snake.hitWall = true;
             endGame();
             return;
@@ -458,6 +458,7 @@ function checkCollisions() {
             sessionStorage.setItem("losingSnake", "both");
         }
         endGame();
+        return;
 
     }
     for (let i = 1; i < snakeOpponent.body.length; i++) {
@@ -523,14 +524,14 @@ async function drawGame() {
         let winner_id = opponent;
         if (ws) {
             ws.close();
-            console.log("SnakeSocket 3")
         }
         if (user && (modality2 != 'remote' || (modality2 == 'remote' && inviter == 'True')) && (modality2 != 'tournament' || (modality2 == 'tournament' && nickTorn == 'True'))) {
             if (player) {
                 try {
 
-                    let nameWinner = sessionStorage.getItem('losingSnake');
-                    if (nameWinner == 'player')
+                    const id = sessionStorage.getItem('id_match');
+
+                    if (sessionStorage.getItem("losingSnake") == 'opponent')
                         winner_id = player;
                     const score = `${snakePlayer.foodCount}-${snakeOpponent.foodCount}`;
                     const duration = "10";

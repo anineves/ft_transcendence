@@ -104,7 +104,6 @@ export const startPongGame = async () => {
             let winner_id = opponent;
             if (wsPong) {
                 wsPong.close();
-                console.log("PongSocket 4")
             }
             if (id)  {
                 try {
@@ -376,7 +375,6 @@ export function initialize() {
             let winner_id = opponent;
             if (wsPong) {
                 wsPong.close();
-                console.log("PongSocket 4")
             }
             
             if (player && (modality2 != 'remote'||( modality2 == 'remote' && inviter=='True')) && (modality2 != 'tournament'||( modality2 == 'tournament' && nickTorn=='True')))  {
@@ -451,7 +449,6 @@ export function initialize() {
         });
     }
     else if (modality2 == 'remote' && wsPong) {
-        console.log("pongSnakeee", wsPong);
         document.addEventListener('keydown', keyDownHandler);
         document.addEventListener('keyup', keyUpHandler);
 

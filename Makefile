@@ -4,7 +4,11 @@ COMPOSE = ./docker-compose.yml
 all: up 
 
 up: 
-	docker compose -p $(NAME) -f $(COMPOSE) up --build -d
+	@if ! docker compose -p $(NAME) ps | grep -q 'Up'; then \
+	    docker compose -p $(NAME) -f $(COMPOSE) up -d --build; \
+	else \
+	    echo "$(NAME) containers are already running."; \
+	fi
 
 down:
 	docker compose -p $(NAME) down --volumes
