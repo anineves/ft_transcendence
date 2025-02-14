@@ -4,6 +4,8 @@ ft_transcendence
 
 ft_transcendence is a project developed within the 42 School context, designed to provide an interactive web experience based on the Pong game, featuring authentication, real-time multiplayer, and a user profile system. The goal is to apply modern full-stack web development concepts, including OAuth authentication, WebSockets, and secure architecture.
 
+
+
 🚀 Features
 
 🔑 Secure Authentication: Supports login via OAuth2 and two-factor authentication (2FA).
@@ -15,6 +17,8 @@ ft_transcendence is a project developed within the 42 School context, designed t
 💬 Real-Time Chat: Communication between players via WebSockets.
 
 🛡️ Enhanced Security: Protection against common attacks such as SQL Injection and Cross-Site Scripting (XSS).
+
+
 
 🛠️ Technologies Used
 
@@ -29,6 +33,8 @@ Real-Time Communication: WebSockets
 Database: PostgreSQL
 
 Docker: Facilitates deployment and development environment
+
+
 
 📦 Requirements
 
@@ -54,6 +60,7 @@ Build and start the containers with Docker:
 docker-compose up --build
 
 The frontend will be available at http://localhost:8443.
+
 
 🎥 Demo Video
 
