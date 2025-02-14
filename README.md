@@ -8,14 +8,17 @@ including OAuth authentication, WebSockets, and secure architecture.
 
 🚀 Features:
 🔑 Secure Authentication: Supports login via OAuth2 and two-factor authentication (2FA).
+
 🎮 Multiplayer Pong Game: Play real-time matches against other users
+
 📊 Ranking and Profile System: User profiles with statistics and a scoring system.
+
 💬 Real-Time Chat: Communication between players via WebSockets.
+
 🛡️ Enhanced Security: Protection against common attacks such as SQL Injection and Cross-Site Scripting (XSS).
 
 
 🛠️ Technologies Used:
-
 Frontend: JavaScript
 
 Backend: Django, PostgreSQL
@@ -34,6 +37,8 @@ Docker: Facilitates deployment and development environment
 Docker & Docker Compose
 
 PostgreSQL
+
+
 
 🔧How to Run the Project:
 
