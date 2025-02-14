@@ -8,58 +8,58 @@ ft_transcendence is a project developed within the 42 School context, designed t
 
 🚀 Features
 
-🔑 Secure Authentication: Supports login via OAuth2 and two-factor authentication (2FA).
+  🔑 Secure Authentication: Supports login via OAuth2 and two-factor authentication (2FA).
 
-🎮 Multiplayer Pong Game: Play real-time matches against other users.
+  🎮 Multiplayer Pong Game: Play real-time matches against other users.
 
-📊 Ranking and Profile System: User profiles with statistics and a scoring system.
+  📊 Ranking and Profile System: User profiles with statistics and a scoring system.
+  
+  💬 Real-Time Chat: Communication between players via WebSockets.
 
-💬 Real-Time Chat: Communication between players via WebSockets.
-
-🛡️ Enhanced Security: Protection against common attacks such as SQL Injection and Cross-Site Scripting (XSS).
+  🛡️ Enhanced Security: Protection against common attacks such as SQL Injection and Cross-Site Scripting (XSS).
 
 
 
 🛠️ Technologies Used
 
-Frontend: JavaScript
+  Frontend: JavaScript
 
-Backend: Django, PostgreSQL
+  Backend: Django, PostgreSQL
 
-Authentication: OAuth2, 2FA
+  Authentication: OAuth2, 2FA
 
-Real-Time Communication: WebSockets
+  Real-Time Communication: WebSockets
 
-Database: PostgreSQL
+  Database: PostgreSQL
 
-Docker: Facilitates deployment and development environment
+  Docker: Facilitates deployment and development environment
 
 
 
 📦 Requirements
 
-Docker & Docker Compose
+  Docker & Docker Compose
 
-PostgreSQL
+  PostgreSQL
 
 🔧 How to Run the Project
 
-Clone the repository:
+  Clone the repository:
 
-git clone https://github.com/anineves/ft_transcendence.git
-cd ft_transcendence
+  git clone https://github.com/anineves/ft_transcendence.git
+  cd ft_transcendence
 
-Configure environment variables:
+  Configure environment variables:
 
-cp .env.example .env
+  cp .env.example .env
 
-Fill in the credentials in the .env file.
+  Fill in the credentials in the .env file.
+  
+  Build and start the containers with Docker:
 
-Build and start the containers with Docker:
+  docker-compose up --build
 
-docker-compose up --build
-
-The frontend will be available at http://localhost:8443.
+  The frontend will be available at http://localhost:8443.
 
 
 🎥 Demo Video
