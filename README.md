@@ -1,4 +1,5 @@
 ft_transcendence
+
 📌 About the Project
 ft_transcendence is a project developed within the 42 School context, designed to provide an interactive web experience based on the Pong game, 
 featuring authentication, real-time multiplayer, and a user profile system. The goal is to apply modern full-stack web development concepts, 
