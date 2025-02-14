@@ -39,3 +39,9 @@ Build and start the containers with Docker:
 docker-compose up --build
 
 The frontend will be available at http://localhost:8443.
+
+
+
+
+https://github.com/user-attachments/assets/2e6caa78-164f-4501-b77a-e672be6c02fb
+
