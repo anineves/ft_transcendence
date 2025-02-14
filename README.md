@@ -5,20 +5,16 @@ ft_transcendence is a project developed within the 42 School context, designed t
 featuring authentication, real-time multiplayer, and a user profile system. The goal is to apply modern full-stack web development concepts, 
 including OAuth authentication, WebSockets, and secure architecture.
 
-🚀 Features
 
+🚀 Features:
 🔑 Secure Authentication: Supports login via OAuth2 and two-factor authentication (2FA).
-
 🎮 Multiplayer Pong Game: Play real-time matches against other users
-
 📊 Ranking and Profile System: User profiles with statistics and a scoring system.
-
 💬 Real-Time Chat: Communication between players via WebSockets.
-
 🛡️ Enhanced Security: Protection against common attacks such as SQL Injection and Cross-Site Scripting (XSS).
 
 
-🛠️ Technologies Used
+🛠️ Technologies Used:
 
 Frontend: JavaScript
 
