@@ -1,12 +1,9 @@
-ft_transcendence
-
-📌 About the Project
+# ft_transcendence
 
 ft_transcendence is a project developed within the 42 School context, designed to provide an interactive web experience based on the Pong game, featuring authentication, real-time multiplayer, and a user profile system. The goal is to apply modern full-stack web development concepts, including OAuth authentication, WebSockets, and secure architecture.
 
 
-
-🚀 Features
+## 🚀 Features
 
   🔑 Secure Authentication: Supports login via OAuth2 and two-factor authentication (2FA).
 
@@ -20,49 +17,53 @@ ft_transcendence is a project developed within the 42 School context, designed t
 
 
 
-🛠️ Technologies Used
+## 🛠️ Technologies Used
 
-  Frontend: JavaScript
+ - Frontend: JavaScript
 
-  Backend: Django, PostgreSQL
+ - Backend: Django, PostgreSQL
 
-  Authentication: OAuth2, 2FA
+ - Authentication: OAuth2, 2FA
 
-  Real-Time Communication: WebSockets
+ - Real-Time Communication: WebSockets
 
-  Database: PostgreSQL
+ - Database: PostgreSQL
 
-  Docker: Facilitates deployment and development environment
+ - Docker: Facilitates deployment and development environment
 
 
 
-📦 Requirements
+## 📦 Requirements
 
-  Docker & Docker Compose
+ - Docker & Docker Compose
 
-  PostgreSQL
+ - PostgreSQL
 
-🔧 How to Run the Project
+## 🔧 How to Run the Project
 
-  Clone the repository:
+ - Clone the repository:
 
+``` bash
   git clone https://github.com/anineves/ft_transcendence.git
   cd ft_transcendence
+```
+ - Configure environment variables:
 
-  Configure environment variables:
-
+``` bash
   cp .env.example .env
-
-  Fill in the credentials in the .env file.
+```
+ - Fill in the credentials in the .env file.
   
-  Build and start the containers with Docker:
+ - Build and start the containers with Docker:
 
+``` bash
   docker-compose up --build
+```
 
   The frontend will be available at http://localhost:8443.
 
 
-🎥 Demo Video
+## 🎥 Demo Video
 
 
 https://github.com/user-attachments/assets/2e6caa78-164f-4501-b77a-e672be6c02fb
